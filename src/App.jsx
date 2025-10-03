@@ -12,7 +12,8 @@ import Onama from "./pages/Onama";
 
 function App() {
   return (
-    <div className="min-h-screen w-full bg-gradient-to-br from-[#CBCFBB] via-[#91CEC1] to-[#6EAEA2]">
+    //bg-gradient-to-br from-[#CBCFBB] via-[#91CEC1] to-[#6EAEA2]
+    <div className="min-h-screen w-full napredniGradient">
       <Router>
         <Navbar />
         <main className="max-w-5xl mx-auto px-3 sm:px-8 py-8 pt-16">

@@ -3,7 +3,7 @@ import { FaTools, FaShippingFast, FaCertificate, FaFlask, FaLaptopCode, FaIndust
 
 export default function Home() {
   return (
-    <main className="max-w-full sm:max-w-3xl mx-auto p-2 sm:p-8 bg-white/80 rounded-xl shadow-lg mt-10 animate-fadein border border-[#CBCFBB]">
+    <main className="max-w-full sm:max-w-6xl mx-auto p-2 sm:p-8 bg-white/80 rounded-xl shadow-lg mt-10 animate-fadein border border-[#CBCFBB]">
       {/* Slider ili hero slika */}
       <div className="relative rounded-2xl overflow-hidden mb-6 animate-fadein duration-1000">
         {/* /imgs/home/slika1.png */}

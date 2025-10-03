@@ -43,7 +43,10 @@ export default function Navbar() {
           className="sm:hidden flex flex-col items-center justify-center h-9 w-9 rounded hover:bg-[#6EAEA2]/50 transition"
           aria-label="Menu"
           onClick={() => setOpen(!open)}
-          style={{ background: open ? BOJE.sheen : "transparent" }}
+          style={{ 
+            position: "relative", // ili "absolute" ako treba da visi iznad
+            zIndex: 1000,         // ensure it's above animated elements!
+            background: open ? BOJE.sheen : "transparent" }}
         >
           <span className={`block h-1 w-7 bg-[#CBCFBB] rounded mb-1 transition-all ${open ? "rotate-45 translate-y-2" : ""}`}></span>
           <span className={`block h-1 w-7 bg-[#CBCFBB] rounded mb-1 transition-all ${open ? "opacity-0" : ""}`}></span>
@@ -83,7 +86,7 @@ export default function Navbar() {
 
       {/* Mobile Menu */}
       {open && (
-        <ul className="sm:hidden flex flex-col items-end gap-4 px-6 pb-6 bg-[#1E3E49]/95 absolute right-0 left-0 top-full shadow-lg rounded-b-xl border-b-2 border-[#6EAEA2]">
+        <ul className="sm:hidden flex flex-col items-end gap-4 px-6 pb-6 bg-[#1E3E49]/95 absolute right-0 left-0 top-full shadow-lg rounded-b-xl border-b-2 border-[#6EAEA2] animate-slidein-right">
           <li>
             <Link to="/" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#AD5637]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
               <FaHome />
