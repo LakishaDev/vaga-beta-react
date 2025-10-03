@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Footer() {
   return (
-    <footer className="bg-blue-50 text-blue-700 text-center p-4 mt-8 shadow-inner animate-fadeIn">
+    <footer className="bg-[#2F5363] text-[#91CEC1] text-center p-4 mt-8 shadow-inner animate-fadeIn">
       <p>
         Copyright © 2022 Vaga Beta<br />
         Designed & Hosted by{" "}

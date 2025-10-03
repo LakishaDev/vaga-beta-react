@@ -1,7 +1,7 @@
 export default function Onama() {
   return (
     <main className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 animate-fadein">
-      <h2 className="text-3xl text-blue-700 font-semibold mb-6 animate-pop">O nama</h2>
+      <h2 className="text-3xl text-[#1E3E49] font-semibold mb-6 animate-pop">O nama</h2>
       <p className="text-gray-700 mb-4 animate-fadeup">
         Vaga-Beta osnovana 2009. godine sa sedištem u Nišu, ul. Ive Andrića 14.<br />
         Osnovna delatnost: kontrolno ispitivanje, servisiranje i overavanje vaga na teritoriji cele Srbije.

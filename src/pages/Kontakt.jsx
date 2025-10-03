@@ -1,7 +1,7 @@
 export default function Kontakt() {
   return (
     <main className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 animate-fadein">
-      <h2 className="text-3xl text-blue-700 font-semibold mb-4 animate-pop">Kontaktirajte nas</h2>
+      <h2 className="text-3xl text-[#1E3E49] font-semibold mb-4 animate-pop">Kontaktirajte nas</h2>
       <p className="text-gray-700 mb-6 animate-fadeup">Možete nas kontaktirati putem e-maila:</p>
       <ul className="space-y-3 text-gray-700 mb-8">
         <li><strong>Adresa:</strong> Ive Andrića 14, Niš 18116</li>

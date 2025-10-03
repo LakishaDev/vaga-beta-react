@@ -1,7 +1,7 @@
 export default function Usluge() {
   return (
     <main className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10 animate-fadein">
-      <h2 className="text-3xl text-blue-700 font-semibold mb-4 animate-pop">Servis</h2>
+      <h2 className="text-3xl text-[#1E3E49] font-semibold mb-4 animate-pop">Servis</h2>
       <p className="text-gray-700 mb-4 animate-fadeup">
         Vršimo servisranje svih vrsta vaga: mehaničkih, digitalnih, preciznih, trgovačkih, magacinskih, kamionskih, mesoreznica i građevinskih vaga.
       </p>
