@@ -1,7 +1,9 @@
 import { Link, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../contexts/shop/CartContext";
+import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
 import { auth } from "../../utils/firebase";
+import { useNavigate } from "react-router-dom";
 import { 
   ShoppingCart, 
   LogIn, 
@@ -17,12 +19,14 @@ import {
 import TypingText from "../TypingText";
 
 export default function Navbar() {
+  const { showSnackbar } = useContext(SnackbarContext);
   const { cart } = useContext(CartContext);
   const cartCount = cart.reduce((acc, item) => acc + item.qty, 0);
   const [user, setUser] = useState(null); // <-- DODAJ OVO
   const [isAdmin, setIsAdmin] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -38,6 +42,8 @@ export default function Navbar() {
     try {
       await auth.signOut();
       setMobileMenuOpen(false); // zatvori mobilni meni
+      showSnackbar("Uspešno ste se odjavili.", "success");
+      navigate("/prodavnica/login");
     } catch (error) {
       console.error("Greška pri odjavi:", error);
     }

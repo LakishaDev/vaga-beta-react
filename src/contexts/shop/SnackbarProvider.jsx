@@ -1,28 +1,24 @@
 import { useState, useCallback } from "react";
 import { SnackbarContext } from "./SnackbarContext";
-import Snackbar from "../../components/shop/Snackbar";
+import SnackbarStack from "../../components/shop/SnackbarStack";
 
 export function SnackbarProvider({ children }) {
-  const [snackbar, setSnackbar] = useState({ message: "", show: false });
+  const [snacks, setSnacks] = useState([]);
 
-  // Funkcija za prikaz Snackbar-a
-  const showSnackbar = useCallback((message) => {
-    setSnackbar({ message, show: true });
+  const showSnackbar = useCallback((message, type) => {
+    const id = Math.random().toString(36).slice(2,10);
+    setSnacks(snacks => [...snacks, { message, id, show: true, type: type || "info" }]);
   }, []);
 
-  // Funkcija za zatvaranje Snackbar-a
-  const closeSnackbar = useCallback(() => {
-    setSnackbar(s => ({ ...s, show: false }));
+  const removeSnackbar = useCallback((id) => {
+    setSnacks(snacks => snacks.filter(s => s.id !== id));
   }, []);
 
   return (
     <SnackbarContext.Provider value={{ showSnackbar }}>
       {children}
-      <Snackbar
-        message={snackbar.message}
-        show={snackbar.show}
-        onClose={closeSnackbar}
-      />
+      <SnackbarStack messages={snacks} removeSnackbar={removeSnackbar} />
     </SnackbarContext.Provider>
   );
 }
+

@@ -10,7 +10,7 @@ export default function ProductCard({ product }) {
   const handleAddToCart = (e) => {
     e.preventDefault();
     addToCart(product);
-    showSnackbar(`${product.name} je dodat u korpu!`);
+    showSnackbar(`${product.name} je dodat u korpu!`, "success");
   };
 
   return (
@@ -25,7 +25,7 @@ export default function ProductCard({ product }) {
     >
       {/* Cena badge gore desno */}
       <span className="absolute top-4 sm:top-6 right-4 sm:right-7 bg-bluegreen text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-base sm:text-lg shadow animate-pop z-10">
-        {product.price} RSD
+        {Number(product.price).toLocaleString("sr-RS")} RSD
       </span>
       <img
         src={product.imgUrl}

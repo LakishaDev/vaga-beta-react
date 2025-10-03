@@ -50,20 +50,20 @@ export default function AdminPanel() {
         imgUrl,
         createdAt: new Date()
       });
-      showSnackbar("Proizvod uspešno dodat!");
+      showSnackbar("Proizvod uspešno dodat!", "success");
       // refresh products list...
     } catch(err) {
-      showSnackbar("Greška pri dodavanju proizvoda.");
+      showSnackbar("Greška pri dodavanju proizvoda.", "error");
     }
   };
 
   const handleDelete = async (id) => {
     try {
       await deleteDoc(doc(db, "products", id));
-      showSnackbar("Proizvod uspešno obrisan!");
+      showSnackbar("Proizvod uspešno obrisan!", "success");
       // refresh products list...
     } catch(err) {
-      showSnackbar("Greška pri brisanju proizvoda.");
+      showSnackbar("Greška pri brisanju proizvoda.", "error");
     }
   };
 
