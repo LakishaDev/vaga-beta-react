@@ -5,7 +5,7 @@ export default function Footer() {
     <footer className="bg-[#2F5363] text-[#91CEC1] text-center p-4 mt-8 shadow-inner animate-fadeIn">
       <p>
         Copyright © {new Date().getFullYear()} Vaga Beta<br />
-        Designed & Hosted by{" "}
+        Designed by{" "}
         <a
           href="https://www.linkedin.com/in/lakishadev/"
           target="_blank"
