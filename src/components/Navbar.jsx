@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
+import { FaHome, FaBoxes, FaCogs, FaEnvelope, FaInfoCircle } from "react-icons/fa";
 
 const BOJE = {
   bone: "#CBCFBB",
@@ -52,40 +53,66 @@ export default function Navbar() {
         {/* Links desktop */}
         <ul className="hidden sm:flex gap-6 font-semibold text-base">
           <li>
-            <Link to="/" className="hover:text-[#AD5637] transition" style={{ color: BOJE.bone }}>Početna</Link>
+            <Link to="/" className="flex items-center gap-2 hover:text-[#AD5637] transition" style={{ color: BOJE.bone }}>
+              <FaHome /> Početna
+            </Link>
           </li>
           <li>
-            <Link to="/proizvodi" className="hover:text-[#6EAEA2] transition" style={{ color: BOJE.bone }}>Proizvodi</Link>
+            <Link to="/proizvodi" className="flex items-center gap-2 hover:text-[#6EAEA2] transition" style={{ color: BOJE.bone }}>
+              <FaBoxes /> Proizvodi
+            </Link>
           </li>
           <li>
-            <Link to="/usluge" className="hover:text-[#91CEC1] transition" style={{ color: BOJE.bone }}>Usluge</Link>
+            <Link to="/usluge" className="flex items-center gap-2 hover:text-[#91CEC1] transition" style={{ color: BOJE.bone }}>
+              <FaCogs /> Usluge
+            </Link>
           </li>
           <li>
-            <Link to="/kontakt" className="hover:text-[#8A4D34] transition" style={{ color: BOJE.bone }}>Kontakt</Link>
+            <Link to="/kontakt" className="flex items-center gap-2 hover:text-[#8A4D34] transition" style={{ color: BOJE.bone }}>
+              <FaEnvelope /> Kontakt
+            </Link>
           </li>
           <li>
-            <Link to="/onama" className="hover:text-[#CBCFBB] transition" style={{ color: BOJE.bone }}>O nama</Link>
+            <Link to="/onama" className="flex items-center gap-2 hover:text-[#CBCFBB] transition" style={{ color: BOJE.bone }}>
+              <FaInfoCircle /> O nama
+            </Link>
           </li>
         </ul>
+
       </div>
 
       {/* Mobile Menu */}
       {open && (
         <ul className="sm:hidden flex flex-col items-end gap-4 px-6 pb-6 bg-[#1E3E49]/95 absolute right-0 left-0 top-full shadow-lg rounded-b-xl border-b-2 border-[#6EAEA2]">
           <li>
-            <Link to="/" className="py-2 px-6 rounded hover:bg-[#AD5637]/20 block w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>Početna</Link>
+            <Link to="/" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#AD5637]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
+              <FaHome />
+            Početna
+            </Link>
           </li>
           <li>
-            <Link to="/proizvodi" className="py-2 px-6 rounded hover:bg-[#6EAEA2]/20 block w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>Proizvodi</Link>
+            <Link to="/proizvodi" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
+              <FaBoxes />
+              Proizvodi
+            </Link>
           </li>
           <li>
-            <Link to="/usluge" className="py-2 px-6 rounded hover:bg-[#91CEC1]/20 block w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>Usluge</Link>
+            <Link to="/usluge" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#91CEC1]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
+              <FaCogs />
+              Usluge
+            </Link>
           </li>
           <li>
-            <Link to="/kontakt" className="py-2 px-6 rounded hover:bg-[#8A4D34]/20 block w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>Kontakt</Link>
+            <Link to="/kontakt" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#8A4D34]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
+              <FaEnvelope />
+              Kontakt
+            </Link>
           </li>
           <li>
-            <Link to="/onama" className="py-2 px-6 rounded hover:bg-[#CBCFBB]/20 block w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>O nama</Link>
+            <Link to="/onama" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#CBCFBB]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
+              <FaInfoCircle />
+              O nama
+            </Link>
           </li>
         </ul>
       )}

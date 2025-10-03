@@ -1,21 +1,96 @@
 import Slider from "../components/Slider";
+import { FaTools, FaShippingFast, FaCertificate, FaFlask, FaLaptopCode, FaIndustry, FaShieldAlt } from "react-icons/fa";
 
 export default function Home() {
   return (
-    <main className="max-w-full sm:max-w-2xl mx-auto p-2 sm:p-8 bg-white rounded-xl shadow-lg mt-10 animate-fadein">
-      <Slider />
-      <h1 className="text-4xl text-[#1E3E49] mb-2 font-bold animate-pop">Vaga Beta</h1>
-      <h2 className="text-2xl text-[#1A343D]
+    <main className="max-w-full sm:max-w-3xl mx-auto p-2 sm:p-8 bg-white/80 rounded-xl shadow-lg mt-10 animate-fadein border border-[#CBCFBB]">
+      {/* Slider ili hero slika */}
+      <div className="relative rounded-2xl overflow-hidden mb-6 animate-fadein duration-1000">
+        {/* /imgs/home/slika1.png */}
+        <img
+          src="/imgs/home/slika1.png"
+          alt="Elektronske vage i programiranje"
+          className="w-full aspect-video object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#CBCFBB]/80 to-transparent" />
+        <div className="absolute bottom-5 left-8 text-3xl text-[#1E3E49] font-bold drop-shadow animate-pop">
+          Vaga Beta
+        </div>
+      </div>
+      
+      {/* Intro sekcija */}
+      <section className="mb-6 animate-fadein duration-1000 delay-200">
+        <h2 className="text-2xl text-[#1A343D] mt-0 font-extrabold animate-fadeup">
+          Preciznost, inovacije i poverenje u svakoj vagi.
+        </h2>
+        <p className="text-lg text-[#2F5363] mt-3 mb-4 max-w-xl animate-fadeup delay-100">
+          Vaga Beta je lider u izradi, servisu i žigosanju elektronskih vaga – ali i programiranju specijalizovanih softverskih rešenja za kontrolu i merenje! Pronađite sve što vam je potrebno na jednom mestu – brzo, profesionalno i sa garancijom.
+        </p>
+      </section>
 
- mt-0 animate-fadeup">Šta vam nudimo?</h2>
-      <ul className="list-disc pl-6 space-y-3 animate-fadeup">
-        <li className="hover:scale-105 transition-transform">Brzu i efikasnu popravku</li>
-        <li className="hover:scale-105 transition-transform">Profesionalno servisiranje uz profesionalnu opremu</li>
-        <li className="hover:scale-105 transition-transform">Žigosanje vaga u najkraćem roku</li>
-        <li className="hover:scale-105 transition-transform">Izrađivanje vaga po vašoj želji</li>
-        <li className="hover:scale-105 transition-transform">Laboratorijsko ispitivanje</li>
-        <li className="hover:scale-105 transition-transform">Akreditovana firma D.O.O</li>
-      </ul>
+      {/* Sekcija Proizvodnja i softver */}
+      <section className="rounded-xl p-4 bg-[#91CEC1]/30 mb-8 flex flex-col md:flex-row gap-6 items-center animate-fadein duration-1000 delay-200">
+        <img src="/imgs/home/slika2.png" alt="Izrada elektronskih vaga po želji" className="w-full md:w-1/2 rounded-lg object-cover animate-pop delay-300" />
+        <div className="flex-1">
+          <h3 className="text-xl font-bold text-[#6EAEA2] mb-2">Izrada vaga po meri i razvoj softvera</h3>
+          <ul className="space-y-2">
+            <li className="flex items-center gap-2"><FaIndustry className="text-[#1E3E49] text-xl" /> Elektronske i mehaničke vage dizajnirane po vašim potrebama</li>
+            <li className="flex items-center gap-2"><FaLaptopCode className="text-[#AD5637] text-xl" /> Razvoj softverskih programa za pametno praćenje, upravljanje i integraciju vaga</li>
+            <li className="flex items-center gap-2"><FaShippingFast className="text-[#91CEC1] text-xl" /> Isporuka i ugradnja na lokaciji korisnika</li>
+          </ul>
+        </div>
+      </section>
+
+      {/* Usluge sekcija sa ikonama */}
+      <section className="mb-8 animate-fadein duration-1000 delay-300">
+        <h3 className="text-xl text-[#6EAEA2] font-bold mb-3 animate-pop">Šta vam još nudimo?</h3>
+        <ul className="grid sm:grid-cols-2 gap-4 list-none pl-0">
+          <li className="flex items-center gap-3 p-3 rounded-lg bg-[#CBCFBB]/50 hover:bg-[#91CEC1]/20 shadow transition-transform hover:scale-105 animate-fadeup">
+            <FaTools className="text-[#AD5637] text-2xl" />
+            Brza i efikasna popravka elektronskih vaga
+          </li>
+          <li className="flex items-center gap-3 p-3 rounded-lg bg-[#CBCFBB]/50 hover:bg-[#91CEC1]/20 shadow transition-transform hover:scale-105 animate-fadeup delay-100">
+            <FaCertificate className="text-[#8A4D34] text-2xl" />
+            Žigosanje vaga i izdavanje sertifikata
+          </li>
+          <li className="flex items-center gap-3 p-3 rounded-lg bg-[#CBCFBB]/50 hover:bg-[#91CEC1]/20 shadow transition-transform hover:scale-105 animate-fadeup delay-150">
+            <FaFlask className="text-[#1E3E49] text-2xl" />
+            Laboratorijsko ispitivanje i kalibracija
+          </li>
+          <li className="flex items-center gap-3 p-3 rounded-lg bg-[#CBCFBB]/50 hover:bg-[#91CEC1]/20 shadow transition-transform hover:scale-105 animate-fadeup delay-200">
+            <FaShieldAlt className="text-[#2F5363] text-2xl" />
+            Akreditovana firma i višegodišnja garancija
+          </li>
+        </ul>
+      </section>
+
+      {/* Slika testiranja/vage */}
+      <div className="rounded-2xl overflow-hidden mb-8 animate-fadein duration-1000 delay-400">
+        {/* /imgs/home/slika3.png */}
+        <img
+          src="/imgs/home/slika3.png"
+          alt="Elektronske vage u laboratoriji"
+          className="w-full aspect-video object-cover rounded-xl"
+        />
+      </div>
+
+      {/* Zašto baš mi + CTA */}
+      <section className="bg-[#CBCFBB]/60 rounded-lg p-5 shadow-sm animate-pop duration-1000 delay-400">
+        <h4 className="text-xl text-[#AD5637] font-bold mb-2">Zašto baš Vaga Beta?</h4>
+        <ul className="list-disc pl-6 text-[#1A343D] space-y-1 font-medium mb-4">
+          <li>Više od 20 godina iskustva u industriji vaga</li>
+          <li>Kompletan servis i podrška na jednom mestu</li>
+          <li>Tim stručnjaka za elektroniku, mehaniku i softver</li>
+          <li>Brzina & pouzdanost</li>
+          <li>Individualni pristup svakom klijentu</li>
+        </ul>
+        <a
+          href="/kontakt"
+          className="inline-block px-6 py-3 rounded-xl font-semibold text-white bg-[#AD5637] hover:bg-[#6EAEA2] shadow transition-all animate-bounce"
+        >
+          Kontaktirajte nas
+        </a>
+      </section>
     </main>
   );
 }
