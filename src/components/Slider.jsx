@@ -71,7 +71,7 @@ export default function Slider() {
               </>
             )}
             <img
-              src={`https://vagabeta.rs/img/${item.slika}.jpg`}
+              src={`https://vagabeta.rs/imgs/${item.slika}.jpg`}
               alt={item.tekst}
               className={`w-full h-full object-cover transition group-hover:scale-105 ${!loaded[idx] ? "blur-lg" : ""}`}
               draggable={false}
