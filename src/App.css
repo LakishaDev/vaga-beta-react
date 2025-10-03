@@ -1,0 +1,93 @@
+/* Paleta boja */
+:root {
+  --primary: #276ef1;
+  --secondary: #48a6ff;
+  --background: #f4f8fc;
+  --text: #1a2941;
+  --nav-bg: #fff;
+  --footer-bg: #f0f3fa;
+  --card-bg: #ffffff;
+}
+
+body {
+  background: var(--background);
+  color: var(--text);
+  font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+}
+
+nav {
+  background: var(--nav-bg);
+  box-shadow: 0 2px 6px rgba(39, 110, 241, 0.05);
+  padding: 1rem 0;
+}
+
+nav ul {
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  gap: 2rem;
+  margin: 0;
+  padding: 0;
+}
+
+nav li a {
+  text-decoration: none;
+  color: var(--primary);
+  font-weight: 500;
+  font-size: 1.1rem;
+  padding: .3rem 1rem;
+  border-radius: 20px;
+  transition: background 0.2s, color 0.2s;
+}
+
+nav li a:hover, nav li a.active {
+  background: var(--primary);
+  color: #fff;
+}
+
+footer {
+  background: var(--footer-bg);
+  text-align: center;
+  padding: 1.5rem 0;
+  font-size: 0.95rem;
+  color: var(--primary);
+  margin-top: 4rem;
+  box-shadow: 0 -2px 6px rgba(39, 110, 241, 0.07);
+}
+
+main, .container {
+  max-width: 700px;
+  margin: 2rem auto;
+  background: var(--card-bg);
+  border-radius: 16px;
+  box-shadow: 0 2px 12px rgba(39, 110, 241, 0.07);
+  padding: 2rem;
+}
+
+h1, h2, h3 {
+  color: var(--primary);
+  margin-top: 0;
+}
+
+ul {
+  padding-left: 1.2em;
+}
+
+a {
+  color: var(--secondary);
+}
+a:hover {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+@media (max-width: 800px) {
+  main, .container {
+    margin: 1rem;
+    padding: 1rem;
+  }
+  nav ul {
+    gap: 1rem;
+  }
+}

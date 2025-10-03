@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@layer utilities {
+  .animate-fadeIn {
+    animation: fadeIn 0.9s ease;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px);}
+    to { opacity: 1; transform: translateY(0);}
+  }
+}
+
+.infinite-scroll-container {
+  overflow: hidden;
+  width: 100%;
+}
+.infinite-scroll-track {
+  display: flex;
+  gap: 1.5rem;
+  width: max-content;
+}
+@media (max-width: 640px) {
+  .infinite-scroll-track .slider-item {
+    min-width: 100vw !important; /* Full screen za mob / jedna slika na ekranu */
+    max-width: 100vw !important;
+    height: 13rem;
+  }
+}
+
+
+
+
