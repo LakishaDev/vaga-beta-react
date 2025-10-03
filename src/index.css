@@ -1,4 +1,5 @@
 @import "tailwindcss";
+@config "../tailwind.config.js";
 
 .napredniGradient {
   /* background: hsla(164, 38%, 18%, 1);
@@ -35,6 +36,18 @@
     height: 13rem;
   }
 }
+
+.filter-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 24px 16px;
+  width: 100%;
+}
+.filter-item {
+  min-width: 220px;
+  flex: 1 1 220px;
+}
+
 
 
 @keyframes fadein {
@@ -74,3 +87,5 @@
 
 @keyframes slideinRight { 0% {opacity: 0;transform: translateX(90px);} 100%{opacity:1;transform:translateX(0);} }
 .animate-slidein-right { animation: slideinRight 1.2s cubic-bezier(0.4,0,0.2,1) both;}
+
+

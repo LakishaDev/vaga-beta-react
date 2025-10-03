@@ -66,8 +66,8 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link to="/proizvodi" className="flex items-center gap-2 hover:text-[#6EAEA2] transition" style={{ color: BOJE.bone }}>
-              <FaBoxes /> Proizvodi
+            <Link to="/prodavnica" className="flex items-center gap-2 hover:text-[#6EAEA2] transition" style={{ color: BOJE.bone }}>
+              <FaBoxes /> Prodavnica
             </Link>
           </li>
           <li>
