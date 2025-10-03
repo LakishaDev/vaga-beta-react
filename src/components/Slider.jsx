@@ -1,12 +1,13 @@
 import React, { useRef, useEffect, useState } from "react";
 
 const sliderData = [
-  { tekst: "Vaga - Beta", slika: "slika3" },
-  { tekst: "Vaga - Beta", slika: "004" },
-  { tekst: "Vaga - Beta", slika: "manekaslika454671" },
-  { tekst: "Vaga - Beta", slika: "probamesoreznica41544" },
-  { tekst: "Vaga - Beta", slika: "preciznanova4546" },
-  { tekst: "Vaga - Beta", slika: "slicka" }
+  { tekst: "Veliki set tegova", slika: "slika3" },
+  { tekst: "Set tegova za precizna merenja", slika: "004" },
+  { tekst: "Kamionske vage", slika: "spojena12134543" },
+  { tekst: "Mesoreznica", slika: "probamesoreznica41544" },
+  { tekst: "Precizna vaga", slika: "preciznavaga123" },
+  { tekst: "Proizvodi u ponudi", slika: "slicka" },
+  { tekst: "Stocna vaga", slika: "stocarskavaga" }
 ];
 const trackImages = [...sliderData, ...sliderData];
 
@@ -52,7 +53,7 @@ export default function Slider() {
 
   return (
     <div
-      className="infinite-scroll-container mb-10 max-w-2xl mx-auto"
+      className="infinite-scroll-container mt-7 mb-1 max-w-full mx-auto"
       style={{ height: "13rem", position: "relative" }}
       ref={containerRef}
     >
@@ -71,14 +72,14 @@ export default function Slider() {
               </>
             )}
             <img
-              src={`https://vagabeta.rs/imgs/${item.slika}.jpg`}
+              src={`/imgs/${item.slika}.jpg`}
               alt={item.tekst}
               className={`w-full h-full object-cover transition group-hover:scale-105 ${!loaded[idx] ? "blur-lg" : ""}`}
               draggable={false}
               onLoad={() => handleImgLoad(idx)}
               loading="lazy"
             />
-            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/80 px-4 py-1 rounded-full shadow text-blue-700 font-semibold text-base group-hover:bg-blue-500 group-hover:text-white transition">
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 bg-white/80 px-4 py-1 rounded-full shadow text-blue-700 font-semibold text-base group-hover:bg-blue-500 group-hover:text-white transition w-max">
               {item.tekst}
             </div>
           </div>
