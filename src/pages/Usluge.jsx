@@ -17,7 +17,6 @@ import {
   FaClipboardCheck,
   FaCogs,
   FaShippingFast,
-  
 } from "react-icons/fa";
 
 export default function Usluge() {

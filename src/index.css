@@ -74,7 +74,3 @@
 
 @keyframes slideinRight { 0% {opacity: 0;transform: translateX(90px);} 100%{opacity:1;transform:translateX(0);} }
 .animate-slidein-right { animation: slideinRight 1.2s cubic-bezier(0.4,0,0.2,1) both;}
-
-
-
-
