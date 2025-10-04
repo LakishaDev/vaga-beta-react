@@ -28,10 +28,12 @@ export default function AdminPanel() {
   // Provera autentikacije
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
-      setAllowed(user && user.email === "lazar.cve@gmail.com");
+      const adminEmails = import.meta.env.VITE_ADMIN_EMAILS?.split(",").map(e => e.trim()) || [];
+      setAllowed(user && adminEmails.includes(user.email));
     });
     return () => unsubscribe();
   }, []);
+
 
   // Učitaj proizvode
   const fetchProducts = async () => {
