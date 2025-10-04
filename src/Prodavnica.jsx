@@ -17,6 +17,7 @@ import { useAuthState } from 'react-firebase-hooks/auth';
 import { auth } from './utils/firebase';
 import { createOrUpdateUserAccount } from './utils/userService';
 import Footer from "./components/Footer";
+import VerifyEmailPage from "./pages/shop/VerifyEmailPage";
 
 function Prodavnica() {
   const [user] = useAuthState(auth);
@@ -42,6 +43,7 @@ function Prodavnica() {
             <Route path="/prodavnica/prijava" element={<AuthForm />} />
             <Route path="/prodavnica/admin" element={<AdminPanel />} />
             <Route path="/prodavnica/nalog" element={<Profile />} />
+            <Route path="/prodavnica/email-verifikovan" element={<VerifyEmailPage />} />
           </Routes>
           <Footer />
 
