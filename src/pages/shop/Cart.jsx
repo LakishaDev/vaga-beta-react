@@ -38,7 +38,7 @@ export default function Cart() {
             to="/prodavnica/placanje"
             className="bg-sheen text-white px-6 py-2 rounded shadow hover:bg-bluegreen transition"
           >
-            Checkout
+            Placanje
           </Link>
           <button
             className="ml-2 text-charcoal"
