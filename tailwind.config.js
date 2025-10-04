@@ -13,7 +13,7 @@ export const theme = {
             rust: "#AD5637",
             bluegreen: "#91CEC1",
             charcoal: "#2F5363"
-        }
+        },
     },
     fontFamily: {
       sans: ['Geist', 'Inter', 'sans-serif'],

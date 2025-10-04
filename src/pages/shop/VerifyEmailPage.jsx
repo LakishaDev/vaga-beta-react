@@ -22,7 +22,7 @@ export default function VerifyEmailPage() {
     applyActionCode(auth, oobCode)
       .then(() => {
         setStatus("success");
-        // Dodatno možeš reloadovati korisnika: auth.currentUser.reload()
+        auth.currentUser.reload()
       })
       .catch(() => {
         setStatus("fail");

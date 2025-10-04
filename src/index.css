@@ -200,3 +200,199 @@
 .transform-gpu {
   transform: translateZ(0);
 }
+
+.add-to-cart-anim {
+  animation: addToCartFly 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+}
+
+.cart-anim {
+  animation: cartAppear 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+}
+
+@media (max-width: 639px) {
+  .add-to-cart-anim {
+    animation: addToCartFlyMobile 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+  }
+
+  .cart-anim {
+    animation: cartAppearMobile 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+  }
+}
+
+@keyframes addToCartFly {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 30%) scale(0.55) rotate(-20deg);
+  }
+
+  28% {
+    opacity: 1;
+    transform: translate(-50%, -10%) scale(1.12) rotate(0deg);
+  }
+
+  50% {
+    opacity: 1;
+    transform: translate(110px, -35px) scale(.92) rotate(14deg);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translate(132px, -18px) scale(0.87) rotate(-10deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(148px, 6px) scale(0.7) rotate(-18deg);
+  }
+}
+
+@keyframes cartAppear {
+  0% {
+    opacity: 0;
+    transform: scale(0.6) translateY(-16px);
+  }
+
+  15% {
+    opacity: 1;
+    transform: scale(1.1) translateY(-12px);
+  }
+
+  42% {
+    opacity: 1;
+    transform: scale(.98) translateY(0px);
+  }
+
+  75% {
+    opacity: 1;
+    transform: scale(.96) translateY(7px);
+  }
+
+  99% {
+    opacity: 0;
+    transform: scale(.8) translateY(12px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(.7) translateY(12px);
+  }
+}
+
+@keyframes addToCartFlyMobile {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, 30%) scale(0.45) rotate(-12deg);
+  }
+
+  28% {
+    opacity: 1;
+    transform: translate(-50%, -5%) scale(1.05) rotate(0deg);
+  }
+
+  55% {
+    opacity: 1;
+    transform: translate(56px, -14px) scale(.89) rotate(10deg);
+  }
+
+  85% {
+    opacity: 1;
+    transform: translate(70px, 0px) scale(0.87) rotate(-9deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: translate(88px, 8px) scale(0.6) rotate(-14deg);
+  }
+}
+
+@keyframes cartAppearMobile {
+  0% {
+    opacity: 0;
+    transform: scale(0.62) translateY(-8px);
+  }
+
+  10% {
+    opacity: 1;
+    transform: scale(.99) translateY(-5px);
+  }
+
+  42% {
+    opacity: 1;
+    transform: scale(.90) translateY(0px);
+  }
+
+  85% {
+    opacity: 1;
+    transform: scale(.85) translateY(6px);
+  }
+
+  99% {
+    opacity: 0;
+    transform: scale(.73) translateY(15px);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(.6) translateY(20px);
+  }
+}
+
+
+.image-modal-open {
+  opacity: 1;
+  pointer-events: auto;
+  transition: opacity .5s cubic-bezier(.37, .66, .1, 1);
+}
+
+.image-modal-close {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .4s;
+}
+
+.image-modal-animate {
+  backface-visibility: hidden;
+  transform-style: preserve-3d;
+}
+
+.img-enter {
+  animation: showImgIn .44s cubic-bezier(.42, 1.08, .58, .98);
+}
+
+.img-leave {
+  animation: showImgOut .44s cubic-bezier(.53, -0.04, .57, 1.06);
+}
+
+@keyframes showImgIn {
+  0% {
+    opacity: 0;
+    transform: scale(.8) rotateY(40deg) rotateX(12deg);
+  }
+
+  60% {
+    opacity: .98;
+    transform: scale(1.05) rotateY(-7deg) rotateX(-4deg);
+  }
+
+  100% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg) rotateX(0deg);
+  }
+}
+
+@keyframes showImgOut {
+  0% {
+    opacity: 1;
+    transform: scale(1) rotateY(0deg) rotateX(0deg);
+  }
+
+  40% {
+    opacity: .9;
+    transform: scale(.99) rotateY(18deg) rotateX(7deg);
+  }
+
+  100% {
+    opacity: 0;
+    transform: scale(.8) rotateY(-40deg) rotateX(-10deg);
+  }
+}
