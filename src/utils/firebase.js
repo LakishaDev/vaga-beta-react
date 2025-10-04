@@ -6,13 +6,13 @@ import { getStorage } from "firebase/storage";
 
 // Vaša Firebase konfiguracija
 const firebaseConfig = {
-  apiKey: "AIzaSyCi4Dv4xX0uLr5texK-UoQMgAx6LYyLRGk",
-  authDomain: "vaga-beta-sajt.firebaseapp.com",
-  projectId: "vaga-beta-sajt",
-  storageBucket: "vaga-beta-sajt.firebasestorage.app",      // Ispravi: .app → .app**spot.com**
-  messagingSenderId: "128255475317",
-  appId: "1:128255475317:web:940cd944e6f1f762b9423c",
-  measurementId: "G-WQFDTPZEXB"
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
 };
 
 const app = initializeApp(firebaseConfig);
