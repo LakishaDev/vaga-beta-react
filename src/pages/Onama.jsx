@@ -1,11 +1,12 @@
 import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments } from "react-icons/fa";
+import ProgressiveImage from "../components/ProgressiveImage";
 
 export default function Onama() {
   return (
     <main className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl p-6 sm:p-10 mt-14 border border-[#CBCFBB] animate-fadein animate__animated animate__fadeInUpBig">
       {/* Logo i naslov */}
       <div className="flex items-center mb-4 animate-pop animate__animated animate__bounceInDown">
-        <img src="/imgs/vaga-logo.png" alt="Logo Vaga Beta" className="h-16 w-16 rounded-full shadow-lg bg-[#CBCFBB] animate-spin-slow" />
+        <ProgressiveImage src="/imgs/vaga-logo.png" alt="Logo Vaga Beta" className="h-16 w-16 rounded-full shadow-lg bg-[#CBCFBB] animate-spin-slow" />
         <span className="ml-4 text-3xl font-extrabold text-[#1E3E49] tracking-tight animate-pop">Vaga Beta Lab d.o.o</span>
       </div>
 

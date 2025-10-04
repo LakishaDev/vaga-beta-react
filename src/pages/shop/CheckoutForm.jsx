@@ -47,7 +47,7 @@ export default function CheckoutForm() {
 
   return (
     <div className="max-w-md mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
-      <h2 className="text-2xl font-bold mb-6">Checkout</h2>
+      <h2 className="text-2xl font-bold mb-6">Placanje</h2>
       {success ? (
         <div className="text-green-600 text-lg font-semibold">
           Hvala na narudžbini! Potvrda je poslata.

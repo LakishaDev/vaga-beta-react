@@ -2,6 +2,7 @@ import { useContext } from "react";
 import { CartContext } from "../../contexts/shop/CartContext";
 import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
 import { Link } from "react-router-dom";
+import ProgressiveImage from "../ProgressiveImage";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
@@ -15,7 +16,7 @@ export default function ProductCard({ product }) {
 
   return (
     <Link
-      to={`/prodavnica/product/${product.id}`}
+      to={`/prodavnica/proizvod/${product.id}`}
       className="group bg-white/80 backdrop-blur rounded-2xl border shadow-xl 
         transition-transform hover:scale-105 hover:shadow-2xl hover:border-bluegreen
         flex flex-col items-center py-6 px-3 sm:px-5 relative overflow-hidden min-h-[320px] sm:min-h-[380px] w-full"
@@ -27,7 +28,7 @@ export default function ProductCard({ product }) {
       <span className="absolute top-4 sm:top-6 right-4 sm:right-7 bg-bluegreen text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-base sm:text-lg shadow animate-pop z-10">
         {Number(product.price).toLocaleString("sr-RS")} RSD
       </span>
-      <img
+      <ProgressiveImage
         src={product.imgUrl}
         alt={product.name}
         className="h-32 w-32 sm:h-40 sm:w-40 object-cover rounded-xl shadow-lg mb-3 sm:mb-4 group-hover:scale-105 group-hover:shadow-2xl transition"

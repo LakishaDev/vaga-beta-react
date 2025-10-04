@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
-import { FaHome, FaBoxes, FaCogs, FaEnvelope, FaInfoCircle } from "react-icons/fa";
+import { FaHome, FaBoxes, FaCogs, FaEnvelope, FaInfoCircle, FaShoppingBag } from "react-icons/fa";
+import ProgressiveImage from "./ProgressiveImage";
 
 const BOJE = {
   bone: "#CBCFBB",
@@ -31,7 +32,7 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
         {/* Logo/Brand */}
         <Link to="/" className="flex items-center gap-2">
-          <img
+          <ProgressiveImage
             src="/imgs/vaga-logo.png"
             alt="Logo"
             className="h-9 w-9 rounded-lg shadow"
@@ -67,7 +68,7 @@ export default function Navbar() {
           </li>
           <li>
             <Link to="/prodavnica" className="flex items-center gap-2 hover:text-[#6EAEA2] transition" style={{ color: BOJE.bone }}>
-              <FaBoxes /> Prodavnica
+              <FaShoppingBag /> Prodavnica
             </Link>
           </li>
           <li>
@@ -100,8 +101,8 @@ export default function Navbar() {
             </Link>
           </li>
           <li>
-            <Link to="/proizvodi" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
-              <FaBoxes /> Proizvodi
+            <Link to="/prodavnica" className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right" style={{ color: BOJE.bone }} onClick={() => setOpen(false)}>
+              <FaShoppingBag /> Prodavnica
             </Link>
           </li>
           <li>

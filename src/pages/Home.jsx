@@ -1,3 +1,4 @@
+import ProgressiveImage from "../components/ProgressiveImage";
 import Slider from "../components/Slider";
 import { FaTools, FaShippingFast, FaCertificate, FaFlask, FaLaptopCode, FaIndustry, FaShieldAlt } from "react-icons/fa";
 
@@ -6,7 +7,7 @@ export default function Home() {
     <main className="max-w-full sm:max-w-6xl mx-auto p-2 sm:p-8 bg-white/80 rounded-xl shadow-lg mt-10 animate-fadein border border-[#CBCFBB]">
       <div className="relative rounded-2xl overflow-hidden mb-6 animate-fadein duration-1000">
         {/* /imgs/home/slika1.png */}
-        <img
+        <ProgressiveImage
           src="/imgs/home/slika1.png"
           alt="Elektronske vage i programiranje"
           className="w-full aspect-video object-cover"
@@ -37,7 +38,7 @@ export default function Home() {
 
       {/* Sekcija Proizvodnja i softver */}
       <section className="rounded-xl p-4 bg-[#91CEC1]/30 mb-8 flex flex-col md:flex-row gap-6 items-center animate-fadein duration-1000 delay-200">
-        <img src="/imgs/home/slika2.png" alt="Izrada elektronskih vaga po želji" className="w-full md:w-1/2 rounded-lg object-cover animate-pop delay-300" />
+        <ProgressiveImage src="/imgs/home/slika2.png" alt="Izrada elektronskih vaga po želji" className="w-full md:w-1/2 rounded-lg object-cover animate-pop delay-300" />
         <div className="flex-1">
           <h3 className="text-xl font-bold text-[#6EAEA2] mb-2">Izrada vaga po meri i razvoj softvera</h3>
           <ul className="space-y-2">
@@ -74,7 +75,7 @@ export default function Home() {
       {/* Slika testiranja/vage */}
       <div className="rounded-2xl overflow-hidden mb-8 animate-fadein duration-1000 delay-400">
         {/* /imgs/home/slika3.png */}
-        <img
+        <ProgressiveImage
           src="/imgs/home/slika3.png"
           alt="Elektronske vage u laboratoriji"
           className="w-full aspect-video object-cover rounded-xl"

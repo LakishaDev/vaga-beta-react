@@ -1,5 +1,6 @@
 // src/components/HeroSection.jsx
 import { Link } from "react-router-dom";
+import ProgressiveImage from "../../components/ProgressiveImage";
 const BOJE = {
   bone: "#CBCFBB",
   midnight: "#1E3E49",
@@ -19,10 +20,10 @@ export default function HeroSection() {
         background: `linear-gradient(135deg, ${BOJE.midnight} 40%, ${BOJE.bone} 100%)`
       }}
     >
-      <img src="imgs/vaga-logo.png" alt="Shop hero" className="w-40 rounded-full mb-4 shadow-lg" />
+      <ProgressiveImage src="imgs/vaga-logo.png" alt="Shop hero" className="w-40 rounded-full mb-4 shadow-lg" />
       <h1 className="text-4xl font-bold tracking-tight text-white mb-2">Dobrodošli u Vaga Beta Shop</h1>
       <p className="text-xl text-sheen mb-4">Najbolji proizvodi, probrana kolekcija, jednostavna kupovina!</p>
-      <Link to="/prodavnica/products">
+      <Link to="/prodavnica/proizvodi">
         <button className="bg-sheen text-white font-semibold px-6 py-2 rounded shadow hover:bg-bluegreen transition">
           Pogledaj proizvode
         </button>

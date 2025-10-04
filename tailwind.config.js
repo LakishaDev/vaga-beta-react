@@ -19,4 +19,4 @@ export const theme = {
       sans: ['Geist', 'Inter', 'sans-serif'],
     },
 };
-export const plugins = [];
+export const plugins = [require('@tailwindcss/forms'), require('@tailwindcss/typography')];

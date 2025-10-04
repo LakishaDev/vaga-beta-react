@@ -35,7 +35,7 @@ export default function Cart() {
           </ul>
           <div className="font-semibold text-lg mb-4">Ukupno: {total} RSD</div>
           <Link
-            to="/checkout"
+            to="/prodavnica/placanje"
             className="bg-sheen text-white px-6 py-2 rounded shadow hover:bg-bluegreen transition"
           >
             Checkout

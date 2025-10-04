@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { db } from "../../utils/firebase";
 import { doc, getDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
+import ProgressiveImage from "../ProgressiveImage";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -40,7 +41,7 @@ export default function ProductDetails() {
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-8 mt-10">
-      <img src={product.imgUrl} alt={product.name} className="w-56 h-56 mx-auto mb-6 rounded shadow" />
+      <ProgressiveImage src={product.imgUrl} alt={product.name} className="w-56 h-56 mx-auto mb-6 rounded shadow" />
       <h2 className="text-3xl text-midnight font-bold mb-1">{product.name}</h2>
       <div className="mb-4 text-sheen">{product.category}</div>
       <div className="mb-4 text-xl text-charcoal font-semibold">{product.price} RSD</div>

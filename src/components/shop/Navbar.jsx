@@ -43,7 +43,7 @@ export default function Navbar() {
       await auth.signOut();
       setMobileMenuOpen(false); // zatvori mobilni meni
       showSnackbar("Uspešno ste se odjavili.", "success");
-      navigate("/prodavnica/login");
+      navigate("/prodavnica/prijava");
     } catch (error) {
       console.error("Greška pri odjavi:", error);
     }
@@ -89,12 +89,12 @@ export default function Navbar() {
           Početna
           <span className={underlineClass("/")} />
         </Link>
-        <Link to="/prodavnica/products" className={navLinkClass("/prodavnica/products")}>
+        <Link to="/prodavnica/proizvodi" className={navLinkClass("/prodavnica/proizvodi")}>
           <Boxes size={20}/>
           Proizvodi
-          <span className={underlineClass("/prodavnica/products")}></span>
+          <span className={underlineClass("/prodavnica/proizvodi")}></span>
         </Link>
-        <Link to="/prodavnica/cart" className={`${navLinkClass("/prodavnica/cart")}`}>
+        <Link to="/prodavnica/korpa" className={`${navLinkClass("/prodavnica/korpa")}`}>
           <span className="flex items-center">
             <ShoppingCart size={20}/>
             Korpa
@@ -104,12 +104,12 @@ export default function Navbar() {
               </span>
             )}
           </span>
-          <span className={underlineClass("/prodavnica/cart")}></span>
+          <span className={underlineClass("/prodavnica/korpa")}></span>
         </Link>
-        <Link to="/prodavnica/profile" className={navLinkClass("/prodavnica/profile")}>
+        <Link to="/prodavnica/nalog" className={navLinkClass("/prodavnica/nalog")}>
           <User size={20}/>
-          Profil
-          <span className={underlineClass("/prodavnica/profile")}></span>
+          Nalog
+          <span className={underlineClass("/prodavnica/nalog")}></span>
         </Link>
         {isAdmin && (
           <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")}>
@@ -128,7 +128,7 @@ export default function Navbar() {
           </button>
         ) : (
           <Link
-            to="/prodavnica/login"
+            to="/prodavnica/prijava"
             className="bg-sheen rounded-xl px-3 py-1 text-white font-semibold hover:bg-bluegreen focus:ring-2 focus:ring-bluegreen transition shadow-md hover:scale-105 active:scale-95 flex items-center gap-1"
           >
             <LogIn size={20} />
@@ -173,11 +173,11 @@ export default function Navbar() {
           </Link>
 
 
-          <Link to="/prodavnica/products" className={navLinkClass("/prodavnica/products")} onClick={() => setMobileMenuOpen(false)}>
+          <Link to="/prodavnica/proizvodi" className={navLinkClass("/prodavnica/proizvodi")} onClick={() => setMobileMenuOpen(false)}>
             <Boxes size={22}/>
             Proizvodi
           </Link>
-          <Link to="/prodavnica/cart" className={navLinkClass("/prodavnica/cart")} onClick={() => setMobileMenuOpen(false)}>
+          <Link to="/prodavnica/korpa" className={navLinkClass("/prodavnica/korpa")} onClick={() => setMobileMenuOpen(false)}>
             <ShoppingCart size={22}/>
             Korpa
             {cartCount > 0 && (
@@ -186,9 +186,9 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link to="/prodavnica/profile" className={navLinkClass("/prodavnica/profile")} onClick={() => setMobileMenuOpen(false)}>
+          <Link to="/prodavnica/nalog" className={navLinkClass("/prodavnica/nalog")} onClick={() => setMobileMenuOpen(false)}>
             <User size={22}/>
-            Profil
+            Nalog
           </Link>
           {isAdmin && (
             <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")} onClick={() => setMobileMenuOpen(false)}>
@@ -196,14 +196,24 @@ export default function Navbar() {
               Admin
             </Link>
           )}
+           {user ? (
+          <button
+            onClick={handleLogout}
+            className="bg-rust rounded-xl px-3 py-1 text-white font-semibold hover:bg-red-600 focus:ring-2 focus:ring-red-500 transition shadow-md hover:scale-105 active:scale-95 flex items-center gap-1"
+          >
+            <LogOut size={20} />
+            Odjavi se
+          </button>
+        ) : (
           <Link
-            to="/login"
+            to="/prodavnica/prijava"
             className="bg-sheen rounded-xl px-5 py-2 text-white font-semibold hover:bg-bluegreen shadow-md hover:scale-105 active:scale-95 transition flex items-center gap-2 w-full max-w-[210px] justify-center"
             onClick={() => setMobileMenuOpen(false)}
           >
             <LogIn size={22}/>
             Prijava
           </Link>
+        )}
         </div>
       </div>
     </nav>

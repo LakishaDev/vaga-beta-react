@@ -37,7 +37,7 @@ export default function AuthForm() {
         await createUserWithEmailAndPassword(auth, email, pass);
         showSnackbar("Kreiran nalog, dobrodošao/la!", "success");
       }
-      navigate("/prodavnica/profile");
+      navigate("/prodavnica/nalog");
     } catch (err) {
       showSnackbar(
         err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
@@ -55,7 +55,7 @@ export default function AuthForm() {
       const provider = new GoogleAuthProvider();
       await signInWithPopup(auth, provider);
       showSnackbar("Google login uspešan!", "success");
-      navigate("/prodavnica/profile");
+      navigate("/prodavnica/nalog");
     } catch (err) {
       showSnackbar("Greška pri Google prijavi: " + (err.message || err.code), "error");
     }
