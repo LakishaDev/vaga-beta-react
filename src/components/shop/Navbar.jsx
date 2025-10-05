@@ -114,11 +114,16 @@ export default function Navbar() {
           </Link>
         )}
         {isAdmin && (
-          <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")}>
-            <UserCog size={20}/>
-            Admin
-            <span className={underlineClass("/prodavnica/admin")}></span>
-          </Link>
+           <>
+              <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")} onClick={() => setMobileMenuOpen(false)}>
+                <UserCog size={22}/>
+                Admin
+              </Link>
+              <Link to="/prodavnica/porudzbine" className={navLinkClass("/prodavnica/porudzbine")} onClick={() => setMobileMenuOpen(false)}>
+                <UserCog size={22}/>
+                Porudžbine
+              </Link>
+            </>
         )}
         {user ? (
           <button
@@ -193,10 +198,16 @@ export default function Navbar() {
             Nalog
           </Link>
           {isAdmin && (
-            <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")} onClick={() => setMobileMenuOpen(false)}>
-              <UserCog size={22}/>
-              Admin
-            </Link>
+            <>
+              <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")} onClick={() => setMobileMenuOpen(false)}>
+                <UserCog size={22}/>
+                Admin
+              </Link>
+              <Link to="/prodavnica/porudzbine" className={navLinkClass("/prodavnica/porudzbine")} onClick={() => setMobileMenuOpen(false)}>
+                <UserCog size={22}/>
+                Porudžbine
+              </Link>
+            </>
           )}
            {user ? (
           <button

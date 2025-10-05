@@ -18,6 +18,7 @@ import { auth } from './utils/firebase';
 import { createOrUpdateUserAccount } from './utils/userService';
 import Footer from "./components/Footer";
 import VerifyEmailPage from "./pages/shop/VerifyEmailPage";
+import AdminOrders from "./pages/shop/AdminOrders";
 
 function Prodavnica() {
   const [user] = useAuthState(auth);
@@ -44,6 +45,7 @@ function Prodavnica() {
             <Route path="/prodavnica/admin" element={<AdminPanel />} />
             <Route path="/prodavnica/nalog" element={<Profile />} />
             <Route path="/prodavnica/email-verifikovan" element={<VerifyEmailPage />} />
+            <Route path="/prodavnica/porudzbine" element={<AdminOrders />} />
           </Routes>
           <Footer />
 

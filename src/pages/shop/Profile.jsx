@@ -9,6 +9,7 @@ import Loader from "../../components/Loader";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Sparkles } from "@react-three/drei";
 import ProgressiveImage from "../../components/ProgressiveImage";
+import StatusBadge from "../../components/shop/StatusBadge";
 
 function srRsd(n) { return n.toLocaleString("sr-RS") + " RSD"; }
 function srDate(ts) {
@@ -386,9 +387,7 @@ export default function Profile() {
                   <span className="text-sm text-gray-500 font-medium">
                     {srDate(order.createdAt)}
                   </span>
-                  <span className="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-xs font-semibold">
-                    U obradi
-                  </span>
+                  <StatusBadge status={order.status} />
                 </div>
                 
                 <div className="space-y-3 mb-4">

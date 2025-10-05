@@ -36,7 +36,8 @@ export default function CheckoutForm() {
       await addDoc(collection(db, "orders"), {
         ...values,
         cart,
-        createdAt: serverTimestamp()
+        createdAt: serverTimestamp(),
+        status: "primljeno" // <-- default status
       });
       setSuccess(true);
       clearCart();
