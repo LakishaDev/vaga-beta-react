@@ -15,6 +15,10 @@ export default function VerifyEmailPage() {
     const mode = params.get("mode");
     const oobCode = params.get("oobCode");
     // Ako nije verifyEmail - samo ignoriši
+    if(mode == "resetPassword") {
+      setStatus("resetPassword");
+      return;
+    }
     if (mode !== "verifyEmail" || !oobCode) {
       setStatus("fail");
       return;
@@ -29,6 +33,10 @@ export default function VerifyEmailPage() {
       });
   }, [location.search]);
 
+  if (status === "resetPassword") {
+    navigate('/prodavnica/reset-password' + location.search);
+    return null;
+  }
   if (status === "loading") return <Loader />;
   if (status === "fail") return (
     <div className="flex flex-col items-center my-16">
