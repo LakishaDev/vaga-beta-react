@@ -19,6 +19,7 @@ import { createOrUpdateUserAccount } from './utils/userService';
 import Footer from "./components/Footer";
 import VerifyEmailPage from "./pages/shop/VerifyEmailPage";
 import AdminOrders from "./pages/shop/AdminOrders";
+import PasswordResetForm from "./components/shop/PasswordResetForm";
 
 function Prodavnica() {
   const [user] = useAuthState(auth);
@@ -46,6 +47,7 @@ function Prodavnica() {
             <Route path="/prodavnica/nalog" element={<Profile />} />
             <Route path="/prodavnica/email-verifikovan" element={<VerifyEmailPage />} />
             <Route path="/prodavnica/porudzbine" element={<AdminOrders />} />
+            <Route path="/prodavnica/reset-password" element={<PasswordResetForm />} />
           </Routes>
           <Footer />
 

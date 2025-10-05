@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useUserData } from "../../hooks/useUserData";
 import { updateUserProfile, uploadProfileImage } from "../../utils/userService";
 import { collection, query, where, getDocs } from "firebase/firestore";
-import { db } from "../../utils/firebase";
+import { db,auth } from "../../utils/firebase";
 import { motion, AnimatePresence } from "framer-motion";
 import { Mail, Phone, Home, ReceiptText, AlertTriangle, CreditCard, Settings, Pen, Upload, LogOut, Trash2, ShieldCheck } from "lucide-react";
 import Loader from "../../components/Loader";
@@ -10,6 +10,9 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Sparkles } from "@react-three/drei";
 import ProgressiveImage from "../../components/ProgressiveImage";
 import StatusBadge from "../../components/shop/StatusBadge";
+import { useNavigate } from "react-router-dom";
+import DeleteAccountModal from "../../components/shop/DeleteAccountModal";
+import PasswordResetModal from "../../components/shop/PasswordResetModal";
 
 function srRsd(n) { return n.toLocaleString("sr-RS") + " RSD"; }
 function srDate(ts) {
@@ -64,6 +67,9 @@ export default function Profile() {
   const [editData, setEditData] = useState({});
   const [uploadingImage, setUploadingImage] = useState(false);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [passwordResetModalOpen, setPasswordResetModalOpen] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (!user) return;
@@ -286,63 +292,92 @@ export default function Profile() {
       </AnimatePresence>
 
       {/* Settings Modal */}
-      <AnimatePresence>
-        {settingsOpen && (
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            className="fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={() => setSettingsOpen(false)}
+<AnimatePresence>
+  {settingsOpen && (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      className="fixed inset-0 z-[999] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+      onClick={() => setSettingsOpen(false)}
+    >
+      <motion.div
+        initial={{ scale: 0.8, opacity: 0, y: 50 }}
+        animate={{ scale: 1, opacity: 1, y: 0 }}
+        exit={{ scale: 0.8, opacity: 0, y: 50 }}
+        transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+        className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-full max-w-md"
+        onClick={e => e.stopPropagation()}
+      >
+        <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
+          <Settings size={22} className="text-bluegreen"/>
+          Podešavanja profila
+        </h3>
+        <div className="space-y-3">
+          <motion.button 
+            onClick={() => {
+              setSettingsOpen(false);
+              setPasswordResetModalOpen(true);
+            }}
+            className="flex gap-3 items-center w-full px-5 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
+            whileHover={{ scale: 1.02, backgroundColor: "#3b82f6" }}
+            whileTap={{ scale: 0.98 }}
           >
-            <motion.div
-              initial={{ scale: 0.8, opacity: 0, y: 50 }}
-              animate={{ scale: 1, opacity: 1, y: 0 }}
-              exit={{ scale: 0.8, opacity: 0, y: 50 }}
-              transition={{ type: 'spring', damping: 20, stiffness: 300 }}
-              className="bg-white/95 backdrop-blur-xl p-8 rounded-3xl shadow-2xl w-full max-w-md"
-              onClick={e => e.stopPropagation()}
-            >
-              <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                <Settings size={22} className="text-bluegreen"/>
-                Podešavanja profila
-              </h3>
-              <div className="space-y-3">
-                <motion.button 
-                  className="flex gap-3 items-center w-full px-5 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02, backgroundColor: "#3b82f6" }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <ShieldCheck size={18}/>
-                  Promeni lozinku
-                </motion.button>
-                <motion.button 
-                  className="flex gap-3 items-center w-full px-5 py-3 bg-red-500 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02, backgroundColor: "#dc2626" }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <Trash2 size={18}/>
-                  Obriši nalog
-                </motion.button>
-                <motion.button 
-                  className="flex gap-3 items-center w-full px-5 py-3 bg-gray-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02, backgroundColor: "#6b7280" }}
-                  whileTap={{ scale: 0.98 }}
-                >
-                  <LogOut size={18}/>
-                  Odjavi se
-                </motion.button>
-              </div>
-              <button 
-                onClick={() => setSettingsOpen(false)}
-                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
-              >
-                ✕
-              </button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            <ShieldCheck size={18}/>
+            Promeni lozinku
+          </motion.button>
+          <motion.button 
+            onClick={() => {
+              setSettingsOpen(false);
+              setDeleteModalOpen(true);
+            }}
+            className="flex gap-3 items-center w-full px-5 py-3 bg-red-500 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all"
+            whileHover={{ scale: 1.02, backgroundColor: "#dc2626" }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <Trash2 size={18}/>
+            Obriši nalog
+          </motion.button>
+          <motion.button 
+            onClick={() => {
+              // Add logout functionality
+              auth.signOut();
+              setSettingsOpen(false);
+            }}
+            className="flex gap-3 items-center w-full px-5 py-3 bg-gray-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
+            whileHover={{ scale: 1.02, backgroundColor: "#6b7280" }}
+            whileTap={{ scale: 0.98 }}
+          >
+            <LogOut size={18}/>
+            Odjavi se
+          </motion.button>
+        </div>
+        <button 
+          onClick={() => setSettingsOpen(false)}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition-colors"
+        >
+          ✕
+        </button>
+      </motion.div>
+    </motion.div>
+  )}
+</AnimatePresence>
+
+      {/* Delete Account Modal */}
+      <DeleteAccountModal 
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onSuccess={() => {
+          // Handle successful account deletion
+          navigate('/');
+        }}
+      />
+
+      {/* Password Reset Modal */}
+      <PasswordResetModal 
+        isOpen={passwordResetModalOpen}
+        onClose={() => setPasswordResetModalOpen(false)}
+      />
 
       {/* Orders Section */}
       <motion.div 

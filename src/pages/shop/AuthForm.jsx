@@ -17,6 +17,7 @@ import {
   CheckCircle2,
   ArrowRight,
 } from "lucide-react";
+import PasswordResetModal from "../../components/shop/PasswordResetModal.jsx";
 
 export default function AuthForm() {
   const [email, setEmail] = useState("");
@@ -28,6 +29,7 @@ export default function AuthForm() {
   const navigate = useNavigate();
   const { showSnackbar } = useContext(SnackbarContext);
   const checkInterval = useRef(null);
+  const [passwordResetModalOpen, setPasswordResetModalOpen] = useState(false);
 
   function validate() {
     if (!email.trim() || !pass.trim())
@@ -266,8 +268,23 @@ export default function AuthForm() {
               {isLogin ? "Registrujte se!" : "Prijavite se!"}
             </span>
           </span>
+            {isLogin && (
+                <button
+                  type="button"
+                  className="text-sheen font-semibold text-base hover:underline text-left mt-1 ml-1"
+                  onClick={() => { setPasswordResetModalOpen(true); }}
+                  tabIndex={-1}
+                >
+                  Zaboravili ste lozinku?
+                </button>
+              )}
         </div>
       </div>
-    </div>
+      {/* Password Reset Modal */}
+      <PasswordResetModal
+        isOpen={passwordResetModalOpen}
+        onClose={() => setPasswordResetModalOpen(false)}
+      />
+    </div> 
   );
 }
