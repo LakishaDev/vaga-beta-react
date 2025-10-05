@@ -5,12 +5,11 @@ export default function SnackbarStack({ messages, removeSnackbar }) {
     <div
       className="
         fixed bottom-7 right-7 z-[120]
-        flex flex-col items-end gap-3
+        flex flex-col items-end gap-1
         w-full max-w-xs pointer-events-none
         sm:right-12 sm:bottom-10
-        "
+      "
       style={{
-        // glass/blur efekat iza snackova
         backdropFilter: "blur(2.5px)",
         WebkitBackdropFilter: "blur(2.5px)",
       }}
@@ -18,9 +17,11 @@ export default function SnackbarStack({ messages, removeSnackbar }) {
       {messages.map((snack, i) => (
         <div
           key={snack.id}
-          className="w-full animate-in fade-in"
+          className={`w-full stack-fade-in-up`}
           style={{
-            transitionDelay: `${i * 100}ms`, // animacija stekovanja, svaka kasni malo
+            animationDelay: `${i * 120}ms`,
+            // z-index povećava gornje snackove
+            zIndex: 120 + i,
           }}
         >
           <Snackbar

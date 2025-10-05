@@ -60,7 +60,7 @@ export default function Navbar() {
     ${location.pathname === path ? "scale-x-100" : ""}`;
 
   return (
-    <nav className="bg-midnight text-white flex items-center justify-between px-4 sm:px-8 py-4 shadow-lg sticky top-0 z-50 font-sans" style={{ fontFamily: "'Geist','Inter',sans-serif" }}>
+    <nav className={`bg-midnight/80 ${!mobileMenuOpen && "backdrop-blur-sm"} text-white flex items-center justify-between px-4 sm:px-8 py-4 shadow-lg sticky top-0 z-50 font-sans`} style={{ fontFamily: "'Geist','Inter',sans-serif" }}>
       {/* Logo/brand */}
       <Link
         to="/prodavnica"
@@ -106,11 +106,13 @@ export default function Navbar() {
           </span>
           <span className={underlineClass("/prodavnica/korpa")}></span>
         </Link>
-        <Link to="/prodavnica/nalog" className={navLinkClass("/prodavnica/nalog")}>
-          <User size={20}/>
-          Nalog
-          <span className={underlineClass("/prodavnica/nalog")}></span>
-        </Link>
+        {user && (
+          <Link to="/prodavnica/nalog" className={navLinkClass("/prodavnica/nalog")}>
+            <User size={20}/>
+            Nalog
+            <span className={underlineClass("/prodavnica/nalog")}></span>
+          </Link>
+        )}
         {isAdmin && (
           <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")}>
             <UserCog size={20}/>
@@ -139,7 +141,7 @@ export default function Navbar() {
 
       {/* Mobile nav */}
       <div
-        className={`sm:hidden fixed top-0 left-0 w-full h-full z-40 bg-midnight/90 backdrop-blur-md transform transition-transform duration-300 ${
+        className={`sm:hidden fixed top-0 left-0 w-full h-full z-40 bg-midnight/80 backdrop-blur-md transform transition-transform duration-300 ${
           mobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
         style={{ pointerEvents: mobileMenuOpen ? "auto" : "none" }}

@@ -41,10 +41,37 @@ export default function ProductGrid() {
     return () => document.removeEventListener("mousedown", handler);
   }, [dropdownOpen]);
 
+  // Nova logika: vraća price i originalPrice
+  // function withDiscount(product) {
+  //   let percent = 0.10; // 10% popusta za proizvode ispod 14k
+  //   if (product.price > 40000 && product.price < 500000) percent = 0.25;
+  //   else if (product.price < 14000) percent = 0.1;
+  //   else if (product.price > 500000) percent = 0.3;
+  //   let originalPrice = Math.round(product.price / (1 - percent));
+  //   return { ...product, originalPrice, discountPercent: Math.round(percent*100) };
+  // }
+
+  function addDiscountInfo(product) {
+     let percent = 0.10; // 10% popusta za proizvode ispod 14k
+    if (product.price > 40000 && product.price < 500000) percent = 0.25;
+    else if (product.price < 14000) percent = 0.1;
+    else if (product.price > 500000) percent = 0.3;
+    let originalPrice = Math.round(product.price / (1 - percent));
+    return {
+      ...product,
+      originalPrice,
+      discountPercent: Math.round(percent * 100)
+    };
+  }
+
   useEffect(() => {
     let q = query(collection(db, "products"), orderBy("createdAt", "desc"));
     getDocs(q).then(snapshot => {
-      let arr = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
+      let arr = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data()
+    }))
+    .map(addDiscountInfo); // Ovde pozivaš funkciju
       setProducts(arr);
       const kats = Array.from(new Set(arr.map(p => p.category).filter(Boolean)))
         .sort((a, b) => a.localeCompare(b, 'sr', { numeric: true }));
