@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { CartContext } from "../../contexts/shop/CartContext";
-import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
+import { CartContext } from "../../contexts/shop/cart/CartContext";
+import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { auth } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -16,7 +16,7 @@ import {
   Scale,
   Home
 } from "lucide-react";
-import TypingText from "../TypingText";
+import TypingText from "../UI/TypingText";
 
 export default function Navbar() {
   const { showSnackbar } = useContext(SnackbarContext);

@@ -1,6 +1,6 @@
 // src/components/HeroSection.jsx
 import { Link } from "react-router-dom";
-import ProgressiveImage from "../../components/ProgressiveImage";
+import ProgressiveImage from "../../components/UI/ProgressiveImage";
 const BOJE = {
   bone: "#CBCFBB",
   midnight: "#1E3E49",

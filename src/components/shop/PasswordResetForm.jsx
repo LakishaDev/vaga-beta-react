@@ -5,7 +5,7 @@ import { KeyRound, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import { confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
 import { auth } from "../../utils/firebase";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import AnimatedInput from "../AnimatedInput";
+import AnimatedInput from "../UI/AnimatedInput";
 
 const PasswordResetForm = () => {
   const [searchParams] = useSearchParams();

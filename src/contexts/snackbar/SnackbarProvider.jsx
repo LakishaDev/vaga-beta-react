@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { SnackbarContext } from "./SnackbarContext";
-import SnackbarStack from "../../components/shop/SnackbarStack";
+import SnackbarStack from "../../components/UI/SnackbarStack";
 
 export function SnackbarProvider({ children }) {
   const [snacks, setSnacks] = useState([]);

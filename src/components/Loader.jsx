@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import ProgressiveImage from "./ProgressiveImage";
+import ProgressiveImage from "./UI/ProgressiveImage";
 export default function Loader() {
   return (
     <motion.div

@@ -2,9 +2,9 @@ import { useState, useContext, useEffect } from "react";
 import { db, storage, auth } from "../../utils/firebase.js";
 import { addDoc, collection, deleteDoc, doc, getDocs, updateDoc } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
-import { SnackbarContext } from "../../contexts/shop/SnackbarContext.jsx";
-import FloatingLabelInput from "../../components/FloatingLabelInput.jsx";
-import ProgressiveImage from "../../components/ProgressiveImage.jsx";
+import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext.jsx";
+import FloatingLabelInput from "../../components/UI/FloatingLabelInput.jsx";
+import ProgressiveImage from "../../components/UI/ProgressiveImage.jsx";
 
 export default function AdminPanel() {
   const { showSnackbar } = useContext(SnackbarContext);

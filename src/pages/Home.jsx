@@ -1,4 +1,4 @@
-import ProgressiveImage from "../components/ProgressiveImage";
+import ProgressiveImage from "../components/UI/ProgressiveImage";
 import Slider from "../components/Slider";
 import { FaTools, FaShippingFast, FaCertificate, FaFlask, FaLaptopCode, FaIndustry, FaShieldAlt } from "react-icons/fa";
 

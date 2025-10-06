@@ -1,8 +1,8 @@
 import { useEffect, useState, useContext } from "react";
 import { db, auth } from "../../utils/firebase";
 import { getDocs, collection, updateDoc, doc } from "firebase/firestore";
-import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
-import ProgressiveImage from "../../components/ProgressiveImage";
+import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
+import ProgressiveImage from "../../components/UI/ProgressiveImage";
 import { FaRegClock, FaCheckCircle, FaUserCircle, FaEnvelope, FaBuilding, FaTruck, FaBoxes, FaHome, FaTimes } from "react-icons/fa";
 import StatusBadge from "../../components/shop/StatusBadge";
 import { motion, AnimatePresence } from "framer-motion";

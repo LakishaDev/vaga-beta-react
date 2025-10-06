@@ -3,9 +3,9 @@ import { CartContext } from "./CartContext";
 
 // src/contexts/shop/CartContext.jsx
 import { useReducer, useEffect } from "react";
-import { AuthContext } from "../../contexts/shop/auth/AuthContext"; // pretpostavljam da imaš AuthContext
-import { CartService } from "../../services/CartService"; // putanja do CartService
-import { useAuth } from "../../hooks/useAuth";
+import { AuthContext } from "../auth/AuthContext"; // pretpostavljam da imaš AuthContext
+import { CartService } from "../../../services/CartService"; // putanja do CartService
+import { useAuth } from "../../../hooks/useAuth";
 
 // Reducer funkcija za upravljanje stanjem korpe
 

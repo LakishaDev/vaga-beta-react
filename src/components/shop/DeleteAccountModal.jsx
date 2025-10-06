@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, AlertTriangle, X, Shield, Mail } from "lucide-react";
-import AnimatedInput from "../AnimatedInput";
+import AnimatedInput from "../UI/AnimatedInput";
 import { deleteUserAccount } from "../../utils/userService";
 import { useUserData } from "../../hooks/useUserData";
 import {  

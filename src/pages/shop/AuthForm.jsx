@@ -8,7 +8,7 @@ import {
   sendEmailVerification
 } from "firebase/auth";
 import { useNavigate } from "react-router-dom";
-import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
+import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext.jsx";
 import {
   UserRound,
   Lock,

@@ -1,8 +1,8 @@
 import { useContext } from "react";
-import { CartContext } from "../../contexts/shop/CartContext";
-import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
+import { CartContext } from "../../contexts/shop/cart/CartContext";
+import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { Link } from "react-router-dom";
-import ProgressiveImage from "../ProgressiveImage";
+import ProgressiveImage from "../UI/ProgressiveImage";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);

@@ -1,7 +1,7 @@
 // src/Prodavnica.jsx
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import { CartProvider } from "./contexts/shop/CartProvider";
-import { SnackbarProvider } from "./contexts/shop/SnackbarProvider";
+import { CartProvider } from "./contexts/shop/cart/CartProvider";
+import { SnackbarProvider } from "./contexts/snackbar/SnackbarProvider";
 import { useEffect } from 'react';
 
 import HeroSection from "./pages/shop/HeroSection";

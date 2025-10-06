@@ -1,6 +1,6 @@
 // src/components/CheckoutForm.jsx
 import { useState, useContext } from "react";
-import { CartContext } from "../../contexts/shop/CartContext";
+import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { db } from "../../utils/firebase";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 

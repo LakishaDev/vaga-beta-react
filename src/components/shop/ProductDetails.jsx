@@ -2,10 +2,10 @@ import { useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { db } from "../../utils/firebase";
 import { doc, getDoc, collection, addDoc, query, where, getDocs } from "firebase/firestore";
-import ProgressiveImage from "../ProgressiveImage";
+import ProgressiveImage from "../UI/ProgressiveImage";
 import { Star, Package, Download, MessageCircle, ShoppingCart, X, Percent } from "lucide-react";
-import { CartContext } from "../../contexts/shop/CartContext";
-import { SnackbarContext } from "../../contexts/shop/SnackbarContext";
+import { CartContext } from "../../contexts/shop/cart/CartContext";
+import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 
 export default function ProductDetails() {
   const { id } = useParams();

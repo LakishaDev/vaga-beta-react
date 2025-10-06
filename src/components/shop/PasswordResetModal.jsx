@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { KeyRound, Mail, X, CheckCircle } from "lucide-react";
-import AnimatedInput from "../AnimatedInput";
+import AnimatedInput from "../UI/AnimatedInput";
 import { sendPasswordResetEmail } from "firebase/auth";
 import { auth } from "../../utils/firebase";
 

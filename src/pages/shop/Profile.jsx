@@ -8,11 +8,12 @@ import { Mail, Phone, Home, ReceiptText, AlertTriangle, CreditCard, Settings, Pe
 import Loader from "../../components/Loader";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, Sparkles } from "@react-three/drei";
-import ProgressiveImage from "../../components/ProgressiveImage";
+import ProgressiveImage from "../../components/UI/ProgressiveImage";
 import StatusBadge from "../../components/shop/StatusBadge";
 import { useNavigate } from "react-router-dom";
 import DeleteAccountModal from "../../components/shop/DeleteAccountModal";
 import PasswordResetModal from "../../components/shop/PasswordResetModal";
+import OrderDetailsModal from "../../components/shop/OrderDetailsModal";
 
 function srRsd(n) { return n.toLocaleString("sr-RS") + " RSD"; }
 function srDate(ts) {
@@ -70,13 +71,23 @@ export default function Profile() {
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [passwordResetModalOpen, setPasswordResetModalOpen] = useState(false);
   const navigate = useNavigate();
+  const [orderModalOpen, setOrderModalOpen] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
   useEffect(() => {
     if (!user) return;
     const fetchOrders = async () => {
       const q = query(collection(db, "orders"), where("email", "==", user.email));
       const snaps = await getDocs(q);
-      setOrders(snaps.docs.map(d => d.data()));
+      // sortiraj po createdAt, najnoviji prvo
+      const sorted = snaps.docs
+        .map(d => d.data())
+        .sort((a, b) => {
+          const ta = a.createdAt?.seconds || 0;
+          const tb = b.createdAt?.seconds || 0;
+          return tb - ta; // descending
+        });
+      setOrders(sorted);
     };
     fetchOrders();
   }, [user]);
@@ -108,6 +119,7 @@ export default function Profile() {
   if (!user) return <div className="text-center mt-10">Morate biti prijavljeni.</div>;
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 60 }}
       animate={{ opacity: 1, y: 0 }}
@@ -402,14 +414,18 @@ export default function Profile() {
             <p className="text-lg font-medium">Nema narudžbina.</p>
           </motion.div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8">
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 md:auto-rows-fr">
             {orders.map((order, idx) => (
               <motion.div
                 key={order.createdAt?.seconds || idx}
-                className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100 cursor-pointer"
+                className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100 cursor-pointer flex flex-col h-full"
                 initial={{ opacity: 0, y: 40 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
+                onClick={() => {
+                  setSelectedOrder(order);
+                  setOrderModalOpen(true);
+                }}
                 whileHover={{ 
                   scale: 1.02,
                   y: -8,
@@ -425,7 +441,7 @@ export default function Profile() {
                   <StatusBadge status={order.status} />
                 </div>
                 
-                <div className="space-y-3 mb-4">
+                <div className="space-y-3 mb-4 md:max-h-56 md:overflow-y-auto custom-scrollbar">
                   {order.cart.map(product => (
                     <div key={product.id} className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors">
                       <ProgressiveImage 
@@ -443,7 +459,7 @@ export default function Profile() {
                   ))}
                 </div>
                 
-                <div className="border-t pt-4 flex justify-between items-center">
+                <div className="border-t pt-4 flex justify-between items-center mt-auto">
                   <span className="font-semibold text-gray-700">Ukupno:</span>
                   <span className="font-bold text-bluegreen text-lg">
                     {srRsd(order.cart.reduce((a, p) => a + p.price * p.qty, 0))}
@@ -455,5 +471,7 @@ export default function Profile() {
         )}
       </motion.div>
     </motion.div>
+    <OrderDetailsModal open={orderModalOpen} onClose={() => setOrderModalOpen(false)} order={selectedOrder} />
+    </>
   );
 }

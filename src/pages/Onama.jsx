@@ -1,5 +1,5 @@
 import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments } from "react-icons/fa";
-import ProgressiveImage from "../components/ProgressiveImage";
+import ProgressiveImage from "../components/UI/ProgressiveImage";
 
 export default function Onama() {
   return (

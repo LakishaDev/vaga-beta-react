@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { useState } from "react";
 import { FaHome, FaBoxes, FaCogs, FaEnvelope, FaInfoCircle, FaShoppingBag } from "react-icons/fa";
-import ProgressiveImage from "./ProgressiveImage";
+import ProgressiveImage from "./UI/ProgressiveImage";
 
 const BOJE = {
   bone: "#CBCFBB",
