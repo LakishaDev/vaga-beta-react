@@ -24,6 +24,10 @@ import {
   Home,
 } from "lucide-react";
 import TypingText from "../UI/TypingText";
+import { MdAdminPanelSettings } from "react-icons/md";
+import { BiSolidReceipt } from "react-icons/bi";
+import { PiShoppingCartDuotone } from "react-icons/pi";
+import { AiTwotoneShop } from "react-icons/ai";
 
 export default function Navbar() {
   const { showSnackbar } = useContext(SnackbarContext);
@@ -108,7 +112,7 @@ export default function Navbar() {
           to="/prodavnica/proizvodi"
           className={navLinkClass("/prodavnica/proizvodi")}
         >
-          <Boxes size={20} />
+          <AiTwotoneShop size={20} />
           Proizvodi
           <span className={underlineClass("/prodavnica/proizvodi")}></span>
         </Link>
@@ -117,7 +121,7 @@ export default function Navbar() {
           className={`${navLinkClass("/prodavnica/korpa")}`}
         >
           <span className="flex items-center">
-            <ShoppingCart size={20} />
+            <PiShoppingCartDuotone size={20} />
             Korpa
             {cartCount > 0 && (
               <span className="ml-1 animate-bounce absolute -top-3 -right-4 bg-rust text-white rounded-full h-5 w-5 flex items-center justify-center text-xs shadow-lg font-bold border-2 border-white z-10">
@@ -144,7 +148,7 @@ export default function Navbar() {
               className={navLinkClass("/prodavnica/admin")}
               onClick={() => setMobileMenuOpen(false)}
             >
-              <UserCog size={22} />
+              <MdAdminPanelSettings size={22} />
               Admin
             </Link>
             <Link
@@ -152,7 +156,7 @@ export default function Navbar() {
               className={navLinkClass("/prodavnica/porudzbine")}
               onClick={() => setMobileMenuOpen(false)}
             >
-              <UserCog size={22} />
+              <BiSolidReceipt size={22} />
               Porudžbine
             </Link>
           </>
@@ -221,7 +225,7 @@ export default function Navbar() {
             className={navLinkClass("/prodavnica/proizvodi")}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <Boxes size={22} />
+            <AiTwotoneShop size={22} />
             Proizvodi
           </Link>
           <Link
@@ -229,7 +233,7 @@ export default function Navbar() {
             className={navLinkClass("/prodavnica/korpa")}
             onClick={() => setMobileMenuOpen(false)}
           >
-            <ShoppingCart size={22} />
+            <PiShoppingCartDuotone size={22} />
             Korpa
             {cartCount > 0 && (
               <span className="ml-2 animate-bounce bg-rust text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold border-2 border-white z-10">
@@ -254,7 +258,7 @@ export default function Navbar() {
                 className={navLinkClass("/prodavnica/admin")}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <UserCog size={22} />
+                <MdAdminPanelSettings size={22} />
                 Admin
               </Link>
               <Link
@@ -262,7 +266,7 @@ export default function Navbar() {
                 className={navLinkClass("/prodavnica/porudzbine")}
                 onClick={() => setMobileMenuOpen(false)}
               >
-                <UserCog size={22} />
+                <BiSolidReceipt size={22} />
                 Porudžbine
               </Link>
             </>
