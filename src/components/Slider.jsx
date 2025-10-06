@@ -1,4 +1,11 @@
-import React, { useRef, useEffect, useState } from "react";
+// components/Slider.jsx
+// Komponenta za beskonačni horizontalni slider sa slikama i tekstom
+// Slike se učitavaju iz javnog foldera /public/imgs
+// Prikazuje loader dok se slike ne učitaju
+// Koristi useRef za referencu na kontejner i useEffect za animaciju skrolovanja
+// Koristi osnovne Tailwind CSS klase za stilizaciju
+// Možeš prilagoditi brzinu skrolovanja promenom vrednosti speed u useEffect
+import { useRef, useEffect, useState } from "react";
 
 const sliderData = [
   { tekst: "Veliki set tegova", slika: "slika3" },
@@ -7,7 +14,7 @@ const sliderData = [
   { tekst: "Mesoreznica", slika: "probamesoreznica41544" },
   { tekst: "Precizna vaga", slika: "preciznavaga123" },
   { tekst: "Proizvodi u ponudi", slika: "slicka" },
-  { tekst: "Stocna vaga", slika: "stocarskavaga" }
+  { tekst: "Stocna vaga", slika: "stocarskavaga" },
 ];
 const trackImages = [...sliderData, ...sliderData];
 
@@ -15,9 +22,19 @@ function Spinner() {
   return (
     <div className="absolute inset-0 flex items-center justify-center">
       <svg className="animate-spin h-10 w-10 text-blue-500" viewBox="0 0 24 24">
-        <circle className="opacity-40" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-        <path className="opacity-85" fill="currentColor"
-          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z" />
+        <circle
+          className="opacity-40"
+          cx="12"
+          cy="12"
+          r="10"
+          stroke="currentColor"
+          strokeWidth="4"
+        />
+        <path
+          className="opacity-85"
+          fill="currentColor"
+          d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+        />
       </svg>
     </div>
   );
@@ -44,8 +61,8 @@ export default function Slider() {
     return () => cancelAnimationFrame(frame);
   }, []);
 
-  const handleImgLoad = idx =>
-    setLoaded(state => {
+  const handleImgLoad = (idx) =>
+    setLoaded((state) => {
       const newState = [...state];
       newState[idx] = true;
       return newState;
@@ -74,7 +91,9 @@ export default function Slider() {
             <img
               src={`/imgs/${item.slika}.jpg`}
               alt={item.tekst}
-              className={`w-full h-full object-cover transition group-hover:scale-105 ${!loaded[idx] ? "blur-lg" : ""}`}
+              className={`w-full h-full object-cover transition group-hover:scale-105 ${
+                !loaded[idx] ? "blur-lg" : ""
+              }`}
               draggable={false}
               onLoad={() => handleImgLoad(idx)}
               loading="lazy"

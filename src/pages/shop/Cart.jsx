@@ -1,7 +1,23 @@
+// src/pages/shop/Cart.jsx
+// Stranica korpe u prodavnici
+// Prikazuje proizvode u korpi, omogućava izmenu količine, uklanjanje proizvoda i čišćenje korpe
+// Takođe prikazuje ukupnu cenu i dugme za plaćanje
+// Koristi CartContext za upravljanje stanjem korpe
+// Koristi React ikone za prikaz ikonica
+// Koristi Modal komponentu za potvrdu akcija
+// Koristi ProgressiveImage komponentu za učitavanje slika proizvoda
+// Funkcija formatPrice formatira cenu u lokalnom formatu
+// Animacije su dodate za poboljšanje korisničkog iskustva
 import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { Link } from "react-router-dom";
-import { FaTrashAlt, FaCheckCircle, FaShoppingCart, FaPlus, FaMinus } from "react-icons/fa";
+import {
+  FaTrashAlt,
+  FaCheckCircle,
+  FaShoppingCart,
+  FaPlus,
+  FaMinus,
+} from "react-icons/fa";
 import Modal from "../../components/UI/Modal";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
 
@@ -10,7 +26,8 @@ function formatPrice(price) {
 }
 
 export default function Cart() {
-  const { cart, removeFromCart, clearCart, updateQuantity } = useContext(CartContext);
+  const { cart, removeFromCart, clearCart, updateQuantity } =
+    useContext(CartContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [removeId, setRemoveId] = useState(null);
   const [showClearModal, setShowClearModal] = useState(false);
@@ -34,7 +51,7 @@ export default function Cart() {
       const step = (total - displayedTotal) / frames;
       const interval = setInterval(() => {
         frame++;
-        setDisplayedTotal(prev => (frame < frames ? prev + step : total));
+        setDisplayedTotal((prev) => (frame < frames ? prev + step : total));
         if (frame >= frames) {
           clearInterval(interval);
           setDisplayedTotal(total);
@@ -43,7 +60,7 @@ export default function Cart() {
       }, duration / frames);
       return () => clearInterval(interval);
     }
-  }, [total]);
+  }, [displayedTotal, total]);
 
   const handleDecrease = (id, qty) => {
     if (qty > 1) {
@@ -72,30 +89,56 @@ export default function Cart() {
           <div className="flex flex-col items-center py-6 sm:py-10 text-base sm:text-xl text-gray-400 animate-jump">
             <FaShoppingCart size={38} className="sm:size-48" />
             <p className="mt-3 sm:mt-4">Korpa je prazna.</p>
-            <Link to="/prodavnica/proizvodi" className="mt-6 text-bluegreen underline">Nastavi kupovinu</Link>
+            <Link
+              to="/prodavnica/proizvodi"
+              className="mt-6 text-bluegreen underline"
+            >
+              Nastavi kupovinu
+            </Link>
           </div>
         ) : (
           <>
             <ul className="mb-6 space-y-4 sm:space-y-6 overflow-x-auto">
-              {cart.map(item => (
+              {cart.map((item) => (
                 <li
                   key={item.id}
-                  className={
-                    `flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 bg-neutral-50 rounded-xl shadow-sm hover:shadow-md transition-all animate-cartItem
-                    ${animIndex === item.id && animType === "inc" ? "animate-bounceInc" : ""}
-                    ${animIndex === item.id && animType === "dec" ? "animate-bounceDec" : ""}`
-                  }
-                  onAnimationEnd={() => { setAnimIndex(null); setAnimType(""); }}
+                  className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 bg-neutral-50 rounded-xl shadow-sm hover:shadow-md transition-all animate-cartItem
+                    ${
+                      animIndex === item.id && animType === "inc"
+                        ? "animate-bounceInc"
+                        : ""
+                    }
+                    ${
+                      animIndex === item.id && animType === "dec"
+                        ? "animate-bounceDec"
+                        : ""
+                    }`}
+                  onAnimationEnd={() => {
+                    setAnimIndex(null);
+                    setAnimType("");
+                  }}
                 >
                   <div className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto">
-                    <ProgressiveImage src={item.imgUrl} alt={item.name} className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-lg border" />
+                    <ProgressiveImage
+                      src={item.imgUrl}
+                      alt={item.name}
+                      className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-lg border"
+                    />
                     <div className="flex flex-col">
-                      <h3 className="text-base sm:text-lg font-semibold break-words">{item.name}</h3>
-                      <div className="text-xs sm:text-sm text-gray-400">{item.category}</div>
+                      <h3 className="text-base sm:text-lg font-semibold break-words">
+                        {item.name}
+                      </h3>
+                      <div className="text-xs sm:text-sm text-gray-400">
+                        {item.category}
+                      </div>
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 sm:gap-2 w-full sm:w-auto">
-                    <span className={`text-base sm:text-xl font-bold text-charcoal ${animatingTotal ? "animate-flipPrice" : ""}`}>
+                    <span
+                      className={`text-base sm:text-xl font-bold text-charcoal ${
+                        animatingTotal ? "animate-flipPrice" : ""
+                      }`}
+                    >
                       {formatPrice(item.price * item.qty)} RSD
                     </span>
                     <div className="flex items-center gap-1">
@@ -106,7 +149,9 @@ export default function Cart() {
                       >
                         <FaMinus />
                       </button>
-                      <span className="w-8 text-center font-semibold select-none">{item.qty}</span>
+                      <span className="w-8 text-center font-semibold select-none">
+                        {item.qty}
+                      </span>
                       <button
                         className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition"
                         onClick={() => handleIncrease(item.id, item.qty)}
@@ -116,7 +161,10 @@ export default function Cart() {
                       </button>
                       <button
                         className="ml-2 flex items-center gap-1 bg-rust text-white py-1 px-2 sm:px-3 rounded hover:bg-red-700 transition-all shadow active:scale-95"
-                        onClick={() => { setRemoveId(item.id); setShowRemoveModal(true); }}
+                        onClick={() => {
+                          setRemoveId(item.id);
+                          setShowRemoveModal(true);
+                        }}
                         aria-label="Izbaci iz korpe"
                       >
                         <FaTrashAlt />
@@ -129,7 +177,11 @@ export default function Cart() {
             </ul>
             <div className="flex flex-col sm:flex-row justify-between items-center gap-3 sm:gap-0 font-semibold text-xl sm:text-2xl my-5 border-t pt-4">
               <span>Ukupno:</span>
-              <span className={`text-bluegreen ${animatingTotal ? "animate-flipPrice" : ""}`}>
+              <span
+                className={`text-bluegreen ${
+                  animatingTotal ? "animate-flipPrice" : ""
+                }`}
+              >
                 {formatPrice(Math.round(displayedTotal))} RSD
               </span>
             </div>
@@ -156,7 +208,10 @@ export default function Cart() {
         <Modal
           title="Potvrda"
           onClose={() => setShowRemoveModal(false)}
-          onConfirm={() => { removeFromCart(removeId); setShowRemoveModal(false); }}
+          onConfirm={() => {
+            removeFromCart(removeId);
+            setShowRemoveModal(false);
+          }}
           confirmText="Da, izbaci"
         >
           Da li ste sigurni da želite da izbacite proizvod iz korpe?
@@ -166,7 +221,10 @@ export default function Cart() {
         <Modal
           title="Potvrda"
           onClose={() => setShowClearModal(false)}
-          onConfirm={() => { clearCart(); setShowClearModal(false); }}
+          onConfirm={() => {
+            clearCart();
+            setShowClearModal(false);
+          }}
           confirmText="Da, očisti"
         >
           Da li ste sigurni da želite da očistite celu korpu?

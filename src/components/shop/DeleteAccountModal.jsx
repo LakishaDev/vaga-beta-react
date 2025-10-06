@@ -1,13 +1,19 @@
 // components/DeleteAccountModal.jsx
+// Modal za brisanje korisničkog naloga sa više koraka:
+// 1. Upozorenje o brisanju
+// 2. Potvrda unošenjem tačnog teksta (npr. korisničkog imena ili "POTVRDI")
+// 3. Slanje email potvrde (za korisnike koji se prijavljuju email-om)
+// Koristi AnimatedInput za unos teksta i framer-motion za animacije
+// Props: isOpen, onClose, onSuccess
+
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { Trash2, AlertTriangle, X, Shield, Mail } from "lucide-react";
 import AnimatedInput from "../UI/AnimatedInput";
 import { deleteUserAccount } from "../../utils/userService";
 import { useUserData } from "../../hooks/useUserData";
-import {  
-  sendEmailVerification
-} from "firebase/auth";
+import { sendEmailVerification } from "firebase/auth";
 
 const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
   const { user, userData } = useUserData();
@@ -17,7 +23,9 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
   const [error, setError] = useState("");
   const [emailSent, setEmailSent] = useState(false);
 
-  const isGoogleUser = user?.providerData?.some(provider => provider.providerId === 'google.com');
+  const isGoogleUser = user?.providerData?.some(
+    (provider) => provider.providerId === "google.com"
+  );
   const requiredText = userData?.username || "POTVRDI";
 
   const resetModal = () => {
@@ -86,9 +94,9 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
             initial={{ scale: 0.8, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-red-500 to-red-600 px-6 py-4 text-white">
@@ -99,7 +107,9 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">Brisanje naloga</h3>
-                    <p className="text-red-100 text-sm">Korak {step} od {isGoogleUser ? 2 : 3}</p>
+                    <p className="text-red-100 text-sm">
+                      Korak {step} od {isGoogleUser ? 2 : 3}
+                    </p>
                   </div>
                 </div>
                 <button
@@ -128,13 +138,16 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
                       Upozorenje!
                     </h4>
                     <p className="text-gray-600 text-sm leading-relaxed">
-                      Ova akcija je <strong>nepovratna</strong>. Svi vaši podaci, narudžbine 
-                      i informacije će biti trajno obrisani sa naših servera.
+                      Ova akcija je <strong>nepovratna</strong>. Svi vaši
+                      podaci, narudžbine i informacije će biti trajno obrisani
+                      sa naših servera.
                     </p>
                   </div>
 
                   <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                    <h5 className="font-semibold text-red-800 mb-2">Šta će biti obrisano:</h5>
+                    <h5 className="font-semibold text-red-800 mb-2">
+                      Šta će biti obrisano:
+                    </h5>
                     <ul className="text-sm text-red-700 space-y-1">
                       <li>• Vaš profil i lični podaci</li>
                       <li>• Istorija narudžbina</li>
@@ -203,11 +216,17 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
                       Nazad
                     </button>
                     <button
-                      onClick={isGoogleUser ? handleDeleteAccount : handleNextStep}
+                      onClick={
+                        isGoogleUser ? handleDeleteAccount : handleNextStep
+                      }
                       disabled={confirmText !== requiredText || loading}
                       className="flex-1 px-4 py-3 bg-red-500 text-white font-semibold rounded-xl hover:bg-red-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
                     >
-                      {loading ? "Brišem..." : isGoogleUser ? "Obriši nalog" : "Nastavi"}
+                      {loading
+                        ? "Brišem..."
+                        : isGoogleUser
+                        ? "Obriši nalog"
+                        : "Nastavi"}
                     </button>
                   </div>
                 </motion.div>
@@ -229,7 +248,8 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
                       Email potvrda
                     </h4>
                     <p className="text-gray-600 text-sm">
-                      Poslaćemo vam email sa finalno potvrdom za brisanje naloga.
+                      Poslaćemo vam email sa finalno potvrdom za brisanje
+                      naloga.
                     </p>
                   </div>
 
@@ -244,14 +264,17 @@ const DeleteAccountModal = ({ isOpen, onClose, onSuccess }) => {
                   ) : (
                     <div className="bg-green-50 border border-green-200 rounded-xl p-4">
                       <p className="text-green-800 text-sm text-center">
-                        ✅ Email je poslat! Proverite svoj inbox i kliknite na link za finalno brisanje.
+                        ✅ Email je poslat! Proverite svoj inbox i kliknite na
+                        link za finalno brisanje.
                       </p>
                     </div>
                   )}
 
                   {error && (
                     <div className="bg-red-50 border border-red-200 rounded-xl p-4">
-                      <p className="text-red-800 text-sm text-center">{error}</p>
+                      <p className="text-red-800 text-sm text-center">
+                        {error}
+                      </p>
                     </div>
                   )}
 

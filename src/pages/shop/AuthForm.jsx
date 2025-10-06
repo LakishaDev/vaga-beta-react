@@ -1,3 +1,16 @@
+// src/pages/shop/AuthForm.jsx
+// Forma za prijavu i registraciju korisnika
+// Podržava prijavu/registraciju putem emaila i lozinke, Google naloga, i broja telefona
+// Koristi Firebase Authentication za upravljanje autentifikacijom
+// Prikazuje različite UI elemente u zavisnosti od stanja (prijava, registracija, verifikacija emaila, telefon)
+// Koristi useState, useContext i useRef iz React biblioteke
+// Uvozi potrebne funkcije iz Firebase Authentication i koristi SnackbarContext za prikaz poruka
+// Eksportuj AuthForm komponentu
+// Možeš prilagoditi izgled i funkcionalnost po želji
+// Koristi lucide-react za ikone
+// Uključuje modal za resetovanje lozinke
+// Validacija emaila i lozinke je osnovna, možeš je proširiti po potrebi
+
 import { useState, useContext, useRef } from "react";
 import { auth } from "../../utils/firebase.js";
 import {
@@ -194,7 +207,7 @@ export default function AuthForm() {
         text: "Prijava brojem telefona uspešna!",
       });
       navigate("/prodavnica/nalog");
-    } catch (e) {
+    } catch {
       setPhoneMessage({
         type: "error",
         text: "Kod je pogrešan ili istekao. Probaj ponovo.",
@@ -257,7 +270,7 @@ export default function AuthForm() {
               className="text-sheen drop-shadow-xl animate-pulse"
             />
           )}
-          <h2 className="text-3xl sm:text-4xl text-midnight tracking-tight font-extrabold text-center drop-shadow-lg bg-gradient-to-tr from-bluegreen via-sheen to-midnight bg-clip-text text-transparent uppercase">
+          <h2 className="text-3xl sm:text-4xl text-midnight tracking-tight font-extrabold text-center drop-shadow-lg bg-gradient-to-tr from-bluegreen via-sheen to-midnight bg-clip-text uppercase">
             {isLogin ? "PRIJAVA" : "REGISTRACIJA"}
           </h2>
         </div>

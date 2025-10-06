@@ -1,3 +1,10 @@
+// components/shop/ProductCard.jsx
+// Komponenta koja prikazuje karticu proizvoda u prodavnici
+// Prikazuje sliku, naziv, kategoriju, ocenu, cenu i dugme za dodavanje u korpu
+// Koristi kontekst korpe za dodavanje proizvoda i kontekst snackbar-a za prikaz poruke
+// Koristi ProgressiveImage za učitavanje slike sa efektom preliva
+// Props: product (objekat sa podacima o proizvodu)
+// product: {id, name, category, price, originalPrice, discountPercent, rating, imgUrl}
 import { useContext } from "react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
@@ -21,11 +28,11 @@ export default function ProductCard({ product }) {
         transition-transform hover:scale-105 hover:shadow-2xl hover:border-bluegreen
         flex flex-col items-center py-6 px-3 sm:px-5 relative overflow-hidden min-h-[340px] sm:min-h-[410px] w-full"
       style={{
-        borderColor: "#CBCFBB"
+        borderColor: "#CBCFBB",
       }}
     >
       {/* Popust badge */}
-      {(product.originalPrice && product.originalPrice > product.price) && (
+      {product.originalPrice && product.originalPrice > product.price && (
         <span className="absolute top-4 left-4 sm:top-6 sm:left-7 bg-green-100 text-green-800 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow animate-bounce z-20">
           -{product.discountPercent}% POPUST
         </span>
@@ -42,8 +49,12 @@ export default function ProductCard({ product }) {
         className="h-32 w-32 sm:h-40 sm:w-40 object-cover rounded-xl shadow-lg mb-4 group-hover:scale-105 group-hover:shadow-2xl transition"
         style={{ aspectRatio: "1/1", background: "#E5E5E5" }}
       />
-      <h3 className="font-bold text-base sm:text-xl text-midnight mb-1 text-center">{product.name}</h3>
-      <p className="text-sheen mb-2 text-center font-semibold text-sm sm:text-base">{product.category}</p>
+      <h3 className="font-bold text-base sm:text-xl text-midnight mb-1 text-center">
+        {product.name}
+      </h3>
+      <p className="text-sheen mb-2 text-center font-semibold text-sm sm:text-base">
+        {product.category}
+      </p>
 
       {/* Cene: pre i posle popusta */}
       {product.originalPrice && product.originalPrice > product.price && (
@@ -57,7 +68,9 @@ export default function ProductCard({ product }) {
       {/* Ocena */}
       <div className="mb-2 sm:mb-3 flex items-center justify-center gap-1">
         <span className="text-yellow-400 text-lg sm:text-xl">★</span>
-        <span className="text-charcoal font-semibold text-base sm:text-lg">{product.rating ? product.rating.toFixed(1) : "5.0"}</span>
+        <span className="text-charcoal font-semibold text-base sm:text-lg">
+          {product.rating ? product.rating.toFixed(1) : "5.0"}
+        </span>
       </div>
 
       <button

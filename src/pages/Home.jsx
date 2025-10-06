@@ -1,6 +1,28 @@
+// src/pages/Home.jsx
+// Početna stranica sajta
+// Predstavlja Vaga Beta firmu, njene usluge i proizvode
+// Koristi ProgressiveImage za optimizovane slike
+// Stilizovana sa Tailwind CSS
+// Responsive i pristupačna
+// Koristi komponente iz /components
+// Ikonice iz react-icons
+// Animacije sa Tailwind CSS
+// Sadrži sekcije: hero, intro, usluge, galerija, zašto mi + CTA
+// Sve slike su u /public/imgs/home
+// Boje iz BOJE objekta
+// Animacije: fadein, fadeup, pop
+
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 import Slider from "../components/Slider";
-import { FaTools, FaShippingFast, FaCertificate, FaFlask, FaLaptopCode, FaIndustry, FaShieldAlt } from "react-icons/fa";
+import {
+  FaTools,
+  FaShippingFast,
+  FaCertificate,
+  FaFlask,
+  FaLaptopCode,
+  FaIndustry,
+  FaShieldAlt,
+} from "react-icons/fa";
 
 export default function Home() {
   return (
@@ -25,33 +47,54 @@ export default function Home() {
         </h2>
         <Slider />
       </section>
-      
+
       {/* Intro sekcija */}
       <section className="mb-6 animate-fadein duration-1000 delay-200">
         <h2 className="text-2xl text-[#1A343D] mt-0 font-extrabold animate-fadeup">
           Preciznost, inovacije i poverenje u svakoj vagi.
         </h2>
         <p className="text-lg text-[#2F5363] mt-3 mb-4 max-w-xl animate-fadeup delay-100">
-          Vaga Beta je lider u izradi, servisu i žigosanju elektronskih vaga – ali i programiranju specijalizovanih softverskih rešenja za kontrolu i merenje! Pronađite sve što vam je potrebno na jednom mestu – brzo, profesionalno i sa garancijom.
+          Vaga Beta je lider u izradi, servisu i žigosanju elektronskih vaga –
+          ali i programiranju specijalizovanih softverskih rešenja za kontrolu i
+          merenje! Pronađite sve što vam je potrebno na jednom mestu – brzo,
+          profesionalno i sa garancijom.
         </p>
       </section>
 
       {/* Sekcija Proizvodnja i softver */}
       <section className="rounded-xl p-4 bg-[#91CEC1]/30 mb-8 flex flex-col md:flex-row gap-6 items-center animate-fadein duration-1000 delay-200">
-        <ProgressiveImage src="/imgs/home/slika2.png" alt="Izrada elektronskih vaga po želji" className="w-full md:w-1/2 rounded-lg object-cover animate-pop delay-300" />
+        <ProgressiveImage
+          src="/imgs/home/slika2.png"
+          alt="Izrada elektronskih vaga po želji"
+          className="w-full md:w-1/2 rounded-lg object-cover animate-pop delay-300"
+        />
         <div className="flex-1">
-          <h3 className="text-xl font-bold text-[#6EAEA2] mb-2">Izrada vaga po meri i razvoj softvera</h3>
+          <h3 className="text-xl font-bold text-[#6EAEA2] mb-2">
+            Izrada vaga po meri i razvoj softvera
+          </h3>
           <ul className="space-y-2">
-            <li className="flex items-center gap-2"><FaIndustry className="text-[#1E3E49] text-xl" /> Elektronske i mehaničke vage dizajnirane po vašim potrebama</li>
-            <li className="flex items-center gap-2"><FaLaptopCode className="text-[#AD5637] text-xl" /> Razvoj softverskih programa za pametno praćenje, upravljanje i integraciju vaga</li>
-            <li className="flex items-center gap-2"><FaShippingFast className="text-[#91CEC1] text-xl" /> Isporuka i ugradnja na lokaciji korisnika</li>
+            <li className="flex items-center gap-2">
+              <FaIndustry className="text-[#1E3E49] text-xl" /> Elektronske i
+              mehaničke vage dizajnirane po vašim potrebama
+            </li>
+            <li className="flex items-center gap-2">
+              <FaLaptopCode className="text-[#AD5637] text-xl" /> Razvoj
+              softverskih programa za pametno praćenje, upravljanje i
+              integraciju vaga
+            </li>
+            <li className="flex items-center gap-2">
+              <FaShippingFast className="text-[#91CEC1] text-xl" /> Isporuka i
+              ugradnja na lokaciji korisnika
+            </li>
           </ul>
         </div>
       </section>
 
       {/* Usluge sekcija sa ikonama */}
       <section className="mb-8 animate-fadein duration-1000 delay-300">
-        <h3 className="text-xl text-[#6EAEA2] font-bold mb-3 animate-pop">Šta vam još nudimo?</h3>
+        <h3 className="text-xl text-[#6EAEA2] font-bold mb-3 animate-pop">
+          Šta vam još nudimo?
+        </h3>
         <ul className="grid sm:grid-cols-2 gap-4 list-none pl-0">
           <li className="flex items-center gap-3 p-3 rounded-lg bg-[#CBCFBB]/50 hover:bg-[#91CEC1]/20 shadow transition-transform hover:scale-105 animate-fadeup">
             <FaTools className="text-[#AD5637] text-2xl" />
@@ -84,7 +127,9 @@ export default function Home() {
 
       {/* Zašto baš mi + CTA */}
       <section className="bg-[#CBCFBB]/60 rounded-lg p-5 shadow-sm animate-pop duration-1000 delay-400">
-        <h4 className="text-xl text-[#AD5637] font-bold mb-2">Zašto baš Vaga Beta?</h4>
+        <h4 className="text-xl text-[#AD5637] font-bold mb-2">
+          Zašto baš Vaga Beta?
+        </h4>
         <ul className="list-disc pl-6 text-[#1A343D] space-y-1 font-medium mb-4">
           <li>Više od 20 godina iskustva u industriji vaga</li>
           <li>Kompletan servis i podrška na jednom mestu</li>

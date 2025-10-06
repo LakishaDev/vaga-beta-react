@@ -1,3 +1,7 @@
+/* Tailwind CSS global styles and custom animations */
+/* Import Tailwind base, components, and utilities */
+/* Tailwind config is in the root directory */
+/* Custom animations and utility classes are defined below */
 @import "tailwindcss";
 @config "../tailwind.config.js";
 
@@ -7,7 +11,6 @@
   background: url("/imgs/gradients/mesh-gradient.png") no-repeat center center;
   background-size: cover;
 }
-
 
 @layer utilities {
   .animate-fadeIn {
@@ -59,8 +62,6 @@
   flex: 1 1 220px;
 }
 
-
-
 @keyframes fadein {
   0% {
     opacity: 0;
@@ -74,7 +75,7 @@
 }
 
 .animate-fadein {
-  animation: fadein 0.8s cubic-bezier(0.4, 0.0, 0.2, 1) both;
+  animation: fadein 0.8s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 @keyframes fadeup {
@@ -90,7 +91,7 @@
 }
 
 .animate-fadeup {
-  animation: fadeup 1s cubic-bezier(0.4, 0.0, 0.2, 1) both;
+  animation: fadeup 1s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 /* @keyframes pop {
@@ -144,7 +145,6 @@
   animation: slideinRight 1.2s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
-
 .animate-fade-up {
   animation: fadeUp 0.7s cubic-bezier(0.4, 0, 0.2, 1);
 }
@@ -152,12 +152,12 @@
 @keyframes fadeUp {
   from {
     transform: translateY(40px);
-    opacity: 0
+    opacity: 0;
   }
 
   to {
     transform: translateY(0);
-    opacity: 1
+    opacity: 1;
   }
 }
 
@@ -168,12 +168,12 @@
 @keyframes pop {
   0% {
     transform: scale(0.9);
-    opacity: 0
+    opacity: 0;
   }
 
   100% {
     transform: scale(1);
-    opacity: 1
+    opacity: 1;
   }
 }
 
@@ -184,12 +184,12 @@
 @keyframes scaleUp {
   0% {
     transform: scale(0.8);
-    opacity: 0
+    opacity: 0;
   }
 
   100% {
     transform: scale(1);
-    opacity: 1
+    opacity: 1;
   }
 }
 
@@ -202,20 +202,20 @@
 }
 
 .add-to-cart-anim {
-  animation: addToCartFly 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+  animation: addToCartFly 1s cubic-bezier(0.45, 1.2, 0.73, 1) forwards;
 }
 
 .cart-anim {
-  animation: cartAppear 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+  animation: cartAppear 1s cubic-bezier(0.45, 1.2, 0.73, 1) forwards;
 }
 
 @media (max-width: 639px) {
   .add-to-cart-anim {
-    animation: addToCartFlyMobile 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+    animation: addToCartFlyMobile 1s cubic-bezier(0.45, 1.2, 0.73, 1) forwards;
   }
 
   .cart-anim {
-    animation: cartAppearMobile 1s cubic-bezier(.45, 1.2, .73, 1) forwards;
+    animation: cartAppearMobile 1s cubic-bezier(0.45, 1.2, 0.73, 1) forwards;
   }
 }
 
@@ -232,7 +232,7 @@
 
   50% {
     opacity: 1;
-    transform: translate(110px, -35px) scale(.92) rotate(14deg);
+    transform: translate(110px, -35px) scale(0.92) rotate(14deg);
   }
 
   85% {
@@ -259,22 +259,22 @@
 
   42% {
     opacity: 1;
-    transform: scale(.98) translateY(0px);
+    transform: scale(0.98) translateY(0px);
   }
 
   75% {
     opacity: 1;
-    transform: scale(.96) translateY(7px);
+    transform: scale(0.96) translateY(7px);
   }
 
   99% {
     opacity: 0;
-    transform: scale(.8) translateY(12px);
+    transform: scale(0.8) translateY(12px);
   }
 
   100% {
     opacity: 0;
-    transform: scale(.7) translateY(12px);
+    transform: scale(0.7) translateY(12px);
   }
 }
 
@@ -291,7 +291,7 @@
 
   55% {
     opacity: 1;
-    transform: translate(56px, -14px) scale(.89) rotate(10deg);
+    transform: translate(56px, -14px) scale(0.89) rotate(10deg);
   }
 
   85% {
@@ -313,41 +313,40 @@
 
   10% {
     opacity: 1;
-    transform: scale(.99) translateY(-5px);
+    transform: scale(0.99) translateY(-5px);
   }
 
   42% {
     opacity: 1;
-    transform: scale(.90) translateY(0px);
+    transform: scale(0.9) translateY(0px);
   }
 
   85% {
     opacity: 1;
-    transform: scale(.85) translateY(6px);
+    transform: scale(0.85) translateY(6px);
   }
 
   99% {
     opacity: 0;
-    transform: scale(.73) translateY(15px);
+    transform: scale(0.73) translateY(15px);
   }
 
   100% {
     opacity: 0;
-    transform: scale(.6) translateY(20px);
+    transform: scale(0.6) translateY(20px);
   }
 }
-
 
 .image-modal-open {
   opacity: 1;
   pointer-events: auto;
-  transition: opacity .5s cubic-bezier(.37, .66, .1, 1);
+  transition: opacity 0.5s cubic-bezier(0.37, 0.66, 0.1, 1);
 }
 
 .image-modal-close {
   opacity: 0;
   pointer-events: none;
-  transition: opacity .4s;
+  transition: opacity 0.4s;
 }
 
 .image-modal-animate {
@@ -356,21 +355,21 @@
 }
 
 .img-enter {
-  animation: showImgIn .44s cubic-bezier(.42, 1.08, .58, .98);
+  animation: showImgIn 0.44s cubic-bezier(0.42, 1.08, 0.58, 0.98);
 }
 
 .img-leave {
-  animation: showImgOut .44s cubic-bezier(.53, -0.04, .57, 1.06);
+  animation: showImgOut 0.44s cubic-bezier(0.53, -0.04, 0.57, 1.06);
 }
 
 @keyframes showImgIn {
   0% {
     opacity: 0;
-    transform: scale(.8) rotateY(40deg) rotateX(12deg);
+    transform: scale(0.8) rotateY(40deg) rotateX(12deg);
   }
 
   60% {
-    opacity: .98;
+    opacity: 0.98;
     transform: scale(1.05) rotateY(-7deg) rotateX(-4deg);
   }
 
@@ -387,21 +386,29 @@
   }
 
   40% {
-    opacity: .9;
-    transform: scale(.99) rotateY(18deg) rotateX(7deg);
+    opacity: 0.9;
+    transform: scale(0.99) rotateY(18deg) rotateX(7deg);
   }
 
   100% {
     opacity: 0;
-    transform: scale(.8) rotateY(-40deg) rotateX(-10deg);
+    transform: scale(0.8) rotateY(-40deg) rotateX(-10deg);
   }
 }
 
 @keyframes fadein-down {
-  from { opacity: 0; transform: translateY(-15px);}
-  to { opacity: 1; transform: translateY(0);}
+  from {
+    opacity: 0;
+    transform: translateY(-15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
-.animate-fadein-down { animation: fadein-down 0.5s ease-in; }
+.animate-fadein-down {
+  animation: fadein-down 0.5s ease-in;
+}
 
 @keyframes snackbar-exit {
   to {
@@ -424,7 +431,7 @@
   }
 }
 .stack-fade-in-up {
-  animation: stack-fade-in-up 0.44s cubic-bezier(.31,.89,.42,1.21) both;
+  animation: stack-fade-in-up 0.44s cubic-bezier(0.31, 0.89, 0.42, 1.21) both;
 }
 
 @keyframes shimmer {
@@ -436,78 +443,131 @@
   }
 }
 .animate-shimmer {
-  background: linear-gradient(
-    110deg,
-    #e0e6ed 40%,
-    #f7f8fa 50%,
-    #e0e6ed 60%
-  );
+  background: linear-gradient(110deg, #e0e6ed 40%, #f7f8fa 50%, #e0e6ed 60%);
   background-size: 200% 100%;
   animation: shimmer 1.5s linear infinite;
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(40px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 .animate-fadeIn {
-  animation: fadeIn 0.5s cubic-bezier(0.32,0,0.67,0) both;
+  animation: fadeIn 0.5s cubic-bezier(0.32, 0, 0.67, 0) both;
 }
 
 @keyframes jump {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-12px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-12px);
+  }
 }
 .animate-jump {
-  animation: jump 0.8s cubic-bezier(.5,0,1,1) both;
+  animation: jump 0.8s cubic-bezier(0.5, 0, 1, 1) both;
 }
 
 @keyframes cartItem {
-  from { opacity: 0; transform: scale(0.96) translateX(24px); }
-  to { opacity: 1; transform: scale(1) translateX(0); }
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateX(24px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateX(0);
+  }
 }
 .animate-cartItem {
-  animation: cartItem 0.3s cubic-bezier(.77,0,.18,1) both;
+  animation: cartItem 0.3s cubic-bezier(0.77, 0, 0.18, 1) both;
 }
 
 @keyframes modalFade {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 .animate-modalFade {
   animation: modalFade 0.25s ease both;
 }
 
 @keyframes buttonPulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04);}
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
 }
 .animate-button {
-  animation: buttonPulse 0.8s infinite both cubic-bezier(.67,.02,0,1);
+  animation: buttonPulse 0.8s infinite both cubic-bezier(0.67, 0.02, 0, 1);
 }
 
 /* Animacija bounce (+) */
 @keyframes bounceInc {
-  0% { transform: scale(1); }
-  30% { transform: scale(1.12); }
-  70% { transform: scale(0.97); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  30% {
+    transform: scale(1.12);
+  }
+  70% {
+    transform: scale(0.97);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-.animate-bounceInc { animation: bounceInc 0.35s cubic-bezier(.35,.91,.36,.89) both; }
+.animate-bounceInc {
+  animation: bounceInc 0.35s cubic-bezier(0.35, 0.91, 0.36, 0.89) both;
+}
 
 /* Animacija bounce (−) */
 @keyframes bounceDec {
-  0% { transform: scale(1); }
-  32% { transform: scale(0.92); }
-  100% { transform: scale(1); }
+  0% {
+    transform: scale(1);
+  }
+  32% {
+    transform: scale(0.92);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-.animate-bounceDec { animation: bounceDec 0.25s cubic-bezier(.35,.91,.36,.89) both; }
+.animate-bounceDec {
+  animation: bounceDec 0.25s cubic-bezier(0.35, 0.91, 0.36, 0.89) both;
+}
 
 /* Animacija promene cene – "flip" efekat */
 @keyframes flipPrice {
-  0% { transform: rotateX(0deg); opacity: 1;}
-  30% { transform: rotateX(45deg); opacity: 0.3;}
-  75% { transform: rotateX(0deg); opacity: 1;}
-  100% { transform: rotateX(0deg); opacity: 1;}
+  0% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  30% {
+    transform: rotateX(45deg);
+    opacity: 0.3;
+  }
+  75% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: rotateX(0deg);
+    opacity: 1;
+  }
 }
-.animate-flipPrice { animation: flipPrice 0.7s cubic-bezier(.63,.02,0,1); }
+.animate-flipPrice {
+  animation: flipPrice 0.7s cubic-bezier(0.63, 0.02, 0, 1);
+}

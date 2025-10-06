@@ -1,5 +1,17 @@
 // components/PasswordResetForm.jsx
+// Komponenta za resetovanje lozinke korisnika putem Firebase Authentication
+// Koristi oobCode iz URL parametara za verifikaciju zahteva
+// Prikazuje formu za unos nove lozinke i potvrdu lozinke
+// Validira jačinu lozinke i poklapanje lozinki
+// Prikazuje poruke o greškama i uspehu
+// Nakon uspešnog resetovanja, preusmerava korisnika na stranicu za prijavu
+// Koristi framer-motion za animacije i AnimatedInput za stilizovane inpute
+// Koristi React Router za navigaciju i čitanje URL parametara
+// Koristi Firebase Authentication metode: verifyPasswordResetCode i confirmPasswordReset
+// Props: nema (uzima oobCode iz URL-a)
 import { useState, useEffect } from "react";
+
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { KeyRound, Eye, EyeOff, CheckCircle, AlertCircle } from "lucide-react";
 import { confirmPasswordReset, verifyPasswordResetCode } from "firebase/auth";
@@ -10,7 +22,7 @@ import AnimatedInput from "../UI/AnimatedInput";
 const PasswordResetForm = () => {
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
-  
+
   const [oobCode, setOobCode] = useState("");
   const [email, setEmail] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -25,14 +37,14 @@ const PasswordResetForm = () => {
     hasUpper: /[A-Z]/.test(newPassword),
     hasLower: /[a-z]/.test(newPassword),
     hasNumber: /\d/.test(newPassword),
-    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword)
+    hasSpecial: /[!@#$%^&*(),.?":{}|<>]/.test(newPassword),
   };
 
   const isStrongPassword = Object.values(passwordStrength).every(Boolean);
   const passwordsMatch = newPassword === confirmPassword;
 
   useEffect(() => {
-    const code = searchParams.get('oobCode');
+    const code = searchParams.get("oobCode");
     const mode = searchParams.get("mode");
     // Ako nije resetPassword - samo ignoriši
     if (mode !== "resetPassword" || !code) {
@@ -50,7 +62,7 @@ const PasswordResetForm = () => {
       const email = await verifyPasswordResetCode(auth, code);
       setEmail(email);
       setVerifying(false);
-    } catch (err) {
+    } catch {
       setError("Kod je istekao ili nije valjan");
       setVerifying(false);
     }
@@ -58,7 +70,7 @@ const PasswordResetForm = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!isStrongPassword) {
       setError("Lozinka ne ispunjava sve uslove");
       return;
@@ -76,7 +88,7 @@ const PasswordResetForm = () => {
       await confirmPasswordReset(auth, oobCode, newPassword);
       setSuccess(true);
       setTimeout(() => {
-        navigate('/prodavnica/prijava');
+        navigate("/prodavnica/prijava");
       }, 3000);
     } catch (err) {
       setError("Greška pri resetovanju lozinke: " + err.message);
@@ -93,7 +105,9 @@ const PasswordResetForm = () => {
           className="bg-white rounded-3xl shadow-2xl p-8 text-center"
         >
           <div className="w-16 h-16 border-4 border-bluegreen border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-800">Verifikujem kod...</h3>
+          <h3 className="text-xl font-semibold text-gray-800">
+            Verifikujem kod...
+          </h3>
         </motion.div>
       </div>
     );
@@ -111,7 +125,7 @@ const PasswordResetForm = () => {
           <h3 className="text-xl font-semibold text-gray-800 mb-2">Greška</h3>
           <p className="text-gray-600 mb-6">{error}</p>
           <button
-            onClick={() => navigate('/prodavnica/prijava')}
+            onClick={() => navigate("/prodavnica/prijava")}
             className="px-6 py-3 bg-bluegreen text-white font-semibold rounded-xl hover:bg-bluegreen/90 transition-colors"
           >
             Nazad na prijavu
@@ -132,7 +146,8 @@ const PasswordResetForm = () => {
           <CheckCircle size={64} className="text-green-500 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-800 mb-2">Uspešno!</h3>
           <p className="text-gray-600 mb-6">
-            Lozinka je uspešno resetovana. Preusmeriću vas na stranicu za prijavu...
+            Lozinka je uspešno resetovana. Preusmeriću vas na stranicu za
+            prijavu...
           </p>
           <div className="w-8 h-8 border-2 border-bluegreen border-t-transparent rounded-full animate-spin mx-auto" />
         </motion.div>
@@ -180,17 +195,28 @@ const PasswordResetForm = () => {
               animate={{ opacity: 1, height: "auto" }}
               className="space-y-2"
             >
-              <p className="text-sm font-medium text-gray-700">Jačina lozinke:</p>
+              <p className="text-sm font-medium text-gray-700">
+                Jačina lozinke:
+              </p>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 {Object.entries({
                   "Najmanje 8 karaktera": passwordStrength.hasLength,
                   "Veliko slovo": passwordStrength.hasUpper,
                   "Malo slovo": passwordStrength.hasLower,
-                  "Broj": passwordStrength.hasNumber,
-                  "Specijalni karakter": passwordStrength.hasSpecial
+                  Broj: passwordStrength.hasNumber,
+                  "Specijalni karakter": passwordStrength.hasSpecial,
                 }).map(([label, met]) => (
-                  <div key={label} className={`flex items-center gap-1 ${met ? 'text-green-600' : 'text-gray-400'}`}>
-                    <div className={`w-2 h-2 rounded-full ${met ? 'bg-green-500' : 'bg-gray-300'}`} />
+                  <div
+                    key={label}
+                    className={`flex items-center gap-1 ${
+                      met ? "text-green-600" : "text-gray-400"
+                    }`}
+                  >
+                    <div
+                      className={`w-2 h-2 rounded-full ${
+                        met ? "bg-green-500" : "bg-gray-300"
+                      }`}
+                    />
                     {label}
                   </div>
                 ))}
@@ -206,8 +232,14 @@ const PasswordResetForm = () => {
             onChange={(e) => setConfirmPassword(e.target.value)}
             placeholder="Ponovo unesite lozinku"
             icon={KeyRound}
-            error={confirmPassword && !passwordsMatch ? "Lozinke se ne poklapaju" : ""}
-            success={confirmPassword && passwordsMatch ? "Lozinke se poklapaju" : ""}
+            error={
+              confirmPassword && !passwordsMatch
+                ? "Lozinke se ne poklapaju"
+                : ""
+            }
+            success={
+              confirmPassword && passwordsMatch ? "Lozinke se poklapaju" : ""
+            }
             required
           />
 
@@ -242,7 +274,7 @@ const PasswordResetForm = () => {
 
         <div className="mt-6 text-center">
           <button
-            onClick={() => navigate('/prodavnica/prijava')}
+            onClick={() => navigate("/prodavnica/prijava")}
             className="text-bluegreen text-sm font-medium hover:underline"
           >
             ← Nazad na prijavu

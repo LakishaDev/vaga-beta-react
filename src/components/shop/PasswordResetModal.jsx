@@ -1,5 +1,12 @@
 // components/PasswordResetModal.jsx
+// Modal za resetovanje lozinke korisnika putem email-a
+// Koristi Firebase Authentication za slanje email-a za reset lozinke
+// Prikazuje formu za unos email adrese i dugme za slanje
+// Prikazuje poruke o greškama i uspehu
+// Koristi framer-motion za animacije i AnimatedInput za stilizovane inpute
+// Props: isOpen (boolean), onClose (function)
 import { useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { KeyRound, Mail, X, CheckCircle } from "lucide-react";
 import AnimatedInput from "../UI/AnimatedInput";
@@ -22,7 +29,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
 
   const handleSendReset = async (e) => {
     e.preventDefault();
-    
+
     if (!email) {
       setError("Unesite email adresu");
       return;
@@ -36,13 +43,13 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
       setSuccess(true);
     } catch (err) {
       switch (err.code) {
-        case 'auth/user-not-found':
+        case "auth/user-not-found":
           setError("Nalog sa ovom email adresom ne postoji");
           break;
-        case 'auth/invalid-email':
+        case "auth/invalid-email":
           setError("Neispravna email adresa");
           break;
-        case 'auth/too-many-requests':
+        case "auth/too-many-requests":
           setError("Previše zahteva. Pokušajte ponovo kasnije");
           break;
         default:
@@ -66,9 +73,9 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
             initial={{ scale: 0.8, opacity: 0, y: 50 }}
             animate={{ scale: 1, opacity: 1, y: 0 }}
             exit={{ scale: 0.8, opacity: 0, y: 50 }}
-            transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+            transition={{ type: "spring", damping: 25, stiffness: 300 }}
             className="bg-white rounded-3xl shadow-2xl w-full max-w-md overflow-hidden"
-            onClick={e => e.stopPropagation()}
+            onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
             <div className="bg-gradient-to-r from-blue-500 to-bluegreen px-6 py-4 text-white">
@@ -79,7 +86,9 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">Reset lozinke</h3>
-                    <p className="text-blue-100 text-sm">Resetujte vašu lozinku</p>
+                    <p className="text-blue-100 text-sm">
+                      Resetujte vašu lozinku
+                    </p>
                   </div>
                 </div>
                 <button
@@ -107,7 +116,8 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                       Zaboravili ste lozinku?
                     </h4>
                     <p className="text-gray-600 text-sm">
-                      Unesite vašu email adresu i poslaćemo vam link za reset lozinke.
+                      Unesite vašu email adresu i poslaćemo vam link za reset
+                      lozinke.
                     </p>
                   </div>
 
@@ -158,7 +168,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                   <div className="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto">
                     <CheckCircle size={40} className="text-green-500" />
                   </div>
-                  
+
                   <div>
                     <h4 className="text-xl font-bold text-gray-800 mb-2">
                       Email poslat!
@@ -172,7 +182,8 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
 
                   <div className="bg-blue-50 border border-blue-200 rounded-xl p-4">
                     <p className="text-blue-800 text-sm">
-                      💡 Ako ne vidite email, proverite spam folder ili pokušajte ponovo.
+                      💡 Ako ne vidite email, proverite spam folder ili
+                      pokušajte ponovo.
                     </p>
                   </div>
 

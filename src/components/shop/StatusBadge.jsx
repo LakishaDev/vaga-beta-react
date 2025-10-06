@@ -1,24 +1,52 @@
-import { FaRegClock, FaCheckCircle, FaTruck, FaSpinner, FaExclamationCircle } from "react-icons/fa";
+// components/shop/StatusBadge.jsx
+// Komponenta koja prikazuje bedž sa statusom narudžbine
+// Prikazuje različite boje i ikone za različite statuse
+// status: "primljeno", "u obradi", "poslato", "završeno", "otkazano"
+// Koristi react-icons za ikone
+// Ako je status nepoznat ili nije prosleđen, prikazuje "Nepoznat" sa sivom bojom
+// i ikonom za učitavanje
+// Props: status (string)
+import {
+  FaRegClock,
+  FaCheckCircle,
+  FaTruck,
+  FaSpinner,
+  FaExclamationCircle,
+} from "react-icons/fa";
 
 export default function StatusBadge({ status }) {
   return (
-    <span className={`px-2 py-1 rounded-full text-xs font-bold flex items-center gap-2 shadow transition-all duration-300
-      ${status === "završeno" ? "bg-green-100 text-green-700"
-       : status === "poslato" ? "bg-indigo-100 text-indigo-700"
-       : status === "u obradi" ? "bg-yellow-100 text-yellow-800"
-       : status === "otkazano" ? "bg-red-100 text-red-700"
-       : "bg-gray-100 text-gray-700"}`}>
-      {status === "završeno" && <FaCheckCircle className="inline text-green-500" />}
+    <span
+      className={`px-2 py-1 rounded-full text-xs font-bold flex items-center gap-2 shadow transition-all duration-300
+      ${
+        status === "završeno"
+          ? "bg-green-100 text-green-700"
+          : status === "poslato"
+          ? "bg-indigo-100 text-indigo-700"
+          : status === "u obradi"
+          ? "bg-yellow-100 text-yellow-800"
+          : status === "otkazano"
+          ? "bg-red-100 text-red-700"
+          : "bg-gray-100 text-gray-700"
+      }`}
+    >
+      {status === "završeno" && (
+        <FaCheckCircle className="inline text-green-500" />
+      )}
       {status === "poslato" && <FaTruck className="inline text-indigo-500" />}
-      {status === "u obradi" && <FaRegClock className="inline text-yellow-500 animate-pulse" />}
-      {status === "otkazano" && <FaExclamationCircle className="inline text-red-500" />}
+      {status === "u obradi" && (
+        <FaRegClock className="inline text-yellow-500 animate-pulse" />
+      )}
+      {status === "otkazano" && (
+        <FaExclamationCircle className="inline text-red-500" />
+      )}
       {!status && <FaSpinner className="inline animate-spin text-gray-500" />}
       {{
-        "primljeno": "Primljeno",
+        primljeno: "Primljeno",
         "u obradi": "U obradi",
-        "poslato": "Poslato",
-        "završeno": "Završeno",
-        "otkazano": "Otkazano"
+        poslato: "Poslato",
+        završeno: "Završeno",
+        otkazano: "Otkazano",
       }[status] || "Nepoznat"}
     </span>
   );

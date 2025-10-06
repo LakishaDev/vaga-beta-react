@@ -1,3 +1,10 @@
+// components/shop/EmailVerifiedSuccess.jsx
+// Komponenta koja prikazuje uspešnu verifikaciju email adrese
+// Prikazuje se nakon što korisnik uspešno verifikuje email
+// Prikazuje poruku sa email adresom i zahvalom
+// props: email (verifikovana email adresa)
+
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 import { ShieldCheck, Sparkle, Mail } from "lucide-react";
 
@@ -18,10 +25,15 @@ export default function EmailVerifiedSuccess({ email }) {
         transition={{ duration: 1.2, delay: 0.4 }}
         className="absolute inset-0 pointer-events-none"
       >
-        <svg width="100%" height="100%" viewBox="0 0 300 80" className="w-full h-16">
-          <Sparkle x={45} y={20} size={16} color="#08cf6a"/>
-          <Sparkle x={240} y={38} size={22} color="#0ea5e9"/>
-          <Sparkle x={150} y={58} size={20} color="#22d3ee"/>
+        <svg
+          width="100%"
+          height="100%"
+          viewBox="0 0 300 80"
+          className="w-full h-16"
+        >
+          <Sparkle x={45} y={20} size={16} color="#08cf6a" />
+          <Sparkle x={240} y={38} size={22} color="#0ea5e9" />
+          <Sparkle x={150} y={58} size={20} color="#22d3ee" />
         </svg>
       </motion.div>
 

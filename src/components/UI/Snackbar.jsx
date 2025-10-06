@@ -1,3 +1,15 @@
+// components/UI/Snackbar.jsx
+// Komponenta za prikaz snackbar poruke u donjem desnom uglu ekrana
+// Prikazuje poruku sa ikonama za različite tipove (success, error, info, custom)
+// Poruka se automatski zatvara nakon 4 sekunde ili klikom na dugme za zatvaranje
+// Props:
+// - message: tekst poruke
+// - show: boolean koji kontroliše vidljivost poruke
+// - onClose: funkcija koja se poziva pri zatvaranju poruke
+// - id: jedinstveni identifikator poruke (koristi se pri zatvaranju)
+// - type: tip poruke (success, error, info, custom) - utiče na boju i ikonu
+// Koristi framer-motion za animacije ulaska i izlaska
+// Koristi lucide-react za ikone
 import { useEffect, useState } from "react";
 import { X, CheckCircle2, AlertTriangle, Info, Sparkle } from "lucide-react";
 
@@ -5,10 +17,16 @@ const iconMap = {
   success: <CheckCircle2 size={22} />,
   error: <AlertTriangle size={22} />,
   info: <Info size={22} />,
-  custom: <Sparkle size={22} />
+  custom: <Sparkle size={22} />,
 };
 
-export default function Snackbar({ message, show, onClose, id, type = "info" }) {
+export default function Snackbar({
+  message,
+  show,
+  onClose,
+  id,
+  type = "info",
+}) {
   const [exiting, setExiting] = useState(false);
 
   const icon = iconMap[type] ?? iconMap["info"];
@@ -39,10 +57,18 @@ export default function Snackbar({ message, show, onClose, id, type = "info" }) 
           rounded-xl px-5 py-3 shadow-xl z-50 mb-4
           border-2
           duration-300
-          ${type === "success" ? "from-bluegreen to-sheen border-bluegreen/40" : ""}
+          ${
+            type === "success"
+              ? "from-bluegreen to-sheen border-bluegreen/40"
+              : ""
+          }
           ${type === "error" ? "from-rust to-sheen border-rust/40" : ""}
           ${type === "info" ? "from-sheen to-bluegreen border-sheen/40" : ""}
-          ${type === "custom" ? "from-yellow-300 to-bluegreen border-yellow-300/30" : ""}
+          ${
+            type === "custom"
+              ? "from-yellow-300 to-bluegreen border-yellow-300/30"
+              : ""
+          }
           ${exiting ? "animate-snackbar-exit" : "animate-slidein-left"}
         `}
       >

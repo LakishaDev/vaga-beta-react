@@ -1,9 +1,18 @@
-import { useState } from "react";
+// src/contexts/shop/cart/CartProvider.jsx
+// Kontekst za korpu u prodavnici
+// Možeš koristiti ovaj kontekst za upravljanje stanjem korpe
+// i deljenje podataka o proizvodima u korpi širom aplikacije
+// createContext iz React biblioteke se koristi za kreiranje konteksta
+// Inicijalna vrednost je prazan niz, što znači da nema proizvoda u korpi
+// Koristi useReducer za upravljanje složenijim stanjem korpe
+// Koristi useEffect za učitavanje korpe iz Firebase-a ili localStorage-a
+// Koristi AuthContext za dobijanje informacija o prijavljenom korisniku
+// Ako je korisnik prijavljen, korpa se čuva u Firebase-u, inače u localStorage-u
+// Eksportuj CartProvider komponentu koja obavija decu i pruža kontekst
 import { CartContext } from "./CartContext";
 
 // src/contexts/shop/CartContext.jsx
 import { useReducer, useEffect } from "react";
-import { AuthContext } from "../auth/AuthContext"; // pretpostavljam da imaš AuthContext
 import { CartService } from "../../../services/CartService"; // putanja do CartService
 import { useAuth } from "../../../hooks/useAuth";
 
@@ -11,23 +20,27 @@ import { useAuth } from "../../../hooks/useAuth";
 
 const cartReducer = (state, action) => {
   switch (action.type) {
-    case "SET_CART": return action.payload;
+    case "SET_CART":
+      return action.payload;
     case "ADD_TO_CART": {
-      const exist = state.find(i => i.id === action.payload.id);
+      const exist = state.find((i) => i.id === action.payload.id);
       if (exist) {
-        return state.map(i => i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i);
+        return state.map((i) =>
+          i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i
+        );
       }
       return [...state, { ...action.payload, qty: 1 }];
     }
-    case "REMOVE_FROM_CART": return state.filter(i => i.id !== action.payload);
-    case "CLEAR_CART": return [];
+    case "REMOVE_FROM_CART":
+      return state.filter((i) => i.id !== action.payload);
+    case "CLEAR_CART":
+      return [];
     case "UPDATE_QUANTITY":
-      return state.map(i =>
-        i.id === action.payload.id
-          ? { ...i, qty: action.payload.qty }
-          : i
+      return state.map((i) =>
+        i.id === action.payload.id ? { ...i, qty: action.payload.qty } : i
       );
-    default: return state;
+    default:
+      return state;
   }
 };
 
@@ -43,7 +56,8 @@ export function CartProvider({ children }) {
         dispatch({ type: "SET_CART", payload: cartItems });
       } else {
         const localCart = localStorage.getItem("cart");
-        if (localCart) dispatch({ type: "SET_CART", payload: JSON.parse(localCart) });
+        if (localCart)
+          dispatch({ type: "SET_CART", payload: JSON.parse(localCart) });
         else dispatch({ type: "CLEAR_CART" });
       }
     }
@@ -97,32 +111,35 @@ export function CartProvider({ children }) {
   function getNextCart(type, currentCart, payload) {
     switch (type) {
       case "ADD_TO_CART": {
-        const exist = currentCart.find(i => i.id === payload.id);
+        const exist = currentCart.find((i) => i.id === payload.id);
         if (exist) {
-          return currentCart.map(i => i.id === payload.id ? { ...i, qty: i.qty + 1 } : i);
+          return currentCart.map((i) =>
+            i.id === payload.id ? { ...i, qty: i.qty + 1 } : i
+          );
         }
         return [...currentCart, { ...payload, qty: 1 }];
       }
       case "REMOVE_FROM_CART":
-        return currentCart.filter(i => i.id !== payload);
+        return currentCart.filter((i) => i.id !== payload);
       case "UPDATE_QUANTITY":
-        return currentCart.map(i =>
-          i.id === payload.id
-            ? { ...i, qty: payload.qty }
-            : i
+        return currentCart.map((i) =>
+          i.id === payload.id ? { ...i, qty: payload.qty } : i
         );
-      default: return currentCart;
+      default:
+        return currentCart;
     }
   }
 
   return (
-    <CartContext.Provider value={{
-      cart,
-      addToCart,
-      removeFromCart,
-      clearCart,
-      updateQuantity
-    }}>
+    <CartContext.Provider
+      value={{
+        cart,
+        addToCart,
+        removeFromCart,
+        clearCart,
+        updateQuantity,
+      }}
+    >
       {children}
     </CartContext.Provider>
   );

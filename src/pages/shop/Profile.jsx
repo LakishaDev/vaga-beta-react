@@ -1,9 +1,20 @@
+// src/pages/shop/Profile.jsx
+// Profilna stranica korisnika
+// Prikazuje informacije o korisniku, narudžbine, opcije za izmenu profila, verifikaciju itd.
+// Koristi Firebase za autentifikaciju i Firestore za podatke
+// Stilizovana sa Tailwind CSS
+// Responsive i pristupačna
+// Koristi komponente iz /components i hook iz /hooks
+// Animacije sa Framer Motion
+// Ikonice iz lucide-react
+// Koristi modale za osetljive akcije (brisanje naloga, reset lozinke, detalji narudžbine, verifikacija telefona)
 import { useState, useEffect } from "react";
 import { useUserData } from "../../hooks/useUserData";
 import { updateUserProfile, uploadProfileImage } from "../../utils/userService";
 import { collection, query, where, getDocs, or } from "firebase/firestore";
 import { db, auth } from "../../utils/firebase";
 import { sendEmailVerification } from "firebase/auth";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Mail,

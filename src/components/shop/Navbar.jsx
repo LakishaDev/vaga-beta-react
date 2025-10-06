@@ -1,20 +1,27 @@
+// components/shop/Navbar.jsx
+// Navigaciona traka za prodavnicu
+// Prikazuje linkove ka različitim stranicama, stanje korpe i korisnički nalog
+// Responsive dizajn sa mobilnim menijem
+// Koristi kontekst za korpu i snackbar poruke
+// Koristi Firebase Auth za upravljanje korisničkim nalogom
+
 import { Link, useLocation } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { auth } from "../../utils/firebase";
 import { useNavigate } from "react-router-dom";
-import { 
-  ShoppingCart, 
-  LogIn, 
+import {
+  ShoppingCart,
+  LogIn,
   LogOut,
-  User, 
+  User,
   Boxes,
-  UserCog, 
-  Menu, 
+  UserCog,
+  Menu,
   X,
   Scale,
-  Home
+  Home,
 } from "lucide-react";
 import TypingText from "../UI/TypingText";
 
@@ -60,13 +67,21 @@ export default function Navbar() {
     ${location.pathname === path ? "scale-x-100" : ""}`;
 
   return (
-    <nav className={`bg-midnight/80 ${!mobileMenuOpen && "backdrop-blur-sm"} text-white flex items-center justify-between px-4 sm:px-8 py-4 shadow-lg sticky top-0 z-50 font-sans`} style={{ fontFamily: "'Geist','Inter',sans-serif" }}>
+    <nav
+      className={`bg-midnight/80 ${
+        !mobileMenuOpen && "backdrop-blur-sm"
+      } text-white flex items-center justify-between px-4 sm:px-8 py-4 shadow-lg sticky top-0 z-50 font-sans`}
+      style={{ fontFamily: "'Geist','Inter',sans-serif" }}
+    >
       {/* Logo/brand */}
       <Link
         to="/prodavnica"
         className="font-extrabold text-2xl sm:text-3xl tracking-wider animate-pulse uppercase bg-gradient-to-tr from-bluegreen via-sheen to-midnight bg-clip-text text-transparent flex items-center gap-2"
         tabIndex={0}
-        style={{ fontFamily: "'Geist','Inter',sans-serif", letterSpacing: "-0.01em" }}
+        style={{
+          fontFamily: "'Geist','Inter',sans-serif",
+          letterSpacing: "-0.01em",
+        }}
       >
         <Scale size={28} className="mb-0.5 mr-1 text-bluegreen" />
         Vaga Beta Shop
@@ -85,18 +100,24 @@ export default function Navbar() {
       <div className="hidden sm:flex gap-4 lg:gap-7 items-center">
         {/* Home link */}
         <Link to="/" className={navLinkClass("/")} aria-label="Početna">
-          <Home size={20}/>
+          <Home size={20} />
           Početna
           <span className={underlineClass("/")} />
         </Link>
-        <Link to="/prodavnica/proizvodi" className={navLinkClass("/prodavnica/proizvodi")}>
-          <Boxes size={20}/>
+        <Link
+          to="/prodavnica/proizvodi"
+          className={navLinkClass("/prodavnica/proizvodi")}
+        >
+          <Boxes size={20} />
           Proizvodi
           <span className={underlineClass("/prodavnica/proizvodi")}></span>
         </Link>
-        <Link to="/prodavnica/korpa" className={`${navLinkClass("/prodavnica/korpa")}`}>
+        <Link
+          to="/prodavnica/korpa"
+          className={`${navLinkClass("/prodavnica/korpa")}`}
+        >
           <span className="flex items-center">
-            <ShoppingCart size={20}/>
+            <ShoppingCart size={20} />
             Korpa
             {cartCount > 0 && (
               <span className="ml-1 animate-bounce absolute -top-3 -right-4 bg-rust text-white rounded-full h-5 w-5 flex items-center justify-center text-xs shadow-lg font-bold border-2 border-white z-10">
@@ -107,23 +128,34 @@ export default function Navbar() {
           <span className={underlineClass("/prodavnica/korpa")}></span>
         </Link>
         {user && (
-          <Link to="/prodavnica/nalog" className={navLinkClass("/prodavnica/nalog")}>
-            <User size={20}/>
+          <Link
+            to="/prodavnica/nalog"
+            className={navLinkClass("/prodavnica/nalog")}
+          >
+            <User size={20} />
             Nalog
             <span className={underlineClass("/prodavnica/nalog")}></span>
           </Link>
         )}
         {isAdmin && (
-           <>
-              <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")} onClick={() => setMobileMenuOpen(false)}>
-                <UserCog size={22}/>
-                Admin
-              </Link>
-              <Link to="/prodavnica/porudzbine" className={navLinkClass("/prodavnica/porudzbine")} onClick={() => setMobileMenuOpen(false)}>
-                <UserCog size={22}/>
-                Porudžbine
-              </Link>
-            </>
+          <>
+            <Link
+              to="/prodavnica/admin"
+              className={navLinkClass("/prodavnica/admin")}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <UserCog size={22} />
+              Admin
+            </Link>
+            <Link
+              to="/prodavnica/porudzbine"
+              className={navLinkClass("/prodavnica/porudzbine")}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <UserCog size={22} />
+              Porudžbine
+            </Link>
+          </>
         )}
         {user ? (
           <button
@@ -155,7 +187,10 @@ export default function Navbar() {
           <Link
             to="/prodavnica"
             className="mb-7 font-extrabold text-2xl tracking-wider animate-pulse uppercase bg-gradient-to-tr from-bluegreen via-sheen to-midnight bg-clip-text text-transparent flex items-center gap-2"
-            style={{ fontFamily: "'Geist','Inter',sans-serif", letterSpacing: "-0.01em" }}
+            style={{
+              fontFamily: "'Geist','Inter',sans-serif",
+              letterSpacing: "-0.01em",
+            }}
             tabIndex={0}
             onClick={() => setMobileMenuOpen(false)}
           >
@@ -164,10 +199,12 @@ export default function Navbar() {
               text="Vaga Beta Shop"
               speed={76}
               className="font-extrabold text-2xl tracking-wider animate-pulse uppercase bg-gradient-to-tr from-bluegreen via-sheen to-midnight bg-clip-text text-transparent"
-              style={{ fontFamily: "'Geist','Inter',sans-serif", letterSpacing: "-0.01em" }}
+              style={{
+                fontFamily: "'Geist','Inter',sans-serif",
+                letterSpacing: "-0.01em",
+              }}
             />
           </Link>
-
 
           <Link
             to="/"
@@ -175,17 +212,24 @@ export default function Navbar() {
             onClick={() => setMobileMenuOpen(false)}
             aria-label="Početna"
           >
-            <Home size={22}/>
+            <Home size={22} />
             Početna
           </Link>
 
-
-          <Link to="/prodavnica/proizvodi" className={navLinkClass("/prodavnica/proizvodi")} onClick={() => setMobileMenuOpen(false)}>
-            <Boxes size={22}/>
+          <Link
+            to="/prodavnica/proizvodi"
+            className={navLinkClass("/prodavnica/proizvodi")}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <Boxes size={22} />
             Proizvodi
           </Link>
-          <Link to="/prodavnica/korpa" className={navLinkClass("/prodavnica/korpa")} onClick={() => setMobileMenuOpen(false)}>
-            <ShoppingCart size={22}/>
+          <Link
+            to="/prodavnica/korpa"
+            className={navLinkClass("/prodavnica/korpa")}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <ShoppingCart size={22} />
             Korpa
             {cartCount > 0 && (
               <span className="ml-2 animate-bounce bg-rust text-white rounded-full h-6 w-6 flex items-center justify-center text-sm font-bold border-2 border-white z-10">
@@ -193,40 +237,52 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link to="/prodavnica/nalog" className={navLinkClass("/prodavnica/nalog")} onClick={() => setMobileMenuOpen(false)}>
-            <User size={22}/>
+          <Link
+            to="/prodavnica/nalog"
+            className={navLinkClass("/prodavnica/nalog")}
+            onClick={() => setMobileMenuOpen(false)}
+          >
+            <User size={22} />
             Nalog
           </Link>
           {isAdmin && (
             <>
-              <Link to="/prodavnica/admin" className={navLinkClass("/prodavnica/admin")} onClick={() => setMobileMenuOpen(false)}>
-                <UserCog size={22}/>
+              <Link
+                to="/prodavnica/admin"
+                className={navLinkClass("/prodavnica/admin")}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserCog size={22} />
                 Admin
               </Link>
-              <Link to="/prodavnica/porudzbine" className={navLinkClass("/prodavnica/porudzbine")} onClick={() => setMobileMenuOpen(false)}>
-                <UserCog size={22}/>
+              <Link
+                to="/prodavnica/porudzbine"
+                className={navLinkClass("/prodavnica/porudzbine")}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <UserCog size={22} />
                 Porudžbine
               </Link>
             </>
           )}
-           {user ? (
-          <button
-            onClick={handleLogout}
-            className="bg-rust rounded-xl px-3 py-1 text-white font-semibold hover:bg-red-600 focus:ring-2 focus:ring-red-500 transition shadow-md hover:scale-105 active:scale-95 flex items-center gap-1"
-          >
-            <LogOut size={20} />
-            Odjavi se
-          </button>
-        ) : (
-          <Link
-            to="/prodavnica/prijava"
-            className="bg-sheen rounded-xl px-5 py-2 text-white font-semibold hover:bg-bluegreen shadow-md hover:scale-105 active:scale-95 transition flex items-center gap-2 w-full max-w-[210px] justify-center"
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <LogIn size={22}/>
-            Prijava
-          </Link>
-        )}
+          {user ? (
+            <button
+              onClick={handleLogout}
+              className="bg-rust rounded-xl px-3 py-1 text-white font-semibold hover:bg-red-600 focus:ring-2 focus:ring-red-500 transition shadow-md hover:scale-105 active:scale-95 flex items-center gap-1"
+            >
+              <LogOut size={20} />
+              Odjavi se
+            </button>
+          ) : (
+            <Link
+              to="/prodavnica/prijava"
+              className="bg-sheen rounded-xl px-5 py-2 text-white font-semibold hover:bg-bluegreen shadow-md hover:scale-105 active:scale-95 transition flex items-center gap-2 w-full max-w-[210px] justify-center"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <LogIn size={22} />
+              Prijava
+            </Link>
+          )}
         </div>
       </div>
     </nav>

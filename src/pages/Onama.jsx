@@ -1,3 +1,17 @@
+// src/pages/Onama.jsx
+// O nama stranica sajta
+// Predstavlja Vaga Beta firmu, njene usluge, tim i dokumentaciju
+// Stilizovana sa Tailwind CSS
+// Responsive i pristupačna
+// Koristi ikone iz react-icons za vizuelnu podršku
+// Animacije: fadein, fadeup, pop, slidein-left, slidein-right, bounceInDown, fadeInUpBig
+// Boje iz BOJE objekta
+// Sadrži sekcije: hero, intro, usluge, benefiti, dokumentacija
+// Sve slike su u /public/imgs
+// Ikonice iz react-icons
+// Animacije sa Tailwind CSS i animate.css
+// Koristi ProgressiveImage za optimizovane slike
+// Ikonice iz react-icons
 import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments } from "react-icons/fa";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 

@@ -1,5 +1,19 @@
 // src/components/CheckoutForm.jsx
+// Forma za naplatu sa validacijom i slanjem u Firebase Firestore
+// Koristi AnimatedInput i AnimatedSelect komponente za polja forme
+// Validacija polja pre slanja, prikaz grešaka i uspeha
+// Ako je korisnik prijavljen, neka polja se automatski popunjavaju i zaključavaju
+// Koristi kontekst korpe za dobijanje stavki koje se naručuju
+// Nakon uspešnog slanja, prikazuje poruku o uspehu i čisti korpu
+// Animacije sa Framer Motion za glatke tranzicije
+// Responsive dizajn sa Tailwind CSS
+// Ikonice iz lucide-react
+// Pretpostavlja se da je Firebase već inicijalizovan u utils/firebase.js
+// i da postoji CartContext za upravljanje stanjem korpe
+// i useUserData hook za dobijanje podataka o korisniku
+
 import { useState, useContext } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { db } from "../../utils/firebase";
@@ -15,10 +29,14 @@ import {
   Hash,
   MapPin,
   AlertTriangle,
-  CheckCircle
+  CheckCircle,
 } from "lucide-react";
 import AnimatedSelect from "../../components/UI/AnimatedSelect";
 
+import { useEffect } from "react";
+import { auth } from "../../utils/firebase";
+import { useUserData } from "../../hooks/useUserData"; // opcionalno ako želiš i ime/prezime/adresu sa profila
+import { Info } from "lucide-react";
 
 const initialValues = {
   tip: "fizicko",
@@ -30,28 +48,24 @@ const initialValues = {
   telefon: "",
   firma: "",
   pib: "",
-  matbr: ""
+  matbr: "",
 };
 
 const validators = {
-  ime: v => v.trim().length >= 2 || "Unesite validno ime",
-  prezime: v => v.trim().length >= 2 || "Unesite validno prezime",
-  adresa: v => v.trim().length > 3 || "Unesite validnu adresu",
-  grad: v => v.trim().length > 1 || "Unesite validan grad",
-  email: v =>
-    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || "Unesite validan email",
-  telefon: v =>
-    /^(\+?\d{6,18})$/.test(v.replace(/ /g, "")) || "Unesite validan telefon"
+  ime: (v) => v.trim().length >= 2 || "Unesite validno ime",
+  prezime: (v) => v.trim().length >= 2 || "Unesite validno prezime",
+  adresa: (v) => v.trim().length > 3 || "Unesite validnu adresu",
+  grad: (v) => v.trim().length > 1 || "Unesite validan grad",
+  email: (v) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v) || "Unesite validan email",
+  telefon: (v) =>
+    /^(\+?\d{6,18})$/.test(v.replace(/ /g, "")) || "Unesite validan telefon",
 };
 
 const firmValidators = {
-  firma: v => v.trim().length >= 2 || "Unesite naziv firme",
-  pib: v =>
-    /^\d{8,15}$/.test(v) || "PIB mora imati 8-15 cifara",
-  matbr: v =>
-    /^\d{8,15}$/.test(v) || "Matični broj mora imati 8-15 cifara"
+  firma: (v) => v.trim().length >= 2 || "Unesite naziv firme",
+  pib: (v) => /^\d{8,15}$/.test(v) || "PIB mora imati 8-15 cifara",
+  matbr: (v) => /^\d{8,15}$/.test(v) || "Matični broj mora imati 8-15 cifara",
 };
-
 
 export default function CheckoutForm() {
   const { cart, clearCart } = useContext(CartContext);
@@ -62,36 +76,107 @@ export default function CheckoutForm() {
   const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  // UVEK pozivaš hook, bez uslova:
+  const hookResult = useUserData(); // ili useUserData() samo ako importuješ sigurno
+
+  // const user = hookResult?.user ?? auth.currentUser ?? null;
+  const userData = hookResult?.userData ?? null;
+
+  // Da li je korisnik prijavljen putem telefona (ima phoneNumber) ili email-a
+  const isLoggedIn = !!auth.currentUser;
+
+  useEffect(() => {
+    if (!isLoggedIn) return;
+
+    setValues((prev) => {
+      const next = { ...prev };
+
+      // Preuzmi ime/prezime iz userData (ako postoji)
+      if (userData?.ime && !prev.ime) next.ime = userData.ime;
+      if (userData?.prezime && !prev.prezime) next.prezime = userData.prezime;
+
+      // Preuzmi adresu/grad ako postoje u userData
+      if (userData?.adresa && !prev.adresa) next.adresa = userData.adresa;
+      if (userData?.grad && !prev.grad) next.grad = userData.grad;
+
+      // Email i/ili telefon iz auth.currentUser
+      if (auth.currentUser?.email) next.email = auth.currentUser.email;
+      if (auth.currentUser?.phoneNumber)
+        next.telefon = auth.currentUser.phoneNumber;
+
+      return next;
+    });
+  }, [isLoggedIn, userData]);
+
+  const primaryViaEmail = !!auth.currentUser?.email;
+  const primaryViaPhone =
+    !!auth.currentUser?.phoneNumber && !auth.currentUser?.email;
+
+  // Polja koja zaključavamo (email ili telefon)
+  const lockEmail = primaryViaEmail;
+  const lockPhone = primaryViaPhone;
+
   const kupacOptions = [
-    { value: "fizicko", label: "Fizičko lice", icon: User, description: "Za privatne korisnike" },
-    { value: "pravno", label: "Pravno lice", icon: Building2, description: "Za kompanije i firme" },
+    {
+      value: "fizicko",
+      label: "Fizičko lice",
+      icon: User,
+      description: "Za privatne korisnike",
+    },
+    {
+      value: "pravno",
+      label: "Pravno lice",
+      icon: Building2,
+      description: "Za kompanije i firme",
+    },
     // { value: "vip", label: "VIP korisnik", icon: Star, description: "Pristup premium pogodnostima" },
     // { value: "korporativni", label: "Korporativni nalog", icon: Briefcase }
   ];
 
+  const AutoFillInfo = ({ text }) => (
+    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-5">
+      <Info size={16} className="text-bluegreen shrink-0" />
+      <span className="leading-tight">{text}</span>
+    </div>
+  );
+
+  const DisabledReason = ({ reason }) => (
+    <div
+      className="text-xs text-gray-500 mt-1 flex items-center gap-1"
+      title={reason}
+    >
+      <Info size={14} className="text-gray-400" />
+      <span>{reason}</span>
+    </div>
+  );
+
   // Responsive container animation variants
   const containerVariant = {
     hidden: { opacity: 0, y: 32 },
-    visible: { opacity: 1, y: 0, transition: { type: "spring", duration: 0.9, bounce: 0.25 } }
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { type: "spring", duration: 0.9, bounce: 0.25 },
+    },
   };
 
   // Handle input change
-  const handleChange = e => {
+  const handleChange = (e) => {
     setValues({ ...values, [e.target.name]: e.target.value });
     setTouched({ ...touched, [e.target.name]: true });
   };
 
   // Field validation on blur
-  const validateField = name => {
+  const validateField = (name) => {
     let validator = validators[name];
     if (values.tip === "pravno" && firmValidators[name]) {
       validator = firmValidators[name];
     }
     if (validator) {
       const valid = validator(values[name]);
-      setFieldErrors(err => ({
+      setFieldErrors((err) => ({
         ...err,
-        [name]: valid === true ? "" : valid
+        [name]: valid === true ? "" : valid,
       }));
     }
   };
@@ -99,12 +184,12 @@ export default function CheckoutForm() {
   // Validate all fields before submit
   const validateForm = () => {
     const errors = {};
-    Object.keys(validators).forEach(field => {
+    Object.keys(validators).forEach((field) => {
       const valid = validators[field](values[field]);
       if (valid !== true) errors[field] = valid;
     });
     if (values.tip === "pravno") {
-      Object.keys(firmValidators).forEach(field => {
+      Object.keys(firmValidators).forEach((field) => {
         const valid = firmValidators[field](values[field]);
         if (valid !== true) errors[field] = valid;
       });
@@ -113,7 +198,7 @@ export default function CheckoutForm() {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     if (!validateForm()) {
@@ -127,7 +212,7 @@ export default function CheckoutForm() {
         ...values,
         cart,
         createdAt: serverTimestamp(),
-        status: "primljeno"
+        status: "primljeno",
       });
       setSuccess(true);
       clearCart();
@@ -192,73 +277,113 @@ export default function CheckoutForm() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AnimatedInput
-                label="Ime"
-                name="ime"
-                required
-                icon={User}
-                value={values.ime}
-                error={touched.ime && fieldErrors.ime}
-                onChange={handleChange}
-                onBlur={() => validateField("ime")}
-             />
-              <AnimatedInput
-                label="Prezime"
-                name="prezime"
-                required
-                icon={User}
-                value={values.prezime}
-                error={touched.prezime && fieldErrors.prezime}
-                onChange={handleChange}
-                onBlur={() => validateField("prezime")}
-              />
+              <div className="flex flex-col gap-2">
+                {userData?.ime && (
+                  <AutoFillInfo text="Ime je preuzeto sa vašeg naloga. Možete izmeniti pre slanja." />
+                )}
+                <AnimatedInput
+                  label="Ime"
+                  name="ime"
+                  required
+                  icon={User}
+                  value={values.ime}
+                  error={touched.ime && fieldErrors.ime}
+                  onChange={handleChange}
+                  onBlur={() => validateField("ime")}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {userData?.prezime && (
+                  <AutoFillInfo text="Prezime je preuzeto sa vašeg naloga. Možete izmeniti pre slanja." />
+                )}
+                <AnimatedInput
+                  label="Prezime"
+                  name="prezime"
+                  required
+                  icon={User}
+                  value={values.prezime}
+                  error={touched.prezime && fieldErrors.prezime}
+                  onChange={handleChange}
+                  onBlur={() => validateField("prezime")}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AnimatedInput
-                label="Adresa"
-                name="adresa"
-                required
-                icon={Home}
-                value={values.adresa}
-                error={touched.adresa && fieldErrors.adresa}
-                onChange={handleChange}
-                onBlur={() => validateField("adresa")}
-              />
-              <AnimatedInput
-                label="Grad"
-                name="grad"
-                required
-                icon={MapPin}
-                value={values.grad}
-                error={touched.grad && fieldErrors.grad}
-                onChange={handleChange}
-                onBlur={() => validateField("grad")}
-              />
+              <div className="flex flex-col gap-2">
+                {userData?.adresa && (
+                  <AutoFillInfo text="Adresa je preuzeta sa vašeg naloga. Možete izmeniti pre slanja." />
+                )}
+                <AnimatedInput
+                  label="Adresa"
+                  name="adresa"
+                  required
+                  icon={Home}
+                  value={values.adresa}
+                  error={touched.adresa && fieldErrors.adresa}
+                  onChange={handleChange}
+                  onBlur={() => validateField("adresa")}
+                />
+              </div>
+
+              <div className="flex flex-col gap-2">
+                {userData?.grad && (
+                  <AutoFillInfo text="Grad je preuzet sa vašeg naloga. Možete izmeniti pre slanja." />
+                )}
+                <AnimatedInput
+                  label="Grad"
+                  name="grad"
+                  required
+                  icon={MapPin}
+                  value={values.grad}
+                  error={touched.grad && fieldErrors.grad}
+                  onChange={handleChange}
+                  onBlur={() => validateField("grad")}
+                />
+              </div>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <AnimatedInput
-                label="Email"
-                name="email"
-                required
-                icon={Mail}
-                type="email"
-                value={values.email}
-                error={touched.email && fieldErrors.email}
-                onChange={handleChange}
-                onBlur={() => validateField("email")}
-              />
-              <AnimatedInput
-                label="Telefon"
-                name="telefon"
-                required
-                icon={Phone}
-                value={values.telefon}
-                error={touched.telefon && fieldErrors.telefon}
-                onChange={handleChange}
-                onBlur={() => validateField("telefon")}
-              />
+              <div className="flex flex-col gap-2">
+                {isLoggedIn && values.email && (
+                  <AutoFillInfo text="Email je preuzet sa vašeg naloga. Ako ste prijavljeni putem email-a, ovo polje je zaključano." />
+                )}
+                <AnimatedInput
+                  label="Email"
+                  name="email"
+                  required
+                  icon={Mail}
+                  type="email"
+                  value={values.email}
+                  error={touched.email && fieldErrors.email}
+                  onChange={handleChange}
+                  onBlur={() => validateField("email")}
+                  disabled={lockEmail}
+                />
+                {lockEmail && (
+                  <DisabledReason reason="Polje je zaključano jer ste prijavljeni email-om. Email je primarni identifikator i koristi se da se narudžbina poveže sa vašim nalogom." />
+                )}
+              </div>
+              <div className="flex flex-col gap-2">
+                {isLoggedIn && values.telefon && (
+                  <AutoFillInfo text="Telefon je preuzet sa vašeg naloga." />
+                )}
+                <AnimatedInput
+                  label="Telefon"
+                  name="telefon"
+                  required
+                  icon={Phone}
+                  value={values.telefon}
+                  error={touched.telefon && fieldErrors.telefon}
+                  onChange={handleChange}
+                  onBlur={() => validateField("telefon")}
+                  disabled={lockPhone}
+                />
+                {lockPhone && (
+                  <DisabledReason reason="Polje je zaključano jer ste prijavljeni telefonom. Telefon je primarni identifikator i koristi se da se narudžbina poveže sa vašim nalogom." />
+                )}
+              </div>
             </div>
 
             {values.tip === "pravno" && (
@@ -297,7 +422,7 @@ export default function CheckoutForm() {
             )}
 
             <AnimatePresence>
-              {(!!error) && (
+              {!!error && (
                 <motion.div
                   key="error"
                   initial={{ opacity: 0, y: -12 }}
@@ -314,7 +439,10 @@ export default function CheckoutForm() {
             <motion.button
               type="submit"
               whileTap={{ scale: 0.97 }}
-              whileHover={{ scale: 1.02, boxShadow: "0px 6px 32px -8px rgba(36,180,190,0.18)" }}
+              whileHover={{
+                scale: 1.02,
+                boxShadow: "0px 6px 32px -8px rgba(36,180,190,0.18)",
+              }}
               disabled={loading}
               className="relative my-2 mx-auto w-full md:w-7/12 text-lg py-3 rounded-xl font-bold tracking-tight bg-gradient-to-r from-bluegreen to-sheen text-white shadow-md hover:shadow-lg transition duration-200 focus:outline-none disabled:opacity-70"
             >

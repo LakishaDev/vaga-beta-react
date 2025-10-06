@@ -1,25 +1,37 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
-
-// import './App.css';
+// src/App.jsx
+// Glavna aplikaciona komponenta
+// Koristi React Router za navigaciju
+// Uključuje rute za Home, Usluge, Kontakt, Onama i Prodavnica
+// Ako je ruta /prodavnica/*, renderuje samo Prodavnica komponentu
+// Inače renderuje Navbar, Footer i glavne stranice
+// Stilizovana sa Tailwind CSS
+// Responsive i pristupačna
+// Koristi React Router v6
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  useLocation,
+} from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Home from "./pages/Home";
-import Proizvodi from "./pages/Proizvodi";
 import Usluge from "./pages/Usluge";
 import Kontakt from "./pages/Kontakt";
 import Onama from "./pages/Onama";
-import Prodavnica from "./Prodavnica"; // putanja po potrebi
+import Prodavnica from "./Prodavnica";
 
 function AppContent() {
   const location = useLocation();
   const isShop = location.pathname.startsWith("/prodavnica");
-  
+
+  // Ako je ruta za prodavnicu, renderuj samo Prodavnica komponentu
   if (isShop) {
-    // Render ONLY shop!
     return <Prodavnica />;
   }
-  // Render site UI
+
+  // Inače renderuj glavne stranice sa Navbar i Footer
   return (
     <>
       <Navbar />
@@ -36,7 +48,7 @@ function AppContent() {
   );
 }
 
-
+// Glavna App komponenta sa Router-om
 function App() {
   return (
     <div className="min-h-screen w-full napredniGradient">

@@ -1,3 +1,13 @@
+// src/pages/shop/VerifyEmailPage.jsx
+// Stranica za verifikaciju email-a
+// Koristi Firebase funkciju applyActionCode
+// Prikazuje Loader dok se verifikacija ne završi
+// Prikazuje poruku o uspehu ili neuspehu
+// Ako je mode=resetPassword, preusmerava na stranicu za reset lozinke
+// Stilizovana sa Tailwind CSS
+// Responsive i pristupačna
+// Koristi React Router za navigaciju i čitanje query parametara
+// Koristi komponente iz /components
 import { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import { applyActionCode } from "firebase/auth";
@@ -15,7 +25,7 @@ export default function VerifyEmailPage() {
     const mode = params.get("mode");
     const oobCode = params.get("oobCode");
     // Ako nije verifyEmail - samo ignoriši
-    if(mode == "resetPassword") {
+    if (mode == "resetPassword") {
       setStatus("resetPassword");
       return;
     }
@@ -26,7 +36,7 @@ export default function VerifyEmailPage() {
     applyActionCode(auth, oobCode)
       .then(() => {
         setStatus("success");
-        auth.currentUser.reload()
+        auth.currentUser.reload();
       })
       .catch(() => {
         setStatus("fail");
@@ -34,15 +44,18 @@ export default function VerifyEmailPage() {
   }, [location.search]);
 
   if (status === "resetPassword") {
-    navigate('/prodavnica/reset-password' + location.search);
+    navigate("/prodavnica/reset-password" + location.search);
     return null;
   }
   if (status === "loading") return <Loader />;
-  if (status === "fail") return (
-    <div className="flex flex-col items-center my-16">
-      <span className="text-red-600 font-bold text-2xl">Neuspešna verifikacija.</span>
-    </div>
-  );
+  if (status === "fail")
+    return (
+      <div className="flex flex-col items-center my-16">
+        <span className="text-red-600 font-bold text-2xl">
+          Neuspešna verifikacija.
+        </span>
+      </div>
+    );
   return (
     <EmailVerifiedSuccess email={auth.currentUser?.email || "tvoj email"} />
   );

@@ -1,4 +1,11 @@
+// components/shop/PhoneVerifyModal.jsx
+// Modal za verifikaciju broja telefona korisnika putem Firebase Authentication
+// Koristi reCAPTCHA za sigurnost i šalje SMS kod za verifikaciju
+// Koristi framer-motion za animacije otvaranja i zatvaranja
+// Props: open (boolean), onClose (function), user (firebase user object), onSuccess (function nakon uspešne verifikacije)
+
 import { useRef, useState } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   RecaptchaVerifier,
@@ -31,7 +38,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
         "recaptcha-container",
         {
           size: "invisible",
-          callback: (response) => {
+          callback: () => {
             /* reCAPTCHA solved */
           },
         }
@@ -68,7 +75,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
       setConfirmation(confirmationResult);
       setStep("code");
       setMessage({ type: "success", text: "Kod je poslat na broj." });
-    } catch (e) {
+    } catch {
       setMessage({
         type: "error",
         text: "Neuspešno slanje koda! Proveri broj ili pokušaj ponovo.",
@@ -89,7 +96,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
         text: "Broj uspešno verifikovan i povezan!",
       });
       if (onSuccess) onSuccess();
-    } catch (e) {
+    } catch {
       setMessage({
         type: "error",
         text: "Kod je pogrešan ili je istekao. Probajte ponovo.",

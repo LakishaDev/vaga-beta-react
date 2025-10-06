@@ -1,3 +1,12 @@
+// src/utils/firebase.js
+// Firebase konfiguracija i inicijalizacija
+// Uključuje Firestore, Auth, Storage, Analytics, App Check
+// Konfiguracija koristi environment varijable iz .env fajla
+// App Check koristi reCAPTCHA v3
+// Inicijalizacija je podešena za automatsko osvežavanje tokena
+// Uključuje error handling i debug mod za App Check
+// Eksportuje app, db, auth, storage, analytics, appCheck
+// Koristi Firebase v9 modularni SDK
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
@@ -12,17 +21,20 @@ const firebaseConfig = {
   storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
   messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
 export const app = initializeApp(firebaseConfig);
 
 if (import.meta.env.DEV && import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN) {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN = import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
+  self.FIREBASE_APPCHECK_DEBUG_TOKEN =
+    import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
 }
 
 export const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider(import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY),
+  provider: new ReCaptchaV3Provider(
+    import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY
+  ),
   isTokenAutoRefreshEnabled: true,
 });
 

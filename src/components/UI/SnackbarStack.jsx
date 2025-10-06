@@ -1,3 +1,9 @@
+// components/UI/SnackbarStack.jsx
+// Komponenta za prikaz gomile snackbar poruka u donjem desnom uglu ekrana
+// Poruke se prikazuju sa malim zakašnjenjem i animacijom
+// Svaki snackbar se može zatvoriti pojedinačno
+// messages: [{id, message, type, show}, ...]
+// removeSnackbar: funkcija za uklanjanje snackbar poruke po id-u
 import Snackbar from "./Snackbar";
 
 export default function SnackbarStack({ messages, removeSnackbar }) {
