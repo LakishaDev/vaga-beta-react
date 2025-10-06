@@ -380,6 +380,16 @@ export default function Profile() {
                 value={user?.phoneNumber || userData?.telefon}
                 onClick={() => !user?.phoneNumber && setPhoneModalOpen(true)}
               />
+              {!user?.phoneNumber && (
+                <motion.button
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setPhoneModalOpen(true)}
+                  className="text-xs font-semibold text-yellow-600 bg-yellow-100 border border-yellow-300 px-4 py-2 rounded-xl shadow ml-2"
+                >
+                  Poveži/verifikuj telefon — koristi za prijavu!
+                </motion.button>
+              )}
 
               {/* Dugmad za verifikaciju (samo ako nisu verifikovani) */}
               {!user?.emailVerified && (

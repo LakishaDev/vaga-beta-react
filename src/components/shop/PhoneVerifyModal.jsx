@@ -1,6 +1,11 @@
 import { useRef, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { RecaptchaVerifier, signInWithPhoneNumber, updateProfile } from "firebase/auth";
+import {
+  RecaptchaVerifier,
+  linkWithPhoneNumber,
+  signInWithPhoneNumber,
+} from "firebase/auth";
+
 import { auth } from "../../utils/firebase";
 import { Phone, ShieldCheck, Loader2, AlertTriangle } from "lucide-react";
 
@@ -21,10 +26,16 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
 
   const startRecaptcha = () => {
     if (!recaptchaRef.current) {
-      recaptchaRef.current = new RecaptchaVerifier(auth, "recaptcha-container", {
-        size: "invisible",
-        callback: (response) => { /* reCAPTCHA solved */ },
-      });
+      recaptchaRef.current = new RecaptchaVerifier(
+        auth,
+        "recaptcha-container",
+        {
+          size: "invisible",
+          callback: (response) => {
+            /* reCAPTCHA solved */
+          },
+        }
+      );
     }
     return recaptchaRef.current;
   };
@@ -32,14 +43,36 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
   const sendCode = async () => {
     setLoading(true);
     setMessage(null);
+
     try {
       const appVerifier = startRecaptcha();
-      const confirmationResult = await signInWithPhoneNumber(auth, phone, appVerifier);
+
+      let confirmationResult;
+
+      // Ako je korisnik prijavljen: koristi linkWithPhoneNumber za vezivanje broja
+      if (auth.currentUser) {
+        confirmationResult = await linkWithPhoneNumber(
+          auth.currentUser,
+          phone,
+          appVerifier
+        );
+      } else {
+        // Ako nije prijavljen, koristi klasičan login telefonom
+        confirmationResult = await signInWithPhoneNumber(
+          auth,
+          phone,
+          appVerifier
+        );
+      }
+
       setConfirmation(confirmationResult);
       setStep("code");
       setMessage({ type: "success", text: "Kod je poslat na broj." });
     } catch (e) {
-      setMessage({ type: "error", text: "Neuspešno slanje koda! Proveri broj ili pokušaj ponovo." });
+      setMessage({
+        type: "error",
+        text: "Neuspešno slanje koda! Proveri broj ili pokušaj ponovo.",
+      });
     }
     setLoading(false);
   };
@@ -51,10 +84,16 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
       if (!confirmation) throw new Error("Nema potvrde.");
       await confirmation.confirm(code);
       setStep("success");
-      setMessage({ type: "success", text: "Uspešno verifikovan broj!" });
+      setMessage({
+        type: "success",
+        text: "Broj uspešno verifikovan i povezan!",
+      });
       if (onSuccess) onSuccess();
     } catch (e) {
-      setMessage({ type: "error", text: "Kod je pogrešan ili je istekao. Probajte ponovo." });
+      setMessage({
+        type: "error",
+        text: "Kod je pogrešan ili je istekao. Probajte ponovo.",
+      });
     }
     setLoading(false);
   };
@@ -74,17 +113,21 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
           {...MODAL_ANIMATION}
           transition={{ type: "spring", damping: 24, stiffness: 380 }}
           className="w-full max-w-md p-8 bg-white rounded-2xl shadow-2xl relative"
-          onClick={e => e.stopPropagation()}
+          onClick={(e) => e.stopPropagation()}
         >
           <button
             className="absolute right-3 top-3 text-gray-400 hover:text-gray-600"
             onClick={() => {
-              setStep("phone"); setCode(""); setMessage(null); setLoading(false); onClose();
+              setStep("phone");
+              setCode("");
+              setMessage(null);
+              setLoading(false);
+              onClose();
             }}
           >
             &#10005;
           </button>
-          
+
           <h2 className="text-xl font-bold mb-4 flex gap-2 items-center">
             <Phone /> Verifikacija broja telefona
           </h2>
@@ -100,7 +143,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
                 type="tel"
                 value={phone}
                 disabled={loading}
-                onChange={e => setPhone(e.target.value)}
+                onChange={(e) => setPhone(e.target.value)}
                 placeholder="+3816xxxxxx"
                 className="border-2 rounded-lg px-4 py-3 w-full mb-3"
               />
@@ -111,7 +154,11 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
                 disabled={loading || !/^(\+3816)[0-9]{6,9}$/.test(phone)}
                 onClick={sendCode}
               >
-                {loading ? <Loader2 className="animate-spin mr-1" /> : "Pošalji kod"}
+                {loading ? (
+                  <Loader2 className="animate-spin mr-1" />
+                ) : (
+                  "Pošalji kod"
+                )}
               </motion.button>
             </>
           )}
@@ -125,7 +172,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
                 type="text"
                 value={code}
                 disabled={loading}
-                onChange={e => setCode(e.target.value)}
+                onChange={(e) => setCode(e.target.value)}
                 maxLength={6}
                 className="border-2 rounded-lg px-4 py-3 w-full mb-3 font-mono text-lg text-center tracking-widest"
               />
@@ -143,21 +190,48 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
 
           {step === "success" && (
             <div className="text-center py-6">
-              <ShieldCheck size={48} className="mx-auto text-green-500 mb-3 animate-bounce" />
-              <div className="text-xl font-bold text-green-700 mb-2">Verifikacija uspešna!</div>
-              <div className="text-gray-600">Broj je dodat i verifikovan uz tvoj nalog.</div>
+              <ShieldCheck
+                size={48}
+                className="mx-auto text-green-500 mb-3 animate-bounce"
+              />
+              <div className="text-xl font-bold text-green-700 mb-2">
+                Broj je uspešno povezan sa tvoj nalog!
+              </div>
+              <div className="text-gray-600">
+                Sada se možeš prijavljivati i brojem telefona — oba načina vode
+                na isti nalog, iste porudžbine i podatke.
+              </div>
             </div>
           )}
 
           {message && (
-            <div className={`mt-4 p-3 rounded-lg text-base shadow flex items-center gap-2
+            <div
+              className={`mt-4 p-3 rounded-lg text-base shadow flex items-center gap-2
               ${message.type === "success" ? "bg-green-100 text-green-800" : ""}
               ${message.type === "error" ? "bg-red-100 text-red-800" : ""}
-            `}>
-              {message.type === "error" && <AlertTriangle className="w-5 h-5" />}
+            `}
+            >
+              {message.type === "error" && (
+                <AlertTriangle className="w-5 h-5" />
+              )}
               {message.text}
             </div>
           )}
+
+          <div className="mt-6 text-sm text-gray-500 text-center">
+            Kada verifikuješ broj telefona, dobijate:
+            <ul className="mt-2 text-left mx-auto max-w-xs list-disc pl-4">
+              <li>
+                Prijavu i emailom i brojem telefona (isti nalog, podaci i
+                porudžbine)
+              </li>
+              <li>Sigurnosnu rezervu — lakši reset naloga</li>
+              <li>
+                Mogućnost za SMS obaveštenja ili dvofaktorsku autentifikaciju u
+                budućnosti
+              </li>
+            </ul>
+          </div>
         </motion.div>
       </motion.div>
     </AnimatePresence>
