@@ -20,6 +20,7 @@ import Footer from "./components/Footer";
 import VerifyEmailPage from "./pages/shop/VerifyEmailPage";
 import AdminOrders from "./pages/shop/AdminOrders";
 import PasswordResetForm from "./components/shop/PasswordResetForm";
+import { AuthProvider } from "./contexts/shop/auth/AuthProvider";
 
 function Prodavnica() {
   const [user] = useAuthState(auth);
@@ -33,25 +34,25 @@ function Prodavnica() {
 
   return (
     <SnackbarProvider>
-      <CartProvider>
-        
-          <Navbar />
-          <Routes>
-            <Route path="/prodavnica" element={<HeroSection />} />
-            <Route path="/prodavnica/proizvodi" element={<ProductGrid />} />
-            <Route path="/prodavnica/proizvod/:id" element={<ProductDetails />} />
-            <Route path="/prodavnica/korpa" element={<Cart />} />
-            <Route path="/prodavnica/placanje" element={<CheckoutForm />} />
-            <Route path="/prodavnica/prijava" element={<AuthForm />} />
-            <Route path="/prodavnica/admin" element={<AdminPanel />} />
-            <Route path="/prodavnica/nalog" element={<Profile />} />
-            <Route path="/prodavnica/email-verifikovan" element={<VerifyEmailPage />} />
-            <Route path="/prodavnica/porudzbine" element={<AdminOrders />} />
-            <Route path="/prodavnica/reset-password" element={<PasswordResetForm />} />
-          </Routes>
-          <Footer />
-
-      </CartProvider>
+      <AuthProvider>
+        <CartProvider>
+            <Navbar />
+            <Routes>
+              <Route path="/prodavnica" element={<HeroSection />} />
+              <Route path="/prodavnica/proizvodi" element={<ProductGrid />} />
+              <Route path="/prodavnica/proizvod/:id" element={<ProductDetails />} />
+              <Route path="/prodavnica/korpa" element={<Cart />} />
+              <Route path="/prodavnica/placanje" element={<CheckoutForm />} />
+              <Route path="/prodavnica/prijava" element={<AuthForm />} />
+              <Route path="/prodavnica/admin" element={<AdminPanel />} />
+              <Route path="/prodavnica/nalog" element={<Profile />} />
+              <Route path="/prodavnica/email-verifikovan" element={<VerifyEmailPage />} />
+              <Route path="/prodavnica/porudzbine" element={<AdminOrders />} />
+              <Route path="/prodavnica/reset-password" element={<PasswordResetForm />} />
+            </Routes>
+            <Footer />
+        </CartProvider>
+      </AuthProvider>
     </SnackbarProvider>
   );
 }
