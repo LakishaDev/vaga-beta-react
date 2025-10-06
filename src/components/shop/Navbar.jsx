@@ -171,7 +171,7 @@ export default function Navbar() {
             className="bg-sheen rounded-xl px-3 py-1 text-white font-semibold hover:bg-bluegreen focus:ring-2 focus:ring-bluegreen transition shadow-md hover:scale-105 active:scale-95 flex items-center gap-1"
           >
             <LogIn size={20} />
-            Prijava
+            Prijavi se
           </Link>
         )}
       </div>
@@ -237,14 +237,16 @@ export default function Navbar() {
               </span>
             )}
           </Link>
-          <Link
-            to="/prodavnica/nalog"
-            className={navLinkClass("/prodavnica/nalog")}
-            onClick={() => setMobileMenuOpen(false)}
-          >
-            <User size={22} />
-            Nalog
-          </Link>
+          {user && (
+            <Link
+              to="/prodavnica/nalog"
+              className={navLinkClass("/prodavnica/nalog")}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <User size={22} />
+              Nalog
+            </Link>
+          )}
           {isAdmin && (
             <>
               <Link
@@ -280,7 +282,7 @@ export default function Navbar() {
               onClick={() => setMobileMenuOpen(false)}
             >
               <LogIn size={22} />
-              Prijava
+              Prijavi se
             </Link>
           )}
         </div>

@@ -21,6 +21,8 @@ import Usluge from "./pages/Usluge";
 import Kontakt from "./pages/Kontakt";
 import Onama from "./pages/Onama";
 import Prodavnica from "./Prodavnica";
+import Lenis from "lenis";
+import { useEffect } from "react";
 
 function AppContent() {
   const location = useLocation();
@@ -50,6 +52,18 @@ function AppContent() {
 
 // Glavna App komponenta sa Router-om
 function App() {
+  // Inicijalizacija Lenis za glatko skrolovanje
+  useEffect(() => {
+    const lenis = new Lenis({
+      lerp: 0.05, // smoothness (0 - 1)
+      smoothWheel: true, // enables smooth for mouse/touchpad
+      smoothTouch: true, // disables for touch (can enable)
+      autoRaf: true, // automatski animira
+    });
+
+    return () => lenis.destroy();
+  }, []);
+
   return (
     <div className="min-h-screen w-full napredniGradient">
       <Router>

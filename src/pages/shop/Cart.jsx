@@ -45,7 +45,7 @@ export default function Cart() {
   useEffect(() => {
     if (displayedTotal !== total) {
       let frame = 0;
-      const duration = 400;
+      const duration = 70;
       const frames = 20;
       setAnimatingTotal(true);
       const step = (total - displayedTotal) / frames;
@@ -98,11 +98,11 @@ export default function Cart() {
           </div>
         ) : (
           <>
-            <ul className="mb-6 space-y-4 sm:space-y-6 overflow-x-auto">
+            <ul className="mb-6 space-y-4 sm:space-y-6 overflow-hidden animate-cartItem">
               {cart.map((item) => (
                 <li
                   key={item.id}
-                  className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 bg-neutral-50 rounded-xl shadow-sm hover:shadow-md transition-all animate-cartItem
+                  className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 bg-neutral-50 rounded-xl shadow-sm hover:shadow-md transition-all
                     ${
                       animIndex === item.id && animType === "inc"
                         ? "animate-bounceInc"
@@ -112,7 +112,8 @@ export default function Cart() {
                       animIndex === item.id && animType === "dec"
                         ? "animate-bounceDec"
                         : ""
-                    }`}
+                    }
+                    `}
                   onAnimationEnd={() => {
                     setAnimIndex(null);
                     setAnimType("");
@@ -188,13 +189,13 @@ export default function Cart() {
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
               <Link
                 to="/prodavnica/placanje"
-                className="flex items-center justify-center gap-2 bg-sheen text-white px-6 py-2 sm:px-8 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:bg-bluegreen transition-all animate-button scale-100 active:scale-95 text-base sm:text-lg"
+                className="flex items-center justify-center gap-2 bg-sheen text-white px-6 py-2 sm:px-8 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:bg-bluegreen transition-all scale-100 active:scale-95 text-base sm:text-lg"
               >
                 <FaCheckCircle className="text-white" size={18} />
                 Plaćanje
               </Link>
               <button
-                className="flex items-center justify-center gap-2 bg-charcoal text-white px-6 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:bg-gray-700 transition-all animate-button scale-100 active:scale-95 text-base sm:text-lg"
+                className="flex items-center justify-center gap-2 bg-charcoal text-white px-6 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:bg-gray-800 transition-all scale-100 active:scale-95 text-base sm:text-lg"
                 onClick={() => setShowClearModal(true)}
               >
                 <FaTrashAlt />
