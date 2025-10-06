@@ -7,6 +7,7 @@ const AnimatedInput = ({
   label, 
   value, 
   onChange, 
+  onBlur,
   type = "text", 
   placeholder,
   error,
@@ -27,6 +28,17 @@ const AnimatedInput = ({
   
   const handleLabelClick = () => {
     inputRef.current?.focus();
+  };
+
+  const handleBlur = (e) => {
+    // 1. Interna logika u AnimatedInput (ako ima)
+    // npr. set reaktivnog stanja, animacija, ili bilo šta što želiš:
+    setFocused(false);
+
+    // 2. Pozovi i eksternu funkciju ako postoji
+    if (typeof onBlur === "function") {
+      onBlur(e);
+    }
   };
 
   return (
@@ -87,7 +99,7 @@ const AnimatedInput = ({
           value={value}
           onChange={onChange}
           onFocus={() => setFocused(true)}
-          onBlur={() => setFocused(false)}
+          onBlur={handleBlur}
           disabled={disabled}
           className={`w-full px-4 py-4 border-2 rounded-xl bg-white/90 backdrop-blur-sm
             focus:outline-none transition-all duration-200 text-gray-800 font-medium

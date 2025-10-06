@@ -3,9 +3,10 @@ import { db, auth } from "../../utils/firebase";
 import { getDocs, collection, updateDoc, doc } from "firebase/firestore";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
-import { FaRegClock, FaCheckCircle, FaUserCircle, FaEnvelope, FaBuilding, FaTruck, FaBoxes, FaHome, FaTimes } from "react-icons/fa";
+import { FaRegClock, FaCheckCircle, FaUserCircle, FaEnvelope, FaBuilding, FaTruck, FaBoxes, FaHome, FaTimes, FaExclamationCircle } from "react-icons/fa";
 import StatusBadge from "../../components/shop/StatusBadge";
 import { motion, AnimatePresence } from "framer-motion";
+import Modal from "../../components/UI/Modal";
 
 export default function AdminOrders() {
   const { showSnackbar } = useContext(SnackbarContext);
@@ -14,9 +15,11 @@ export default function AdminOrders() {
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [sort, setSort] = useState("desc");
   const [page, setPage] = useState(1);
-  const ORDERS_PER_PAGE = 8;
+  const ORDERS_PER_PAGE = 10;
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [pagingAnimKey, setPagingAnimKey] = useState(1);
+  const [otvoriBrisanjeModal, setOtvoriBrisanjeModal] = useState(false);
+  const [currectOrderId, setCurrectOrderId] = useState(null);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -103,6 +106,7 @@ export default function AdminOrders() {
   );
 
   return (
+    <>
     <div className="max-w-7xl mx-auto w-full p-3 sm:p-8 pt-12">
       <h2 className="text-4xl font-black text-center text-charcoal mb-6 tracking-tight">
         <FaTruck className="inline-block mr-2 mb-1 text-bluegreen" />
@@ -182,7 +186,7 @@ export default function AdminOrders() {
                       <td className="px-4 py-3">{order.tip === "pravno" ? <><FaBuilding className="inline-block text-gray-400 mr-1"/>Pravno</>:<>Fizičko</>}</td>
                       <td className="px-4 py-3"><StatusBadge status={order.status}/></td>
                       <td className="px-4 py-3 text-center space-x-1">
-                        {order.status !== "završeno" && (
+                        {order.status !== "završeno" && order.status !== "otkazano" && (
                           <>
                             {order.status !== "poslato" && (
                               <button 
@@ -196,6 +200,11 @@ export default function AdminOrders() {
                               className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-all duration-300 shadow hover:scale-105"
                               title="Završeno"
                             ><FaCheckCircle className="inline mr-1" />Završeno</button>
+                            <button 
+                              onClick={e=>{e.stopPropagation(); setOtvoriBrisanjeModal(true); setCurrectOrderId(order.id);}}
+                              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
+                              title="Otkazi"
+                            ><FaExclamationCircle className="inline mr-1" />Otkazi</button>
                           </>
                         )}
                       </td>
@@ -259,7 +268,7 @@ export default function AdminOrders() {
                       <FaBoxes /> Proizvoda: {order.cart.length}
                     </span>
                   )}
-                  {order.status !== "završeno" && (
+                  {order.status !== "završeno" && order.status !== "otkazano" && (
                     <>
                       {order.status !== "poslato" && (
                         <button 
@@ -271,6 +280,11 @@ export default function AdminOrders() {
                         onClick={e=>{e.stopPropagation(); updateOrderStatus(order.id,"završeno");}}
                         className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition shadow hover:scale-105 text-xs font-bold"
                       >Završeno</button>
+                      <button 
+                              onClick={e=>{e.stopPropagation(); setOtvoriBrisanjeModal(true); setCurrectOrderId(order.id);}}
+                              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
+                              title="Otkazi"
+                            ><FaExclamationCircle className="inline mr-1" />Otkazi</button>
                     </>
                   )}
                 </div>
@@ -322,7 +336,7 @@ export default function AdminOrders() {
               </div>
             </div>
             <div className="flex gap-2 mt-5 justify-end">
-              {selectedOrder.status !== "završeno" && (
+              {selectedOrder.status !== "završeno" && selectedOrder.status !== "otkazano" && (
                 <>
                   {selectedOrder.status !== "poslato" && (
                     <button 
@@ -334,6 +348,11 @@ export default function AdminOrders() {
                     onClick={()=>updateOrderStatus(selectedOrder.id, "završeno")}
                     className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition shadow hover:scale-105 font-bold"
                   ><FaCheckCircle className="inline mr-1" />Označi kao završeno</button>
+                  <button 
+                              onClick={e=>{e.stopPropagation(); setOtvoriBrisanjeModal(true); setCurrectOrderId(selectedOrder.id);}}
+                              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
+                              title="Otkazi"
+                            ><FaExclamationCircle className="inline mr-1" />Otkazi narudžbinu</button>
                 </>
               )}
             </div>
@@ -341,5 +360,22 @@ export default function AdminOrders() {
         </div>
       )}
     </div>
+    {otvoriBrisanjeModal && (
+      <Modal
+        title={"Brisanje narudžbine #" + (currectOrderId || "")}
+        onClose={()=>setOtvoriBrisanjeModal(false)}
+        onConfirm={()=>{
+          updateOrderStatus(currectOrderId,"otkazano");
+          setOtvoriBrisanjeModal(false);
+          setSelectedOrder(null);
+          setCurrectOrderId(null);
+        }}
+        confirmText="Da, otkaži"
+        cancelText="Otkaži"
+      >
+        <p>Da li ste sigurni da želite da otkažete ovu narudžbinu? Ova akcija se ne može poništiti.</p>
+      </Modal>
+    )}
+    </>
   );
 }
