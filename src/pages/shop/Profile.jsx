@@ -285,7 +285,7 @@ export default function Profile() {
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-7xl mx-auto bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl p-4 sm:p-6 lg:p-14 my-6 sm:my-10 font-sans relative overflow-hidden"
+        className="max-w-7xl mx-2 sm:mx-auto bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl p-4 sm:p-6 lg:p-14 my-6 sm:my-10 font-sans relative overflow-hidden"
       >
         {/* Profile header */}
         <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
