@@ -453,8 +453,12 @@ export default function AdminOrders() {
         </div>
 
         {/* --- Modal --- */}
+        {/* Detalji narudžbine */}
         {selectedOrder && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadein">
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadein"
+            data-lenis-prevent
+          >
             <div
               className="absolute inset-0"
               onClick={() => setSelectedOrder(null)}

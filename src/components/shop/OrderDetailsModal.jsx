@@ -39,6 +39,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           onClick={onClose}
+          data-lenis-prevent
         >
           <motion.div
             className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-screen relative flex flex-col overflow-hidden my-10"

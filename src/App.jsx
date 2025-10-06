@@ -55,10 +55,11 @@ function App() {
   // Inicijalizacija Lenis za glatko skrolovanje
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.05, // smoothness (0 - 1)
+      lerp: 0.08, // smoothness (0 - 1)
       smoothWheel: true, // enables smooth for mouse/touchpad
-      smoothTouch: true, // disables for touch (can enable)
       autoRaf: true, // automatski animira
+      anchors: true, // omogućava glatko skrolovanje do anchor linkova
+      touchMultiplier: 0.5, // povećava brzinu skrolovanja na touch uređajima
     });
 
     return () => lenis.destroy();

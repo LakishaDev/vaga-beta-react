@@ -12,6 +12,7 @@ import { useEffect, useState, useRef } from "react";
 import { db } from "../../utils/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import ProductCard from "./ProductCard";
+import Lenis from "lenis";
 
 import {
   Package2,
@@ -37,6 +38,12 @@ export default function ProductGrid() {
   const [filtersOpen, setFiltersOpen] = useState(true);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
+  const lenisRef = useRef();
+
+  useEffect(() => {
+    lenisRef.current = new Lenis({ lerp: 0.07 });
+    return () => lenisRef.current.destroy();
+  }, []);
 
   useEffect(() => {
     const handler = (e) => {
