@@ -62,6 +62,8 @@ function App() {
       touchMultiplier: 0.5, // povećava brzinu skrolovanja na touch uređajima
     });
 
+    window.lenis = lenis;
+
     return () => lenis.destroy();
   }, []);
 

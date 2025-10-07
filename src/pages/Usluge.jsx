@@ -14,140 +14,201 @@
 // Završna sekcija sa benefitima saradnje sa Vaga Beta
 import {
   FaWeight,
+  FaBalanceScale,
+  FaTools,
+  FaClipboardCheck,
   FaMobileAlt,
   FaAndroid,
   FaApple,
-  FaDatabase,
-  FaBalanceScale,
-  FaTools,
-  FaTruck,
-  FaWarehouse,
-  FaStore,
-  FaCloud,
-  FaServer,
-  FaExchangeAlt,
-  FaGlobe,
-  FaPlug,
-  FaClipboardCheck,
   FaCogs,
-  FaShippingFast,
+  FaCloud,
+  FaPlug,
+  FaGlobe,
+  FaDatabase,
+  FaInfoCircle,
 } from "react-icons/fa";
+import vagaZig from "/imgs/usluge/slika1.jpg"; // tvoja slika
+import { useEffect } from "react";
 
 export default function Usluge() {
+  // Skrolovanje do sekcije ako postoji hash u URL-u
+  // Inicijalizacija Lenis u App.jsx
+  // window.lenis je dostupan globalno
+  useEffect(() => {
+    if (window.location.hash) {
+      const el = document.getElementById(window.location.hash.replace("#", ""));
+      if (el && window.lenis) {
+        setTimeout(() => {
+          window.lenis.scrollTo(el, { offset: -120, duration: 1.2 });
+        }, 100); // kratko zakašnjenje da se renderuje
+      }
+    }
+  }, []);
+
   return (
-    <main className="max-w-5xl mx-auto bg-white/95 rounded-2xl shadow-2xl p-8 sm:p-14 mt-14 border border-[#CBCFBB] animate-fadein">
-      <div className="flex items-center gap-5 mb-10 justify-center animate-pop">
-        <FaTools className="text-5xl text-[#6EAEA2] animate-spin-slow" />
-        <h2 className="text-5xl text-[#1E3E49] font-extrabold">Naše usluge</h2>
+    <main className="max-w-6xl mx-auto bg-gradient-to-b from-[#F9FAF9] to-[#EEF3EF] rounded-3xl shadow-2xl p-10 sm:p-16 mt-16 border border-[#D7DACF] animate-fadein overflow-hidden">
+      <div className="text-center mb-14 animate-pop">
+        <div className="flex justify-center mb-4">
+          <FaTools className="text-6xl text-[#6EAEA2] animate-spin-slow" />
+        </div>
+        <h2 className="text-5xl font-extrabold text-[#1E3E49] tracking-tight">
+          Naše Usluge
+        </h2>
+        <p className="text-[#2F5363] text-lg mt-2 max-w-3xl mx-auto">
+          Pouzdano održavanje, zakonska verifikacija i digitalna transformacija
+          vaga – sve na jednom mestu.
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-10">
-        <section className="bg-[#91CEC1]/20 rounded-2xl shadow p-8 animate-slidein-left">
+      {/* GLAVNE USLUGE */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
+        <section className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 p-8 border border-[#D8E2DC] animate-slidein-left">
           <div className="flex items-center gap-3 mb-3">
-            <FaWeight className="text-3xl text-[#1E3E49]" />
-            <h3 className="text-2xl text-[#1E3E49] font-bold">
+            <FaWeight className="text-4xl text-[#1E3E49]" />
+            <h3 className="text-2xl font-bold text-[#1E3E49]">
               Servisiranje vaga svih tipova
             </h3>
           </div>
-          <p className="text-[#2F5363] mb-3">
-            Servisiramo, kalibrišemo, testiramo i održavamo mehaničke,
-            digitalne, trgovačke, magacinske, platformske, industrijske,
-            kamionske i građevinske vage – pouzdano, brzo i sa stručnim savetima
-            za dug vek i tačan rad.
+          <p className="text-[#2F5363] mb-4 leading-relaxed">
+            Stručno servisiranje, kalibracija i održavanje vaga – od trgovinskih
+            do industrijskih i kamionskih sistema. Naš tim obezbeđuje preciznost
+            i dugotrajnost svakog merila.
           </p>
-          <div className="flex items-center gap-2 mb-2">
-            <FaTools className="text-lg text-[#AD5637]" /> Stručan servis
-            mesoreznica: zamena noževa, podešavanje, rezervni delovi.
+          <div className="flex items-center gap-2 text-[#AD5637] font-medium">
+            <FaTools /> Stručan i brz servis uz originalne delove.
           </div>
         </section>
-        <section className="bg-[#6EAEA2]/15 rounded-2xl shadow p-8 animate-slidein-right">
+
+        <section className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 p-8 border border-[#D8E2DC] animate-slidein-right">
           <div className="flex items-center gap-3 mb-3">
-            <FaBalanceScale className="text-3xl text-[#AD5637]" />
-            <h3 className="text-2xl text-[#AD5637] font-bold">
+            <FaBalanceScale className="text-4xl text-[#AD5637]" />
+            <h3 className="text-2xl font-bold text-[#AD5637]">
               Kontrolno telo i overavanje
             </h3>
           </div>
-          <p className="text-[#2F5363] mb-3">
+          <p className="text-[#2F5363] mb-4 leading-relaxed">
             Akreditovani smo za zakonsku verifikaciju i žigosanje vaga svih
-            klasa: inspekcijsko merenje, izdavanje sertifikata, automatsko
-            obaveštavanje o isteku žiga, usklađivanje sa svim propisima i
-            sigurnost javnog merenja.
+            klasa. Brinemo o tačnosti i zakonitosti svakog javnog merenja u
+            skladu sa propisima Republike Srbije.
           </p>
-          <div className="flex items-center gap-2 mb-2">
-            <FaClipboardCheck className="text-lg text-[#6EAEA2]" /> Sva javna
-            merenja moraju biti ispravna i overena — brinemo o tome za Vas.
+          <div className="flex items-center gap-2 text-[#6EAEA2] font-medium">
+            <FaClipboardCheck /> Svaka vaga mora imati overu i žig – mi to
+            obezbeđujemo.
           </div>
         </section>
-        <section className="bg-[#CBCFBB]/30 rounded-2xl shadow p-8 animate-slidein-left">
+
+        <section className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 p-8 border border-[#D8E2DC] animate-slidein-left">
           <div className="flex items-center gap-3 mb-3">
-            <FaMobileAlt className="text-3xl text-[#6EAEA2]" />
-            <h3 className="text-2xl text-[#1E3E49] font-bold">
+            <FaMobileAlt className="text-4xl text-[#6EAEA2]" />
+            <h3 className="text-2xl font-bold text-[#1E3E49]">
               Softver, aplikacije i baze podataka
             </h3>
           </div>
-          <p className="text-[#2F5363] mb-3">
-            Pravimo i integriramo mobilne aplikacije (
+          <p className="text-[#2F5363] mb-4 leading-relaxed">
+            Razvijamo mobilne aplikacije (
             <FaAndroid className="inline text-[#3DDC84]" /> Android,{" "}
             <FaApple className="inline text-[#1E3E49]" /> iOS), desktop softver
-            i baze za digitalno upravljanje vagama, izveštaje, analizu,
-            digitalno žigosanje i daljinsko monitorisanje uz mogućnost Web API
-            povezivanja sa ERP/CRM sistemima.
+            i baze za digitalno upravljanje merenjima, analizu i izveštavanje.
           </p>
-          <div className="flex items-center gap-2 mb-2">
-            <FaCogs className="text-lg text-[#AD5637]" /> Softver za automatsku
-            analizu, vezu sa bazom i naprednu statistiku.
+          <div className="flex items-center gap-2 text-[#AD5637] font-medium">
+            <FaCogs /> Automatizovani sistemi i statistika u realnom vremenu.
           </div>
         </section>
-        <section className="bg-[#AD5637]/10 rounded-2xl shadow p-8 animate-slidein-right">
+
+        <section className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 p-8 border border-[#D8E2DC] animate-slidein-right">
           <div className="flex items-center gap-3 mb-3">
-            <FaCloud className="text-3xl text-[#AD5637]" />
-            <h3 className="text-2xl text-[#AD5637] font-bold">
-              Cloud, API, integracije i remote monitoring
+            <FaCloud className="text-4xl text-[#AD5637]" />
+            <h3 className="text-2xl font-bold text-[#AD5637]">
+              Cloud i daljinsko upravljanje
             </h3>
           </div>
-          <p className="text-[#2F5363] mb-3">
-            Omogućavamo cloud skladištenje merenja, povezivanje sa Vašim
-            softverom (API/ERP) i remote nadzor vaga gde god da ste — u realnom
-            vremenu, potpuno integrisano, sa automatskim izveštajima i sigurnim
-            pristupom.
+          <p className="text-[#2F5363] mb-4 leading-relaxed">
+            Cloud rešenja za skladištenje, API integracije i nadzor vaga sa bilo
+            kog mesta. Povezivanje sa ERP/CRM sistemima i generisanje
+            automatskih izveštaja.
           </p>
-          <div className="flex items-center gap-2 mb-2">
-            <FaPlug className="text-lg text-[#6EAEA2]" /> Integracije i custom
-            povezivanje sa svim softverskim rešenjima Vaše firme.
-          </div>
-          <div className="flex items-center gap-2 mb-2">
-            <FaGlobe className="text-lg text-[#AD5637]" /> Online portal za
-            inspekciju i automatsku generaciju izveštaja.
+          <div className="flex flex-col gap-1 text-[#2F5363] font-medium">
+            <div className="flex items-center gap-2">
+              <FaPlug className="text-[#6EAEA2]" /> Povezivanje sa vašim
+              softverom.
+            </div>
+            <div className="flex items-center gap-2">
+              <FaGlobe className="text-[#AD5637]" /> Online pristup i
+              inspekcioni portal.
+            </div>
           </div>
         </section>
       </div>
 
-      {/* FINAL BENEFITI */}
-      <section className="mt-12 mb-8 animate-fadein">
-        <h3 className="text-2xl text-[#1E3E49] font-extrabold mb-5 text-center">
-          Zašto baš Vaga Beta?
+      {/* SEKCIJA O ŽIGU */}
+      <section
+        id="zakonski-zig"
+        className="mt-20 bg-[#F5F9F7] rounded-3xl p-5 relative animate-fadein shadow-md hover:shadow-xl transition-all duration-500"
+      >
+        <h3 className="text-3xl font-extrabold text-[#1E3E49] mb-8 text-center">
+          Zakonski žig na merilima
         </h3>
-        <ul className="list-none flex flex-wrap justify-center gap-7 text-lg font-medium">
-          <li className="flex gap-2 items-center animate-slidein-left">
-            <FaTools className="text-[#6EAEA2]" /> Savremen servis,
-            profesionalan tim
+        <div className="flex flex-col md:flex-row items-center justify-center gap-10 relative">
+          <div className="relative w-full md:w-1/2">
+            <img
+              src={vagaZig}
+              alt="Žig na vagi"
+              className="rounded-2xl shadow-lg border border-[#D8E2DC]"
+            />
+            {/* Linija i krug oko žiga */}
+            <div className="absolute border-4 border-[#ff4400] rounded-full w-25 h-25 animate-pulse-slow top-[33%] left-[7%]"></div>
+          </div>
+
+          <div className="md:w-1/2 bg-white/80 p-8 rounded-2xl shadow-md border border-[#D8E2DC] animate-slidein-right">
+            <h4 className="text-2xl font-bold text-[#AD5637] mb-3 flex items-center gap-2">
+              <FaInfoCircle /> Šta je zakonski žig?
+            </h4>
+            <p className="text-[#2F5363] leading-relaxed">
+              Žig (kao na slici – broj 00001578) označava da je vaga{" "}
+              <b>zakonski overena</b> i proverena od strane akreditovanog
+              kontrolnog tela prema Pravilniku o vagama. Svako merilo u
+              Republici Srbiji mora imati važeći žig kao dokaz tačnosti i
+              ispravnosti merenja.
+            </p>
+            <p className="text-[#2F5363] mt-3 italic">
+              Uklanjanje, neovlašćeno menjanje ili oštećenje žiga povlači
+              zakonske posledice i čini merenje nevažećim. Overa žiga važi
+              obično <b>24 meseca</b> od datuma žigosanja, nakon čega mora da se
+              izvrši ponovna verifikacija.
+            </p>
+            <p className="text-[#2F5363] mt-3">
+              Dodatno: žig mora sadržati serijski broj, datum verifikacije i
+              oznaku klase merila, u skladu sa zakonskim zahtevima. Kontrolno
+              telo izdaje sertifikat i vodi evidenciju o verifikaciji.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      {/* BENEFITI */}
+      <section className="mt-16 animate-fadein">
+        <h3 className="text-3xl text-[#1E3E49] font-extrabold mb-6 text-center">
+          Zašto odabrati Vaga Beta?
+        </h3>
+        <ul className="flex flex-wrap justify-center gap-6 text-lg font-medium">
+          <li className="flex gap-2 items-center">
+            <FaTools className="text-[#6EAEA2]" /> Savremen servis i stručan tim
           </li>
-          <li className="flex gap-2 items-center animate-slidein-right">
+          <li className="flex gap-2 items-center">
             <FaBalanceScale className="text-[#AD5637]" /> Zakonska sigurnost i
             brzina
           </li>
-          <li className="flex gap-2 items-center animate-slidein-left">
-            <FaMobileAlt className="text-[#91CEC1]" /> Softver & mobilne
+          <li className="flex gap-2 items-center">
+            <FaMobileAlt className="text-[#91CEC1]" /> Softver i mobilne
             aplikacije
           </li>
-          <li className="flex gap-2 items-center animate-slidein-right">
-            <FaCloud className="text-[#AD5637]" /> Cloud, API i daljinsko
-            upravljanje
+          <li className="flex gap-2 items-center">
+            <FaCloud className="text-[#AD5637]" /> Cloud i daljinsko upravljanje
           </li>
-          <li className="flex gap-2 items-center animate-slidein-left">
+          <li className="flex gap-2 items-center">
             <FaDatabase className="text-[#6EAEA2]" /> Automatizacija podataka
           </li>
-          <li className="flex gap-2 items-center animate-slidein-right">
+          <li className="flex gap-2 items-center">
             <FaPlug className="text-[#AD5637]" /> Integracije sa vašim sistemima
           </li>
         </ul>

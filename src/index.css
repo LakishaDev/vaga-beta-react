@@ -656,3 +656,21 @@
 .animate-slideInLeft {
   animation: slideInLeft 1.3s;
 }
+
+@keyframes pulse-slow {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+    box-shadow: 0 0 0 0 rgba(173, 86, 55, 0.6);
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 0.9;
+    box-shadow: 0 0 25px 8px rgba(173, 86, 55, 0.4);
+  }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 2.5s ease-in-out infinite;
+}
