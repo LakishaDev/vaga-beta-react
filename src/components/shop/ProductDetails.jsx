@@ -1,16 +1,3 @@
-// components/shop/ProductDetails.jsx
-// Komponenta koja prikazuje detalje o proizvodu
-// Učitava proizvod iz Firestore na osnovu ID-a iz URL-a
-// Prikazuje sliku, naziv, opis, cenu, ocene i recenzije
-// Omogućava dodavanje u korpu sa animacijom
-// Omogućava pregled slike u modalnom prozoru
-// Koristi kontekst korpe i snackbar-a za funkcionalnosti
-// Koristi ProgressiveImage za učitavanje slike sa efektom preliva
-// Koristi framer-motion za animacije
-// Koristi React Router za čitanje URL parametara
-// Koristi Firebase Firestore za čuvanje i učitavanje podataka o proizvodima i recenzijama
-// Props: nema (uzima ID proizvoda iz URL-a)
-
 import { useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { db } from "../../utils/firebase";
@@ -57,11 +44,13 @@ export default function ProductDetails() {
   };
 
   function addDiscountInfo(product) {
-    let percent = 0.1; // 10% popusta za proizvode ispod 14k
+    let percent = 0.1;
     if (product.price > 40000 && product.price < 500000) percent = 0.25;
     else if (product.price < 14000) percent = 0.1;
     else if (product.price > 500000) percent = 0.3;
-    let originalPrice = Math.round(product.price / (1 - percent));
+    let originalPrice = Math.round(
+      (product.price || product.hiddenPrice || 0) / (1 - percent)
+    );
     return {
       ...product,
       originalPrice,
@@ -81,7 +70,7 @@ export default function ProductDetails() {
     };
     fetchProduct();
     fetchReviews();
-    window.scrollTo({ top: 0, behavior: "smooth" }); // ili "smooth" za animirani skok
+    window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
   const handleReview = async (e) => {
@@ -106,7 +95,8 @@ export default function ProductDetails() {
     setTimeout(() => setShowAddAnim(false), 1200);
   };
 
-  const formatRSD = (num) => new Intl.NumberFormat("sr-RS").format(num);
+  const formatRSD = (num) =>
+    num ? new Intl.NumberFormat("sr-RS").format(num) : "";
 
   if (!product)
     return (
@@ -127,7 +117,6 @@ export default function ProductDetails() {
             animate-shimmer shadow-lg
             "
             >
-              {/* Ikona proizvoda - shimmer */}
               <svg
                 className="mx-auto my-auto block mt-12 opacity-25"
                 width="64"
@@ -145,7 +134,6 @@ export default function ProductDetails() {
               </svg>
             </div>
           </div>
-          {/* Info skeleton */}
           <div className="md:w-1/2 w-full flex flex-col gap-5">
             <div className="h-8 bg-gray-300/50 rounded w-3/4 animate-shimmer"></div>
             <div className="h-4 bg-gray-200/60 rounded w-1/2 animate-shimmer"></div>
@@ -162,9 +150,17 @@ export default function ProductDetails() {
       </div>
     );
 
-  // Prikaz badge-a i cena za popust
+  // Provera skrivene cene
+  const hasHiddenPrice = product.hiddenPrice && !product.price;
+  const getDisplayPrice = () => {
+    if (product.price) return product.price;
+    if (product.hiddenPrice) return product.hiddenPrice;
+    return 0;
+  };
   const showDiscount =
-    product.originalPrice && product.originalPrice > product.price;
+    !hasHiddenPrice &&
+    product.originalPrice &&
+    product.originalPrice > product.price;
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center py-4 px-1 sm:py-8 sm:px-2 animate-pop">
@@ -207,7 +203,7 @@ export default function ProductDetails() {
       >
         <div className="md:w-1/2 w-full flex items-center justify-center flex-col gap-6 py-5 px-2 sm:py-8 sm:px-4 animate-fade-up relative">
           {/* Popust badge */}
-          {showDiscount && (
+          {!hasHiddenPrice && showDiscount && (
             <span className="absolute top-3 left-3 sm:top-5 sm:left-6 bg-green-100 text-green-800 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow border border-green-200 flex items-center gap-1 z-20">
               <Percent size={16} className="text-green-600" /> -
               {product.discountPercent}% POPUST
@@ -253,48 +249,55 @@ export default function ProductDetails() {
           {/* Prikaz cene i staru cenu precrtanu */}
           <div className="flex items-center sm:items-end flex-col sm:flex-row gap-2 sm:gap-4 mt-0 sm:mt-1 mb-3 relative min-h-[48px]">
             <div className="flex flex-col">
-              {showDiscount && (
+              {/* Precrtana cena samo ako JE JAVNA cena i popust */}
+              {!hasHiddenPrice && showDiscount && (
                 <span className="line-through text-rust font-semibold text-base sm:text-lg opacity-60 mb-[2px]">
                   {formatRSD(product.originalPrice)} RSD
                 </span>
               )}
-              <span className="font-bold text-lg sm:text-xl md:text-2xl text-[#253869]">
-                {formatRSD(product.price)} RSD
-              </span>
-            </div>
-
-            <button
-              className="bg-[#253869] text-white font-semibold rounded-xl px-4 sm:px-8 py-2 shadow hover:bg-[#162040] transition flex items-center gap-2 relative overflow-visible"
-              onClick={handleAddToCart}
-              style={{ position: "relative", zIndex: 10 }}
-            >
-              {showAddAnim && (
-                <>
-                  <span className="cart-anim absolute right-[-32px] sm:right-[-60px] top-[-12px] sm:top-[-18px] z-30">
-                    <ShoppingCart
-                      size={28}
-                      className="sm:hidden text-[#355aac] drop-shadow-lg"
-                    />
-                    <ShoppingCart
-                      size={38}
-                      className="hidden sm:inline text-[#355aac] drop-shadow-lg"
-                    />
-                  </span>
-                  <span className="add-to-cart-anim absolute left-1/2 -translate-x-1/2 -top-6 sm:-top-7 z-20 pointer-events-none">
-                    <Package
-                      size={24}
-                      className="sm:hidden text-[#44bb99] drop-shadow-lg"
-                    />
-                    <Package
-                      size={32}
-                      className="hidden sm:inline text-[#44bb99] drop-shadow-lg"
-                    />
-                  </span>
-                </>
+              {/* Prikaz badge-a kada je cena skrivena */}
+              {hasHiddenPrice ? (
+                <span className="font-bold text-base sm:text-lg md:text-xl text-rust/90 bg-orange-100 px-3 py-1 rounded-xl">
+                  Cena na upit
+                </span>
+              ) : (
+                <span className="font-bold text-lg sm:text-xl md:text-2xl text-[#253869]">
+                  {formatRSD(getDisplayPrice())} RSD
+                </span>
               )}
-              Dodaj u korpu
-            </button>
+            </div>
           </div>
+          <button
+            className="bg-[#253869] text-white font-semibold rounded-xl px-4 sm:px-8 py-2 shadow hover:bg-[#162040] transition flex items-center gap-2 relative overflow-visible"
+            onClick={handleAddToCart}
+            style={{ position: "relative", zIndex: 10 }}
+          >
+            {showAddAnim && (
+              <>
+                <span className="cart-anim absolute right-[-32px] sm:right-[-60px] top-[-12px] sm:top-[-18px] z-30">
+                  <ShoppingCart
+                    size={28}
+                    className="sm:hidden text-[#355aac] drop-shadow-lg"
+                  />
+                  <ShoppingCart
+                    size={38}
+                    className="hidden sm:inline text-[#355aac] drop-shadow-lg"
+                  />
+                </span>
+                <span className="add-to-cart-anim absolute left-1/2 -translate-x-1/2 -top-6 sm:-top-7 z-20 pointer-events-none">
+                  <Package
+                    size={24}
+                    className="sm:hidden text-[#44bb99] drop-shadow-lg"
+                  />
+                  <Package
+                    size={32}
+                    className="hidden sm:inline text-[#44bb99] drop-shadow-lg"
+                  />
+                </span>
+              </>
+            )}
+            Dodaj u korpu
+          </button>
           <div className="flex items-center gap-3 mb-1 mt-1">
             <span className="text-sm text-gray-600 font-medium">Boja:</span>
             <span className="inline-block w-5 h-5 bg-[#232221] rounded-full border border-gray-300"></span>

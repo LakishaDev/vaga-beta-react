@@ -1,11 +1,4 @@
-// components/shop/ProductCard.jsx
-// Komponenta koja prikazuje karticu proizvoda u prodavnici
-// Prikazuje sliku, naziv, kategoriju, ocenu, cenu i dugme za dodavanje u korpu
-// Koristi kontekst korpe za dodavanje proizvoda i kontekst snackbar-a za prikaz poruke
-// Koristi ProgressiveImage za učitavanje slike sa efektom preliva
-// Props: product (objekat sa podacima o proizvodu)
-// product: {id, name, category, price, originalPrice, discountPercent, rating, imgUrl}
-import { useContext } from "react";
+import { useContext, useState } from "react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { Link } from "react-router-dom";
@@ -14,11 +7,22 @@ import ProgressiveImage from "../UI/ProgressiveImage";
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
   const { showSnackbar } = useContext(SnackbarContext);
+  const [isHovered, setIsHovered] = useState(false);
+
+  // Proveri da li je cena skrivena
+  const hasHiddenPrice = product.hiddenPrice && !product.price;
 
   const handleAddToCart = (e) => {
     e.preventDefault();
     addToCart(product);
     showSnackbar(`${product.name} je dodat u korpu!`, "success");
+  };
+
+  // Funkcija za prikaz cene - koristi price ili hiddenPrice
+  const getDisplayPrice = () => {
+    if (product.price) return product.price;
+    if (product.hiddenPrice) return product.hiddenPrice;
+    return 0;
   };
 
   return (
@@ -30,18 +34,32 @@ export default function ProductCard({ product }) {
       style={{
         borderColor: "#CBCFBB",
       }}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Popust badge */}
-      {product.originalPrice && product.originalPrice > product.price && (
-        <span className="absolute top-4 left-4 sm:top-6 sm:left-7 bg-green-100 text-green-800 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow animate-bounce z-20">
-          -{product.discountPercent}% POPUST
+      {/* Popust badge - prikaži samo ako cena nije skrivena */}
+      {!hasHiddenPrice &&
+        product.originalPrice &&
+        product.originalPrice > getDisplayPrice() && (
+          <span
+            className={`absolute top-4 left-4 sm:top-6 sm:left-7 bg-green-100 text-green-800 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow ${
+              isHovered ? "animate-bounce" : ""
+            } z-20`}
+          >
+            -{product.discountPercent}% POPUST
+          </span>
+        )}
+
+      {/* Badge za skrivenu cenu ili običnu cenu gore desno */}
+      {hasHiddenPrice ? (
+        <span className="absolute top-32 sm:top-40 right-4 sm:right-7 bg-chestnut/80 text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-sm sm:text-base shadow z-10">
+          Cena na upit
+        </span>
+      ) : (
+        <span className="absolute top-32 sm:top-40 right-4 sm:right-7 bg-bluegreen text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-base sm:text-lg shadow animate-pop z-10">
+          {Number(getDisplayPrice()).toLocaleString("sr-RS")} RSD
         </span>
       )}
-
-      {/* Cena badge gore desno */}
-      <span className="absolute top-32 sm:top-40 right-24 sm:right-7 bg-bluegreen text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-base sm:text-lg shadow animate-pop z-10">
-        {Number(product.price).toLocaleString("sr-RS")} RSD
-      </span>
 
       <ProgressiveImage
         src={product.imgUrl}
@@ -56,11 +74,22 @@ export default function ProductCard({ product }) {
         {product.category}
       </p>
 
-      {/* Cene: pre i posle popusta */}
-      {product.originalPrice && product.originalPrice > product.price && (
-        <div className="mb-2 sm:mb-3 flex items-center justify-center gap-2 animate-fadein-down">
-          <span className="line-through text-rust font-semibold text-lg opacity-60">
-            {Number(product.originalPrice).toLocaleString("sr-RS")} RSD
+      {/* Cene: pre i posle popusta - samo ako cena nije skrivena */}
+      {!hasHiddenPrice &&
+        product.originalPrice &&
+        product.originalPrice > getDisplayPrice() && (
+          <div className="mb-2 sm:mb-3 flex items-center justify-center gap-2 animate-fadein-down">
+            <span className="line-through text-rust font-semibold text-lg opacity-60">
+              {Number(product.originalPrice).toLocaleString("sr-RS")} RSD
+            </span>
+          </div>
+        )}
+
+      {/* Tekst za skrivenu cenu umesto precrtane cene */}
+      {hasHiddenPrice && (
+        <div className="mb-2 sm:mb-3 flex items-center justify-center gap-2">
+          <span className="text-rust/60 font-semibold text-base italic">
+            Kontaktirajte nas za cenu
           </span>
         </div>
       )}
@@ -73,6 +102,7 @@ export default function ProductCard({ product }) {
         </span>
       </div>
 
+      {/* Dugme - ostaje "Dodaj u korpu" za sve proizvode */}
       <button
         onClick={handleAddToCart}
         className="mt-2 sm:mt-4 px-4 sm:px-6 py-2 sm:py-3 w-full rounded-full font-semibold shadow-lg

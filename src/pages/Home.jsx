@@ -30,11 +30,11 @@ export default function Home() {
       <div className="relative rounded-2xl overflow-hidden mb-6 animate-fadein duration-1000">
         {/* /imgs/home/slika1.png */}
         <ProgressiveImage
-          src="/imgs/home/slika1.png"
+          src="/imgs/home/slika8.jpg"
           alt="Elektronske vage i programiranje"
-          className="w-full aspect-video object-cover"
+          className="w-full object-center"
         />
-        <div className="absolute inset-0 bg-gradient-to-br from-[#CBCFBB]/80 to-transparent" />
+        {/* <div className="absolute inset-0 bg-gradient-to-br from-[#CBCFBB]/80 to-transparent" /> */}
         <div className="absolute bottom-5 left-8 text-3xl text-[#1E3E49] font-bold drop-shadow animate-pop">
           Vaga Beta
         </div>

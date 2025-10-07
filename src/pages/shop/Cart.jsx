@@ -8,6 +8,7 @@
 // Koristi ProgressiveImage komponentu za učitavanje slika proizvoda
 // Funkcija formatPrice formatira cenu u lokalnom formatu
 // Animacije su dodate za poboljšanje korisničkog iskustva
+
 import { useContext, useState, useEffect } from "react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { Link } from "react-router-dom";
@@ -32,35 +33,47 @@ export default function Cart() {
   const [removeId, setRemoveId] = useState(null);
   const [showClearModal, setShowClearModal] = useState(false);
 
-  // Za animaciju promene cene
+  // Animacija ukupne cene
   const [displayedTotal, setDisplayedTotal] = useState(0);
   const [animatingTotal, setAnimatingTotal] = useState(false);
 
   const [animIndex, setAnimIndex] = useState(null);
   const [animType, setAnimType] = useState(""); // "inc" ili "dec"
 
-  const total = cart.reduce((acc, item) => acc + item.price * item.qty, 0);
+  const getItemPrice = (item) => item.price || item.hiddenPrice || 0;
+  const hasHiddenPrice = (item) => item.hiddenPrice && !item.price;
 
-  // Responsivno ažuriraj prikazanu cenu uz animaciju
+  // Suma vidljivih cena
+  const totalVisible = cart.reduce(
+    (acc, item) => (item.price ? acc + item.price * item.qty : acc),
+    0
+  );
+
+  // Ukupno artikala sa skrivenom cenom
+  const hiddenPriceCount = cart.filter(hasHiddenPrice).length;
+  const hasAnyHiddenPrices = hiddenPriceCount > 0;
+
   useEffect(() => {
-    if (displayedTotal !== total) {
+    if (displayedTotal !== totalVisible) {
       let frame = 0;
       const duration = 70;
       const frames = 20;
       setAnimatingTotal(true);
-      const step = (total - displayedTotal) / frames;
+      const step = (totalVisible - displayedTotal) / frames;
       const interval = setInterval(() => {
         frame++;
-        setDisplayedTotal((prev) => (frame < frames ? prev + step : total));
+        setDisplayedTotal((prev) =>
+          frame < frames ? prev + step : totalVisible
+        );
         if (frame >= frames) {
           clearInterval(interval);
-          setDisplayedTotal(total);
+          setDisplayedTotal(totalVisible);
           setAnimatingTotal(false);
         }
       }, duration / frames);
       return () => clearInterval(interval);
     }
-  }, [displayedTotal, total]);
+  }, [displayedTotal, totalVisible]);
 
   const handleDecrease = (id, qty) => {
     if (qty > 1) {
@@ -85,6 +98,27 @@ export default function Cart() {
           <FaShoppingCart className="text-sheen" size={28} />
           <span>Vaša korpa</span>
         </h2>
+
+        {hasAnyHiddenPrices && (
+          <div className="mb-6 p-4 bg-orange-50 border border-orange-200 rounded-xl">
+            <div className="flex items-center gap-2 text-orange-700">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path
+                  fillRule="evenodd"
+                  d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                  clipRule="evenodd"
+                />
+              </svg>
+              <span className="font-semibold">Napomena:</span>
+            </div>
+            <p className="mt-1 text-sm text-orange-600">
+              U korpi imate {hiddenPriceCount} proizvod
+              {hiddenPriceCount === 1 ? "" : "a"} sa skrivenom cenom. Cena će
+              vam biti javljena nakon naručivanja.
+            </p>
+          </div>
+        )}
+
         {cart.length === 0 ? (
           <div className="flex flex-col items-center py-6 sm:py-10 text-base sm:text-xl text-gray-400 animate-jump">
             <FaShoppingCart size={38} className="sm:size-48" />
@@ -103,6 +137,9 @@ export default function Cart() {
                 <li
                   key={item.id}
                   className={`flex flex-col sm:flex-row items-center justify-between gap-4 p-3 sm:p-4 bg-neutral-50 rounded-xl shadow-sm hover:shadow-md transition-all
+                    ${
+                      hasHiddenPrice(item) ? "border-l-4 border-orange-400" : ""
+                    }
                     ${
                       animIndex === item.id && animType === "inc"
                         ? "animate-bounceInc"
@@ -132,16 +169,27 @@ export default function Cart() {
                       <div className="text-xs sm:text-sm text-gray-400">
                         {item.category}
                       </div>
+                      {hasHiddenPrice(item) && (
+                        <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full mt-1 animate-pulse">
+                          Skrivena cena
+                        </span>
+                      )}
                     </div>
                   </div>
                   <div className="flex flex-col items-end gap-1 sm:gap-2 w-full sm:w-auto">
-                    <span
-                      className={`text-base sm:text-xl font-bold text-charcoal ${
-                        animatingTotal ? "animate-flipPrice" : ""
-                      }`}
-                    >
-                      {formatPrice(item.price * item.qty)} RSD
-                    </span>
+                    {hasHiddenPrice(item) ? (
+                      <span className="text-base sm:text-lg font-bold text-orange-600 italic">
+                        Cena na upit
+                      </span>
+                    ) : (
+                      <span
+                        className={`text-base sm:text-xl font-bold text-charcoal ${
+                          animatingTotal ? "animate-flipPrice" : ""
+                        }`}
+                      >
+                        {formatPrice(getItemPrice(item) * item.qty)} RSD
+                      </span>
+                    )}
                     <div className="flex items-center gap-1">
                       <button
                         className="w-8 h-8 flex items-center justify-center bg-gray-200 rounded hover:bg-gray-300 transition"
@@ -184,6 +232,11 @@ export default function Cart() {
                 }`}
               >
                 {formatPrice(Math.round(displayedTotal))} RSD
+                {hasAnyHiddenPrices && (
+                  <span className="ml-3 text-orange-600 font-normal text-base italic">
+                    + artikli na upit
+                  </span>
+                )}
               </span>
             </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
@@ -192,7 +245,7 @@ export default function Cart() {
                 className="flex items-center justify-center gap-2 bg-sheen text-white px-6 py-2 sm:px-8 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:bg-bluegreen transition-all scale-100 active:scale-95 text-base sm:text-lg"
               >
                 <FaCheckCircle className="text-white" size={18} />
-                Plaćanje
+                Nastavi na plaćanje
               </Link>
               <button
                 className="flex items-center justify-center gap-2 bg-charcoal text-white px-6 py-2 sm:px-6 sm:py-3 rounded-xl sm:rounded-2xl shadow-lg hover:bg-gray-800 transition-all scale-100 active:scale-95 text-base sm:text-lg"

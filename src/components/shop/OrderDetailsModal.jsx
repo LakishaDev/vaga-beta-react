@@ -21,15 +21,39 @@ import ProgressiveImage from "../UI/ProgressiveImage";
 import StatusBadge from "./StatusBadge";
 
 function srRsd(n) {
-  return n.toLocaleString("sr-RS") + " RSD";
+  return n ? n.toLocaleString("sr-RS") + " RSD" : "Cena na upit";
 }
+
 function srDate(ts) {
   const date = ts?.toDate ? ts.toDate() : new Date(ts);
   return date.toLocaleString("sr-RS");
 }
 
+// Pomoćne funkcije za rad sa skrivenim cenama
+function hasHiddenPrice(product) {
+  return product.hiddenPrice && !product.price;
+}
+
+function getProductPrice(product) {
+  return product.price || product.hiddenPrice || 0;
+}
+
 export default function OrderDetailsModal({ open, onClose, order }) {
   if (!order) return null;
+
+  // Proveri da li narudžbina sadrži proizvode sa skrivenom cenom
+  const hasHiddenItems = order.cart.some(hasHiddenPrice);
+
+  // Računaj ukupno za vidljive cene
+  const visibleTotal = order.cart.reduce((acc, prod) => {
+    return prod.price ? acc + prod.price * prod.qty : acc;
+  }, 0);
+
+  // Ukupno svih proizvoda (uključujući skrivene cene)
+  const fullTotal = order.cart.reduce((acc, prod) => {
+    return acc + getProductPrice(prod) * prod.qty;
+  }, 0);
+
   return (
     <AnimatePresence>
       {open && (
@@ -42,7 +66,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
           data-lenis-prevent
         >
           <motion.div
-            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-screen relative flex flex-col overflow-hidden my-10"
+            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-11/12 sm:max-h-screen relative flex flex-col overflow-y-auto my-20"
             initial={{ scale: 0.88, y: 40, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 40, opacity: 0 }}
@@ -71,10 +95,35 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                 #{order.id || order.createdAt?.seconds}
               </span>
             </div>
+
+            {/* Obaveštenje o skrivenim cenama */}
+            {hasHiddenItems && (
+              <div className="mx-6 mt-4 p-3 bg-orange-50 border border-orange-200 rounded-xl">
+                <div className="flex items-center gap-2 text-orange-700">
+                  <svg
+                    className="w-4 h-4"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <span className="font-semibold text-sm">Napomena:</span>
+                </div>
+                <p className="text-xs text-orange-600 mt-1">
+                  Ova narudžbina sadrži proizvode sa skrivenom cenom. Finalna
+                  cena će biti određena nakon kontakta.
+                </p>
+              </div>
+            )}
+
             {/* Glavni sadrzaj */}
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Sekcija proizvodi */}
-              <div className="overflow-y-auto max-h-[30vh] sm:max-h-[50vh] custom-scrollbar">
+              <div className="overflow-y-auto max-h-[30vh] sm:max-h-[50vh]">
                 <h4 className="text-lg font-semibold flex items-center gap-3 mb-4">
                   <PackageSearch size={20} className="text-bluegreen" />{" "}
                   Proizvodi
@@ -83,7 +132,11 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                   {order.cart.map((prod) => (
                     <li
                       key={prod.id}
-                      className="flex items-center gap-3 bg-gray-50 rounded-xl p-2 shadow-sm"
+                      className={`flex items-center gap-3 bg-gray-50 rounded-xl p-2 shadow-sm ${
+                        hasHiddenPrice(prod)
+                          ? "border-l-4 border-orange-400"
+                          : ""
+                      }`}
                     >
                       <ProgressiveImage
                         src={prod.imgUrl}
@@ -91,14 +144,25 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                         className="w-14 h-14 object-cover rounded-lg"
                       />
                       <div className="flex-1 min-w-0">
-                        <div className="font-medium text-gray-800 truncate">
+                        <div className="font-medium text-gray-800 truncate flex items-center gap-2">
                           {prod.name}
+                          {hasHiddenPrice(prod) && (
+                            <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full animate-pulse">
+                              Skrivena cena
+                            </span>
+                          )}
                         </div>
                         <div className="text-xs text-gray-500">
                           {prod.category}
                         </div>
                         <div className="text-sm text-gray-500">
-                          {srRsd(prod.price)} × {prod.qty}
+                          {hasHiddenPrice(prod) ? (
+                            <span className="italic text-orange-600">
+                              Cena na upit × {prod.qty}
+                            </span>
+                          ) : (
+                            `${srRsd(getProductPrice(prod))} × ${prod.qty}`
+                          )}
                         </div>
                       </div>
                     </li>
@@ -130,12 +194,39 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                     <span>{order.adresa + ", " + order.grad}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-2 text-base text-bluegreen font-bold border-t pt-3 mt-6">
-                  <CreditCard size={20} />
-                  <span>Ukupno:</span>
-                  <span>
-                    {srRsd(order.cart.reduce((a, p) => a + p.price * p.qty, 0))}
-                  </span>
+
+                {/* Ukupna cena - prilagođeno za skrivene cene */}
+                <div className="flex flex-col gap-2 text-base text-bluegreen font-bold border-t pt-3 mt-6">
+                  <div className="flex items-center gap-2">
+                    <CreditCard size={20} />
+                    <span>Ukupno:</span>
+                  </div>
+                  {hasHiddenItems ? (
+                    <div className="flex flex-col gap-1 ml-7">
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-gray-600">
+                          Vidljive cene:
+                        </span>
+                        <span className="text-bluegreen">
+                          {srRsd(visibleTotal)}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="text-sm font-medium text-orange-600">
+                          Artikli na upit:
+                        </span>
+                        <span className="text-orange-600 italic">Dogovor</span>
+                      </div>
+                      <div className="border-t pt-1 mt-1 flex justify-between">
+                        <span className="font-bold">Finalna cena:</span>
+                        <span className="text-orange-600 italic">
+                          Na dogovor
+                        </span>
+                      </div>
+                    </div>
+                  ) : (
+                    <span className="ml-7">{srRsd(fullTotal)}</span>
+                  )}
                 </div>
               </div>
             </div>

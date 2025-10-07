@@ -95,25 +95,44 @@ export default function ProductGrid() {
       ).sort((a, b) => a.localeCompare(b, "sr", { numeric: true }));
       setCategories(kats);
 
-      const prices = arr.map((p) => p.price).filter(Number);
+      const prices = arr
+        .map((p) =>
+          p.price !== null && p.price !== undefined
+            ? p.price
+            : p.hiddenPrice !== null && p.hiddenPrice !== undefined
+            ? p.hiddenPrice
+            : null
+        )
+        .filter(Number);
       setMinPrice(Math.min(...prices));
       setMaxPrice(Math.max(...prices));
       setPriceRange([Math.min(...prices), Math.max(...prices)]);
     });
   }, []);
 
+  function getEffectivePrice(product) {
+    // Vraća cenu koja treba da se koristi za sortiranje/filter
+    return product.price !== null && product.price !== undefined
+      ? product.price
+      : product.hiddenPrice !== null && product.hiddenPrice !== undefined
+      ? product.hiddenPrice
+      : 0;
+  }
+
   let filteredProducts = products.filter(
     (p) =>
       (selectedCategories.length === 0 ||
         selectedCategories.includes(p.category)) &&
-      p.price >= priceRange[0] &&
-      p.price <= priceRange[1] &&
+      getEffectivePrice(p) >= priceRange[0] &&
+      getEffectivePrice(p) <= priceRange[1] &&
       p.name.toLowerCase().includes(search.toLowerCase())
   );
 
   let sortedProducts = [...filteredProducts];
-  if (sort === "lowest") sortedProducts.sort((a, b) => a.price - b.price);
-  if (sort === "highest") sortedProducts.sort((a, b) => b.price - a.price);
+  if (sort === "lowest")
+    sortedProducts.sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b));
+  if (sort === "highest")
+    sortedProducts.sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a));
   if (sort === "newest")
     sortedProducts.sort((a, b) => {
       if (
@@ -234,12 +253,13 @@ export default function ProductGrid() {
                 </button>
                 {dropdownOpen && (
                   <div
-                    className="absolute left-0 bottom-full mb-2 w-full bg-white rounded-xl border shadow-2xl px-2 py-3 z-50 animate-fadein"
+                    className="absolute left-0 top-full mt-2 mb-2 w-full bg-white rounded-xl border shadow-2xl px-2 py-3 z-50 animate-fadein"
                     style={{
                       minWidth: "200px",
                       maxHeight: "220px",
                       overflowY: "auto",
                     }}
+                    data-lenis-prevent
                   >
                     {categories.map((cat) => (
                       <label

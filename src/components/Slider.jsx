@@ -14,7 +14,12 @@ const sliderData = [
   { tekst: "Mesoreznica", slika: "probamesoreznica41544" },
   { tekst: "Precizna vaga", slika: "preciznavaga123" },
   { tekst: "Proizvodi u ponudi", slika: "slicka" },
-  { tekst: "Stocna vaga", slika: "stocarskavaga" },
+  { tekst: "Stočna vaga", slika: "stocarskavaga" },
+  { tekst: "Platformska vaga", slika: "home/platformskavaga" },
+  { tekst: "Paletna vaga", slika: "home/paletarka1" },
+  { tekst: "Paletna vaga", slika: "home/paletarka2" },
+  { tekst: "Kamionska vaga", slika: "home/kamionskavaga1" },
+  { tekst: "Mehanička vaga", slika: "home/mehanickavaga1" },
 ];
 const trackImages = [...sliderData, ...sliderData];
 

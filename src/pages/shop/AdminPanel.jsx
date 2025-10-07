@@ -40,9 +40,11 @@ export default function AdminPanel() {
     name: "",
     category: "",
     price: "",
+    hasHiddenPrice: false, // dodaj
     imgFile: null,
     imgPreview: null,
   });
+
   const [products, setProducts] = useState([]);
 
   // Provera autentikacije
@@ -133,7 +135,10 @@ export default function AdminPanel() {
       await addDoc(collection(db, "products"), {
         name: newProduct.name,
         category: newProduct.category,
-        price: Number(newProduct.price),
+        price: newProduct.hasHiddenPrice ? null : Number(newProduct.price),
+        hiddenPrice: newProduct.hasHiddenPrice
+          ? Number(newProduct.price)
+          : null,
         imgUrl,
         createdAt: new Date(),
       });
@@ -184,7 +189,12 @@ export default function AdminPanel() {
 
   // Edit funkcije
   const handleEditOpen = (product) =>
-    setEditProduct({ ...product, imgPreview: product.imgUrl });
+    setEditProduct({
+      ...product,
+      hasHiddenPrice: !!product.hiddenPrice,
+      imgPreview: product.imgUrl,
+    });
+
   const handleEditClose = () => {
     setEditProduct(null);
     setEditUploadProgress(0);
@@ -221,7 +231,10 @@ export default function AdminPanel() {
       await updateDoc(doc(db, "products", editProduct.id), {
         name: editProduct.name,
         category: editProduct.category,
-        price: Number(editProduct.price),
+        price: editProduct.hasHiddenPrice ? null : Number(editProduct.price),
+        hiddenPrice: editProduct.hasHiddenPrice
+          ? Number(editProduct.price)
+          : null,
         imgUrl,
       });
 
@@ -269,6 +282,41 @@ export default function AdminPanel() {
             onChange={handleChange}
             required
           />
+
+          <div className="flex items-center gap-2">
+            <label className="flex items-center cursor-pointer relative group">
+              <input
+                type="checkbox"
+                name="hasHiddenPrice"
+                checked={newProduct.hasHiddenPrice}
+                onChange={(e) =>
+                  setNewProduct({
+                    ...newProduct,
+                    hasHiddenPrice: e.target.checked,
+                  })
+                }
+                className="peer w-5 h-5 rounded border border-slate-300 checked:bg-indigo-600 checked:border-indigo-600 transition-all duration-300 shadow focus:ring-2 focus:ring-indigo-400"
+              />
+              <span className="absolute pointer-events-none opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4 text-white"
+                  fill="none"
+                  viewBox="0 0 20 20"
+                  stroke="currentColor"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+              </span>
+              <span className="ml-2 text-sm font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors peer-checked:text-indigo-600">
+                Sakrij cenu za korisnike
+              </span>
+            </label>
+          </div>
         </div>
 
         {/* Upload slika */}
@@ -391,8 +439,22 @@ export default function AdminPanel() {
                     </td>
                     <td className="py-4 text-gray-600">{prod.category}</td>
                     <td className="py-4 font-bold text-green-600 text-lg">
-                      {formatPrice(prod.price)} RSD
+                      {prod.price !== null ? (
+                        formatPrice(prod.price) + " RSD"
+                      ) : allowed ? (
+                        formatPrice(prod.hiddenPrice) + " RSD (skrivena)"
+                      ) : (
+                        <span className="italic text-gray-400">
+                          Cena skrivena
+                        </span>
+                      )}
+                      {prod.hiddenPrice && (
+                        <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold ml-2 animate-pulse">
+                          Sakrivena cena
+                        </span>
+                      )}
                     </td>
+
                     <td className="py-4 space-x-3">
                       <button
                         onClick={() => handleEditOpen(prod)}
@@ -438,8 +500,20 @@ export default function AdminPanel() {
                 </h3>
                 <p className="text-gray-600 text-sm mb-2">{prod.category}</p>
                 <p className="font-bold text-green-600 text-lg">
-                  {formatPrice(prod.price)} RSD
+                  {prod.price !== null ? (
+                    formatPrice(prod.price) + " RSD"
+                  ) : allowed ? (
+                    formatPrice(prod.hiddenPrice) + " RSD (skrivena)"
+                  ) : (
+                    <span className="italic text-gray-400">Cena skrivena</span>
+                  )}
+                  {prod.hiddenPrice && (
+                    <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-yellow-100 text-yellow-700 text-xs font-semibold ml-2 animate-pulse">
+                      Sakrivena cena
+                    </span>
+                  )}
                 </p>
+
                 <div className="mt-3 text-center">
                   <span className="text-xs text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
                     Kliknite za opcije
@@ -552,7 +626,7 @@ export default function AdminPanel() {
             }}
             onClick={handleEditClose}
           />
-          <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 animate-scale-up max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto">
+          <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 animate-scale-up max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" data-lenis-prevent>
             <form onSubmit={handleEditSubmit} className="flex flex-col gap-6">
               <h3 className="text-xl sm:text-2xl font-bold text-center text-gray-800">
                 Izmena proizvoda
@@ -630,6 +704,39 @@ export default function AdminPanel() {
                 onChange={handleEditChange}
                 required
               />
+
+              <label className="flex items-center cursor-pointer relative group mb-4">
+                <input
+                  type="checkbox"
+                  name="hasHiddenPrice"
+                  checked={!!editProduct.hasHiddenPrice}
+                  onChange={(e) =>
+                    setEditProduct({
+                      ...editProduct,
+                      hasHiddenPrice: e.target.checked,
+                    })
+                  }
+                  className="peer w-5 h-5 rounded border border-slate-300 checked:bg-indigo-600 checked:border-indigo-600 transition-all duration-300 shadow focus:ring-2 focus:ring-indigo-400"
+                />
+                <span className="absolute pointer-events-none opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-white"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                    stroke="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span className="ml-2 text-sm font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors peer-checked:text-indigo-600">
+                  Sakrij cenu za korisnike
+                </span>
+              </label>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
                 <button

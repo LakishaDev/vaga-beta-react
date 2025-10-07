@@ -40,11 +40,21 @@ import PhoneVerifyModal from "../../components/shop/PhoneVerifyModal";
 
 // Helperi
 function srRsd(n) {
-  return n.toLocaleString("sr-RS") + " RSD";
+  return n ? n.toLocaleString("sr-RS") + " RSD" : "Cena na upit";
 }
 function srDate(ts) {
   const date = ts?.toDate ? ts.toDate() : new Date(ts);
   return date.toLocaleString("sr-RS");
+}
+
+// Funkcija za prepoznavanje skrivene cene
+function hasHiddenPrice(product) {
+  return product.hiddenPrice && !product.price;
+}
+
+// Funkcija za dobijanje cene proizvoda
+function getProductPrice(product) {
+  return product.price || product.hiddenPrice || 0;
 }
 
 // Floating Label Input (koristi se u edit profilu)
@@ -527,65 +537,114 @@ export default function Profile() {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 md:auto-rows-fr">
-              {orders.map((order, idx) => (
-                <motion.div
-                  key={order.createdAt?.seconds || idx}
-                  className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100 cursor-pointer flex flex-col h-full"
-                  initial={{ opacity: 0, y: 40 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.5, delay: idx * 0.1 }}
-                  onClick={() => {
-                    setSelectedOrder(order);
-                    setOrderModalOpen(true);
-                  }}
-                  whileHover={{
-                    scale: 1.02,
-                    y: -8,
-                    boxShadow: "0 20px 40px rgba(34, 211, 238, 0.15)",
-                    borderColor: "#22d3ee",
-                  }}
-                  layout
-                >
-                  <div className="flex justify-between items-center mb-4">
-                    <span className="text-sm text-gray-500 font-medium">
-                      {srDate(order.createdAt)}
-                    </span>
-                    <StatusBadge status={order.status} />
-                  </div>
+              {orders.map((order, idx) => {
+                // Računaj ukupno sa proverom skrivenih cena
+                const orderTotal = order.cart.reduce((acc, product) => {
+                  return acc + getProductPrice(product) * product.qty;
+                }, 0);
 
-                  <div className="space-y-3 mb-4 md:max-h-56 md:overflow-y-auto custom-scrollbar">
-                    {order.cart.map((product) => (
-                      <div
-                        key={product.id}
-                        className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        <ProgressiveImage
-                          src={product.imgUrl}
-                          alt={product.name}
-                          className="w-14 h-14 rounded-xl object-cover shadow-sm"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <div className="font-semibold text-gray-800 truncate">
-                            {product.name}
-                          </div>
-                          <div className="text-sm text-gray-500">
-                            {srRsd(product.price)} × {product.qty}
+                const hasHiddenItems = order.cart.some(hasHiddenPrice);
+
+                return (
+                  <motion.div
+                    key={order.createdAt?.seconds || idx}
+                    className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100 cursor-pointer flex flex-col h-full"
+                    initial={{ opacity: 0, y: 40 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5, delay: idx * 0.1 }}
+                    onClick={() => {
+                      setSelectedOrder(order);
+                      setOrderModalOpen(true);
+                    }}
+                    whileHover={{
+                      scale: 1.02,
+                      y: -8,
+                      boxShadow: "0 20px 40px rgba(34, 211, 238, 0.15)",
+                      borderColor: "#22d3ee",
+                    }}
+                    layout
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-sm text-gray-500 font-medium">
+                        {srDate(order.createdAt)}
+                      </span>
+                      <StatusBadge status={order.status} />
+                    </div>
+
+                    {hasHiddenItems && (
+                      <div className="mb-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                        <span className="text-xs text-orange-700 font-semibold">
+                          Sadrži proizvode sa skrivenom cenom
+                        </span>
+                      </div>
+                    )}
+
+                    <div className="space-y-3 mb-4 md:max-h-56 md:overflow-y-auto custom-scrollbar">
+                      {order.cart.map((product) => (
+                        <div
+                          key={product.id}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                          <ProgressiveImage
+                            src={product.imgUrl}
+                            alt={product.name}
+                            className="w-14 h-14 rounded-xl object-cover shadow-sm"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <div className="font-semibold text-gray-800 truncate">
+                              {product.name}
+                              {hasHiddenPrice(product) && (
+                                <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                                  Skrivena cena
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-sm text-gray-500">
+                              {hasHiddenPrice(product) ? (
+                                <span className="italic text-orange-600">
+                                  Cena na upit × {product.qty}
+                                </span>
+                              ) : (
+                                `${srRsd(getProductPrice(product))} × ${
+                                  product.qty
+                                }`
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    ))}
-                  </div>
+                      ))}
+                    </div>
 
-                  <div className="border-t pt-4 flex justify-between items-center mt-auto">
-                    <span className="font-semibold text-gray-700">Ukupno:</span>
-                    <span className="font-bold text-bluegreen text-lg">
-                      {srRsd(
-                        order.cart.reduce((a, p) => a + p.price * p.qty, 0)
-                      )}
-                    </span>
-                  </div>
-                </motion.div>
-              ))}
+                    <div className="border-t pt-4 flex justify-between items-center mt-auto">
+                      <span className="font-semibold text-gray-700">
+                        Ukupno:
+                      </span>
+                      <div className="text-right">
+                        {hasHiddenItems ? (
+                          <div className="flex flex-col">
+                            <span className="font-bold text-bluegreen text-lg">
+                              {srRsd(
+                                order.cart.reduce(
+                                  (acc, p) =>
+                                    acc + (p.price ? p.price * p.qty : 0),
+                                  0
+                                )
+                              )}
+                            </span>
+                            <span className="text-xs text-orange-600 italic">
+                              + artikli na upit
+                            </span>
+                          </div>
+                        ) : (
+                          <span className="font-bold text-bluegreen text-lg">
+                            {srRsd(orderTotal)}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </motion.div>
