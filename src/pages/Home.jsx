@@ -79,35 +79,80 @@ export default function Home() {
           </p>
         </section>
 
-        {/* NOVA SEKCIJA – shortcut vodič & dugmad */}
-        <div className="flex flex-col items-center my-10">
-          <div className="mb-3 text-center max-w-lg">
-            <span className="block text-xl font-bold text-[#1E3E49] animate-fadeup mb-1">
-              Proverite: Da li je vaše merilo zakonski ispravno?
-            </span>
-            <span className="block text-lg text-[#2F5363] animate-fadeup delay-100">
-              Kliknite na opciju ispod za više informacija o zakonskom žigu ili
-              postupku overavanja merila.
-              <br />
-              Detaljni vodiči i primeri iz prakse dostupni su u posebnoj
-              sekciji.
-            </span>
-          </div>
-          <div className="flex flex-wrap gap-4 justify-center mt-3 animate-fadeup delay-200">
+        {/* SEKCIJA – vodič ka žigu/overavanju, stilski uklopljena */}
+        <section
+          className="
+              w-full
+              bg-gradient-to-br from-[#F5F9F7] to-[#E9EFE6]/80
+              rounded-xl shadow
+              my-10 px-4 py-8
+              flex flex-col items-center
+              animate-fadein
+            "
+        >
+          <h3 className="text-2xl sm:text-3xl font-extrabold text-[#1E3E49] text-center mb-2 animate-fadeup">
+            Potrebna vam je zakonska verifikacija ili više informacija o
+            merilima?
+          </h3>
+          <p className="text-[#2F5363] text-base sm:text-lg text-center max-w-2xl mx-auto mb-5 animate-fadeup delay-100">
+            Pripremili smo praktične vodiče i postupke za žigosanje i overu
+            vaga, sve prema važećim zakonima. Odaberite jednu od opcija ispod za
+            detalje i primere iz prakse.
+          </p>
+          <div
+            className="
+                w-full
+                max-w-xl
+                grid grid-cols-1 sm:grid-cols-2
+                gap-4 mt-3
+              "
+          >
             <button
               onClick={() => navigate("/usluge#zakonski-zig")}
-              className="flex items-center gap-2 px-5 py-3 bg-[#6EAEA2] text-white rounded-lg shadow hover:bg-[#AD5637] transition-all font-semibold animate-pop"
+              className="
+                  flex flex-col justify-center items-center gap-2
+                  py-5 px-3
+                  rounded-xl
+                  bg-white/90 hover:bg-[#6EAEA2]/10 transition
+                  border border-[#D7DACF]
+                  shadow group
+                  focus:outline-none focus:ring-2 focus:ring-[#6EAEA2]
+                  animate-pop
+                "
             >
-              <FaCertificate className="text-xl" /> Zakonski žig
+              <FaCertificate className="text-3xl text-[#6EAEA2] group-hover:scale-110 transition" />
+              <span className="text-lg font-semibold text-[#1E3E49]">
+                Zakonski žig
+              </span>
+              <span className="text-sm text-[#2F5363] opacity-80 mt-1 text-center">
+                Sve što treba da znate o žigosanju vaga i važnosti zakonskog
+                žiga.
+              </span>
             </button>
             <button
               onClick={() => navigate("/usluge#overavanje-merila")}
-              className="flex items-center gap-2 px-5 py-3 bg-[#AD5637] text-white rounded-lg shadow hover:bg-[#6EAEA2] transition-all font-semibold animate-pop"
+              className="
+                    flex flex-col justify-center items-center gap-2
+                    py-5 px-3
+                    rounded-xl
+                    bg-white/90 hover:bg-[#AD5637]/10 transition
+                    border border-[#D7DACF]
+                    shadow group
+                    focus:outline-none focus:ring-2 focus:ring-[#AD5637]
+                    animate-pop
+                  "
             >
-              <FaClipboardCheck className="text-xl" /> Overavanje merila
+              <FaClipboardCheck className="text-3xl text-[#AD5637] group-hover:scale-110 transition" />
+              <span className="text-lg font-semibold text-[#1E3E49]">
+                Overavanje merila
+              </span>
+              <span className="text-sm text-[#2F5363] opacity-80 mt-1 text-center">
+                Detaljan postupak, objašnjenja i odgovori na najčešća pitanja o
+                overavanju.
+              </span>
             </button>
           </div>
-        </div>
+        </section>
 
         {/* Sekcija Proizvodnja i softver */}
         <section className="rounded-xl p-4 bg-[#91CEC1]/30 mb-8 flex flex-col md:flex-row gap-6 items-center animate-fadein duration-1000 delay-200">
