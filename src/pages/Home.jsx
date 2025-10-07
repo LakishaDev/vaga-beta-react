@@ -13,7 +13,7 @@
 // Animacije: fadein, fadeup, pop
 
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 import Slider from "../components/Slider";
 import {
@@ -107,8 +107,8 @@ export default function Home() {
                 gap-4 mt-3
               "
           >
-            <button
-              onClick={() => navigate("/usluge#zakonski-zig")}
+            <Link
+              to="/usluge#zakonski-zig"
               className="
                   flex flex-col justify-center items-center gap-2
                   py-5 px-3
@@ -128,9 +128,9 @@ export default function Home() {
                 Sve što treba da znate o žigosanju vaga i važnosti zakonskog
                 žiga.
               </span>
-            </button>
-            <button
-              onClick={() => navigate("/usluge#overavanje-merila")}
+            </Link>
+            <Link
+              to="/usluge#overavanje-merila"
               className="
                     flex flex-col justify-center items-center gap-2
                     py-5 px-3
@@ -150,7 +150,7 @@ export default function Home() {
                 Detaljan postupak, objašnjenja i odgovori na najčešća pitanja o
                 overavanju.
               </span>
-            </button>
+            </Link>
           </div>
         </section>
 

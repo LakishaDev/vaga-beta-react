@@ -114,31 +114,6 @@ export default function Usluge() {
             <FaCogs /> Automatizovani sistemi i statistika u realnom vremenu.
           </div>
         </section>
-        <section className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 p-8 border border-[#D8E2DC] animate-pop">
-          <div className="flex items-center gap-3 mb-3">
-            <FaClipboardCheck className="text-4xl text-[#6EAEA2]" />
-            <h3 className="text-2xl font-bold text-[#6EAEA2]">
-              Overavanje merila – postupak
-            </h3>
-          </div>
-          <ol className="list-decimal ml-6 text-[#2F5363] leading-relaxed space-y-2">
-            <li className="transition-transform duration-500 hover:scale-105">
-              Provera funkcionalnosti merila
-            </li>
-            <li className="transition-transform duration-500 hover:scale-105">
-              Pregled i ispitivanje radi utvrđivanja usaglašenosti sa propisanim
-              zahtevima
-            </li>
-            <li className="transition-transform duration-500 hover:scale-105">
-              Označavanje (žigosanje) merila, izdavanje uverenja o overavanju
-              ili rešenja o odbijanju
-            </li>
-          </ol>
-          <div className="flex items-center gap-2 mt-4 text-[#AD5637] font-medium">
-            <FaBalanceScale /> Svi koraci obavljaju se po važećem Pravilniku sa
-            akreditovanim stručnjacima.
-          </div>
-        </section>
         <section className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-500 p-8 border border-[#D8E2DC] animate-slidein-right">
           <div className="flex items-center gap-3 mb-3">
             <FaCloud className="text-4xl text-[#AD5637]" />

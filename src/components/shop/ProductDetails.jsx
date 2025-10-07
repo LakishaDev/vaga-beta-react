@@ -1,4 +1,4 @@
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { db } from "../../utils/firebase";
 import {
@@ -38,7 +38,6 @@ export default function ProductDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalAnimating, setModalAnimating] = useState(false);
   const [hovered, setHovered] = useState(false);
-  const navigate = useNavigate();
 
   const closeModal = () => {
     setModalAnimating(true);
