@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { db } from "../../utils/firebase";
 import {
@@ -22,6 +22,9 @@ import {
 } from "lucide-react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
+import { ArrowLeft } from "lucide-react";
+// eslint-disable-next-line no-unused-vars
+import { motion } from "framer-motion";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -34,6 +37,8 @@ export default function ProductDetails() {
   const { showSnackbar } = useContext(SnackbarContext);
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalAnimating, setModalAnimating] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const navigate = useNavigate();
 
   const closeModal = () => {
     setModalAnimating(true);
@@ -201,6 +206,70 @@ export default function ProductDetails() {
           border: "1.5px solid rgba(170,170,185,0.23)",
         }}
       >
+        {/* Back button — na vrhu, ispod otvaranja wrappera */}
+        <div className="hidden sm:flex justify-start mb-5 px-3 pt-5">
+          <motion.div
+            className={`
+          group flex items-center
+          rounded-full bg-white/80 backdrop-blur-md border border-[#bed7ec]/70 shadow
+          px-1 py-1
+          transition-colors
+          cursor-pointer
+          hover:bg-blue-50/80 focus:outline-none
+          relative overflow-hidden whitespace-nowrap
+          min-w-[48px]
+          max-h-fit
+        `}
+            aria-label="Vrati na proizvode"
+            style={{
+              boxShadow: "0 2px 24px rgba(50,60,100,0.10)",
+              border: "1.25px solid rgba(130,170,230,0.17)",
+            }}
+            onMouseEnter={() => setHovered(true)}
+            onMouseLeave={() => setHovered(false)}
+            animate={{
+              width: hovered ? "118px" : "48px",
+              transition: { type: "spring", stiffness: 340, damping: 30 },
+            }}
+            initial={{ width: "48px" }}
+          >
+            <Link
+              to="/prodavnica/proizvodi"
+              className="flex items-center focus:outline-none"
+              style={{ textDecoration: "none", color: "inherit" }}
+            >
+              {/* Fiksni kružić za ikonu */}
+              <span
+                className="flex items-center justify-center bg-white/80 border border-[#bed7ec]/60 rounded-full shadow w-10 h-10 transition"
+                style={{
+                  minWidth: 40,
+                  minHeight: 40,
+                  maxWidth: 40,
+                  maxHeight: 40,
+                  boxShadow: "0 2px 12px rgba(50,60,100,0.10)",
+                }}
+              >
+                <ArrowLeft
+                  size={24}
+                  className="text-blue-700 drop-shadow transition-all"
+                />
+              </span>
+              {/* Animirani tekst na hover */}
+              <motion.span
+                className="pl-2 select-none font-semibold text-blue-900 text-lg hidden sm:inline-block"
+                style={{
+                  whiteSpace: "nowrap",
+                  display: "inline-block",
+                  opacity: hovered ? 1 : 0,
+                  transition: "opacity 0.22s",
+                }}
+                layout
+              >
+                Vrati
+              </motion.span>
+            </Link>
+          </motion.div>
+        </div>
         <div className="md:w-1/2 w-full flex items-center justify-center flex-col gap-6 py-5 px-2 sm:py-8 sm:px-4 animate-fade-up relative">
           {/* Popust badge */}
           {!hasHiddenPrice && showDiscount && (
