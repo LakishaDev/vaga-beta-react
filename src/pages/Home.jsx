@@ -13,6 +13,7 @@
 // Animacije: fadein, fadeup, pop
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 import Slider from "../components/Slider";
 import {
@@ -23,6 +24,7 @@ import {
   FaLaptopCode,
   FaIndustry,
   FaShieldAlt,
+  FaClipboardCheck,
 } from "react-icons/fa";
 import LepModal from "../components/UI/LepModal";
 // eslint-disable-next-line no-unused-vars
@@ -38,6 +40,7 @@ export default function Home() {
   const openModal = ({ src, text }) => setModalData({ open: true, src, text });
 
   const closeModal = () => setModalData((prev) => ({ ...prev, open: false }));
+  const navigate = useNavigate();
 
   return (
     <>
@@ -75,6 +78,36 @@ export default function Home() {
             profesionalno i sa garancijom.
           </p>
         </section>
+
+        {/* NOVA SEKCIJA – shortcut vodič & dugmad */}
+        <div className="flex flex-col items-center my-10">
+          <div className="mb-3 text-center max-w-lg">
+            <span className="block text-xl font-bold text-[#1E3E49] animate-fadeup mb-1">
+              Proverite: Da li je vaše merilo zakonski ispravno?
+            </span>
+            <span className="block text-lg text-[#2F5363] animate-fadeup delay-100">
+              Kliknite na opciju ispod za više informacija o zakonskom žigu ili
+              postupku overavanja merila.
+              <br />
+              Detaljni vodiči i primeri iz prakse dostupni su u posebnoj
+              sekciji.
+            </span>
+          </div>
+          <div className="flex flex-wrap gap-4 justify-center mt-3 animate-fadeup delay-200">
+            <button
+              onClick={() => navigate("/usluge#zakonski-zig")}
+              className="flex items-center gap-2 px-5 py-3 bg-[#6EAEA2] text-white rounded-lg shadow hover:bg-[#AD5637] transition-all font-semibold animate-pop"
+            >
+              <FaCertificate className="text-xl" /> Zakonski žig
+            </button>
+            <button
+              onClick={() => navigate("/usluge#overavanje-merila")}
+              className="flex items-center gap-2 px-5 py-3 bg-[#AD5637] text-white rounded-lg shadow hover:bg-[#6EAEA2] transition-all font-semibold animate-pop"
+            >
+              <FaClipboardCheck className="text-xl" /> Overavanje merila
+            </button>
+          </div>
+        </div>
 
         {/* Sekcija Proizvodnja i softver */}
         <section className="rounded-xl p-4 bg-[#91CEC1]/30 mb-8 flex flex-col md:flex-row gap-6 items-center animate-fadein duration-1000 delay-200">
