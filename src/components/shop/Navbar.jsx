@@ -42,7 +42,10 @@ export default function Navbar() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       setUser(user);
-      if (user && user.email === "lazar.cve@gmail.com") setIsAdmin(true);
+      const adminEmails =
+        import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) ||
+        [];
+      if (user && adminEmails.includes(user.email)) setIsAdmin(true);
       else setIsAdmin(false);
     });
     return () => unsubscribe();
