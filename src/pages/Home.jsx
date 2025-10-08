@@ -130,7 +130,7 @@ export default function Home() {
               </span>
             </Link>
             <Link
-              to="/usluge#overavanje-merila"
+              to="/usluge#overavanje-vaga"
               className="
                     flex flex-col justify-center items-center gap-2
                     py-5 px-3
@@ -144,7 +144,7 @@ export default function Home() {
             >
               <FaClipboardCheck className="text-3xl text-[#AD5637] group-hover:scale-110 transition" />
               <span className="text-lg font-semibold text-[#1E3E49]">
-                Overavanje merila
+                Overavanje vaga
               </span>
               <span className="text-sm text-[#2F5363] opacity-80 mt-1 text-center">
                 Detaljan postupak, objašnjenja i odgovori na najčešća pitanja o

@@ -184,16 +184,16 @@ export default function Usluge() {
         </div>
       </section>
 
-      {/* NOVA PODSEKCIJA Overavanje merila */}
+      {/* NOVA PODSEKCIJA Overavanje vaga */}
       <section
-        id="overavanje-merila"
+        id="overavanje-vaga"
         className="mt-16 bg-[#F5F9F7] rounded-3xl p-8 flex flex-col md:flex-row gap-10 items-center shadow-lg animate-fadein"
       >
         {/* Slika i graphic container */}
         <div className="relative w-full md:w-1/2 flex justify-center items-center">
           <img
             src={overavanjeImg}
-            alt="Overavanje merila ilustracija"
+            alt="Overavanje vaga ilustracija"
             className="rounded-2xl shadow-xl border border-[#D8E2DC] animate-pop"
             style={{ maxWidth: 400, width: "100%" }}
           />
@@ -201,7 +201,7 @@ export default function Usluge() {
         {/* Tekstualna strana */}
         <div className="w-full md:w-1/2 flex flex-col gap-6 animate-slidein-right">
           <h4 className="text-2xl font-extrabold text-[#1E3E49] mb-2 flex items-center gap-3">
-            <FaClipboardCheck className="text-[#6EAEA2]" /> Overavanje merila —
+            <FaClipboardCheck className="text-[#6EAEA2]" /> Overavanje vaga —
             stručni postupak
           </h4>
           {/* "Stepper" koraci */}
