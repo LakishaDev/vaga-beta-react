@@ -19,12 +19,14 @@ import {
   ShoppingCart,
   X,
   Percent,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { ArrowLeft } from "lucide-react";
-// eslint-disable-next-line no-unused-vars
-import { motion } from "framer-motion";
+import { motion as Motion, AnimatePresence } from "framer-motion";
+import { FiDownload, FiPackage } from "react-icons/fi";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -38,6 +40,7 @@ export default function ProductDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [modalAnimating, setModalAnimating] = useState(false);
   const [hovered, setHovered] = useState(false);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   const closeModal = () => {
     setModalAnimating(true);
@@ -207,7 +210,7 @@ export default function ProductDetails() {
       >
         {/* Back button — na vrhu, ispod otvaranja wrappera */}
         <div className="hidden sm:flex justify-start mb-5 px-3 pt-5">
-          <motion.div
+          <Motion.div
             className={`
           group flex items-center
           rounded-full bg-white/80 backdrop-blur-md border border-[#bed7ec]/70 shadow
@@ -254,7 +257,7 @@ export default function ProductDetails() {
                 />
               </span>
               {/* Animirani tekst na hover */}
-              <motion.span
+              <Motion.span
                 className="pl-2 select-none font-semibold text-blue-900 text-lg hidden sm:inline-block"
                 style={{
                   whiteSpace: "nowrap",
@@ -265,9 +268,9 @@ export default function ProductDetails() {
                 layout
               >
                 Vrati
-              </motion.span>
+              </Motion.span>
             </Link>
-          </motion.div>
+          </Motion.div>
         </div>
         <div className="md:w-1/2 w-full flex items-center justify-center flex-col gap-6 py-5 px-2 sm:py-8 sm:px-4 animate-fade-up relative">
           {/* Popust badge */}
@@ -277,21 +280,85 @@ export default function ProductDetails() {
               {product.discountPercent}% POPUST
             </span>
           )}
-          <div
-            className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-blue-100 bg-white bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-70 w-full max-w-xs cursor-zoom-in transition hover:scale-105"
-            onClick={() => {
-              setShowImageModal(true);
-              setModalAnimating(false);
-            }}
-            tabIndex={0}
-            aria-label="Otvori sliku"
-          >
-            <ProgressiveImage
-              src={product.imgUrl}
-              alt={product.name}
-              className="w-full aspect-square object-contain"
-            />
+          
+          {/* Image Carousel */}
+          <div className="relative w-full max-w-xs">
+            <div
+              className="rounded-2xl overflow-hidden shadow-lg ring-1 ring-blue-100 bg-white bg-clip-padding backdrop-filter backdrop-blur-lg bg-opacity-70 cursor-zoom-in transition hover:scale-105"
+              onClick={() => {
+                setShowImageModal(true);
+                setModalAnimating(false);
+              }}
+              tabIndex={0}
+              aria-label="Otvori sliku"
+            >
+              <AnimatePresence mode="wait">
+                <Motion.div
+                  key={currentImageIndex}
+                  initial={{ opacity: 0, x: 100 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -100 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  <ProgressiveImage
+                    src={
+                      currentImageIndex === 0
+                        ? product.imgUrl
+                        : product.images?.[currentImageIndex - 1]
+                    }
+                    alt={`${product.name} - ${currentImageIndex + 1}`}
+                    className="w-full aspect-square object-contain"
+                  />
+                </Motion.div>
+              </AnimatePresence>
+            </div>
+
+            {/* Carousel Controls */}
+            {product.images && product.images.length > 0 && (
+              <>
+                <Motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    const totalImages = 1 + (product.images?.length || 0);
+                    setCurrentImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+                  }}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
+                  style={{ backdropFilter: "blur(10px)" }}
+                >
+                  <ChevronLeft size={20} />
+                </Motion.button>
+                <Motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={() => {
+                    const totalImages = 1 + (product.images?.length || 0);
+                    setCurrentImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+                  }}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
+                  style={{ backdropFilter: "blur(10px)" }}
+                >
+                  <ChevronRight size={20} />
+                </Motion.button>
+
+                {/* Dots indicator */}
+                <div className="flex justify-center gap-2 mt-3">
+                  {[...Array(1 + (product.images?.length || 0))].map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentImageIndex(idx)}
+                      className={`w-2 h-2 rounded-full transition-all ${
+                        idx === currentImageIndex
+                          ? "bg-[#6EAEA2] w-6"
+                          : "bg-gray-300 hover:bg-[#6EAEA2]/50"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
           </div>
+
           <div className="flex gap-2 mt-2">
             <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#edeef3] text-[#2d334d]">
               <Package size={20} />
@@ -371,23 +438,89 @@ export default function ProductDetails() {
             <span className="inline-block w-5 h-5 bg-[#232221] rounded-full border border-gray-300"></span>
             <span className="inline-block w-5 h-5 bg-[#ededed] rounded-full border border-gray-300"></span>
           </div>
-          <div>
-            <details className="mb-1">
-              <summary className="cursor-pointer font-medium text-[#253869] flex items-center gap-1">
-                <Package size={16} /> Karakteristike
-              </summary>
-              <div className="mt-2 text-sm text-gray-600">
-                {product.features || "Osnovne karakteristike proizvoda..."}
-              </div>
-            </details>
-            <details>
-              <summary className="cursor-pointer font-medium text-[#253869] flex items-center gap-1">
-                <Download size={16} /> Preuzimanja
-              </summary>
-              <div className="mt-2 text-sm text-gray-600">
-                {product.downloads || "Preuzmi PDF, deklaracije..."}
-              </div>
-            </details>
+          {/* Features & Downloads with glassmorphism */}
+          <div className="w-full space-y-3 mt-4">
+            {/* Karakteristike */}
+            {product.features && product.features.length > 0 && (
+              <Motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="p-4 rounded-xl backdrop-blur-md border shadow-lg"
+                style={{
+                  background: "rgba(110, 174, 162, 0.1)",
+                  backdropFilter: "blur(10px)",
+                  border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                }}
+              >
+                <h3 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2 text-base">
+                  <FiPackage className="text-[#6EAEA2]" size={20} />
+                  Karakteristike
+                </h3>
+                <div className="space-y-2">
+                  {product.features.map((feature, idx) => (
+                    <Motion.div
+                      key={idx}
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.3 + idx * 0.1 }}
+                      className="flex justify-between items-center p-2 rounded-lg bg-white/40 backdrop-blur-sm border border-[#6EAEA2]/20"
+                    >
+                      <span className="text-sm font-semibold text-[#1E3E49]">
+                        {feature.label}:
+                      </span>
+                      <span className="text-sm text-[#2F5363]">{feature.value}</span>
+                    </Motion.div>
+                  ))}
+                </div>
+              </Motion.div>
+            )}
+
+            {/* Preuzimanja / Datasheets */}
+            {product.datasheets && product.datasheets.length > 0 && (
+              <Motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="p-4 rounded-xl backdrop-blur-md border shadow-lg"
+                style={{
+                  background: "rgba(30, 62, 73, 0.08)",
+                  backdropFilter: "blur(10px)",
+                  border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                }}
+              >
+                <h3 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2 text-base">
+                  <FiDownload className="text-[#6EAEA2]" size={20} />
+                  Preuzimanja
+                </h3>
+                <div className="space-y-2">
+                  {product.datasheets.map((datasheet, idx) => (
+                    <Motion.a
+                      key={idx}
+                      href={datasheet.url}
+                      download
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.4 + idx * 0.1 }}
+                      whileHover={{ scale: 1.02, x: 5 }}
+                      className="flex items-center gap-3 p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-[#6EAEA2]/30 hover:bg-[#91CEC1]/20 hover:border-[#6EAEA2] transition-all cursor-pointer group"
+                    >
+                      <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#6EAEA2]/20 group-hover:bg-[#6EAEA2] transition-all">
+                        <FiDownload className="text-[#1E3E49] group-hover:text-white transition-all" size={18} />
+                      </div>
+                      <div className="flex-1">
+                        <span className="text-sm font-medium text-[#1E3E49] group-hover:text-[#6EAEA2] transition-all">
+                          {datasheet.name}
+                        </span>
+                      </div>
+                      <ChevronRight className="text-[#6EAEA2] group-hover:translate-x-1 transition-transform" size={18} />
+                    </Motion.a>
+                  ))}
+                </div>
+              </Motion.div>
+            )}
           </div>
         </div>
       </div>
