@@ -12,9 +12,9 @@
 // Možeš prilagoditi izgled i funkcionalnost po želji
 // Admin email-ovi se čitaju iz .env fajla (VITE_ADMIN_EMAILS)
 
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useEffect, useState, useContext, useRef } from "react";
 import { db, auth } from "../../utils/firebase";
-import { getDocs, collection, updateDoc, doc } from "firebase/firestore";
+import { collection, updateDoc, doc, onSnapshot, query, orderBy as firestoreOrderBy } from "firebase/firestore";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
 import {
@@ -42,6 +42,7 @@ export default function AdminOrders() {
   const { showSnackbar } = useContext(SnackbarContext);
   const [allowed, setAllowed] = useState(null);
   const [orders, setOrders] = useState([]);
+  const [newOrderIds, setNewOrderIds] = useState(new Set());
   const [ordersLoading, setOrdersLoading] = useState(false);
   const [sort, setSort] = useState("desc");
   const [page, setPage] = useState(1);
@@ -53,6 +54,7 @@ export default function AdminOrders() {
   const [editingPrices, setEditingPrices] = useState({});
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [deliveryCompany, setDeliveryCompany] = useState("");
+  const initialLoadRef = useRef(true);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -64,30 +66,58 @@ export default function AdminOrders() {
     return () => unsubscribe();
   }, []);
 
-  const fetchOrders = useCallback(async () => {
-    setOrdersLoading(true);
-    try {
-      const querySnapshot = await getDocs(collection(db, "orders"));
-      let list = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      list = list.sort((a, b) => {
-        const aTime = a.createdAt?.seconds || 0;
-        const bTime = b.createdAt?.seconds || 0;
-        return sort === "desc" ? bTime - aTime : aTime - bTime;
-      });
-      setOrders(list);
-    } catch {
-      showSnackbar("Greška pri učitavanju narudžbina.", "error");
-    } finally {
-      setOrdersLoading(false);
-    }
-  }, [showSnackbar, sort]);
-
+  // Real-time listener for orders with onSnapshot
   useEffect(() => {
-    if (allowed) fetchOrders();
-  }, [allowed, fetchOrders, sort]);
+    if (!allowed) return;
+    
+    setOrdersLoading(true);
+    
+    const q = query(
+      collection(db, "orders"),
+      firestoreOrderBy("createdAt", sort === "desc" ? "desc" : "asc")
+    );
+    
+    const unsubscribe = onSnapshot(q, 
+      (snapshot) => {
+        const newIds = new Set();
+        
+        // Detect new orders (only for non-initial loads)
+        if (!initialLoadRef.current) {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              newIds.add(change.doc.id);
+            }
+          });
+        }
+        
+        let list = snapshot.docs.map((doc) => ({
+          id: doc.id,
+          ...doc.data(),
+        }));
+        
+        setOrders(list);
+        setOrdersLoading(false);
+        
+        // Mark new orders for animation
+        if (newIds.size > 0) {
+          setNewOrderIds(newIds);
+          // Clear the markers after animation
+          setTimeout(() => setNewOrderIds(new Set()), 1500);
+        }
+        
+        // Mark initial load as complete
+        initialLoadRef.current = false;
+      },
+      (error) => {
+        console.error("Error fetching orders:", error);
+        showSnackbar("Greška pri učitavanju narudžbina.", "error");
+        setOrdersLoading(false);
+      }
+    );
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
+  }, [allowed, sort, showSnackbar]);
 
   // Kada admin klikne narudžbinu...
   useEffect(() => {
@@ -135,9 +165,10 @@ export default function AdminOrders() {
       await new Promise((resolve) => setTimeout(resolve, 180));
       await updateDoc(doc(db, "orders", orderId), { status });
       showSnackbar("Status ažuriran!", "success");
-    } catch {
+    } catch (error) {
+      console.error("Error updating status:", error);
       showSnackbar("Greška pri ažuriranju statusa.", "error");
-      fetchOrders();
+      // No need to manually fetch - onSnapshot will update automatically
     }
   };
 
@@ -177,7 +208,7 @@ export default function AdminOrders() {
       });
 
       showSnackbar("Cene i dostava ažurirani!", "success");
-      fetchOrders();
+      // No need to manually fetch - onSnapshot will update automatically
       setSelectedOrder(null);
     } catch (error) {
       showSnackbar("Greška pri ažuriranju.", "error");
@@ -323,19 +354,29 @@ export default function AdminOrders() {
                       </td>
                     </motion.tr>
                   ) : (
-                    pagedOrders.map((order) => (
-                      <motion.tr
-                        key={order.id}
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 20 }}
-                        transition={{
-                          duration: 0.33,
-                          ease: [0.48, 0.06, 0.58, 1],
-                        }}
-                        className="hover:bg-bluegreen/10 transition cursor-pointer"
-                        onClick={() => setSelectedOrder(order)}
-                      >
+                    pagedOrders.map((order) => {
+                      const isNew = newOrderIds.has(order.id);
+                      return (
+                        <motion.tr
+                          key={order.id}
+                          initial={{ opacity: 0, y: 18, scale: isNew ? 0.95 : 1 }}
+                          animate={{ 
+                            opacity: 1, 
+                            y: 0,
+                            scale: isNew ? [0.95, 1.02, 1] : 1,
+                            backgroundColor: isNew ? ["rgba(34, 211, 238, 0.2)", "transparent"] : "transparent"
+                          }}
+                          exit={{ opacity: 0, y: 20 }}
+                          transition={{
+                            duration: isNew ? 0.8 : 0.33,
+                            ease: [0.48, 0.06, 0.58, 1],
+                            type: isNew ? "spring" : "tween",
+                            stiffness: 120
+                          }}
+                          className="hover:bg-bluegreen/10 transition cursor-pointer"
+                          onClick={() => setSelectedOrder(order)}
+                        >
+                      
                         <td className="px-4 py-3 font-semibold">
                           {order.ime} {order.prezime}
                         </td>
@@ -403,7 +444,8 @@ export default function AdminOrders() {
                             )}
                         </td>
                       </motion.tr>
-                    ))
+                    );
+                    })
                   )}
                 </AnimatePresence>
               </motion.tbody>
@@ -436,17 +478,33 @@ export default function AdminOrders() {
                 Nema narudžbina
               </motion.div>
             ) : (
-              pagedOrders.map((order) => (
-                <motion.div
-                  key={order.id}
-                  initial={{ opacity: 0, y: 34 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -15 }}
-                  transition={{ duration: 0.36, ease: [0.45, 0.07, 0.58, 1] }}
-                  style={{ willChange: "opacity, transform" }}
-                  className="bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 ring-1 ring-bluegreen/10 hover:scale-[1.03] hover:shadow-2xl cursor-pointer transition-all"
-                  onClick={() => setSelectedOrder(order)}
-                >
+              pagedOrders.map((order) => {
+                const isNew = newOrderIds.has(order.id);
+                return (
+                  <motion.div
+                    key={order.id}
+                    initial={{ opacity: 0, y: 34, scale: isNew ? 0.9 : 1 }}
+                    animate={{ 
+                      opacity: 1, 
+                      y: 0,
+                      scale: isNew ? [0.9, 1.05, 1] : 1
+                    }}
+                    exit={{ opacity: 0, y: -15 }}
+                    transition={{ 
+                      duration: isNew ? 0.8 : 0.36, 
+                      ease: [0.45, 0.07, 0.58, 1],
+                      type: isNew ? "spring" : "tween",
+                      stiffness: 120
+                    }}
+                    style={{ willChange: "opacity, transform" }}
+                    className={`bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 ring-1 hover:scale-[1.03] hover:shadow-2xl cursor-pointer transition-all ${
+                      isNew 
+                        ? "ring-2 ring-bluegreen bg-gradient-to-br from-cyan-50 to-white" 
+                        : "ring-bluegreen/10"
+                    }`}
+                    onClick={() => setSelectedOrder(order)}
+                  >
+                
                   <div className="flex gap-2 items-center">
                     <FaUserCircle className="text-bluegreen" />
                     <span className="font-bold">
@@ -509,7 +567,8 @@ export default function AdminOrders() {
                       formatDate(order.createdAt.seconds)}
                   </div>
                 </motion.div>
-              ))
+              );
+              })
             )}
           </AnimatePresence>
         </div>
