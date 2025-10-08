@@ -70,6 +70,8 @@ export default function AdminOrders() {
   useEffect(() => {
     if (!allowed) return;
     
+    // Reset initial load flag when sort changes
+    initialLoadRef.current = true;
     setOrdersLoading(true);
     
     const q = query(
@@ -121,21 +123,28 @@ export default function AdminOrders() {
 
   // Kada admin klikne narudžbinu...
   useEffect(() => {
-    if (selectedOrder && selectedOrder.status === "primljeno") {
-      updateOrderStatus(selectedOrder.id, "u obradi");
-    }
+    if (!selectedOrder) return;
+    
+    // Delay the auto status update to prevent UI conflicts
+    const timeoutId = setTimeout(() => {
+      if (selectedOrder && selectedOrder.status === "primljeno") {
+        updateOrderStatus(selectedOrder.id, "u obradi");
+      }
+    }, 300);
+    
     // Učitaj postojeće cene i delivery info
-    if (selectedOrder) {
-      setDeliveryPrice(selectedOrder.deliveryPrice || "");
-      setDeliveryCompany(selectedOrder.deliveryCompany || "");
-      const initialPrices = {};
-      selectedOrder.cart?.forEach((prod, idx) => {
-        if (prod.hiddenPrice && !prod.price) {
-          initialPrices[idx] = prod.suggestedPrice || "";
-        }
-      });
-      setEditingPrices(initialPrices);
-    }
+    setDeliveryPrice(selectedOrder.deliveryPrice || "");
+    setDeliveryCompany(selectedOrder.deliveryCompany || "");
+    const initialPrices = {};
+    selectedOrder.cart?.forEach((prod, idx) => {
+      if (prod.hiddenPrice && !prod.price) {
+        initialPrices[idx] = prod.suggestedPrice || "";
+      }
+    });
+    setEditingPrices(initialPrices);
+    
+    // Cleanup timeout on unmount or when selectedOrder changes
+    return () => clearTimeout(timeoutId);
     // eslint-disable-next-line
   }, [selectedOrder]);
 
