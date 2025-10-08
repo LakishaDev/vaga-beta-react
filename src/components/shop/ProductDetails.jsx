@@ -1,5 +1,11 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useState, useContext, useCallback } from "react";
+import {
+  useEffect,
+  useState,
+  useContext,
+  useCallback,
+  useLayoutEffect,
+} from "react";
 import { db } from "../../utils/firebase";
 import {
   doc,
@@ -72,20 +78,29 @@ export default function ProductDetails() {
   // Handle keyboard navigation in modal
   useEffect(() => {
     if (!showImageModal) return;
-    
+
     const handleKeyDown = (e) => {
-      if (e.key === 'ArrowLeft') {
+      if (e.key === "ArrowLeft") {
         prevModalImage();
-      } else if (e.key === 'ArrowRight') {
+      } else if (e.key === "ArrowRight") {
         nextModalImage();
-      } else if (e.key === 'Escape') {
+      } else if (e.key === "Escape") {
         closeModal();
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showImageModal, nextModalImage, prevModalImage]);
+
+  // Scroll to top on product change with lenis support
+  useLayoutEffect(() => {
+    if (window.lenis) {
+      setTimeout(() => {
+        window.lenis.scrollTo(0, { offset: 0, duration: 1.2 });
+      }, 100);
+    }
+  }, []);
 
   function addDiscountInfo(product) {
     let percent = 0.1;
@@ -225,7 +240,7 @@ export default function ProductDetails() {
             >
               <X size={28} />
             </button>
-            
+
             {/* Navigation arrows - show only if there are multiple images */}
             {product.images && product.images.length > 0 && (
               <>
@@ -377,7 +392,7 @@ export default function ProductDetails() {
             </Link>
           </Motion.div>
         </div>
-        <div className="md:w-1/2 w-full flex items-center justify-center flex-col gap-6 py-5 px-2 sm:py-8 sm:px-4 animate-fade-up relative">
+        <div className="md:w-1/2 w-full flex items-center justify-items-start flex-col gap-6 py-5 px-2 sm:py-20 sm:px-4 animate-fade-up relative">
           {/* Popust badge */}
           {!hasHiddenPrice && showDiscount && (
             <span className="absolute top-3 left-3 sm:top-5 sm:left-6 bg-green-100 text-green-800 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow border border-green-200 flex items-center gap-1 z-20">
@@ -385,7 +400,7 @@ export default function ProductDetails() {
               {product.discountPercent}% POPUST
             </span>
           )}
-          
+
           {/* Image Carousel */}
           <div className="relative w-full max-w-xs">
             <div
@@ -423,7 +438,9 @@ export default function ProductDetails() {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
                     const totalImages = 1 + (product.images?.length || 0);
-                    setCurrentImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
+                    setCurrentImageIndex((prev) =>
+                      prev === 0 ? totalImages - 1 : prev - 1
+                    );
                   }}
                   className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
                   style={{ backdropFilter: "blur(10px)" }}
@@ -435,7 +452,9 @@ export default function ProductDetails() {
                   whileTap={{ scale: 0.9 }}
                   onClick={() => {
                     const totalImages = 1 + (product.images?.length || 0);
-                    setCurrentImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
+                    setCurrentImageIndex((prev) =>
+                      prev === totalImages - 1 ? 0 : prev + 1
+                    );
                   }}
                   className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
                   style={{ backdropFilter: "blur(10px)" }}
@@ -445,17 +464,19 @@ export default function ProductDetails() {
 
                 {/* Dots indicator */}
                 <div className="flex justify-center gap-2 mt-3">
-                  {[...Array(1 + (product.images?.length || 0))].map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentImageIndex(idx)}
-                      className={`w-2 h-2 rounded-full transition-all ${
-                        idx === currentImageIndex
-                          ? "bg-[#6EAEA2] w-6"
-                          : "bg-gray-300 hover:bg-[#6EAEA2]/50"
-                      }`}
-                    />
-                  ))}
+                  {[...Array(1 + (product.images?.length || 0))].map(
+                    (_, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setCurrentImageIndex(idx)}
+                        className={`w-2 h-2 rounded-full transition-all ${
+                          idx === currentImageIndex
+                            ? "bg-[#6EAEA2] w-6"
+                            : "bg-gray-300 hover:bg-[#6EAEA2]/50"
+                        }`}
+                      />
+                    )
+                  )}
                 </div>
               </>
             )}
@@ -571,7 +592,9 @@ export default function ProductDetails() {
                       <span className="text-sm font-semibold text-[#1E3E49]">
                         {feature.label}:
                       </span>
-                      <span className="text-sm text-[#2F5363]">{feature.value}</span>
+                      <span className="text-sm text-[#2F5363]">
+                        {feature.value}
+                      </span>
                     </Motion.div>
                   ))}
                 </div>
@@ -610,14 +633,20 @@ export default function ProductDetails() {
                       className="flex items-center gap-3 p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-[#6EAEA2]/30 hover:bg-[#91CEC1]/20 hover:border-[#6EAEA2] transition-all cursor-pointer group"
                     >
                       <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#6EAEA2]/20 group-hover:bg-[#6EAEA2] transition-all">
-                        <FiDownload className="text-[#1E3E49] group-hover:text-white transition-all" size={18} />
+                        <FiDownload
+                          className="text-[#1E3E49] group-hover:text-white transition-all"
+                          size={18}
+                        />
                       </div>
                       <div className="flex-1">
                         <span className="text-sm font-medium text-[#1E3E49] group-hover:text-[#6EAEA2] transition-all">
                           {datasheet.name}
                         </span>
                       </div>
-                      <ChevronRight className="text-[#6EAEA2] group-hover:translate-x-1 transition-transform" size={18} />
+                      <ChevronRight
+                        className="text-[#6EAEA2] group-hover:translate-x-1 transition-transform"
+                        size={18}
+                      />
                     </Motion.a>
                   ))}
                 </div>
