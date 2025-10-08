@@ -48,7 +48,7 @@ export default function ProductGrid() {
   const [priceRange, setPriceRange] = useState([0, 100000]);
   const [minPrice, setMinPrice] = useState(0);
   const [maxPrice, setMaxPrice] = useState(100000);
-  const [filtersOpen, setFiltersOpen] = useState(true);
+  const [filtersOpen, setFiltersOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
   const lenisRef = useRef();
@@ -202,7 +202,9 @@ export default function ProductGrid() {
         style={{ overflow: "visible" }}
       >
         <button
-          className="flex justify-between items-center w-full bg-gradient-to-r from-bluegreen to-midnight text-white px-4 sm:px-7 py-4 sm:py-5 rounded-t-2xl shadow font-bold text-xl sm:text-2xl tracking-wide uppercase"
+          className={`flex justify-between items-center w-full bg-gradient-to-r from-bluegreen to-midnight text-white px-4 sm:px-7 py-4 sm:py-5 ${
+            filtersOpen ? "rounded-t-2xl" : "rounded-2xl"
+          } shadow font-bold text-xl sm:text-2xl tracking-wide uppercase`}
           onClick={() => setFiltersOpen((open) => !open)}
           style={{
             borderBottom: "1px solid #e5e7eb",
