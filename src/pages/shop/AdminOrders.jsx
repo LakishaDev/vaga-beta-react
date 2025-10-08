@@ -619,7 +619,7 @@ export default function AdminOrders() {
                     </h4>
                     <div className="space-y-3">
                       <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
                           <FaDollarSign size={12} /> Cena dostave (RSD)
                         </label>
                         <motion.input
@@ -632,7 +632,7 @@ export default function AdminOrders() {
                         />
                       </div>
                       <div>
-                        <label className="block text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
+                        <label className="text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
                           <FaTruck size={12} /> Firma dostavljača
                         </label>
                         <motion.input
