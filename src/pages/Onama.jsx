@@ -12,7 +12,7 @@
 // Animacije sa Tailwind CSS i animate.css
 // Koristi ProgressiveImage za optimizovane slike
 // Ikonice iz react-icons
-import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments } from "react-icons/fa";
+import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments, FaFilePdf, FaCertificate, FaFileAlt, FaDownload, FaExternalLinkAlt } from "react-icons/fa";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 
 export default function Onama() {
@@ -90,16 +90,201 @@ export default function Onama() {
         </ul>
       </section>
 
-      {/* Dokumentacija */}
-      <h3 className="text-xl text-[#1E3E49] font-bold mb-3 animate-pop">Dokumentacija o akreditaciji</h3>
-      <ul className="list-disc pl-6 text-[#6EAEA2] space-y-2 text-base animate-fadeup">
-        <li><a href="/dokumentacija/Sertifikat_o_akreditaciji.pdf" className="underline hover:text-[#AD5637]" target="_blank">Sertifikat o akreditaciji</a></li>
-        <li><a href="/dokumentacija/Odluka.pdf" className="underline hover:text-[#AD5637]" target="_blank">Odluka</a></li>
-        <li><a href="/dokumentacija/Predmet_Odluka.pdf" className="underline hover:text-[#AD5637]" target="_blank">Predmet Odluka</a></li>
-        <li><a href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_1.pdf" className="underline hover:text-[#AD5637]" target="_blank">Rešenje DMDM za V-B Lab 1</a></li>
-        <li><a href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_2.pdf" className="underline hover:text-[#AD5637]" target="_blank">Rešenje DMDM za V-B Lab 2</a></li>
-        <li><a href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_3.pdf" className="underline hover:text-[#AD5637]" target="_blank">Rešenje DMDM za V-B Lab 3</a></li>
-      </ul>
+      {/* Dokumentacija - Modern UI/UX with Glass Morphism */}
+      <section className="mt-10 animate-fadeup">
+        <div className="text-center mb-8">
+          <div className="inline-flex items-center justify-center gap-3 mb-4 animate-pop">
+            <FaCertificate className="text-4xl text-[#AD5637] animate-spin-slow" />
+            <h3 className="text-3xl text-[#1E3E49] font-extrabold tracking-tight">
+              Dokumentacija o akreditaciji
+            </h3>
+          </div>
+          <p className="text-[#2F5363] text-base max-w-2xl mx-auto">
+            Preuzmi zvanične dokumente o našoj akreditaciji i sertifikatima
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
+          {/* Sertifikat */}
+          <a
+            href="/dokumentacija/Sertifikat_o_akreditaciji.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-2xl border border-[#91CEC1]/30 bg-gradient-to-br from-white/60 to-[#91CEC1]/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#6EAEA2] animate-fadein"
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6 flex flex-col items-start h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-[#6EAEA2]/20 group-hover:bg-[#6EAEA2]/30 transition-colors duration-300">
+                  <FaCertificate className="text-2xl text-[#1E3E49] group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <FaDownload className="ml-auto text-[#6EAEA2] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300" />
+              </div>
+              <h4 className="text-lg font-bold text-[#1E3E49] mb-2 group-hover:text-[#6EAEA2] transition-colors duration-300">
+                Sertifikat o akreditaciji
+              </h4>
+              <p className="text-sm text-[#2F5363] mb-4 flex-grow">
+                Zvanični sertifikat o akreditaciji laboratorije
+              </p>
+              <div className="flex items-center gap-2 text-sm text-[#AD5637] font-semibold">
+                <FaFilePdf className="text-base" />
+                <span>PDF dokument</span>
+                <FaExternalLinkAlt className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </a>
+
+          {/* Odluka */}
+          <a
+            href="/dokumentacija/Odluka.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-2xl border border-[#AD5637]/30 bg-gradient-to-br from-white/60 to-[#AD5637]/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#AD5637] animate-fadein"
+            style={{ animationDelay: '0.1s' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#AD5637]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6 flex flex-col items-start h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-[#AD5637]/20 group-hover:bg-[#AD5637]/30 transition-colors duration-300">
+                  <FaFileAlt className="text-2xl text-[#1E3E49] group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <FaDownload className="ml-auto text-[#AD5637] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300" />
+              </div>
+              <h4 className="text-lg font-bold text-[#1E3E49] mb-2 group-hover:text-[#AD5637] transition-colors duration-300">
+                Odluka
+              </h4>
+              <p className="text-sm text-[#2F5363] mb-4 flex-grow">
+                Službena odluka o akreditaciji
+              </p>
+              <div className="flex items-center gap-2 text-sm text-[#AD5637] font-semibold">
+                <FaFilePdf className="text-base" />
+                <span>PDF dokument</span>
+                <FaExternalLinkAlt className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </a>
+
+          {/* Predmet Odluka */}
+          <a
+            href="/dokumentacija/Predmet_Odluka.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-2xl border border-[#1E3E49]/30 bg-gradient-to-br from-white/60 to-[#1E3E49]/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#1E3E49] animate-fadein"
+            style={{ animationDelay: '0.2s' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1E3E49]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6 flex flex-col items-start h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-[#1E3E49]/20 group-hover:bg-[#1E3E49]/30 transition-colors duration-300">
+                  <FaFileAlt className="text-2xl text-[#1E3E49] group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <FaDownload className="ml-auto text-[#1E3E49] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300" />
+              </div>
+              <h4 className="text-lg font-bold text-[#1E3E49] mb-2 group-hover:text-[#2F5363] transition-colors duration-300">
+                Predmet Odluka
+              </h4>
+              <p className="text-sm text-[#2F5363] mb-4 flex-grow">
+                Detaljni predmet odluke o akreditaciji
+              </p>
+              <div className="flex items-center gap-2 text-sm text-[#AD5637] font-semibold">
+                <FaFilePdf className="text-base" />
+                <span>PDF dokument</span>
+                <FaExternalLinkAlt className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </a>
+
+          {/* Rešenje DMDM 1 */}
+          <a
+            href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_1.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-2xl border border-[#6EAEA2]/30 bg-gradient-to-br from-white/60 to-[#6EAEA2]/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#6EAEA2] animate-fadein"
+            style={{ animationDelay: '0.3s' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6 flex flex-col items-start h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-[#6EAEA2]/20 group-hover:bg-[#6EAEA2]/30 transition-colors duration-300">
+                  <FaClipboardCheck className="text-2xl text-[#1E3E49] group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <FaDownload className="ml-auto text-[#6EAEA2] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300" />
+              </div>
+              <h4 className="text-lg font-bold text-[#1E3E49] mb-2 group-hover:text-[#6EAEA2] transition-colors duration-300">
+                Rešenje DMDM Lab 1
+              </h4>
+              <p className="text-sm text-[#2F5363] mb-4 flex-grow">
+                Rešenje Direkcije za mere i dragocene metale
+              </p>
+              <div className="flex items-center gap-2 text-sm text-[#AD5637] font-semibold">
+                <FaFilePdf className="text-base" />
+                <span>PDF dokument</span>
+                <FaExternalLinkAlt className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </a>
+
+          {/* Rešenje DMDM 2 */}
+          <a
+            href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_2.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-2xl border border-[#91CEC1]/30 bg-gradient-to-br from-white/60 to-[#91CEC1]/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#91CEC1] animate-fadein"
+            style={{ animationDelay: '0.4s' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#91CEC1]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6 flex flex-col items-start h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-[#91CEC1]/20 group-hover:bg-[#91CEC1]/30 transition-colors duration-300">
+                  <FaClipboardCheck className="text-2xl text-[#1E3E49] group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <FaDownload className="ml-auto text-[#91CEC1] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300" />
+              </div>
+              <h4 className="text-lg font-bold text-[#1E3E49] mb-2 group-hover:text-[#6EAEA2] transition-colors duration-300">
+                Rešenje DMDM Lab 2
+              </h4>
+              <p className="text-sm text-[#2F5363] mb-4 flex-grow">
+                Rešenje Direkcije za mere i dragocene metale
+              </p>
+              <div className="flex items-center gap-2 text-sm text-[#AD5637] font-semibold">
+                <FaFilePdf className="text-base" />
+                <span>PDF dokument</span>
+                <FaExternalLinkAlt className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </a>
+
+          {/* Rešenje DMDM 3 */}
+          <a
+            href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_3.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative overflow-hidden rounded-2xl border border-[#AD5637]/30 bg-gradient-to-br from-white/60 to-[#AD5637]/10 backdrop-blur-sm shadow-lg hover:shadow-2xl transition-all duration-500 hover:scale-105 hover:border-[#AD5637] animate-fadein"
+            style={{ animationDelay: '0.5s' }}
+          >
+            <div className="absolute inset-0 bg-gradient-to-br from-[#AD5637]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+            <div className="relative p-6 flex flex-col items-start h-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="p-3 rounded-xl bg-[#AD5637]/20 group-hover:bg-[#AD5637]/30 transition-colors duration-300">
+                  <FaClipboardCheck className="text-2xl text-[#1E3E49] group-hover:scale-110 transition-transform duration-300" />
+                </div>
+                <FaDownload className="ml-auto text-[#AD5637] opacity-0 group-hover:opacity-100 transform translate-y-2 group-hover:translate-y-0 transition-all duration-300" />
+              </div>
+              <h4 className="text-lg font-bold text-[#1E3E49] mb-2 group-hover:text-[#AD5637] transition-colors duration-300">
+                Rešenje DMDM Lab 3
+              </h4>
+              <p className="text-sm text-[#2F5363] mb-4 flex-grow">
+                Rešenje Direkcije za mere i dragocene metale
+              </p>
+              <div className="flex items-center gap-2 text-sm text-[#AD5637] font-semibold">
+                <FaFilePdf className="text-base" />
+                <span>PDF dokument</span>
+                <FaExternalLinkAlt className="text-xs ml-auto opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+              </div>
+            </div>
+          </a>
+        </div>
+      </section>
     </main>
   );
 }
