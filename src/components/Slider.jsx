@@ -3,18 +3,18 @@ import { useRef, useEffect, useState } from "react";
 import { IoExpand } from "react-icons/io5";
 
 const sliderData = [
-  { tekst: "Veliki set tegova", slika: "slika3" },
-  { tekst: "Set tegova za precizna merenja", slika: "004" },
-  { tekst: "Kamionske vage", slika: "spojena12134543" },
-  { tekst: "Mesoreznica", slika: "probamesoreznica41544" },
-  { tekst: "Precizna vaga", slika: "preciznavaga123" },
-  { tekst: "Proizvodi u ponudi", slika: "slicka" },
-  { tekst: "Stočna vaga", slika: "stocarskavaga" },
-  { tekst: "Platformska vaga", slika: "home/platformskavaga" },
   { tekst: "Paletna vaga", slika: "home/paletarka1" },
   { tekst: "Paletna vaga", slika: "home/paletarka2" },
   { tekst: "Kamionska vaga", slika: "home/kamionskavaga1" },
+  { tekst: "Platformska vaga", slika: "home/platformskavaga" },
   { tekst: "Mehanička vaga", slika: "home/mehanickavaga1" },
+  { tekst: "Kamionske vage", slika: "spojena12134543" },
+  { tekst: "Precizna vaga", slika: "preciznavaga123" },
+  { tekst: "Stočna vaga", slika: "stocarskavaga" },
+  { tekst: "Veliki set tegova", slika: "slika3" },
+  { tekst: "Set tegova za precizna merenja", slika: "004" },
+  { tekst: "Mesoreznica", slika: "probamesoreznica41544" },
+  { tekst: "Proizvodi u ponudi", slika: "slicka" },
 ];
 const trackImages = [...sliderData, ...sliderData];
 
@@ -37,7 +37,7 @@ export default function Slider({ onImageClick }) {
   useEffect(() => {
     const container = containerRef.current;
     let frame;
-    let speed = 0.9;
+    let speed = 1.5; // Adjust scroll speed here
     function animate() {
       if (!container) return;
       if (container.scrollLeft >= container.scrollWidth / 2) {
