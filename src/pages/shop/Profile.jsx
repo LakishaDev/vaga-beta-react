@@ -28,8 +28,6 @@ import {
   AlertTriangle,
   ReceiptText,
   Home,
-  Truck,
-  HandCoins,
   Handshake,
 } from "lucide-react";
 import Loader from "../../components/Loader";
@@ -40,6 +38,7 @@ import DeleteAccountModal from "../../components/shop/DeleteAccountModal";
 import PasswordResetModal from "../../components/shop/PasswordResetModal";
 import OrderDetailsModal from "../../components/shop/OrderDetailsModal";
 import PhoneVerifyModal from "../../components/shop/PhoneVerifyModal";
+import { FaShippingFast } from "react-icons/fa";
 
 // Helperi
 function srRsd(n) {
@@ -636,7 +635,7 @@ export default function Profile() {
                     {(order.deliveryPrice || order.deliveryCompany) && (
                       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200 mb-3">
                         <div className="text-xs font-semibold text-blue-700 mb-1 flex items-center gap-1">
-                          <Truck size={12} /> Dostava
+                          <FaShippingFast size={12} /> Dostava
                         </div>
                         {order.deliveryCompany && (
                           <div className="text-xs text-gray-600">

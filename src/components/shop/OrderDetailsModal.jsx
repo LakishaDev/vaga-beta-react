@@ -16,11 +16,11 @@ import {
   MapPin,
   Mail,
   Phone,
-  Truck,
   DollarSign,
 } from "lucide-react";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import StatusBadge from "./StatusBadge";
+import { FaShippingFast } from "react-icons/fa";
 
 function srRsd(n) {
   return n ? n.toLocaleString("sr-RS") + " RSD" : "Cena na upit";
@@ -215,7 +215,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                 {(order.deliveryPrice || order.deliveryCompany) && (
                   <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200 mt-4">
                     <div className="flex items-center gap-2 text-bluegreen font-bold mb-2">
-                      <Truck size={18} />
+                      <FaShippingFast size={18} />
                       <span>Dostava</span>
                     </div>
                     {order.deliveryCompany && (
