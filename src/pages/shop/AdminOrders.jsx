@@ -28,6 +28,12 @@ import {
   FaHome,
   FaTimes,
   FaExclamationCircle,
+  FaEye,
+  FaEdit,
+  FaSave,
+  FaUndo,
+  FaDollarSign,
+  FaShippingFast,
 } from "react-icons/fa";
 import StatusBadge from "../../components/shop/StatusBadge";
 // eslint-disable-next-line no-unused-vars
@@ -46,6 +52,9 @@ export default function AdminOrders() {
   const [pagingAnimKey, setPagingAnimKey] = useState(1);
   const [otvoriBrisanjeModal, setOtvoriBrisanjeModal] = useState(false);
   const [currectOrderId, setCurrectOrderId] = useState(null);
+  const [editingPrices, setEditingPrices] = useState({});
+  const [deliveryPrice, setDeliveryPrice] = useState("");
+  const [deliveryCompany, setDeliveryCompany] = useState("");
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -86,6 +95,18 @@ export default function AdminOrders() {
   useEffect(() => {
     if (selectedOrder && selectedOrder.status === "primljeno") {
       updateOrderStatus(selectedOrder.id, "u obradi");
+    }
+    // Učitaj postojeće cene i delivery info
+    if (selectedOrder) {
+      setDeliveryPrice(selectedOrder.deliveryPrice || "");
+      setDeliveryCompany(selectedOrder.deliveryCompany || "");
+      const initialPrices = {};
+      selectedOrder.cart?.forEach((prod, idx) => {
+        if (prod.hiddenPrice && !prod.price) {
+          initialPrices[idx] = prod.suggestedPrice || "";
+        }
+      });
+      setEditingPrices(initialPrices);
     }
     // eslint-disable-next-line
   }, [selectedOrder]);
@@ -131,6 +152,46 @@ export default function AdminOrders() {
       hour: "2-digit",
       minute: "2-digit",
     });
+
+  // Funkcija za prepoznavanje skrivene cene
+  const hasHiddenPrice = (product) => {
+    return product.hiddenPrice && !product.price;
+  };
+
+  // Update suggested prices and delivery info
+  const updateOrderPricesAndDelivery = async () => {
+    if (!selectedOrder) return;
+    try {
+      const updatedCart = selectedOrder.cart.map((prod, idx) => {
+        if (hasHiddenPrice(prod) && editingPrices[idx] !== undefined) {
+          return { ...prod, suggestedPrice: parseFloat(editingPrices[idx]) || 0 };
+        }
+        return prod;
+      });
+
+      await updateDoc(doc(db, "orders", selectedOrder.id), {
+        cart: updatedCart,
+        deliveryPrice: parseFloat(deliveryPrice) || 0,
+        deliveryCompany: deliveryCompany || "",
+      });
+
+      showSnackbar("Cene i dostava ažurirani!", "success");
+      fetchOrders();
+      setSelectedOrder(null);
+    } catch (error) {
+      showSnackbar("Greška pri ažuriranju.", "error");
+      console.error(error);
+    }
+  };
+
+  const copyOriginalPrice = (idx, product) => {
+    if (product.hiddenPrice) {
+      setEditingPrices((prev) => ({
+        ...prev,
+        [idx]: product.hiddenPrice,
+      }));
+    }
+  };
 
   const Loader = (
     <div className="flex justify-center items-center py-20">
@@ -454,138 +515,300 @@ export default function AdminOrders() {
 
         {/* --- Modal --- */}
         {/* Detalji narudžbine */}
-        {selectedOrder && (
-          <div
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadein"
-            data-lenis-prevent
-          >
-            <div
-              className="absolute inset-0"
+        <AnimatePresence>
+          {selectedOrder && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
+              data-lenis-prevent
               onClick={() => setSelectedOrder(null)}
-            ></div>
-            <div className="relative bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl w-full max-w-[480px] p-7 mx-auto overflow-y-auto max-h-[90vh] animate-popup border border-bluegreen/30">
-              <button
-                className="absolute right-3 top-3 text-bluegreen bg-white/50 rounded-full p-2 hover:bg-bluegreen/20 transition shadow"
-                onClick={() => setSelectedOrder(null)}
+            >
+              <motion.div
+                initial={{ scale: 0.9, opacity: 0, y: 20 }}
+                animate={{ scale: 1, opacity: 1, y: 0 }}
+                exit={{ scale: 0.9, opacity: 0, y: 20 }}
+                transition={{ type: "spring", damping: 25, stiffness: 300 }}
+                className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-4xl p-7 mx-auto overflow-y-auto max-h-[90vh] border border-bluegreen/30"
+                onClick={(e) => e.stopPropagation()}
               >
-                <FaTimes size={20} />
-              </button>
-              <h3 className="text-2xl font-bold text-bluegreen mb-2 flex items-center gap-2">
-                <FaTruck /> Detalji porudžbine
-              </h3>
-              <div className="mb-3 flex flex-col gap-1">
-                <div>
-                  <FaUserCircle className="inline mb-1 mr-1 text-gray-400" />{" "}
-                  <span className="font-bold">
-                    {selectedOrder.ime} {selectedOrder.prezime}
-                  </span>
-                </div>
-                <div>
-                  <FaEnvelope className="inline mb-1 mr-1 text-gray-400" />{" "}
-                  {selectedOrder.email}
-                </div>
-                <div>
-                  <FaHome className="inline mb-1 mr-1 text-gray-400" />{" "}
-                  {selectedOrder.adresa}, {selectedOrder.grad}
-                </div>
-                {selectedOrder.tip === "pravno" && (
-                  <div>
-                    <FaBuilding className="inline mb-1 mr-1 text-gray-400" />{" "}
-                    Firma: <b>{selectedOrder.firma}</b> PIB:{" "}
-                    <b>{selectedOrder.pib}</b> MB: <b>{selectedOrder.matbr}</b>
-                  </div>
-                )}
-                <div>
-                  <b>Telefon:</b> {selectedOrder.telefon}
-                </div>
-                <div>
-                  Status: <StatusBadge status={selectedOrder.status} />
-                </div>
-                <div>
-                  <span className="text-xs text-gray-400">
-                    Kreirana:{" "}
-                    {selectedOrder.createdAt?.seconds &&
-                      formatDate(selectedOrder.createdAt.seconds)}
-                  </span>
-                </div>
-              </div>
-              <div className="mt-4">
-                <h4 className="font-black mb-2 text-charcoal flex gap-2 items-center text-lg">
-                  <FaBoxes /> Poručeni proizvodi
-                </h4>
-                <div className="flex flex-col gap-3">
-                  {selectedOrder.cart?.map((prod, i) => (
-                    <div
-                      key={i}
-                      className="flex items-center gap-2 p-2 rounded-lg bg-gray-50 border border-bluegreen/10 shadow animate-fadein"
-                    >
-                      <div className="w-14 h-14 rounded-lg overflow-hidden flex-shrink-0 bg-bluegreen/10">
-                        <ProgressiveImage
-                          src={prod.imgUrl}
-                          alt={prod.name}
-                          className="object-cover w-full h-full rounded-lg"
-                        />
+                <button
+                  className="absolute right-3 top-3 text-bluegreen bg-white/50 rounded-full p-2 hover:bg-bluegreen/20 transition shadow z-10"
+                  onClick={() => setSelectedOrder(null)}
+                >
+                  <FaTimes size={20} />
+                </button>
+                <motion.h3
+                  initial={{ x: -20, opacity: 0 }}
+                  animate={{ x: 0, opacity: 1 }}
+                  className="text-2xl font-bold text-bluegreen mb-4 flex items-center gap-2"
+                >
+                  <FaTruck /> Detalji porudžbine - Admin Pregled
+                </motion.h3>
+
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                  {/* Left Column - Customer Info */}
+                  <motion.div
+                    initial={{ x: -20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.1 }}
+                    className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 border border-blue-200/50 backdrop-blur-sm"
+                  >
+                    <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-bluegreen">
+                      <FaUserCircle /> Informacije o kupcu
+                    </h4>
+                    <div className="space-y-2 text-sm">
+                      <div className="flex items-center gap-2">
+                        <FaUserCircle className="text-gray-400" />
+                        <span className="font-semibold">
+                          {selectedOrder.ime} {selectedOrder.prezime}
+                        </span>
                       </div>
-                      <div className="flex-1 pl-2">
-                        <div className="font-bold text-bluegreen">
-                          {prod.name}
+                      <div className="flex items-center gap-2">
+                        <FaEnvelope className="text-gray-400" />
+                        <span>{selectedOrder.email}</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <FaHome className="text-gray-400" />
+                        <span>
+                          {selectedOrder.adresa}, {selectedOrder.grad}
+                        </span>
+                      </div>
+                      {selectedOrder.tip === "pravno" && (
+                        <div className="flex items-start gap-2 bg-white/50 p-2 rounded-lg mt-2">
+                          <FaBuilding className="text-gray-400 mt-1" />
+                          <div className="text-xs">
+                            <div>
+                              <b>Firma:</b> {selectedOrder.firma}
+                            </div>
+                            <div>
+                              <b>PIB:</b> {selectedOrder.pib}
+                            </div>
+                            <div>
+                              <b>MB:</b> {selectedOrder.matbr}
+                            </div>
+                          </div>
                         </div>
-                        <div className="text-xs text-gray-500">
-                          {prod.category}
-                        </div>
-                        <div className="font-bold text-green-600 text-sm">
-                          {prod.price && prod.price.toLocaleString("sr-RS")} RSD
-                        </div>
-                        <div className="text-xs text-gray-400">
-                          Količina: {prod.qty || 1}
-                        </div>
+                      )}
+                      <div className="flex items-center gap-2">
+                        <b>Telefon:</b> {selectedOrder.telefon}
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <b>Status:</b> <StatusBadge status={selectedOrder.status} />
+                      </div>
+                      <div className="text-xs text-gray-400 pt-2">
+                        Kreirana:{" "}
+                        {selectedOrder.createdAt?.seconds &&
+                          formatDate(selectedOrder.createdAt.seconds)}
                       </div>
                     </div>
-                  ))}
+                  </motion.div>
+
+                  {/* Right Column - Delivery Info */}
+                  <motion.div
+                    initial={{ x: 20, opacity: 0 }}
+                    animate={{ x: 0, opacity: 1 }}
+                    transition={{ delay: 0.2 }}
+                    className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-5 border border-green-200/50 backdrop-blur-sm"
+                  >
+                    <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-green-700">
+                      <FaShippingFast /> Dostava
+                    </h4>
+                    <div className="space-y-3">
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
+                          <FaDollarSign size={12} /> Cena dostave (RSD)
+                        </label>
+                        <motion.input
+                          whileFocus={{ scale: 1.02 }}
+                          type="number"
+                          value={deliveryPrice}
+                          onChange={(e) => setDeliveryPrice(e.target.value)}
+                          className="w-full px-3 py-2 border-2 border-green-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all bg-white/80 backdrop-blur-sm"
+                          placeholder="Unesi cenu dostave"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-xs font-semibold text-gray-600 mb-1 flex items-center gap-1">
+                          <FaTruck size={12} /> Firma dostavljača
+                        </label>
+                        <motion.input
+                          whileFocus={{ scale: 1.02 }}
+                          type="text"
+                          value={deliveryCompany}
+                          onChange={(e) => setDeliveryCompany(e.target.value)}
+                          className="w-full px-3 py-2 border-2 border-green-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all bg-white/80 backdrop-blur-sm"
+                          placeholder="Ime firme (npr. DHL, DExpress...)"
+                        />
+                      </div>
+                    </div>
+                  </motion.div>
                 </div>
-              </div>
-              <div className="flex gap-2 mt-5 justify-end">
-                {selectedOrder.status !== "završeno" &&
-                  selectedOrder.status !== "otkazano" && (
-                    <>
-                      {selectedOrder.status !== "poslato" && (
-                        <button
-                          onClick={() =>
-                            updateOrderStatus(selectedOrder.id, "poslato")
-                          }
-                          className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition shadow hover:scale-105 font-bold"
+
+                {/* Products Section */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.3 }}
+                  className="mt-6"
+                >
+                  <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-charcoal">
+                    <FaBoxes /> Poručeni proizvodi
+                  </h4>
+                  <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
+                    {selectedOrder.cart?.map((prod, i) => {
+                      const isHidden = hasHiddenPrice(prod);
+                      return (
+                        <motion.div
+                          key={i}
+                          initial={{ x: -20, opacity: 0 }}
+                          animate={{ x: 0, opacity: 1 }}
+                          transition={{ delay: 0.1 * i }}
+                          className={`flex flex-col sm:flex-row items-start sm:items-center gap-3 p-4 rounded-2xl ${
+                            isHidden
+                              ? "bg-gradient-to-r from-orange-50 to-amber-50 border-2 border-orange-200"
+                              : "bg-gray-50 border border-gray-200"
+                          } backdrop-blur-sm`}
                         >
-                          <FaTruck className="inline mr-1" />
-                          Označi kao poslato
-                        </button>
-                      )}
-                      <button
-                        onClick={() =>
-                          updateOrderStatus(selectedOrder.id, "završeno")
-                        }
-                        className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition shadow hover:scale-105 font-bold"
-                      >
-                        <FaCheckCircle className="inline mr-1" />
-                        Označi kao završeno
-                      </button>
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setOtvoriBrisanjeModal(true);
-                          setCurrectOrderId(selectedOrder.id);
-                        }}
-                        className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
-                        title="Otkaži"
-                      >
-                        <FaExclamationCircle className="inline mr-1" />
-                        Otkaži narudžbinu
-                      </button>
-                    </>
-                  )}
-              </div>
-            </div>
-          </div>
-        )}
+                          <div className="w-16 h-16 rounded-xl overflow-hidden flex-shrink-0 bg-white shadow-sm">
+                            <ProgressiveImage
+                              src={prod.imgUrl}
+                              alt={prod.name}
+                              className="object-cover w-full h-full"
+                            />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="font-bold text-bluegreen flex items-center gap-2 flex-wrap">
+                              {prod.name}
+                              {isHidden && (
+                                <span className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-semibold flex items-center gap-1">
+                                  <FaEye size={10} /> Skrivena cena
+                                </span>
+                              )}
+                            </div>
+                            <div className="text-xs text-gray-500 mb-1">
+                              {prod.category}
+                            </div>
+                            {!isHidden ? (
+                              <>
+                                <div className="font-bold text-green-600 text-sm">
+                                  {prod.price && prod.price.toLocaleString("sr-RS")}{" "}
+                                  RSD
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                  Količina: {prod.qty || 1}
+                                </div>
+                              </>
+                            ) : (
+                              <div className="mt-2 space-y-2">
+                                <div className="flex items-center gap-2 text-xs">
+                                  <span className="font-semibold text-gray-600">
+                                    Skrivena cena:
+                                  </span>
+                                  <span className="bg-white px-2 py-1 rounded border border-orange-300 font-mono">
+                                    {prod.hiddenPrice?.toLocaleString("sr-RS")} RSD
+                                  </span>
+                                  <motion.button
+                                    whileHover={{ scale: 1.05 }}
+                                    whileTap={{ scale: 0.95 }}
+                                    onClick={() => copyOriginalPrice(i, prod)}
+                                    className="bg-blue-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1 hover:bg-blue-600 transition-colors"
+                                    title="Kopiraj originalnu cenu"
+                                  >
+                                    <FaUndo size={10} /> Kopiraj
+                                  </motion.button>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <label className="text-xs font-semibold text-orange-700 flex items-center gap-1">
+                                    <FaEdit size={10} /> Predložena cena:
+                                  </label>
+                                  <motion.input
+                                    whileFocus={{ scale: 1.02 }}
+                                    type="number"
+                                    value={editingPrices[i] || ""}
+                                    onChange={(e) =>
+                                      setEditingPrices((prev) => ({
+                                        ...prev,
+                                        [i]: e.target.value,
+                                      }))
+                                    }
+                                    className="flex-1 px-3 py-1.5 border-2 border-orange-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm bg-white/80"
+                                    placeholder="Unesi predloženu cenu"
+                                  />
+                                  <span className="text-xs text-gray-500">RSD</span>
+                                </div>
+                                <div className="text-xs text-gray-400">
+                                  Količina: {prod.qty || 1}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </motion.div>
+
+                {/* Action Buttons */}
+                <motion.div
+                  initial={{ y: 20, opacity: 0 }}
+                  animate={{ y: 0, opacity: 1 }}
+                  transition={{ delay: 0.4 }}
+                  className="flex flex-wrap gap-2 mt-6 pt-4 border-t border-gray-200"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={updateOrderPricesAndDelivery}
+                    className="bg-gradient-to-r from-green-500 to-emerald-500 text-white px-5 py-2.5 rounded-xl hover:shadow-lg transition-all font-bold flex items-center gap-2"
+                  >
+                    <FaSave /> Sačuvaj izmene
+                  </motion.button>
+
+                  {selectedOrder.status !== "završeno" &&
+                    selectedOrder.status !== "otkazano" && (
+                      <>
+                        {selectedOrder.status !== "poslato" && (
+                          <motion.button
+                            whileHover={{ scale: 1.05 }}
+                            whileTap={{ scale: 0.95 }}
+                            onClick={() =>
+                              updateOrderStatus(selectedOrder.id, "poslato")
+                            }
+                            className="bg-indigo-600 text-white px-4 py-2.5 rounded-xl hover:bg-indigo-700 transition shadow hover:shadow-lg font-bold flex items-center gap-2"
+                          >
+                            <FaTruck /> Poslato
+                          </motion.button>
+                        )}
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() =>
+                            updateOrderStatus(selectedOrder.id, "završeno")
+                          }
+                          className="bg-green-600 text-white px-4 py-2.5 rounded-xl hover:bg-green-700 transition shadow hover:shadow-lg font-bold flex items-center gap-2"
+                        >
+                          <FaCheckCircle /> Završeno
+                        </motion.button>
+                        <motion.button
+                          whileHover={{ scale: 1.05 }}
+                          whileTap={{ scale: 0.95 }}
+                          onClick={() => {
+                            setOtvoriBrisanjeModal(true);
+                            setCurrectOrderId(selectedOrder.id);
+                          }}
+                          className="bg-red-600 text-white px-4 py-2.5 rounded-xl hover:bg-red-700 transition-all shadow hover:shadow-lg font-bold flex items-center gap-2"
+                        >
+                          <FaExclamationCircle /> Otkaži
+                        </motion.button>
+                      </>
+                    )}
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
       {otvoriBrisanjeModal && (
         <Modal
