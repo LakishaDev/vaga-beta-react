@@ -108,7 +108,7 @@ export default function Home() {
               "
           >
             <Link
-              to="/usluge#zakonski-zig"
+              to="/usluge#zigosanje-vaga"
               className="
                   flex flex-col justify-center items-center gap-2
                   py-5 px-3
@@ -122,7 +122,7 @@ export default function Home() {
             >
               <FaCertificate className="text-3xl text-[#6EAEA2] group-hover:scale-110 transition" />
               <span className="text-lg font-semibold text-[#1E3E49]">
-                Zakonski žig
+                Žigosanje vaga
               </span>
               <span className="text-sm text-[#2F5363] opacity-80 mt-1 text-center">
                 Sve što treba da znate o žigosanju vaga i važnosti zakonskog

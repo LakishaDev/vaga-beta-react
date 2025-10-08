@@ -141,11 +141,11 @@ export default function Usluge() {
 
       {/* SEKCIJA O ŽIGU */}
       <section
-        id="zakonski-zig"
+        id="zigosanje-vaga"
         className="mt-20 bg-[#F5F9F7] rounded-3xl p-5 relative animate-fadein shadow-md hover:shadow-xl transition-all duration-500"
       >
         <h3 className="text-3xl font-extrabold text-[#1E3E49] mb-8 text-center">
-          Zakonski žig na merilima
+          Žigosanje vaga
         </h3>
         <div className="flex flex-col md:flex-row items-center justify-center gap-10 relative">
           <div className="relative w-full md:w-1/2">
