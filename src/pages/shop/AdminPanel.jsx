@@ -192,6 +192,7 @@ export default function AdminPanel() {
     setEditProduct({
       ...product,
       hasHiddenPrice: !!product.hiddenPrice,
+      price: product.hiddenPrice || product.price,
       imgPreview: product.imgUrl,
     });
 
@@ -544,7 +545,11 @@ export default function AdminPanel() {
               </h3>
               <p className="text-gray-600 mb-2">{selectedProduct.category}</p>
               <p className="font-bold text-green-600 text-2xl mb-6">
-                {formatPrice(selectedProduct.price)} RSD
+                {selectedProduct.hiddenPrice
+                  ? formatPrice(selectedProduct.hiddenPrice) + " RSD (skrivena)"
+                  : selectedProduct.price !== null
+                  ? formatPrice(selectedProduct.price) + " RSD"
+                  : "Nema cene"}
               </p>
 
               <div className="flex flex-col gap-3">
@@ -593,9 +598,16 @@ export default function AdminPanel() {
             <h3 className="text-xl sm:text-2xl font-bold mb-4 text-center text-gray-800">
               Potvrda brisanja
             </h3>
-            <p className="text-gray-600 mb-6 text-center text-sm sm:text-base">
+            <p className="text-gray-600 mb-2 text-center text-sm sm:text-base">
               Da li ste sigurni da želite da obrišete proizvod "
               {deleteConfirm.name}"?
+            </p>
+            <p className="font-bold text-green-600 text-lg mb-6 text-center">
+              {deleteConfirm.hiddenPrice
+                ? formatPrice(deleteConfirm.hiddenPrice) + " RSD (skrivena)"
+                : deleteConfirm.price !== null
+                ? formatPrice(deleteConfirm.price) + " RSD"
+                : "Nema cene"}
             </p>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center">
               <button
