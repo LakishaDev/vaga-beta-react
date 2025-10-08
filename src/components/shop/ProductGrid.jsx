@@ -34,26 +34,61 @@ import {
 } from "lucide-react";
 
 // Memoized product item wrapper to prevent unnecessary re-renders with animations
-const MemoizedProductItem = memo(({ product, isNew }) => (
-  <motion.div
-    initial={isNew ? { opacity: 0, scale: 0.8, y: 20 } : false}
-    animate={{ opacity: 1, scale: 1, y: 0 }}
-    transition={{ 
-      duration: 0.5, 
-      ease: [0.34, 1.56, 0.64, 1],
-      type: "spring",
-      stiffness: 100
-    }}
-    layout
-  >
-    <ProductCard product={product} />
-  </motion.div>
-));
+const MemoizedProductItem = memo(({ product, isNew, priceChanged }) => {
+  const [showNewBadge, setShowNewBadge] = useState(isNew);
+  const [animatePrice, setAnimatePrice] = useState(false);
+  
+  useEffect(() => {
+    if (isNew) {
+      setShowNewBadge(true);
+      const timer = setTimeout(() => setShowNewBadge(false), 3000);
+      return () => clearTimeout(timer);
+    }
+  }, [isNew]);
+  
+  useEffect(() => {
+    if (priceChanged) {
+      setAnimatePrice(true);
+      const timer = setTimeout(() => setAnimatePrice(false), 500);
+      return () => clearTimeout(timer);
+    }
+  }, [priceChanged]);
+
+  return (
+    <motion.div
+      initial={isNew ? { opacity: 0, scale: 0.8, y: 20 } : false}
+      animate={{ opacity: 1, scale: 1, y: 0 }}
+      transition={{ 
+        duration: 0.5, 
+        ease: [0.34, 1.56, 0.64, 1],
+        type: "spring",
+        stiffness: 100
+      }}
+      layout
+      className="relative"
+    >
+      {showNewBadge && (
+        <motion.div
+          initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          exit={{ opacity: 0, scale: 0.8 }}
+          className="absolute -top-2 -left-2 z-50 bg-gradient-to-r from-green-500 to-emerald-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg"
+        >
+          NOVO!
+        </motion.div>
+      )}
+      <div className={animatePrice ? "animate-flipPrice" : ""}>
+        <ProductCard product={product} />
+      </div>
+    </motion.div>
+  );
+});
 MemoizedProductItem.displayName = "MemoizedProductItem";
 
 export default function ProductGrid() {
   const [products, setProducts] = useState([]);
   const [newProductIds, setNewProductIds] = useState(new Set());
+  const [changedPriceIds, setChangedPriceIds] = useState(new Set());
   const [sort, setSort] = useState("newest");
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -66,6 +101,7 @@ export default function ProductGrid() {
   const dropdownRef = useRef();
   const lenisRef = useRef();
   const initialLoadRef = useRef(true);
+  const previousPricesRef = useRef({});
 
   useEffect(() => {
     lenisRef.current = new Lenis({ lerp: 0.07 });
@@ -113,12 +149,22 @@ export default function ProductGrid() {
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const newIds = new Set();
+      const priceChangedIds = new Set();
       
-      // Detect new products (only for non-initial loads)
+      // Detect new products and price changes (only for non-initial loads)
       if (!initialLoadRef.current) {
         snapshot.docChanges().forEach((change) => {
           if (change.type === "added") {
             newIds.add(change.doc.id);
+          } else if (change.type === "modified") {
+            const docId = change.doc.id;
+            const newData = change.doc.data();
+            const newPrice = newData.price || newData.hiddenPrice || 0;
+            const oldPrice = previousPricesRef.current[docId];
+            
+            if (oldPrice !== undefined && oldPrice !== newPrice) {
+              priceChangedIds.add(docId);
+            }
           }
         });
       }
@@ -130,13 +176,24 @@ export default function ProductGrid() {
         }))
         .map(addDiscountInfo);
       
+      // Store current prices for next comparison
+      arr.forEach((product) => {
+        previousPricesRef.current[product.id] = product.price || product.hiddenPrice || 0;
+      });
+      
       setProducts(arr);
       
       // Mark new products for animation
       if (newIds.size > 0) {
         setNewProductIds(newIds);
         // Clear the new product markers after animation completes
-        setTimeout(() => setNewProductIds(new Set()), 1000);
+        setTimeout(() => setNewProductIds(new Set()), 3000);
+      }
+      
+      // Mark products with changed prices for animation
+      if (priceChangedIds.size > 0) {
+        setChangedPriceIds(priceChangedIds);
+        setTimeout(() => setChangedPriceIds(new Set()), 500);
       }
       
       const kats = Array.from(
@@ -448,6 +505,7 @@ export default function ProductGrid() {
                 key={product.id} 
                 product={product} 
                 isNew={newProductIds.has(product.id)}
+                priceChanged={changedPriceIds.has(product.id)}
               />
             ))
           )}
