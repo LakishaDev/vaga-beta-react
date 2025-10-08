@@ -8,7 +8,7 @@
 // Animacije sa Framer Motion
 // Ikonice iz lucide-react
 // Koristi modale za osetljive akcije (brisanje naloga, reset lozinke, detalji narudžbine, verifikacija telefona)
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useUserData } from "../../hooks/useUserData";
 import { updateUserProfile, uploadProfileImage } from "../../utils/userService";
 import { collection, query, where, or, onSnapshot } from "firebase/firestore";
@@ -155,6 +155,7 @@ export default function Profile() {
   const { user, userData, loading, refreshUserData } = useUserData();
   const [orders, setOrders] = useState([]);
   const [updatedOrderIds, setUpdatedOrderIds] = useState(new Set());
+  const [priceUpdatedOrderIds, setPriceUpdatedOrderIds] = useState(new Set());
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -166,6 +167,7 @@ export default function Profile() {
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [phoneModalOpen, setPhoneModalOpen] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
+  const previousOrderPricesRef = useRef({});
 
   // Provera da li je korisnik dovoljno verifikovan (email ILI telefon)
   const isUserVerified = user && (user.emailVerified || !!user.phoneNumber);
@@ -186,11 +188,26 @@ export default function Profile() {
     
     const unsubscribe = onSnapshot(q, (snapshot) => {
       const updatedIds = new Set();
+      const priceChangedIds = new Set();
       
-      // Detect modified orders for animation
+      // Detect modified orders and price changes for animation
       snapshot.docChanges().forEach((change) => {
         if (change.type === "modified") {
           updatedIds.add(change.doc.id);
+          
+          // Check if prices changed
+          const orderId = change.doc.id;
+          const newData = change.doc.data();
+          const oldData = previousOrderPricesRef.current[orderId];
+          
+          if (oldData) {
+            const newTotal = newData.cart?.reduce((acc, p) => acc + (p.suggestedPrice || p.price || 0) * p.qty, 0) || 0;
+            const oldTotal = oldData.total || 0;
+            
+            if (newTotal !== oldTotal) {
+              priceChangedIds.add(orderId);
+            }
+          }
         }
       });
       
@@ -202,6 +219,12 @@ export default function Profile() {
           return tb - ta;
         });
       
+      // Store current order prices for next comparison
+      sorted.forEach((order) => {
+        const total = order.cart?.reduce((acc, p) => acc + (p.suggestedPrice || p.price || 0) * p.qty, 0) || 0;
+        previousOrderPricesRef.current[order.id] = { total };
+      });
+      
       setOrders(sorted);
       
       // Mark updated orders for animation
@@ -209,6 +232,12 @@ export default function Profile() {
         setUpdatedOrderIds(updatedIds);
         // Clear the markers after animation
         setTimeout(() => setUpdatedOrderIds(new Set()), 1500);
+      }
+      
+      // Mark price-updated orders for animation
+      if (priceChangedIds.size > 0) {
+        setPriceUpdatedOrderIds(priceChangedIds);
+        setTimeout(() => setPriceUpdatedOrderIds(new Set()), 800);
       }
     }, (error) => {
       console.error("Error fetching orders:", error);
@@ -573,6 +602,7 @@ export default function Profile() {
 
                   const hasHiddenItems = order.cart.some(hasHiddenPrice);
                   const isUpdated = updatedOrderIds.has(order.id);
+                  const isPriceUpdated = priceUpdatedOrderIds.has(order.id);
 
                   return (
                     <motion.div
@@ -649,7 +679,7 @@ export default function Profile() {
                                     Cena na upit × {product.qty}
                                   </span>
                                   {product.suggestedPrice && (
-                                    <div className="flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit">
+                                    <div className={`flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit ${isPriceUpdated ? "animate-flipPrice" : ""}`}>
                                       <Handshake size={12} />
                                       <span className="font-semibold">
                                         Predloženo:{" "}
@@ -695,7 +725,7 @@ export default function Profile() {
                       <span className="font-semibold text-gray-700">
                         Ukupno:
                       </span>
-                      <div className="text-right">
+                      <div className={`text-right ${isPriceUpdated ? "animate-flipPrice" : ""}`}>
                         {hasHiddenItems ? (
                           <div className="flex flex-col">
                             <span className="font-bold text-bluegreen text-lg">

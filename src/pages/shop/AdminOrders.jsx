@@ -373,12 +373,23 @@ export default function AdminOrders() {
                             type: isNew ? "spring" : "tween",
                             stiffness: 120
                           }}
-                          className="hover:bg-bluegreen/10 transition cursor-pointer"
+                          className="hover:bg-bluegreen/10 transition cursor-pointer relative"
                           onClick={() => setSelectedOrder(order)}
                         >
                       
-                        <td className="px-4 py-3 font-semibold">
-                          {order.ime} {order.prezime}
+                        <td className="px-4 py-3 font-semibold relative">
+                          {isNew && (
+                            <motion.span
+                              initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                              animate={{ opacity: 1, scale: 1, x: 0 }}
+                              className="absolute -left-1 top-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-1 rounded-full text-[10px] font-bold shadow-lg animate-pulse"
+                            >
+                              NOVA
+                            </motion.span>
+                          )}
+                          <span className={isNew ? "ml-14" : ""}>
+                            {order.ime} {order.prezime}
+                          </span>
                         </td>
                         <td className="px-4 py-3">{order.email}</td>
                         <td
@@ -497,13 +508,22 @@ export default function AdminOrders() {
                       stiffness: 120
                     }}
                     style={{ willChange: "opacity, transform" }}
-                    className={`bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 ring-1 hover:scale-[1.03] hover:shadow-2xl cursor-pointer transition-all ${
+                    className={`bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 ring-1 hover:scale-[1.03] hover:shadow-2xl cursor-pointer transition-all relative ${
                       isNew 
                         ? "ring-2 ring-bluegreen bg-gradient-to-br from-cyan-50 to-white" 
                         : "ring-bluegreen/10"
                     }`}
                     onClick={() => setSelectedOrder(order)}
                   >
+                  {isNew && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
+                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                      className="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse"
+                    >
+                      NOVA PORUDŽBINA
+                    </motion.div>
+                  )}
                 
                   <div className="flex gap-2 items-center">
                     <FaUserCircle className="text-bluegreen" />
