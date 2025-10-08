@@ -187,7 +187,7 @@ export default function ProductDetails() {
             >
               <X size={28} />
             </button>
-            <img
+            <ProgressiveImage
               src={product.imgUrl}
               alt={product.name}
               className={`rounded-2xl max-w-[88vw] max-h-[80vh] object-contain shadow-xl bg-white
