@@ -601,9 +601,23 @@ export default function Profile() {
                             </div>
                             <div className="text-sm text-gray-500">
                               {hasHiddenPrice(product) ? (
-                                <span className="italic text-orange-600">
-                                  Cena na upit × {product.qty}
-                                </span>
+                                <div className="space-y-1">
+                                  <span className="italic text-orange-600">
+                                    Cena na upit × {product.qty}
+                                  </span>
+                                  {product.suggestedPrice && (
+                                    <div className="flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit">
+                                      <ShieldCheck size={12} />
+                                      <span className="font-semibold">
+                                        Predloženo:{" "}
+                                        {product.suggestedPrice.toLocaleString(
+                                          "sr-RS"
+                                        )}{" "}
+                                        RSD × {product.qty}
+                                      </span>
+                                    </div>
+                                  )}
+                                </div>
                               ) : (
                                 `${srRsd(getProductPrice(product))} × ${
                                   product.qty
@@ -614,6 +628,25 @@ export default function Profile() {
                         </div>
                       ))}
                     </div>
+
+                    {/* Delivery Info */}
+                    {(order.deliveryPrice || order.deliveryCompany) && (
+                      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200 mb-3">
+                        <div className="text-xs font-semibold text-blue-700 mb-1 flex items-center gap-1">
+                          <ShieldCheck size={12} /> Dostava
+                        </div>
+                        {order.deliveryCompany && (
+                          <div className="text-xs text-gray-600">
+                            {order.deliveryCompany}
+                          </div>
+                        )}
+                        {order.deliveryPrice && (
+                          <div className="text-xs font-semibold text-blue-600">
+                            {order.deliveryPrice.toLocaleString("sr-RS")} RSD
+                          </div>
+                        )}
+                      </div>
+                    )}
 
                     <div className="border-t pt-4 flex justify-between items-center mt-auto">
                       <span className="font-semibold text-gray-700">
@@ -631,14 +664,40 @@ export default function Profile() {
                                 )
                               )}
                             </span>
-                            <span className="text-xs text-orange-600 italic">
-                              + artikli na upit
-                            </span>
+                            {order.cart.filter(hasHiddenPrice).some((p) => p.suggestedPrice) ? (
+                              <span className="text-xs text-green-600 font-semibold">
+                                + {order.cart
+                                  .filter(hasHiddenPrice)
+                                  .reduce(
+                                    (acc, p) =>
+                                      acc + (p.suggestedPrice || 0) * p.qty,
+                                    0
+                                  )
+                                  .toLocaleString("sr-RS")}{" "}
+                                RSD (predloženo)
+                              </span>
+                            ) : (
+                              <span className="text-xs text-orange-600 italic">
+                                + artikli na upit
+                              </span>
+                            )}
+                            {order.deliveryPrice && (
+                              <span className="text-xs text-blue-600">
+                                + {order.deliveryPrice.toLocaleString("sr-RS")} RSD dostava
+                              </span>
+                            )}
                           </div>
                         ) : (
-                          <span className="font-bold text-bluegreen text-lg">
-                            {srRsd(orderTotal)}
-                          </span>
+                          <div className="flex flex-col">
+                            <span className="font-bold text-bluegreen text-lg">
+                              {srRsd(orderTotal)}
+                            </span>
+                            {order.deliveryPrice && (
+                              <span className="text-xs text-blue-600">
+                                + {order.deliveryPrice.toLocaleString("sr-RS")} RSD dostava
+                              </span>
+                            )}
+                          </div>
                         )}
                       </div>
                     </div>
