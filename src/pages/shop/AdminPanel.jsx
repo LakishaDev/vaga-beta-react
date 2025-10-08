@@ -25,6 +25,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext.jsx";
 import FloatingLabelInput from "../../components/UI/FloatingLabelInput.jsx";
 import ProgressiveImage from "../../components/UI/ProgressiveImage.jsx";
+import { FiUpload, FiX, FiPlus, FiTrash2, FiFile } from "react-icons/fi";
+import { motion as Motion, AnimatePresence } from "framer-motion";
 
 export default function AdminPanel() {
   const { showSnackbar } = useContext(SnackbarContext);
@@ -40,9 +42,12 @@ export default function AdminPanel() {
     name: "",
     category: "",
     price: "",
-    hasHiddenPrice: false, // dodaj
+    hasHiddenPrice: false,
     imgFile: null,
     imgPreview: null,
+    images: [], // Multiple images
+    features: [], // Array of feature objects
+    datasheets: [], // Array of datasheet files
   });
 
   const [products, setProducts] = useState([]);
@@ -95,6 +100,64 @@ export default function AdminPanel() {
     });
   };
 
+  // Handle multiple images
+  const handleMultipleImages = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
+    setNewProduct({
+      ...newProduct,
+      images: [...newProduct.images, ...newImages]
+    });
+  };
+
+  const removeImage = (index) => {
+    const updated = [...newProduct.images];
+    updated.splice(index, 1);
+    setNewProduct({ ...newProduct, images: updated });
+  };
+
+  // Handle features
+  const addFeature = () => {
+    setNewProduct({
+      ...newProduct,
+      features: [...newProduct.features, { label: "", value: "" }]
+    });
+  };
+
+  const updateFeature = (index, field, value) => {
+    const updated = [...newProduct.features];
+    updated[index][field] = value;
+    setNewProduct({ ...newProduct, features: updated });
+  };
+
+  const removeFeature = (index) => {
+    const updated = [...newProduct.features];
+    updated.splice(index, 1);
+    setNewProduct({ ...newProduct, features: updated });
+  };
+
+  // Handle datasheets
+  const handleDatasheets = (e) => {
+    const files = Array.from(e.target.files);
+    const newDatasheets = files.map(file => ({
+      file,
+      name: file.name
+    }));
+    setNewProduct({
+      ...newProduct,
+      datasheets: [...newProduct.datasheets, ...newDatasheets]
+    });
+  };
+
+  const removeDatasheet = (index) => {
+    const updated = [...newProduct.datasheets];
+    updated.splice(index, 1);
+    setNewProduct({ ...newProduct, datasheets: updated });
+  };
+
   // Simulacija upload progresa
   const simulateUpload = (setProgress) => {
     setProgress(0);
@@ -121,7 +184,11 @@ export default function AdminPanel() {
     }, 200);
 
     let imgUrl = "";
+    const imageUrls = [];
+    const datasheetUrls = [];
+    
     try {
+      // Upload main image
       if (newProduct.imgFile) {
         simulateUpload(setUploadProgress);
         const storageRef = ref(
@@ -132,6 +199,31 @@ export default function AdminPanel() {
         imgUrl = await getDownloadURL(storageRef);
       }
 
+      // Upload additional images
+      for (const img of newProduct.images) {
+        const storageRef = ref(
+          storage,
+          `products/${Date.now()}_${img.file.name}`
+        );
+        await uploadBytes(storageRef, img.file);
+        const url = await getDownloadURL(storageRef);
+        imageUrls.push(url);
+      }
+
+      // Upload datasheets
+      for (const ds of newProduct.datasheets) {
+        const storageRef = ref(
+          storage,
+          `datasheets/${Date.now()}_${ds.file.name}`
+        );
+        await uploadBytes(storageRef, ds.file);
+        const url = await getDownloadURL(storageRef);
+        datasheetUrls.push({
+          name: ds.file.name,
+          url: url
+        });
+      }
+
       await addDoc(collection(db, "products"), {
         name: newProduct.name,
         category: newProduct.category,
@@ -140,6 +232,9 @@ export default function AdminPanel() {
           ? Number(newProduct.price)
           : null,
         imgUrl,
+        images: imageUrls,
+        features: newProduct.features,
+        datasheets: datasheetUrls,
         createdAt: new Date(),
       });
 
@@ -150,10 +245,14 @@ export default function AdminPanel() {
         price: "",
         imgFile: null,
         imgPreview: null,
+        images: [],
+        features: [],
+        datasheets: [],
       });
       setUploadProgress(0);
       fetchProducts();
-    } catch {
+    } catch (error) {
+      console.error(error);
       showSnackbar("Greška pri dodavanju proizvoda.", "error");
     } finally {
       setLoading(false);
@@ -194,6 +293,11 @@ export default function AdminPanel() {
       hasHiddenPrice: !!product.hiddenPrice,
       price: product.hiddenPrice || product.price,
       imgPreview: product.imgUrl,
+      images: product.images || [],
+      newImages: [],
+      features: product.features || [],
+      datasheets: product.datasheets || [],
+      newDatasheets: [],
     });
 
   const handleEditClose = () => {
@@ -213,6 +317,76 @@ export default function AdminPanel() {
     });
   };
 
+  // Edit handlers for multiple images
+  const handleEditMultipleImages = (e) => {
+    const files = Array.from(e.target.files);
+    const newImages = files.map(file => ({
+      file,
+      preview: URL.createObjectURL(file)
+    }));
+    setEditProduct({
+      ...editProduct,
+      newImages: [...(editProduct.newImages || []), ...newImages]
+    });
+  };
+
+  const removeEditImage = (index, isNew) => {
+    if (isNew) {
+      const updated = [...editProduct.newImages];
+      updated.splice(index, 1);
+      setEditProduct({ ...editProduct, newImages: updated });
+    } else {
+      const updated = [...editProduct.images];
+      updated.splice(index, 1);
+      setEditProduct({ ...editProduct, images: updated });
+    }
+  };
+
+  // Edit handlers for features
+  const addEditFeature = () => {
+    setEditProduct({
+      ...editProduct,
+      features: [...editProduct.features, { label: "", value: "" }]
+    });
+  };
+
+  const updateEditFeature = (index, field, value) => {
+    const updated = [...editProduct.features];
+    updated[index][field] = value;
+    setEditProduct({ ...editProduct, features: updated });
+  };
+
+  const removeEditFeature = (index) => {
+    const updated = [...editProduct.features];
+    updated.splice(index, 1);
+    setEditProduct({ ...editProduct, features: updated });
+  };
+
+  // Edit handlers for datasheets
+  const handleEditDatasheets = (e) => {
+    const files = Array.from(e.target.files);
+    const newDatasheets = files.map(file => ({
+      file,
+      name: file.name
+    }));
+    setEditProduct({
+      ...editProduct,
+      newDatasheets: [...(editProduct.newDatasheets || []), ...newDatasheets]
+    });
+  };
+
+  const removeEditDatasheet = (index, isNew) => {
+    if (isNew) {
+      const updated = [...editProduct.newDatasheets];
+      updated.splice(index, 1);
+      setEditProduct({ ...editProduct, newDatasheets: updated });
+    } else {
+      const updated = [...editProduct.datasheets];
+      updated.splice(index, 1);
+      setEditProduct({ ...editProduct, datasheets: updated });
+    }
+  };
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -229,6 +403,40 @@ export default function AdminPanel() {
         imgUrl = await getDownloadURL(storageRef);
       }
 
+      // Upload new additional images
+      const newImageUrls = [];
+      if (editProduct.newImages && editProduct.newImages.length > 0) {
+        for (const img of editProduct.newImages) {
+          const storageRef = ref(
+            storage,
+            `products/${Date.now()}_${img.file.name}`
+          );
+          await uploadBytes(storageRef, img.file);
+          const url = await getDownloadURL(storageRef);
+          newImageUrls.push(url);
+        }
+      }
+
+      // Upload new datasheets
+      const newDatasheetUrls = [];
+      if (editProduct.newDatasheets && editProduct.newDatasheets.length > 0) {
+        for (const ds of editProduct.newDatasheets) {
+          const storageRef = ref(
+            storage,
+            `datasheets/${Date.now()}_${ds.file.name}`
+          );
+          await uploadBytes(storageRef, ds.file);
+          const url = await getDownloadURL(storageRef);
+          newDatasheetUrls.push({
+            name: ds.file.name,
+            url: url
+          });
+        }
+      }
+
+      const allImages = [...editProduct.images, ...newImageUrls];
+      const allDatasheets = [...editProduct.datasheets, ...newDatasheetUrls];
+
       await updateDoc(doc(db, "products", editProduct.id), {
         name: editProduct.name,
         category: editProduct.category,
@@ -237,12 +445,16 @@ export default function AdminPanel() {
           ? Number(editProduct.price)
           : null,
         imgUrl,
+        images: allImages,
+        features: editProduct.features,
+        datasheets: allDatasheets,
       });
 
       showSnackbar("Proizvod izmenjen!", "success");
       handleEditClose();
       fetchProducts();
-    } catch {
+    } catch (error) {
+      console.error(error);
       showSnackbar("Greška pri izmeni proizvoda.", "error");
     } finally {
       setLoading(false);
@@ -258,120 +470,284 @@ export default function AdminPanel() {
       {/* Forma za unos proizvoda - responsive */}
       <form
         onSubmit={handleAddProduct}
-        className="flex flex-col gap-6 lg:flex-row items-start bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 shadow animate-pop w-full"
+        className="flex flex-col gap-6 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 shadow animate-pop w-full"
       >
-        <div className="flex flex-col gap-4 w-full pt-2">
-          <FloatingLabelInput
-            name="name"
-            label="Naziv proizvoda"
-            value={newProduct.name}
-            onChange={handleChange}
-            required
-          />
-          <FloatingLabelInput
-            name="category"
-            label="Kategorija"
-            value={newProduct.category}
-            onChange={handleChange}
-            required
-          />
-          <FloatingLabelInput
-            name="price"
-            label="Cena (RSD)"
-            type="number"
-            value={newProduct.price}
-            onChange={handleChange}
-            required
-          />
+        <div className="flex flex-col lg:flex-row items-start gap-6 w-full">
 
-          <div className="flex items-center gap-2">
-            <label className="flex items-center cursor-pointer relative group">
-              <input
-                type="checkbox"
-                name="hasHiddenPrice"
-                checked={newProduct.hasHiddenPrice}
-                onChange={(e) =>
-                  setNewProduct({
-                    ...newProduct,
-                    hasHiddenPrice: e.target.checked,
-                  })
-                }
-                className="peer w-5 h-5 rounded border border-slate-300 checked:bg-indigo-600 checked:border-indigo-600 transition-all duration-300 shadow focus:ring-2 focus:ring-indigo-400"
-              />
-              <span className="absolute pointer-events-none opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 text-white"
-                  fill="none"
-                  viewBox="0 0 20 20"
-                  stroke="currentColor"
-                >
-                  <path
-                    fillRule="evenodd"
-                    d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                    clipRule="evenodd"
-                  />
-                </svg>
-              </span>
-              <span className="ml-2 text-sm font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors peer-checked:text-indigo-600">
-                Sakrij cenu za korisnike
-              </span>
-            </label>
+          <div className="flex flex-col gap-4 w-full pt-2">
+            <FloatingLabelInput
+              name="name"
+              label="Naziv proizvoda"
+              value={newProduct.name}
+              onChange={handleChange}
+              required
+            />
+            <FloatingLabelInput
+              name="category"
+              label="Kategorija"
+              value={newProduct.category}
+              onChange={handleChange}
+              required
+            />
+            <FloatingLabelInput
+              name="price"
+              label="Cena (RSD)"
+              type="number"
+              value={newProduct.price}
+              onChange={handleChange}
+              required
+            />
+
+            <div className="flex items-center gap-2">
+              <label className="flex items-center cursor-pointer relative group">
+                <input
+                  type="checkbox"
+                  name="hasHiddenPrice"
+                  checked={newProduct.hasHiddenPrice}
+                  onChange={(e) =>
+                    setNewProduct({
+                      ...newProduct,
+                      hasHiddenPrice: e.target.checked,
+                    })
+                  }
+                  className="peer w-5 h-5 rounded border border-slate-300 checked:bg-indigo-600 checked:border-indigo-600 transition-all duration-300 shadow focus:ring-2 focus:ring-indigo-400"
+                />
+                <span className="absolute pointer-events-none opacity-0 peer-checked:opacity-100 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 transition">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-4 w-4 text-white"
+                    fill="none"
+                    viewBox="0 0 20 20"
+                    stroke="currentColor"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </span>
+                <span className="ml-2 text-sm font-semibold text-gray-700 group-hover:text-indigo-600 transition-colors peer-checked:text-indigo-600">
+                  Sakrij cenu za korisnike
+                </span>
+              </label>
+            </div>
+          </div>
+
+          {/* Upload slika */}
+          <div className="flex flex-col items-center gap-4 w-full max-w-xs lg:max-w-none">
+            <div className="relative">
+              <label className="cursor-pointer group">
+                <div className="w-28 h-28 sm:w-60 sm:h-auto aspect-square border-3 border-dashed border-blue-300 rounded-xl flex flex-col items-center justify-center bg-blue-50 hover:bg-blue-100 transition-all duration-300 group-hover:border-blue-500 group-hover:scale-105">
+                  {newProduct.imgPreview ? (
+                    <ProgressiveImage
+                      src={newProduct.imgPreview}
+                      alt="Preview"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  ) : (
+                    <>
+                      <svg
+                        className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 group-hover:text-blue-600 transition-colors"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
+                        />
+                      </svg>
+                      <span className="text-xs sm:text-sm text-blue-600 font-medium mt-1 sm:mt-2">
+                        Upload glavnu sliku
+                      </span>
+                    </>
+                  )}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFile}
+                  className="hidden"
+                />
+              </label>
+
+              {/* Upload progress */}
+              {uploadProgress > 0 && uploadProgress < 100 && (
+                <div className="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex items-center justify-center">
+                  <div className="text-white text-center">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-2"></div>
+                    <div className="text-xs sm:text-sm font-medium">
+                      {Math.round(uploadProgress)}%
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
-        {/* Upload slika */}
-        <div className="flex flex-col items-center gap-4 w-full max-w-xs lg:max-w-none">
-          <div className="relative">
-            <label className="cursor-pointer group">
-              <div className="w-28 h-28 sm:w-60 sm:h-auto aspect-square border-3 border-dashed border-blue-300 rounded-xl flex flex-col items-center justify-center bg-blue-50 hover:bg-blue-100 transition-all duration-300 group-hover:border-blue-500 group-hover:scale-105">
-                {newProduct.imgPreview ? (
-                  <ProgressiveImage
-                    src={newProduct.imgPreview}
-                    alt="Preview"
-                    className="w-full h-full object-cover rounded-lg"
-                  />
-                ) : (
-                  <>
-                    <svg
-                      className="w-6 h-6 sm:w-8 sm:h-8 text-blue-400 group-hover:text-blue-600 transition-colors"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"
-                      />
-                    </svg>
-                    <span className="text-xs sm:text-sm text-blue-600 font-medium mt-1 sm:mt-2">
-                      Upload sliku
-                    </span>
-                  </>
-                )}
-              </div>
+        {/* Sekcija za dodatne funkcionalnosti - full width */}
+        <div className="w-full lg:col-span-2 flex flex-col gap-6 mt-4">
+          {/* Multiple Images */}
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="p-4 rounded-xl bg-white/90 backdrop-blur-md border border-[#6EAEA2]/30 shadow-lg"
+            style={{
+              background: "rgba(203, 207, 187, 0.1)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
+              <FiUpload className="text-[#6EAEA2]" /> Dodatne slike
+            </h4>
+            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow">
+              <FiPlus /> Dodaj slike
               <input
                 type="file"
                 accept="image/*"
-                onChange={handleFile}
+                multiple
+                onChange={handleMultipleImages}
                 className="hidden"
               />
             </label>
+            <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mt-3">
+              <AnimatePresence>
+                {newProduct.images.map((img, idx) => (
+                  <Motion.div
+                    key={idx}
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    className="relative group"
+                  >
+                    <img
+                      src={img.preview}
+                      alt={`Preview ${idx}`}
+                      className="w-full aspect-square object-cover rounded-lg border-2 border-[#6EAEA2]/40"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeImage(idx)}
+                      className="absolute -top-2 -right-2 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                    >
+                      <FiX size={16} />
+                    </button>
+                  </Motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </Motion.div>
 
-            {/* Upload progress */}
-            {uploadProgress > 0 && uploadProgress < 100 && (
-              <div className="absolute inset-0 bg-black bg-opacity-50 rounded-xl flex items-center justify-center">
-                <div className="text-white text-center">
-                  <div className="w-12 h-12 sm:w-16 sm:h-16 border-4 border-white border-t-transparent rounded-full animate-spin mb-2"></div>
-                  <div className="text-xs sm:text-sm font-medium">
-                    {Math.round(uploadProgress)}%
-                  </div>
-                </div>
-              </div>
-            )}
-          </div>
+          {/* Features / Karakteristike */}
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="p-4 rounded-xl bg-white/90 backdrop-blur-md border border-[#6EAEA2]/30 shadow-lg"
+            style={{
+              background: "rgba(145, 206, 193, 0.1)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
+              <FiPlus className="text-[#6EAEA2]" /> Karakteristike
+            </h4>
+            <button
+              type="button"
+              onClick={addFeature}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow mb-3"
+            >
+              <FiPlus /> Dodaj karakteristiku
+            </button>
+            <div className="space-y-2">
+              <AnimatePresence>
+                {newProduct.features.map((feature, idx) => (
+                  <Motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="flex gap-2 items-center"
+                  >
+                    <input
+                      type="text"
+                      placeholder="Naziv (npr. Težina)"
+                      value={feature.label}
+                      onChange={(e) => updateFeature(idx, "label", e.target.value)}
+                      className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/80 backdrop-blur-sm"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Vrednost (npr. 2kg)"
+                      value={feature.value}
+                      onChange={(e) => updateFeature(idx, "value", e.target.value)}
+                      className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/80 backdrop-blur-sm"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeFeature(idx)}
+                      className="p-2 bg-[#AD5637] text-white rounded-lg hover:bg-[#8A4D34] transition-all"
+                    >
+                      <FiTrash2 />
+                    </button>
+                  </Motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </Motion.div>
+
+          {/* Datasheets */}
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="p-4 rounded-xl bg-white/90 backdrop-blur-md border border-[#6EAEA2]/30 shadow-lg"
+            style={{
+              background: "rgba(30, 62, 73, 0.05)",
+              backdropFilter: "blur(10px)",
+            }}
+          >
+            <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
+              <FiFile className="text-[#6EAEA2]" /> Datasheets / Preuzimanja
+            </h4>
+            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow">
+              <FiPlus /> Dodaj datoteke
+              <input
+                type="file"
+                accept=".pdf,.doc,.docx"
+                multiple
+                onChange={handleDatasheets}
+                className="hidden"
+              />
+            </label>
+            <div className="space-y-2 mt-3">
+              <AnimatePresence>
+                {newProduct.datasheets.map((ds, idx) => (
+                  <Motion.div
+                    key={idx}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    exit={{ opacity: 0, x: -20 }}
+                    className="flex items-center gap-2 p-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#6EAEA2]/30"
+                  >
+                    <FiFile className="text-[#6EAEA2]" />
+                    <span className="flex-1 text-sm text-[#1E3E49] truncate">{ds.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => removeDatasheet(idx)}
+                      className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                    >
+                      <FiX size={16} />
+                    </button>
+                  </Motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </Motion.div>
         </div>
 
         <button
@@ -638,7 +1014,7 @@ export default function AdminPanel() {
             }}
             onClick={handleEditClose}
           />
-          <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 animate-scale-up max-w-lg w-full mx-4 max-h-[90vh] overflow-y-auto" data-lenis-prevent>
+          <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 animate-scale-up max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" data-lenis-prevent>
             <form onSubmit={handleEditSubmit} className="flex flex-col gap-6">
               <h3 className="text-xl sm:text-2xl font-bold text-center text-gray-800">
                 Izmena proizvoda
@@ -749,6 +1125,143 @@ export default function AdminPanel() {
                   Sakrij cenu za korisnike
                 </span>
               </label>
+
+              {/* Edit Multiple Images */}
+              <div className="p-3 rounded-lg bg-[#CBCFBB]/10 border border-[#6EAEA2]/30">
+                <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
+                  <FiUpload className="text-[#6EAEA2]" /> Dodatne slike
+                </h4>
+                <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm">
+                  <FiPlus size={14} /> Dodaj slike
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleEditMultipleImages}
+                    className="hidden"
+                  />
+                </label>
+                <div className="grid grid-cols-4 gap-2 mt-2">
+                  {editProduct.images.map((img, idx) => (
+                    <div key={idx} className="relative group">
+                      <img
+                        src={img}
+                        alt={`Img ${idx}`}
+                        className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeEditImage(idx, false)}
+                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <FiX size={12} />
+                      </button>
+                    </div>
+                  ))}
+                  {editProduct.newImages && editProduct.newImages.map((img, idx) => (
+                    <div key={`new-${idx}`} className="relative group">
+                      <img
+                        src={img.preview}
+                        alt={`New ${idx}`}
+                        className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeEditImage(idx, true)}
+                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                      >
+                        <FiX size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Edit Features */}
+              <div className="p-3 rounded-lg bg-[#91CEC1]/10 border border-[#6EAEA2]/30">
+                <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
+                  <FiPlus className="text-[#6EAEA2]" /> Karakteristike
+                </h4>
+                <button
+                  type="button"
+                  onClick={addEditFeature}
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm mb-2"
+                >
+                  <FiPlus size={14} /> Dodaj
+                </button>
+                <div className="space-y-2">
+                  {editProduct.features.map((feature, idx) => (
+                    <div key={idx} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        placeholder="Naziv"
+                        value={feature.label}
+                        onChange={(e) => updateEditFeature(idx, "label", e.target.value)}
+                        className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2]"
+                      />
+                      <input
+                        type="text"
+                        placeholder="Vrednost"
+                        value={feature.value}
+                        onChange={(e) => updateEditFeature(idx, "value", e.target.value)}
+                        className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2]"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeEditFeature(idx)}
+                        className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                      >
+                        <FiTrash2 size={14} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Edit Datasheets */}
+              <div className="p-3 rounded-lg bg-[#1E3E49]/5 border border-[#6EAEA2]/30">
+                <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
+                  <FiFile className="text-[#6EAEA2]" /> Datasheets
+                </h4>
+                <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm">
+                  <FiPlus size={14} /> Dodaj
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    multiple
+                    onChange={handleEditDatasheets}
+                    className="hidden"
+                  />
+                </label>
+                <div className="space-y-2 mt-2">
+                  {editProduct.datasheets.map((ds, idx) => (
+                    <div key={idx} className="flex items-center gap-2 p-2 bg-white/60 rounded border border-[#6EAEA2]/30 text-sm">
+                      <FiFile className="text-[#6EAEA2]" size={14} />
+                      <span className="flex-1 truncate text-xs">{ds.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeEditDatasheet(idx, false)}
+                        className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                      >
+                        <FiX size={12} />
+                      </button>
+                    </div>
+                  ))}
+                  {editProduct.newDatasheets && editProduct.newDatasheets.map((ds, idx) => (
+                    <div key={`new-${idx}`} className="flex items-center gap-2 p-2 bg-[#91CEC1]/20 rounded border border-[#91CEC1] text-sm">
+                      <FiFile className="text-[#6EAEA2]" size={14} />
+                      <span className="flex-1 truncate text-xs">{ds.name}</span>
+                      <button
+                        type="button"
+                        onClick={() => removeEditDatasheet(idx, true)}
+                        className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                      >
+                        <FiX size={12} />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              </div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
                 <button
