@@ -246,10 +246,10 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                   {hasHiddenItems ? (
                     <div className="flex flex-col gap-1 ml-7">
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium text-gray-600">
+                        <span className="text-sm font-medium text-sheen">
                           Vidljive cene:
                         </span>
-                        <span className="text-bluegreen">
+                        <span className="text-midnight/70">
                           {srRsd(visibleTotal)}
                         </span>
                       </div>
@@ -257,7 +257,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                         <span className="text-sm font-medium text-orange-600">
                           Artikli na upit:
                         </span>
-                        <span className="text-orange-600 italic">
+                        <span className="text-green-700">
                           {order.cart
                             .filter(hasHiddenPrice)
                             .some((p) => p.suggestedPrice)
@@ -268,7 +268,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                                     acc + (p.suggestedPrice || 0) * p.qty,
                                   0
                                 )
-                                .toLocaleString("sr-RS")} RSD (predloženo)`
+                                .toLocaleString("sr-RS")} RSD`
                             : "Dogovor"}
                         </span>
                       </div>
@@ -284,7 +284,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                       )}
                       <div className="border-t pt-1 mt-1 flex justify-between">
                         <span className="font-bold">Finalna cena:</span>
-                        <span className="text-orange-600 italic">
+                        <span className="text-rust italic">
                           {order.cart
                             .filter(hasHiddenPrice)
                             .every((p) => p.suggestedPrice)
@@ -298,7 +298,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                                     0
                                   ) +
                                 (order.deliveryPrice || 0)
-                              ).toLocaleString("sr-RS")} RSD (orjentaciono)`
+                              ).toLocaleString("sr-RS")} RSD`
                             : "Na dogovor"}
                         </span>
                       </div>

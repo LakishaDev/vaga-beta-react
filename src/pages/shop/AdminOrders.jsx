@@ -14,7 +14,14 @@
 
 import { useEffect, useState, useContext, useRef } from "react";
 import { db, auth } from "../../utils/firebase";
-import { collection, updateDoc, doc, onSnapshot, query, orderBy as firestoreOrderBy } from "firebase/firestore";
+import {
+  collection,
+  updateDoc,
+  doc,
+  onSnapshot,
+  query,
+  orderBy as firestoreOrderBy,
+} from "firebase/firestore";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
 import {
@@ -55,6 +62,7 @@ export default function AdminOrders() {
   const [deliveryPrice, setDeliveryPrice] = useState("");
   const [deliveryCompany, setDeliveryCompany] = useState("");
   const initialLoadRef = useRef(true);
+  const prevOrderIdsRef = useRef(new Set());
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -66,72 +74,67 @@ export default function AdminOrders() {
     return () => unsubscribe();
   }, []);
 
-  // Real-time listener for orders with onSnapshot
   useEffect(() => {
     if (!allowed) return;
-    
-    // Reset initial load flag when sort changes
-    initialLoadRef.current = true;
+
+    initialLoadRef.current = true; // reset na promenu filtera
     setOrdersLoading(true);
-    
+
     const q = query(
       collection(db, "orders"),
       firestoreOrderBy("createdAt", sort === "desc" ? "desc" : "asc")
     );
-    
-    const unsubscribe = onSnapshot(q, 
+    const unsubscribe = onSnapshot(
+      q,
       (snapshot) => {
-        const newIds = new Set();
-        
-        // Detect new orders (only for non-initial loads)
-        if (!initialLoadRef.current) {
-          snapshot.docChanges().forEach((change) => {
-            if (change.type === "added") {
-              newIds.add(change.doc.id);
-            }
-          });
-        }
-        
-        let list = snapshot.docs.map((doc) => ({
+        const snapshotIds = new Set(snapshot.docs.map((doc) => doc.id));
+        const newList = snapshot.docs.map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }));
-        
-        setOrders(list);
-        setOrdersLoading(false);
-        
-        // Mark new orders for animation
-        if (newIds.size > 0) {
-          setNewOrderIds(newIds);
-          // Clear the markers after animation
-          setTimeout(() => setNewOrderIds(new Set()), 1500);
+
+        // Pravi "truly new" porudžbine - nema petlje preko orders
+        let trulyNewIds = new Set();
+        if (!initialLoadRef.current) {
+          for (let doc of snapshot.docs) {
+            if (!prevOrderIdsRef.current.has(doc.id)) {
+              trulyNewIds.add(doc.id);
+            }
+          }
         }
-        
-        // Mark initial load as complete
+
+        setOrders(newList);
+        setOrdersLoading(false);
+
+        if (trulyNewIds.size > 0) {
+          setNewOrderIds(trulyNewIds);
+          setTimeout(() => setNewOrderIds(new Set()), 1600);
+        }
+
+        prevOrderIdsRef.current = snapshotIds;
         initialLoadRef.current = false;
       },
       (error) => {
-        console.error("Error fetching orders:", error);
         showSnackbar("Greška pri učitavanju narudžbina.", "error");
         setOrdersLoading(false);
       }
     );
 
-    // Cleanup listener on unmount
     return () => unsubscribe();
+    // ZAVISNOSTI: nema orders u array-u!
   }, [allowed, sort, showSnackbar]);
 
   // Kada admin klikne narudžbinu...
   useEffect(() => {
     if (!selectedOrder) return;
-    
+
     // Delay the auto status update to prevent UI conflicts
     const timeoutId = setTimeout(() => {
       if (selectedOrder && selectedOrder.status === "primljeno") {
         updateOrderStatus(selectedOrder.id, "u obradi");
       }
     }, 300);
-    
+
     // Učitaj postojeće cene i delivery info
     setDeliveryPrice(selectedOrder.deliveryPrice || "");
     setDeliveryCompany(selectedOrder.deliveryCompany || "");
@@ -142,7 +145,7 @@ export default function AdminOrders() {
       }
     });
     setEditingPrices(initialPrices);
-    
+
     // Cleanup timeout on unmount or when selectedOrder changes
     return () => clearTimeout(timeoutId);
     // eslint-disable-next-line
@@ -346,7 +349,7 @@ export default function AdminOrders() {
                 transition={{ duration: 0.28, ease: [0.45, 0.06, 0.6, 1] }}
                 className="divide-y divide-gray-100"
               >
-                <AnimatePresence mode="wait">
+                <AnimatePresence mode="sync">
                   {pagedOrders.length === 0 ? (
                     <motion.tr
                       key="no-orders"
@@ -368,103 +371,108 @@ export default function AdminOrders() {
                       return (
                         <motion.tr
                           key={order.id}
-                          initial={{ opacity: 0, y: 18, scale: isNew ? 0.95 : 1 }}
-                          animate={{ 
-                            opacity: 1, 
+                          initial={{
+                            opacity: 0,
+                            y: 18,
+                            scale: isNew ? 0.95 : 1,
+                          }}
+                          animate={{
+                            opacity: 1,
                             y: 0,
-                            scale: isNew ? [0.95, 1.02, 1] : 1,
-                            backgroundColor: isNew ? ["rgba(34, 211, 238, 0.2)", "transparent"] : "transparent"
+                            scale: isNew ? [0.9, 1.05, 1] : 1,
+                            backgroundColor: isNew
+                              ? ["rgba(34, 211, 238, 0.2)", "transparent"]
+                              : "transparent",
                           }}
                           exit={{ opacity: 0, y: 20 }}
                           transition={{
-                            duration: isNew ? 0.8 : 0.33,
                             ease: [0.48, 0.06, 0.58, 1],
-                            type: isNew ? "spring" : "tween",
-                            stiffness: 120
+                            type: isNew ? "tween" : "spring",
+                            duration: 0.7,
+                            stiffness: 120,
                           }}
                           className="hover:bg-bluegreen/10 transition cursor-pointer relative"
                           onClick={() => setSelectedOrder(order)}
                         >
-                      
-                        <td className="px-4 py-3 font-semibold relative">
-                          {isNew && (
-                            <motion.span
-                              initial={{ opacity: 0, scale: 0.8, x: -10 }}
-                              animate={{ opacity: 1, scale: 1, x: 0 }}
-                              className="absolute -left-1 top-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-1 rounded-full text-[10px] font-bold shadow-lg animate-pulse"
-                            >
-                              NOVA
-                            </motion.span>
-                          )}
-                          <span className={isNew ? "ml-14" : ""}>
-                            {order.ime} {order.prezime}
-                          </span>
-                        </td>
-                        <td className="px-4 py-3">{order.email}</td>
-                        <td
-                          className="px-4 py-3 max-w-xs truncate"
-                          title={order.adresa}
-                        >
-                          {order.adresa}
-                        </td>
-                        <td className="px-4 py-3">
-                          {order.tip === "pravno" ? (
-                            <>
-                              <FaBuilding className="inline-block text-gray-400 mr-1" />
-                              Pravno
-                            </>
-                          ) : (
-                            <>Fizičko</>
-                          )}
-                        </td>
-                        <td className="px-4 py-3">
-                          <StatusBadge status={order.status} />
-                        </td>
-                        <td className="px-4 py-3 text-center space-x-1">
-                          {order.status !== "završeno" &&
-                            order.status !== "otkazano" && (
+                          <td className="px-4 py-3 font-semibold relative">
+                            {isNew && (
+                              <motion.span
+                                initial={{ opacity: 0, scale: 0.8, x: -10 }}
+                                animate={{ opacity: 1, scale: 1, x: 0 }}
+                                className="absolute -left-1 top-1/2 -translate-y-1/2 bg-gradient-to-r from-red-500 to-orange-500 text-white px-2 py-1 rounded-full text-[10px] font-bold shadow-lg animate-pulse"
+                              >
+                                NOVA
+                              </motion.span>
+                            )}
+                            <span className={isNew ? "ml-14" : ""}>
+                              {order.ime} {order.prezime}
+                            </span>
+                          </td>
+                          <td className="px-4 py-3">{order.email}</td>
+                          <td
+                            className="px-4 py-3 max-w-xs truncate"
+                            title={order.adresa}
+                          >
+                            {order.adresa}
+                          </td>
+                          <td className="px-4 py-3">
+                            {order.tip === "pravno" ? (
                               <>
-                                {order.status !== "poslato" && (
+                                <FaBuilding className="inline-block text-gray-400 mr-1" />
+                                Pravno
+                              </>
+                            ) : (
+                              <>Fizičko</>
+                            )}
+                          </td>
+                          <td className="px-4 py-3">
+                            <StatusBadge status={order.status} />
+                          </td>
+                          <td className="px-4 py-3 text-center space-x-1">
+                            {order.status !== "završeno" &&
+                              order.status !== "otkazano" && (
+                                <>
+                                  {order.status !== "poslato" && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        updateOrderStatus(order.id, "poslato");
+                                      }}
+                                      className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition-all duration-300 shadow hover:scale-105"
+                                      title="Označi kao poslato"
+                                    >
+                                      <FaTruck className="inline mr-1" />
+                                      Poslato
+                                    </button>
+                                  )}
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation();
-                                      updateOrderStatus(order.id, "poslato");
+                                      updateOrderStatus(order.id, "završeno");
                                     }}
-                                    className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition-all duration-300 shadow hover:scale-105"
-                                    title="Označi kao poslato"
+                                    className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-all duration-300 shadow hover:scale-105"
+                                    title="Završeno"
                                   >
-                                    <FaTruck className="inline mr-1" />
-                                    Poslato
+                                    <FaCheckCircle className="inline mr-1" />
+                                    Završeno
                                   </button>
-                                )}
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    updateOrderStatus(order.id, "završeno");
-                                  }}
-                                  className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition-all duration-300 shadow hover:scale-105"
-                                  title="Završeno"
-                                >
-                                  <FaCheckCircle className="inline mr-1" />
-                                  Završeno
-                                </button>
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setOtvoriBrisanjeModal(true);
-                                    setCurrectOrderId(order.id);
-                                  }}
-                                  className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
-                                  title="Otkaži"
-                                >
-                                  <FaExclamationCircle className="inline mr-1" />
-                                  Otkaži
-                                </button>
-                              </>
-                            )}
-                        </td>
-                      </motion.tr>
-                    );
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      setOtvoriBrisanjeModal(true);
+                                      setCurrectOrderId(order.id);
+                                    }}
+                                    className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
+                                    title="Otkaži"
+                                  >
+                                    <FaExclamationCircle className="inline mr-1" />
+                                    Otkaži
+                                  </button>
+                                </>
+                              )}
+                          </td>
+                        </motion.tr>
+                      );
                     })
                   )}
                 </AnimatePresence>
@@ -504,99 +512,99 @@ export default function AdminOrders() {
                   <motion.div
                     key={order.id}
                     initial={{ opacity: 0, y: 34, scale: isNew ? 0.9 : 1 }}
-                    animate={{ 
-                      opacity: 1, 
+                    animate={{
+                      opacity: 1,
                       y: 0,
-                      scale: isNew ? [0.9, 1.05, 1] : 1
+                      scale: isNew ? [0.9, 1] : 1,
                     }}
                     exit={{ opacity: 0, y: -15 }}
-                    transition={{ 
-                      duration: isNew ? 0.8 : 0.36, 
+                    transition={{
+                      duration: isNew ? 0.8 : 0.36,
                       ease: [0.45, 0.07, 0.58, 1],
-                      type: isNew ? "spring" : "tween",
-                      stiffness: 120
+                      type: "spring",
+                      stiffness: 120,
                     }}
                     style={{ willChange: "opacity, transform" }}
                     className={`bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 ring-1 hover:scale-[1.03] hover:shadow-2xl cursor-pointer transition-all relative ${
-                      isNew 
-                        ? "ring-2 ring-bluegreen bg-gradient-to-br from-cyan-50 to-white" 
+                      isNew
+                        ? "ring-2 ring-bluegreen bg-gradient-to-br from-cyan-50 to-white"
                         : "ring-bluegreen/10"
                     }`}
                     onClick={() => setSelectedOrder(order)}
                   >
-                  {isNew && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
-                      animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                      className="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse"
-                    >
-                      NOVA PORUDŽBINA
-                    </motion.div>
-                  )}
-                
-                  <div className="flex gap-2 items-center">
-                    <FaUserCircle className="text-bluegreen" />
-                    <span className="font-bold">
-                      {order.ime} {order.prezime}
-                    </span>
-                  </div>
-                  <div className="flex gap-2 items-center text-xs text-gray-500">
-                    <FaEnvelope /> {order.email}
-                  </div>
-                  <div className="flex gap-2 items-center text-xs text-gray-500">
-                    <FaHome /> {order.adresa}
-                  </div>
-                  <StatusBadge status={order.status} />
-                  <div className="flex items-center gap-2 justify-end mt-2">
-                    {order.cart?.length && (
-                      <span className="inline-flex items-center gap-1 px-2 py-1 bg-bluegreen/10 text-bluegreen text-xs rounded font-bold">
-                        <FaBoxes /> Proizvoda: {order.cart.length}
-                      </span>
+                    {isNew && (
+                      <motion.div
+                        initial={{ opacity: 0, scale: 0.8, rotate: -12 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        className="absolute -top-2 -right-2 z-10 bg-gradient-to-r from-red-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg animate-pulse"
+                      >
+                        NOVA PORUDŽBINA
+                      </motion.div>
                     )}
-                    {order.status !== "završeno" &&
-                      order.status !== "otkazano" && (
-                        <>
-                          {order.status !== "poslato" && (
+
+                    <div className="flex gap-2 items-center">
+                      <FaUserCircle className="text-bluegreen" />
+                      <span className="font-bold">
+                        {order.ime} {order.prezime}
+                      </span>
+                    </div>
+                    <div className="flex gap-2 items-center text-xs text-gray-500">
+                      <FaEnvelope /> {order.email}
+                    </div>
+                    <div className="flex gap-2 items-center text-xs text-gray-500">
+                      <FaHome /> {order.adresa}
+                    </div>
+                    <StatusBadge status={order.status} />
+                    <div className="flex items-center gap-2 justify-end mt-2">
+                      {order.cart?.length && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-bluegreen/10 text-bluegreen text-xs rounded font-bold">
+                          <FaBoxes /> Proizvoda: {order.cart.length}
+                        </span>
+                      )}
+                      {order.status !== "završeno" &&
+                        order.status !== "otkazano" && (
+                          <>
+                            {order.status !== "poslato" && (
+                              <button
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  updateOrderStatus(order.id, "poslato");
+                                }}
+                                className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition shadow hover:scale-105 text-xs font-bold"
+                              >
+                                Poslato
+                              </button>
+                            )}
                             <button
                               onClick={(e) => {
                                 e.stopPropagation();
-                                updateOrderStatus(order.id, "poslato");
+                                updateOrderStatus(order.id, "završeno");
                               }}
-                              className="bg-indigo-600 text-white px-3 py-1 rounded hover:bg-indigo-700 transition shadow hover:scale-105 text-xs font-bold"
+                              className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition shadow hover:scale-105 text-xs font-bold"
                             >
-                              Poslato
+                              Završeno
                             </button>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              updateOrderStatus(order.id, "završeno");
-                            }}
-                            className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700 transition shadow hover:scale-105 text-xs font-bold"
-                          >
-                            Završeno
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              setOtvoriBrisanjeModal(true);
-                              setCurrectOrderId(order.id);
-                            }}
-                            className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
-                            title="Otkaži"
-                          >
-                            <FaExclamationCircle className="inline mr-1" />
-                            Otkaži
-                          </button>
-                        </>
-                      )}
-                  </div>
-                  <div className="flex justify-end text-xs text-gray-400">
-                    {order.createdAt?.seconds &&
-                      formatDate(order.createdAt.seconds)}
-                  </div>
-                </motion.div>
-              );
+                            <button
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setOtvoriBrisanjeModal(true);
+                                setCurrectOrderId(order.id);
+                              }}
+                              className="bg-red-600 text-white px-3 py-1 rounded hover:bg-red-700 transition-all duration-300 shadow hover:scale-105"
+                              title="Otkaži"
+                            >
+                              <FaExclamationCircle className="inline mr-1" />
+                              Otkaži
+                            </button>
+                          </>
+                        )}
+                    </div>
+                    <div className="flex justify-end text-xs text-gray-400">
+                      {order.createdAt?.seconds &&
+                        formatDate(order.createdAt.seconds)}
+                    </div>
+                  </motion.div>
+                );
               })
             )}
           </AnimatePresence>
