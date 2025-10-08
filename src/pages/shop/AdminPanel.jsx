@@ -103,13 +103,13 @@ export default function AdminPanel() {
   // Handle multiple images
   const handleMultipleImages = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map(file => ({
+    const newImages = files.map((file) => ({
       file,
-      preview: URL.createObjectURL(file)
+      preview: URL.createObjectURL(file),
     }));
     setNewProduct({
       ...newProduct,
-      images: [...newProduct.images, ...newImages]
+      images: [...newProduct.images, ...newImages],
     });
   };
 
@@ -123,7 +123,7 @@ export default function AdminPanel() {
   const addFeature = () => {
     setNewProduct({
       ...newProduct,
-      features: [...newProduct.features, { label: "", value: "" }]
+      features: [...newProduct.features, { label: "", value: "" }],
     });
   };
 
@@ -142,13 +142,13 @@ export default function AdminPanel() {
   // Handle datasheets
   const handleDatasheets = (e) => {
     const files = Array.from(e.target.files);
-    const newDatasheets = files.map(file => ({
+    const newDatasheets = files.map((file) => ({
       file,
-      name: file.name
+      name: file.name,
     }));
     setNewProduct({
       ...newProduct,
-      datasheets: [...newProduct.datasheets, ...newDatasheets]
+      datasheets: [...newProduct.datasheets, ...newDatasheets],
     });
   };
 
@@ -186,7 +186,7 @@ export default function AdminPanel() {
     let imgUrl = "";
     const imageUrls = [];
     const datasheetUrls = [];
-    
+
     try {
       // Upload main image
       if (newProduct.imgFile) {
@@ -220,7 +220,7 @@ export default function AdminPanel() {
         const url = await getDownloadURL(storageRef);
         datasheetUrls.push({
           name: ds.file.name,
-          url: url
+          url: url,
         });
       }
 
@@ -320,13 +320,13 @@ export default function AdminPanel() {
   // Edit handlers for multiple images
   const handleEditMultipleImages = (e) => {
     const files = Array.from(e.target.files);
-    const newImages = files.map(file => ({
+    const newImages = files.map((file) => ({
       file,
-      preview: URL.createObjectURL(file)
+      preview: URL.createObjectURL(file),
     }));
     setEditProduct({
       ...editProduct,
-      newImages: [...(editProduct.newImages || []), ...newImages]
+      newImages: [...(editProduct.newImages || []), ...newImages],
     });
   };
 
@@ -346,7 +346,7 @@ export default function AdminPanel() {
   const addEditFeature = () => {
     setEditProduct({
       ...editProduct,
-      features: [...editProduct.features, { label: "", value: "" }]
+      features: [...editProduct.features, { label: "", value: "" }],
     });
   };
 
@@ -365,13 +365,13 @@ export default function AdminPanel() {
   // Edit handlers for datasheets
   const handleEditDatasheets = (e) => {
     const files = Array.from(e.target.files);
-    const newDatasheets = files.map(file => ({
+    const newDatasheets = files.map((file) => ({
       file,
-      name: file.name
+      name: file.name,
     }));
     setEditProduct({
       ...editProduct,
-      newDatasheets: [...(editProduct.newDatasheets || []), ...newDatasheets]
+      newDatasheets: [...(editProduct.newDatasheets || []), ...newDatasheets],
     });
   };
 
@@ -429,7 +429,7 @@ export default function AdminPanel() {
           const url = await getDownloadURL(storageRef);
           newDatasheetUrls.push({
             name: ds.file.name,
-            url: url
+            url: url,
           });
         }
       }
@@ -473,7 +473,6 @@ export default function AdminPanel() {
         className="flex flex-col gap-6 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 shadow animate-pop w-full"
       >
         <div className="flex flex-col lg:flex-row items-start gap-6 w-full">
-
           <div className="flex flex-col gap-4 w-full pt-2">
             <FloatingLabelInput
               name="name"
@@ -688,14 +687,18 @@ export default function AdminPanel() {
                       type="text"
                       placeholder="Naziv (npr. Težina)"
                       value={feature.label}
-                      onChange={(e) => updateFeature(idx, "label", e.target.value)}
+                      onChange={(e) =>
+                        updateFeature(idx, "label", e.target.value)
+                      }
                       className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/90 backdrop-blur-sm transition-all"
                     />
                     <input
                       type="text"
                       placeholder="Vrednost (npr. 2kg)"
                       value={feature.value}
-                      onChange={(e) => updateFeature(idx, "value", e.target.value)}
+                      onChange={(e) =>
+                        updateFeature(idx, "value", e.target.value)
+                      }
                       className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/90 backdrop-blur-sm transition-all"
                     />
                     <Motion.button
@@ -755,11 +758,17 @@ export default function AdminPanel() {
                   >
                     <Motion.div
                       animate={{ rotate: [0, 10, -10, 0] }}
-                      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                      transition={{
+                        repeat: Infinity,
+                        duration: 2,
+                        ease: "easeInOut",
+                      }}
                     >
                       <FiFile className="text-[#6EAEA2]" size={20} />
                     </Motion.div>
-                    <span className="flex-1 text-sm text-[#1E3E49] truncate font-medium">{ds.name}</span>
+                    <span className="flex-1 text-sm text-[#1E3E49] truncate font-medium">
+                      {ds.name}
+                    </span>
                     <Motion.button
                       type="button"
                       onClick={() => removeDatasheet(idx)}
@@ -845,7 +854,7 @@ export default function AdminPanel() {
                       {prod.price !== null ? (
                         formatPrice(prod.price) + " RSD"
                       ) : allowed ? (
-                        formatPrice(prod.hiddenPrice) + " RSD (skrivena)"
+                        formatPrice(prod.hiddenPrice) + " RSD"
                       ) : (
                         <span className="italic text-gray-400">
                           Cena skrivena
@@ -1040,7 +1049,10 @@ export default function AdminPanel() {
             }}
             onClick={handleEditClose}
           />
-          <div className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 animate-scale-up max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto" data-lenis-prevent>
+          <div
+            className="relative bg-white/90 backdrop-blur-xl rounded-2xl p-6 sm:p-8 shadow-2xl border border-white/20 animate-scale-up max-w-2xl w-full mx-4 max-h-[90vh] overflow-y-auto"
+            data-lenis-prevent
+          >
             <form onSubmit={handleEditSubmit} className="flex flex-col gap-6">
               <h3 className="text-xl sm:text-2xl font-bold text-center text-gray-800">
                 Izmena proizvoda
@@ -1153,7 +1165,7 @@ export default function AdminPanel() {
               </label>
 
               {/* Edit Multiple Images */}
-              <Motion.div 
+              <Motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="p-3 rounded-lg bg-[#CBCFBB]/10 backdrop-blur-sm border border-[#6EAEA2]/30 shadow-sm"
@@ -1161,7 +1173,7 @@ export default function AdminPanel() {
                 <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
                   <FiUpload className="text-[#6EAEA2]" /> Dodatne slike
                 </h4>
-                <Motion.label 
+                <Motion.label
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm shadow-sm hover:shadow-md"
@@ -1178,8 +1190,8 @@ export default function AdminPanel() {
                 <div className="grid grid-cols-4 gap-2 mt-2">
                   <AnimatePresence>
                     {editProduct.images.map((img, idx) => (
-                      <Motion.div 
-                        key={idx} 
+                      <Motion.div
+                        key={idx}
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0, scale: 0.8 }}
@@ -1202,37 +1214,38 @@ export default function AdminPanel() {
                         </Motion.button>
                       </Motion.div>
                     ))}
-                    {editProduct.newImages && editProduct.newImages.map((img, idx) => (
-                      <Motion.div 
-                        key={`new-${idx}`} 
-                        initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
-                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
-                        exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
-                        whileHover={{ scale: 1.05 }}
-                        className="relative group"
-                      >
-                        <img
-                          src={img.preview}
-                          alt={`New ${idx}`}
-                          className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] shadow-sm group-hover:shadow-md transition-shadow"
-                        />
-                        <Motion.button
-                          type="button"
-                          onClick={() => removeEditImage(idx, true)}
-                          whileHover={{ scale: 1.2, rotate: 90 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                    {editProduct.newImages &&
+                      editProduct.newImages.map((img, idx) => (
+                        <Motion.div
+                          key={`new-${idx}`}
+                          initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                          exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
+                          whileHover={{ scale: 1.05 }}
+                          className="relative group"
                         >
-                          <FiX size={12} />
-                        </Motion.button>
-                      </Motion.div>
-                    ))}
+                          <img
+                            src={img.preview}
+                            alt={`New ${idx}`}
+                            className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] shadow-sm group-hover:shadow-md transition-shadow"
+                          />
+                          <Motion.button
+                            type="button"
+                            onClick={() => removeEditImage(idx, true)}
+                            whileHover={{ scale: 1.2, rotate: 90 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                          >
+                            <FiX size={12} />
+                          </Motion.button>
+                        </Motion.div>
+                      ))}
                   </AnimatePresence>
                 </div>
               </Motion.div>
 
               {/* Edit Features */}
-              <Motion.div 
+              <Motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
@@ -1253,8 +1266,8 @@ export default function AdminPanel() {
                 <div className="space-y-2">
                   <AnimatePresence>
                     {editProduct.features.map((feature, idx) => (
-                      <Motion.div 
-                        key={idx} 
+                      <Motion.div
+                        key={idx}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
@@ -1264,14 +1277,18 @@ export default function AdminPanel() {
                           type="text"
                           placeholder="Naziv"
                           value={feature.label}
-                          onChange={(e) => updateEditFeature(idx, "label", e.target.value)}
+                          onChange={(e) =>
+                            updateEditFeature(idx, "label", e.target.value)
+                          }
                           className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2] bg-white/80"
                         />
                         <input
                           type="text"
                           placeholder="Vrednost"
                           value={feature.value}
-                          onChange={(e) => updateEditFeature(idx, "value", e.target.value)}
+                          onChange={(e) =>
+                            updateEditFeature(idx, "value", e.target.value)
+                          }
                           className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2] bg-white/80"
                         />
                         <Motion.button
@@ -1290,7 +1307,7 @@ export default function AdminPanel() {
               </Motion.div>
 
               {/* Edit Datasheets */}
-              <Motion.div 
+              <Motion.div
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.2 }}
@@ -1299,7 +1316,7 @@ export default function AdminPanel() {
                 <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
                   <FiFile className="text-[#6EAEA2]" /> Datasheets
                 </h4>
-                <Motion.label 
+                <Motion.label
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95 }}
                   className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm shadow-sm hover:shadow-md"
@@ -1316,8 +1333,8 @@ export default function AdminPanel() {
                 <div className="space-y-2 mt-2">
                   <AnimatePresence>
                     {editProduct.datasheets.map((ds, idx) => (
-                      <Motion.div 
-                        key={idx} 
+                      <Motion.div
+                        key={idx}
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: -20 }}
@@ -1325,7 +1342,9 @@ export default function AdminPanel() {
                         className="flex items-center gap-2 p-2 bg-white/60 backdrop-blur-sm rounded border border-[#6EAEA2]/30 text-sm shadow-sm hover:shadow-md transition-shadow group"
                       >
                         <FiFile className="text-[#6EAEA2]" size={14} />
-                        <span className="flex-1 truncate text-xs font-medium">{ds.name}</span>
+                        <span className="flex-1 truncate text-xs font-medium">
+                          {ds.name}
+                        </span>
                         <Motion.button
                           type="button"
                           onClick={() => removeEditDatasheet(idx, false)}
@@ -1337,28 +1356,31 @@ export default function AdminPanel() {
                         </Motion.button>
                       </Motion.div>
                     ))}
-                    {editProduct.newDatasheets && editProduct.newDatasheets.map((ds, idx) => (
-                      <Motion.div 
-                        key={`new-${idx}`} 
-                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
-                        animate={{ opacity: 1, x: 0, scale: 1 }}
-                        exit={{ opacity: 0, x: -20, scale: 0.9 }}
-                        whileHover={{ scale: 1.02, x: 5 }}
-                        className="flex items-center gap-2 p-2 bg-[#91CEC1]/20 backdrop-blur-sm rounded border border-[#91CEC1] text-sm shadow-sm hover:shadow-md transition-shadow group"
-                      >
-                        <FiFile className="text-[#6EAEA2]" size={14} />
-                        <span className="flex-1 truncate text-xs font-medium">{ds.name}</span>
-                        <Motion.button
-                          type="button"
-                          onClick={() => removeEditDatasheet(idx, true)}
-                          whileHover={{ scale: 1.2 }}
-                          whileTap={{ scale: 0.9 }}
-                          className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm"
+                    {editProduct.newDatasheets &&
+                      editProduct.newDatasheets.map((ds, idx) => (
+                        <Motion.div
+                          key={`new-${idx}`}
+                          initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                          animate={{ opacity: 1, x: 0, scale: 1 }}
+                          exit={{ opacity: 0, x: -20, scale: 0.9 }}
+                          whileHover={{ scale: 1.02, x: 5 }}
+                          className="flex items-center gap-2 p-2 bg-[#91CEC1]/20 backdrop-blur-sm rounded border border-[#91CEC1] text-sm shadow-sm hover:shadow-md transition-shadow group"
                         >
-                          <FiX size={12} />
-                        </Motion.button>
-                      </Motion.div>
-                    ))}
+                          <FiFile className="text-[#6EAEA2]" size={14} />
+                          <span className="flex-1 truncate text-xs font-medium">
+                            {ds.name}
+                          </span>
+                          <Motion.button
+                            type="button"
+                            onClick={() => removeEditDatasheet(idx, true)}
+                            whileHover={{ scale: 1.2 }}
+                            whileTap={{ scale: 0.9 }}
+                            className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm"
+                          >
+                            <FiX size={12} />
+                          </Motion.button>
+                        </Motion.div>
+                      ))}
                   </AnimatePresence>
                 </div>
               </Motion.div>
