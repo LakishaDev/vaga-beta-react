@@ -16,6 +16,8 @@ import {
   MapPin,
   Mail,
   Phone,
+  Truck,
+  DollarSign,
 } from "lucide-react";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import StatusBadge from "./StatusBadge";
@@ -157,9 +159,21 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                         </div>
                         <div className="text-sm text-gray-500">
                           {hasHiddenPrice(prod) ? (
-                            <span className="italic text-orange-600">
-                              Cena na upit × {prod.qty}
-                            </span>
+                            <div className="space-y-1">
+                              <span className="italic text-orange-600">
+                                Cena na upit × {prod.qty}
+                              </span>
+                              {prod.suggestedPrice && (
+                                <div className="flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit">
+                                  <DollarSign size={12} />
+                                  <span className="font-semibold">
+                                    Predložena cena:{" "}
+                                    {prod.suggestedPrice.toLocaleString("sr-RS")}{" "}
+                                    RSD × {prod.qty}
+                                  </span>
+                                </div>
+                              )}
+                            </div>
                           ) : (
                             `${srRsd(getProductPrice(prod))} × ${prod.qty}`
                           )}
@@ -195,6 +209,32 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                   </div>
                 )}
 
+                {/* Dostava */}
+                {(order.deliveryPrice || order.deliveryCompany) && (
+                  <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200 mt-4">
+                    <div className="flex items-center gap-2 text-bluegreen font-bold mb-2">
+                      <Truck size={18} />
+                      <span>Dostava</span>
+                    </div>
+                    {order.deliveryCompany && (
+                      <div className="text-sm text-gray-700 flex items-center gap-2">
+                        <span className="font-medium">Dostavljač:</span>
+                        <span className="bg-white px-2 py-1 rounded border border-blue-200">
+                          {order.deliveryCompany}
+                        </span>
+                      </div>
+                    )}
+                    {order.deliveryPrice && (
+                      <div className="text-sm text-gray-700 flex items-center gap-2 mt-1">
+                        <span className="font-medium">Cena dostave:</span>
+                        <span className="bg-white px-2 py-1 rounded border border-blue-200 font-semibold">
+                          {order.deliveryPrice.toLocaleString("sr-RS")} RSD
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                 {/* Ukupna cena - prilagođeno za skrivene cene */}
                 <div className="flex flex-col gap-2 text-base text-bluegreen font-bold border-t pt-3 mt-6">
                   <div className="flex items-center gap-2">
@@ -215,17 +255,82 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                         <span className="text-sm font-medium text-orange-600">
                           Artikli na upit:
                         </span>
-                        <span className="text-orange-600 italic">Dogovor</span>
+                        <span className="text-orange-600 italic">
+                          {order.cart
+                            .filter(hasHiddenPrice)
+                            .some((p) => p.suggestedPrice)
+                            ? `${order.cart
+                                .filter(hasHiddenPrice)
+                                .reduce(
+                                  (acc, p) =>
+                                    acc + (p.suggestedPrice || 0) * p.qty,
+                                  0
+                                )
+                                .toLocaleString("sr-RS")} RSD (predloženo)`
+                            : "Dogovor"}
+                        </span>
                       </div>
+                      {order.deliveryPrice && (
+                        <div className="flex justify-between">
+                          <span className="text-sm font-medium text-blue-600">
+                            Dostava:
+                          </span>
+                          <span className="text-blue-600">
+                            {order.deliveryPrice.toLocaleString("sr-RS")} RSD
+                          </span>
+                        </div>
+                      )}
                       <div className="border-t pt-1 mt-1 flex justify-between">
                         <span className="font-bold">Finalna cena:</span>
                         <span className="text-orange-600 italic">
-                          Na dogovor
+                          {order.cart
+                            .filter(hasHiddenPrice)
+                            .every((p) => p.suggestedPrice)
+                            ? `${(
+                                visibleTotal +
+                                order.cart
+                                  .filter(hasHiddenPrice)
+                                  .reduce(
+                                    (acc, p) =>
+                                      acc + (p.suggestedPrice || 0) * p.qty,
+                                    0
+                                  ) +
+                                (order.deliveryPrice || 0)
+                              ).toLocaleString("sr-RS")} RSD (orjentaciono)`
+                            : "Na dogovor"}
                         </span>
                       </div>
                     </div>
                   ) : (
-                    <span className="ml-7">{srRsd(fullTotal)}</span>
+                    <div className="ml-7 space-y-1">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium text-gray-600">
+                          Proizvodi:
+                        </span>
+                        <span>{srRsd(fullTotal)}</span>
+                      </div>
+                      {order.deliveryPrice && (
+                        <div className="flex justify-between items-center">
+                          <span className="text-sm font-medium text-blue-600">
+                            Dostava:
+                          </span>
+                          <span className="text-blue-600">
+                            {order.deliveryPrice.toLocaleString("sr-RS")} RSD
+                          </span>
+                        </div>
+                      )}
+                      {order.deliveryPrice && (
+                        <div className="flex justify-between items-center border-t pt-1">
+                          <span className="font-bold">Ukupno sa dostavom:</span>
+                          <span>
+                            {(fullTotal + order.deliveryPrice).toLocaleString(
+                              "sr-RS"
+                            )}{" "}
+                            RSD
+                          </span>
+                        </div>
+                      )}
+                    </div>
                   )}
                 </div>
               </div>
