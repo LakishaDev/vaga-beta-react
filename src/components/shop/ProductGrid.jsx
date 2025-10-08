@@ -15,9 +15,11 @@
 // - React.memo za ProductCard wrapper (sprečava nepotrebno re-renderovanje)
 import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react";
 import { db } from "../../utils/firebase";
-import { collection, getDocs, query, orderBy } from "firebase/firestore";
+import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import ProductCard from "./ProductCard";
 import Lenis from "lenis";
+// eslint-disable-next-line no-unused-vars
+import { motion, AnimatePresence } from "framer-motion";
 
 import {
   Package2,
@@ -31,16 +33,27 @@ import {
   Trash,
 } from "lucide-react";
 
-// Memoized product item wrapper to prevent unnecessary re-renders
-const MemoizedProductItem = memo(({ product }) => (
-  <div className="animate-fadein">
+// Memoized product item wrapper to prevent unnecessary re-renders with animations
+const MemoizedProductItem = memo(({ product, isNew }) => (
+  <motion.div
+    initial={isNew ? { opacity: 0, scale: 0.8, y: 20 } : false}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    transition={{ 
+      duration: 0.5, 
+      ease: [0.34, 1.56, 0.64, 1],
+      type: "spring",
+      stiffness: 100
+    }}
+    layout
+  >
     <ProductCard product={product} />
-  </div>
+  </motion.div>
 ));
 MemoizedProductItem.displayName = "MemoizedProductItem";
 
 export default function ProductGrid() {
   const [products, setProducts] = useState([]);
+  const [newProductIds, setNewProductIds] = useState(new Set());
   const [sort, setSort] = useState("newest");
   const [categories, setCategories] = useState([]);
   const [selectedCategories, setSelectedCategories] = useState([]);
@@ -52,6 +65,7 @@ export default function ProductGrid() {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef();
   const lenisRef = useRef();
+  const initialLoadRef = useRef(true);
 
   useEffect(() => {
     lenisRef.current = new Lenis({ lerp: 0.07 });
@@ -93,16 +107,38 @@ export default function ProductGrid() {
     };
   }
 
+  // Real-time listener with onSnapshot for products
   useEffect(() => {
-    let q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    getDocs(q).then((snapshot) => {
+    const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const newIds = new Set();
+      
+      // Detect new products (only for non-initial loads)
+      if (!initialLoadRef.current) {
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "added") {
+            newIds.add(change.doc.id);
+          }
+        });
+      }
+      
       let arr = snapshot.docs
         .map((doc) => ({
           id: doc.id,
           ...doc.data(),
         }))
-        .map(addDiscountInfo); // Ovde pozivaš funkciju
+        .map(addDiscountInfo);
+      
       setProducts(arr);
+      
+      // Mark new products for animation
+      if (newIds.size > 0) {
+        setNewProductIds(newIds);
+        // Clear the new product markers after animation completes
+        setTimeout(() => setNewProductIds(new Set()), 1000);
+      }
+      
       const kats = Array.from(
         new Set(arr.map((p) => p.category).filter(Boolean))
       ).sort((a, b) => a.localeCompare(b, "sr", { numeric: true }));
@@ -117,10 +153,21 @@ export default function ProductGrid() {
             : null
         )
         .filter(Number);
-      setMinPrice(Math.min(...prices));
-      setMaxPrice(Math.max(...prices));
-      setPriceRange([Math.min(...prices), Math.max(...prices)]);
+      
+      if (prices.length > 0) {
+        setMinPrice(Math.min(...prices));
+        setMaxPrice(Math.max(...prices));
+        setPriceRange([Math.min(...prices), Math.max(...prices)]);
+      }
+      
+      // Mark initial load as complete
+      initialLoadRef.current = false;
+    }, (error) => {
+      console.error("Error fetching products:", error);
     });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, []);
 
   const getEffectivePrice = useCallback((product) => {
@@ -380,17 +427,32 @@ export default function ProductGrid() {
       </div>
 
       {/* Proizvodi - grid dizajn (responsive, razmak) */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 xl:gap-10">
-        {sortedProducts.length === 0 ? (
-          <div className="col-span-full text-center text-lg sm:text-xl text-rust mt-8 sm:mt-12 animate-fadein px-4 font-bold">
-            Nema rezultata za zadate filtere.
-          </div>
-        ) : (
-          sortedProducts.map((product) => (
-            <MemoizedProductItem key={product.id} product={product} />
-          ))
-        )}
-      </div>
+      <AnimatePresence mode="popLayout">
+        <motion.div 
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 xl:gap-10"
+          layout
+        >
+          {sortedProducts.length === 0 ? (
+            <motion.div 
+              key="no-results"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              className="col-span-full text-center text-lg sm:text-xl text-rust mt-8 sm:mt-12 px-4 font-bold"
+            >
+              Nema rezultata za zadate filtere.
+            </motion.div>
+          ) : (
+            sortedProducts.map((product) => (
+              <MemoizedProductItem 
+                key={product.id} 
+                product={product} 
+                isNew={newProductIds.has(product.id)}
+              />
+            ))
+          )}
+        </motion.div>
+      </AnimatePresence>
     </div>
   );
 }

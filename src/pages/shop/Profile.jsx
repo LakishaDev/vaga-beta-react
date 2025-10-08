@@ -11,7 +11,7 @@
 import { useState, useEffect } from "react";
 import { useUserData } from "../../hooks/useUserData";
 import { updateUserProfile, uploadProfileImage } from "../../utils/userService";
-import { collection, query, where, getDocs, or } from "firebase/firestore";
+import { collection, query, where, or, onSnapshot } from "firebase/firestore";
 import { db, auth } from "../../utils/firebase";
 import { sendEmailVerification } from "firebase/auth";
 // eslint-disable-next-line no-unused-vars
@@ -154,6 +154,7 @@ const VerificationBadge = ({ verified, type, value, onClick }) => {
 export default function Profile() {
   const { user, userData, loading, refreshUserData } = useUserData();
   const [orders, setOrders] = useState([]);
+  const [updatedOrderIds, setUpdatedOrderIds] = useState(new Set());
   const [editMode, setEditMode] = useState(false);
   const [editData, setEditData] = useState({});
   const [uploadingImage, setUploadingImage] = useState(false);
@@ -169,28 +170,52 @@ export default function Profile() {
   // Provera da li je korisnik dovoljno verifikovan (email ILI telefon)
   const isUserVerified = user && (user.emailVerified || !!user.phoneNumber);
 
+  // Real-time listener for user orders with onSnapshot
   useEffect(() => {
     if (!user) return;
-    const fetchOrders = async () => {
-      // Pretpostavljam da user.email i user.phoneNumber mogu postojati ili jedan ili oba
-      const conditions = [];
-      if (user?.email) conditions.push(where("email", "==", user.email));
-      if (user?.phoneNumber)
-        conditions.push(where("telefon", "==", user.phoneNumber));
+    
+    const conditions = [];
+    if (user?.email) conditions.push(where("email", "==", user.email));
+    if (user?.phoneNumber)
+      conditions.push(where("telefon", "==", user.phoneNumber));
 
-      // Postavi Firestore upit sa OR logikom
-      const q = query(collection(db, "orders"), or(...conditions));
-      const snaps = await getDocs(q);
-      const sorted = snaps.docs
-        .map((d) => d.data())
+    if (conditions.length === 0) return;
+
+    // Postavi Firestore upit sa OR logikom i real-time listener
+    const q = query(collection(db, "orders"), or(...conditions));
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const updatedIds = new Set();
+      
+      // Detect modified orders for animation
+      snapshot.docChanges().forEach((change) => {
+        if (change.type === "modified") {
+          updatedIds.add(change.doc.id);
+        }
+      });
+      
+      const sorted = snapshot.docs
+        .map((d) => ({ id: d.id, ...d.data() }))
         .sort((a, b) => {
           const ta = a.createdAt?.seconds || 0;
           const tb = b.createdAt?.seconds || 0;
           return tb - ta;
         });
+      
       setOrders(sorted);
-    };
-    fetchOrders();
+      
+      // Mark updated orders for animation
+      if (updatedIds.size > 0) {
+        setUpdatedOrderIds(updatedIds);
+        // Clear the markers after animation
+        setTimeout(() => setUpdatedOrderIds(new Set()), 1500);
+      }
+    }, (error) => {
+      console.error("Error fetching orders:", error);
+    });
+
+    // Cleanup listener on unmount
+    return () => unsubscribe();
   }, [user]);
 
   useEffect(() => {
@@ -539,33 +564,49 @@ export default function Profile() {
             </motion.div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 md:auto-rows-fr">
-              {orders.map((order, idx) => {
-                // Računaj ukupno sa proverom skrivenih cena
-                const orderTotal = order.cart.reduce((acc, product) => {
-                  return acc + getProductPrice(product) * product.qty;
-                }, 0);
+              <AnimatePresence mode="popLayout">
+                {orders.map((order, idx) => {
+                  // Računaj ukupno sa proverom skrivenih cena
+                  const orderTotal = order.cart.reduce((acc, product) => {
+                    return acc + getProductPrice(product) * product.qty;
+                  }, 0);
 
-                const hasHiddenItems = order.cart.some(hasHiddenPrice);
+                  const hasHiddenItems = order.cart.some(hasHiddenPrice);
+                  const isUpdated = updatedOrderIds.has(order.id);
 
-                return (
-                  <motion.div
-                    key={order.createdAt?.seconds || idx}
-                    className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100 cursor-pointer flex flex-col h-full"
-                    initial={{ opacity: 0, y: 40 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.5, delay: idx * 0.1 }}
-                    onClick={() => {
-                      setSelectedOrder(order);
-                      setOrderModalOpen(true);
-                    }}
-                    whileHover={{
-                      scale: 1.02,
-                      y: -8,
-                      boxShadow: "0 20px 40px rgba(34, 211, 238, 0.15)",
-                      borderColor: "#22d3ee",
-                    }}
-                    layout
-                  >
+                  return (
+                    <motion.div
+                      key={order.id || order.createdAt?.seconds || idx}
+                      className={`bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border cursor-pointer flex flex-col h-full ${
+                        isUpdated 
+                          ? "border-green-400 ring-2 ring-green-200" 
+                          : "border-gray-100"
+                      }`}
+                      initial={{ opacity: 0, y: 40 }}
+                      animate={{ 
+                        opacity: 1, 
+                        y: 0,
+                        scale: isUpdated ? [1, 1.03, 1] : 1
+                      }}
+                      exit={{ opacity: 0, scale: 0.8 }}
+                      transition={{ 
+                        duration: isUpdated ? 0.6 : 0.5, 
+                        delay: idx * 0.1,
+                        type: "spring",
+                        stiffness: isUpdated ? 150 : 100
+                      }}
+                      onClick={() => {
+                        setSelectedOrder(order);
+                        setOrderModalOpen(true);
+                      }}
+                      whileHover={{
+                        scale: 1.02,
+                        y: -8,
+                        boxShadow: "0 20px 40px rgba(34, 211, 238, 0.15)",
+                        borderColor: "#22d3ee",
+                      }}
+                      layout
+                    >
                     <div className="flex justify-between items-center mb-4">
                       <span className="text-sm text-gray-500 font-medium">
                         {srDate(order.createdAt)}
@@ -711,6 +752,7 @@ export default function Profile() {
                   </motion.div>
                 );
               })}
+              </AnimatePresence>
             </div>
           )}
         </motion.div>
