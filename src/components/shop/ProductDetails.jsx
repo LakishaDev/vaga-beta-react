@@ -6,7 +6,7 @@ import {
   useCallback,
   useLayoutEffect,
 } from "react";
-import { db } from "../../utils/firebase";
+import { db, auth } from "../../utils/firebase";
 import {
   doc,
   getDoc,
@@ -14,7 +14,10 @@ import {
   addDoc,
   query,
   where,
-  getDocs,
+  onSnapshot,
+  deleteDoc,
+  orderBy,
+  serverTimestamp,
 } from "firebase/firestore";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import {
@@ -27,19 +30,26 @@ import {
   Percent,
   ChevronLeft,
   ChevronRight,
+  Trash2,
+  Mail,
 } from "lucide-react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { ArrowLeft } from "lucide-react";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { FiDownload, FiPackage } from "react-icons/fi";
+import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 
 export default function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [review, setReview] = useState("");
+  const [rating, setRating] = useState(5);
   const [showAddAnim, setShowAddAnim] = useState(false);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const { addToCart } = useContext(CartContext);
   const { showSnackbar } = useContext(SnackbarContext);
@@ -61,6 +71,20 @@ export default function ProductDetails() {
     setModalImageIndex(currentImageIndex);
     setShowImageModal(true);
     setModalAnimating(false);
+  };
+
+  const openReviewModal = () => {
+    if (!currentUser) {
+      showSnackbar("Morate biti prijavljeni da biste ostavili recenziju", "error");
+      return;
+    }
+    setShowReviewModal(true);
+  };
+
+  const closeReviewModal = () => {
+    setShowReviewModal(false);
+    setReview("");
+    setRating(5);
   };
 
   const nextModalImage = useCallback(() => {
@@ -117,33 +141,92 @@ export default function ProductDetails() {
     };
   }
 
+  // Check admin status
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((user) => {
+      setCurrentUser(user);
+      if (user) {
+        const adminEmails =
+          import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) ||
+          [];
+        setIsAdmin(adminEmails.includes(user.email));
+      } else {
+        setIsAdmin(false);
+      }
+    });
+    return () => unsubscribe();
+  }, []);
+
   useEffect(() => {
     const fetchProduct = async () => {
       const snap = await getDoc(doc(db, "products", id));
       setProduct(addDiscountInfo({ id: snap.id, ...snap.data() }));
     };
-    const fetchReviews = async () => {
-      const q = query(collection(db, "reviews"), where("productId", "==", id));
-      const snaps = await getDocs(q);
-      setReviews(snaps.docs.map((d) => ({ ...d.data() })));
-    };
     fetchProduct();
-    fetchReviews();
     window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [id]);
+
+  // Real-time reviews with onSnapshot
+  useEffect(() => {
+    const q = query(
+      collection(db, "reviews"),
+      where("productId", "==", id),
+      orderBy("createdAt", "desc")
+    );
+    
+    const unsubscribe = onSnapshot(q, (snapshot) => {
+      const reviewsData = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      setReviews(reviewsData);
+    });
+
+    return () => unsubscribe();
   }, [id]);
 
   const handleReview = async (e) => {
     e.preventDefault();
+    if (!currentUser) {
+      showSnackbar("Morate biti prijavljeni da biste ostavili recenziju", "error");
+      return;
+    }
     if (review.length > 2) {
-      await addDoc(collection(db, "reviews"), {
-        productId: id,
-        text: review,
-        createdAt: new Date(),
-      });
-      setReview("");
-      const q = query(collection(db, "reviews"), where("productId", "==", id));
-      const snaps = await getDocs(q);
-      setReviews(snaps.docs.map((d) => ({ ...d.data() })));
+      try {
+        await addDoc(collection(db, "reviews"), {
+          productId: id,
+          text: review,
+          rating: rating,
+          userName: currentUser.displayName || "Korisnik",
+          userEmail: currentUser.email,
+          userPhoto: currentUser.photoURL || null,
+          userId: currentUser.uid,
+          createdAt: serverTimestamp(),
+        });
+        setReview("");
+        setRating(5);
+        closeReviewModal();
+        showSnackbar("Recenzija je uspešno dodata!", "success");
+      } catch (error) {
+        console.error("Error adding review:", error);
+        showSnackbar("Greška pri dodavanju recenzije", "error");
+      }
+    } else {
+      showSnackbar("Recenzija mora imati najmanje 3 karaktera", "error");
+    }
+  };
+
+  const handleDeleteReview = async (reviewId) => {
+    if (!isAdmin) {
+      showSnackbar("Nemate dozvolu za brisanje recenzija", "error");
+      return;
+    }
+    try {
+      await deleteDoc(doc(db, "reviews", reviewId));
+      showSnackbar("Recenzija je obrisana", "success");
+    } catch (error) {
+      console.error("Error deleting review:", error);
+      showSnackbar("Greška pri brisanju recenzije", "error");
     }
   };
 
@@ -655,39 +738,255 @@ export default function ProductDetails() {
           </div>
         </div>
       </div>
-      <div
-        className="w-full max-w-5xl mt-3 rounded-[2rem] shadow bg-white bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-60 border border-gray-100 p-5 animate-fade-up"
+      {/* Review Modal */}
+      <AnimatePresence>
+        {showReviewModal && (
+          <Motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm px-4"
+            onClick={closeReviewModal}
+          >
+            <Motion.div
+              initial={{ scale: 0.9, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
+              exit={{ scale: 0.9, y: 20 }}
+              transition={{ type: "spring", damping: 25 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border-2 border-[#6EAEA2]/30"
+              style={{
+                background: "rgba(255, 255, 255, 0.95)",
+                backdropFilter: "blur(20px)",
+              }}
+            >
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-2xl font-bold text-[#253869] flex items-center gap-2">
+                  <MessageCircle size={28} className="text-[#6EAEA2]" />
+                  Nova recenzija
+                </h3>
+                <Motion.button
+                  whileHover={{ scale: 1.1, rotate: 90 }}
+                  whileTap={{ scale: 0.9 }}
+                  onClick={closeReviewModal}
+                  className="text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <X size={28} />
+                </Motion.button>
+              </div>
+
+              <form onSubmit={handleReview} className="space-y-5">
+                <div>
+                  <label className="block text-sm font-semibold text-[#253869] mb-2">
+                    Ocena
+                  </label>
+                  <div className="flex gap-2 items-center">
+                    {[1, 2, 3, 4, 5].map((star) => (
+                      <Motion.button
+                        key={star}
+                        type="button"
+                        whileHover={{ scale: 1.2 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => setRating(star)}
+                        className="focus:outline-none"
+                      >
+                        {star <= rating ? (
+                          <FaStar size={32} className="text-yellow-400" />
+                        ) : (
+                          <FaRegStar size={32} className="text-gray-300" />
+                        )}
+                      </Motion.button>
+                    ))}
+                    <span className="ml-2 text-lg font-semibold text-[#253869]">
+                      {rating}/5
+                    </span>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-semibold text-[#253869] mb-2">
+                    Vaša recenzija
+                  </label>
+                  <textarea
+                    value={review}
+                    onChange={(e) => setReview(e.target.value)}
+                    placeholder="Podelite vaše iskustvo sa ovim proizvodom..."
+                    rows={4}
+                    className="w-full border-2 border-[#6EAEA2]/30 bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 text-gray-800 transition-all focus:border-[#6EAEA2] focus:shadow-lg focus:outline-none resize-none"
+                  />
+                </div>
+
+                <div className="flex gap-3">
+                  <Motion.button
+                    type="button"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    onClick={closeReviewModal}
+                    className="flex-1 bg-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold shadow hover:bg-gray-300 transition-all"
+                  >
+                    Otkaži
+                  </Motion.button>
+                  <Motion.button
+                    type="submit"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="flex-1 bg-gradient-to-r from-[#6EAEA2] to-[#5A9D92] text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+                  >
+                    Objavi
+                  </Motion.button>
+                </div>
+              </form>
+            </Motion.div>
+          </Motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Reviews Section */}
+      <Motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="w-full max-w-5xl mt-3 rounded-[2rem] shadow-xl backdrop-blur-xl border-2 p-6 sm:p-8"
         style={{
-          boxShadow: "0 2px 20px rgba(44,88,99,.07)",
-          border: "1.2px solid rgba(170,170,185,0.17)",
+          background: "rgba(255, 255, 255, 0.7)",
+          backdropFilter: "blur(20px)",
+          border: "2px solid rgba(110, 174, 162, 0.3)",
+          boxShadow: "0 8px 32px rgba(110, 174, 162, 0.15)",
         }}
       >
-        <h3 className="font-semibold text-xl text-[#253869] mb-2 flex items-center gap-1">
-          <MessageCircle size={20} /> Recenzije:
-        </h3>
-        <form onSubmit={handleReview} className="flex gap-2">
-          <input
-            value={review}
-            onChange={(e) => setReview(e.target.value)}
-            placeholder="Ostavi recenziju..."
-            className="flex-1 border border-gray-300 bg-[#f4f5f9] rounded-xl px-4 py-2 text-gray-800 transition-shadow focus:shadow-lg"
-          />
-          <button className="bg-[#253869] text-white px-6 py-2 rounded-xl font-semibold shadow hover:bg-[#162040] transition">
-            Pošalji
-          </button>
-        </form>
-        <ul className="mb-3 space-y-2 mt-4">
-          {reviews.map((r, i) => (
-            <li
-              key={i}
-              className="bg-[#f4f5f9] rounded-xl px-3 py-2 text-gray-800 shadow border animate-slidein"
-              style={{ animationDelay: `${i * 0.2}s` }}
-            >
-              {r.text}
-            </li>
-          ))}
-        </ul>
-      </div>
+        <div className="flex items-center justify-between mb-6">
+          <h3 className="font-bold text-2xl sm:text-3xl text-[#253869] flex items-center gap-2">
+            <MessageCircle size={28} className="text-[#6EAEA2]" />
+            Recenzije
+            {reviews.length > 0 && (
+              <span className="text-lg text-gray-500">({reviews.length})</span>
+            )}
+          </h3>
+          <Motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={openReviewModal}
+            className="bg-gradient-to-r from-[#6EAEA2] to-[#5A9D92] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+          >
+            <MessageCircle size={18} />
+            <span className="hidden sm:inline">Dodaj recenziju</span>
+            <span className="sm:hidden">Dodaj</span>
+          </Motion.button>
+        </div>
+
+        {reviews.length === 0 ? (
+          <Motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center py-12"
+          >
+            <MessageCircle size={64} className="mx-auto text-gray-300 mb-4" />
+            <p className="text-gray-500 text-lg">
+              Još nema recenzija. Budite prvi koji će ostaviti recenziju!
+            </p>
+          </Motion.div>
+        ) : (
+          <AnimatePresence mode="popLayout">
+            <div className="space-y-4">
+              {reviews.map((r, i) => (
+                <Motion.div
+                  key={r.id}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: 20 }}
+                  transition={{ delay: i * 0.1 }}
+                  className="backdrop-blur-md rounded-2xl p-4 sm:p-5 border-2 shadow-lg hover:shadow-xl transition-all group"
+                  style={{
+                    background: "rgba(255, 255, 255, 0.6)",
+                    backdropFilter: "blur(15px)",
+                    border: "2px solid rgba(110, 174, 162, 0.2)",
+                  }}
+                >
+                  <div className="flex items-start gap-4">
+                    {/* User Avatar */}
+                    <div className="flex-shrink-0">
+                      {r.userPhoto ? (
+                        <img
+                          src={r.userPhoto}
+                          alt={r.userName}
+                          className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#6EAEA2]/50 object-cover shadow-md"
+                        />
+                      ) : (
+                        <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-[#6EAEA2] to-[#5A9D92] flex items-center justify-center border-2 border-[#6EAEA2]/50 shadow-md">
+                          <FaUserCircle size={28} className="text-white" />
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Review Content */}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-start justify-between gap-2 mb-2">
+                        <div className="flex-1">
+                          <h4 className="font-bold text-[#253869] text-base sm:text-lg flex items-center gap-2 flex-wrap">
+                            {r.userName}
+                            {r.userEmail && (
+                              <span className="text-xs text-gray-500 font-normal flex items-center gap-1">
+                                <Mail size={12} />
+                                {r.userEmail}
+                              </span>
+                            )}
+                          </h4>
+                          <div className="flex items-center gap-1 mt-1">
+                            {[...Array(5)].map((_, idx) => (
+                              <FaStar
+                                key={idx}
+                                size={14}
+                                className={
+                                  idx < r.rating
+                                    ? "text-yellow-400"
+                                    : "text-gray-300"
+                                }
+                              />
+                            ))}
+                            <span className="text-sm text-gray-600 ml-1">
+                              ({r.rating}/5)
+                            </span>
+                          </div>
+                        </div>
+                        {isAdmin && (
+                          <Motion.button
+                            whileHover={{ scale: 1.1 }}
+                            whileTap={{ scale: 0.9 }}
+                            onClick={() => handleDeleteReview(r.id)}
+                            className="text-red-400 hover:text-red-600 transition-colors p-2 rounded-lg hover:bg-red-50"
+                            title="Obriši recenziju"
+                          >
+                            <Trash2 size={18} />
+                          </Motion.button>
+                        )}
+                      </div>
+                      <p className="text-gray-700 text-sm sm:text-base leading-relaxed">
+                        {r.text}
+                      </p>
+                      {r.createdAt && (
+                        <p className="text-xs text-gray-400 mt-2">
+                          {r.createdAt.toDate
+                            ? new Date(r.createdAt.toDate()).toLocaleDateString(
+                                "sr-RS",
+                                {
+                                  year: "numeric",
+                                  month: "long",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                }
+                              )
+                            : ""}
+                        </p>
+                      )}
+                    </div>
+                  </div>
+                </Motion.div>
+              ))}
+            </div>
+          </AnimatePresence>
+        )}
+      </Motion.div>
     </div>
   );
 }
