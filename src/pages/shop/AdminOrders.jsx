@@ -164,7 +164,10 @@ export default function AdminOrders() {
     try {
       const updatedCart = selectedOrder.cart.map((prod, idx) => {
         if (hasHiddenPrice(prod) && editingPrices[idx] !== undefined) {
-          return { ...prod, suggestedPrice: parseFloat(editingPrices[idx]) || 0 };
+          return {
+            ...prod,
+            suggestedPrice: parseFloat(editingPrices[idx]) || 0,
+          };
         }
         return prod;
       });
@@ -595,7 +598,8 @@ export default function AdminOrders() {
                         <b>Telefon:</b> {selectedOrder.telefon}
                       </div>
                       <div className="flex items-center gap-2">
-                        <b>Status:</b> <StatusBadge status={selectedOrder.status} />
+                        <b>Status:</b>{" "}
+                        <StatusBadge status={selectedOrder.status} />
                       </div>
                       <div className="text-xs text-gray-400 pt-2">
                         Kreirana:{" "}
@@ -693,7 +697,8 @@ export default function AdminOrders() {
                             {!isHidden ? (
                               <>
                                 <div className="font-bold text-green-600 text-sm">
-                                  {prod.price && prod.price.toLocaleString("sr-RS")}{" "}
+                                  {prod.price &&
+                                    prod.price.toLocaleString("sr-RS")}{" "}
                                   RSD
                                 </div>
                                 <div className="text-xs text-gray-400">
@@ -707,7 +712,8 @@ export default function AdminOrders() {
                                     Skrivena cena:
                                   </span>
                                   <span className="bg-white px-2 py-1 rounded border border-orange-300 font-mono">
-                                    {prod.hiddenPrice?.toLocaleString("sr-RS")} RSD
+                                    {prod.hiddenPrice?.toLocaleString("sr-RS")}{" "}
+                                    RSD
                                   </span>
                                   <motion.button
                                     whileHover={{ scale: 1.05 }}
@@ -733,10 +739,12 @@ export default function AdminOrders() {
                                         [i]: e.target.value,
                                       }))
                                     }
-                                    className="flex-1 px-3 py-1.5 border-2 border-orange-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm bg-white/80"
+                                    className="flex-1 px-3 py-1.5 border-2 border-orange-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 transition-all text-sm bg-white/80 w-full max-w-9/12 sm:max-w-full"
                                     placeholder="Unesi predloženu cenu"
                                   />
-                                  <span className="text-xs text-gray-500">RSD</span>
+                                  <span className="text-xs text-gray-500">
+                                    RSD
+                                  </span>
                                 </div>
                                 <div className="text-xs text-gray-400">
                                   Količina: {prod.qty || 1}

@@ -28,6 +28,9 @@ import {
   AlertTriangle,
   ReceiptText,
   Home,
+  Truck,
+  HandCoins,
+  Handshake,
 } from "lucide-react";
 import Loader from "../../components/Loader";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
@@ -607,7 +610,7 @@ export default function Profile() {
                                   </span>
                                   {product.suggestedPrice && (
                                     <div className="flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit">
-                                      <ShieldCheck size={12} />
+                                      <Handshake size={12} />
                                       <span className="font-semibold">
                                         Predloženo:{" "}
                                         {product.suggestedPrice.toLocaleString(
@@ -633,7 +636,7 @@ export default function Profile() {
                     {(order.deliveryPrice || order.deliveryCompany) && (
                       <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200 mb-3">
                         <div className="text-xs font-semibold text-blue-700 mb-1 flex items-center gap-1">
-                          <ShieldCheck size={12} /> Dostava
+                          <Truck size={12} /> Dostava
                         </div>
                         {order.deliveryCompany && (
                           <div className="text-xs text-gray-600">
@@ -664,9 +667,12 @@ export default function Profile() {
                                 )
                               )}
                             </span>
-                            {order.cart.filter(hasHiddenPrice).some((p) => p.suggestedPrice) ? (
+                            {order.cart
+                              .filter(hasHiddenPrice)
+                              .some((p) => p.suggestedPrice) ? (
                               <span className="text-xs text-green-600 font-semibold">
-                                + {order.cart
+                                +{" "}
+                                {order.cart
                                   .filter(hasHiddenPrice)
                                   .reduce(
                                     (acc, p) =>
@@ -683,7 +689,8 @@ export default function Profile() {
                             )}
                             {order.deliveryPrice && (
                               <span className="text-xs text-blue-600">
-                                + {order.deliveryPrice.toLocaleString("sr-RS")} RSD dostava
+                                + {order.deliveryPrice.toLocaleString("sr-RS")}{" "}
+                                RSD dostava
                               </span>
                             )}
                           </div>
@@ -694,7 +701,8 @@ export default function Profile() {
                             </span>
                             {order.deliveryPrice && (
                               <span className="text-xs text-blue-600">
-                                + {order.deliveryPrice.toLocaleString("sr-RS")} RSD dostava
+                                + {order.deliveryPrice.toLocaleString("sr-RS")}{" "}
+                                RSD dostava
                               </span>
                             )}
                           </div>
