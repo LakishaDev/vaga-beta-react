@@ -123,6 +123,7 @@ VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
 VITE_FIREBASE_APP_ID=your_app_id
 VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
 VITE_FIREBASE_APPCHECK_DEBUG_TOKEN=your_debug_token
+VITE_ADMIN_EMAILS=your_admin_emails
 ```
 
 ### 4. Firebase Setup
