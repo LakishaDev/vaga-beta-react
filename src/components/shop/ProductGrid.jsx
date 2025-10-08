@@ -8,7 +8,12 @@
 // Koristi lucide-react za ikone i framer-motion za animacije
 // Koristi useRef za upravljanje klikom van dropdown menija
 // Koristi Firebase Firestore metode: collection, getDocs, query, orderBy
-import { useEffect, useState, useRef } from "react";
+//
+// OPTIMIZACIJE:
+// - useMemo za filtriranje i sortiranje proizvoda (sprečava nepotrebne kalkulacije)
+// - useCallback za event handlere (sprečava ponovno kreiranje funkcija)
+// - React.memo za ProductCard wrapper (sprečava nepotrebno re-renderovanje)
+import { useEffect, useState, useRef, useMemo, useCallback, memo } from "react";
 import { db } from "../../utils/firebase";
 import { collection, getDocs, query, orderBy } from "firebase/firestore";
 import ProductCard from "./ProductCard";
@@ -25,6 +30,14 @@ import {
   DollarSign,
   Trash,
 } from "lucide-react";
+
+// Memoized product item wrapper to prevent unnecessary re-renders
+const MemoizedProductItem = memo(({ product }) => (
+  <div className="animate-fadein">
+    <ProductCard product={product} />
+  </div>
+));
+MemoizedProductItem.displayName = "MemoizedProductItem";
 
 export default function ProductGrid() {
   const [products, setProducts] = useState([]);
@@ -110,56 +123,62 @@ export default function ProductGrid() {
     });
   }, []);
 
-  function getEffectivePrice(product) {
+  const getEffectivePrice = useCallback((product) => {
     // Vraća cenu koja treba da se koristi za sortiranje/filter
     return product.price !== null && product.price !== undefined
       ? product.price
       : product.hiddenPrice !== null && product.hiddenPrice !== undefined
       ? product.hiddenPrice
       : 0;
-  }
+  }, []);
 
-  let filteredProducts = products.filter(
-    (p) =>
-      (selectedCategories.length === 0 ||
-        selectedCategories.includes(p.category)) &&
-      getEffectivePrice(p) >= priceRange[0] &&
-      getEffectivePrice(p) <= priceRange[1] &&
-      p.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredProducts = useMemo(() => {
+    return products.filter(
+      (p) =>
+        (selectedCategories.length === 0 ||
+          selectedCategories.includes(p.category)) &&
+        getEffectivePrice(p) >= priceRange[0] &&
+        getEffectivePrice(p) <= priceRange[1] &&
+        p.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [products, selectedCategories, priceRange, search, getEffectivePrice]);
 
-  let sortedProducts = [...filteredProducts];
-  if (sort === "lowest")
-    sortedProducts.sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b));
-  if (sort === "highest")
-    sortedProducts.sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a));
-  if (sort === "newest")
-    sortedProducts.sort((a, b) => {
-      if (
-        a.createdAt &&
-        b.createdAt &&
-        a.createdAt.seconds &&
-        b.createdAt.seconds
-      ) {
-        return b.createdAt.seconds - a.createdAt.seconds;
-      }
-      return new Date(b.createdAt) - new Date(a.createdAt);
-    });
+  const sortedProducts = useMemo(() => {
+    const sorted = [...filteredProducts];
+    if (sort === "lowest") {
+      sorted.sort((a, b) => getEffectivePrice(a) - getEffectivePrice(b));
+    } else if (sort === "highest") {
+      sorted.sort((a, b) => getEffectivePrice(b) - getEffectivePrice(a));
+    } else if (sort === "newest") {
+      sorted.sort((a, b) => {
+        if (
+          a.createdAt &&
+          b.createdAt &&
+          a.createdAt.seconds &&
+          b.createdAt.seconds
+        ) {
+          return b.createdAt.seconds - a.createdAt.seconds;
+        }
+        return new Date(b.createdAt) - new Date(a.createdAt);
+      });
+    }
+    return sorted;
+  }, [filteredProducts, sort, getEffectivePrice]);
 
-  const handleResetFilters = () => {
+  const handleResetFilters = useCallback(() => {
     setSelectedCategories([]);
     setSearch("");
     setPriceRange([minPrice, maxPrice]);
     setSort("newest");
-  };
+  }, [minPrice, maxPrice]);
 
-  const handleCategoryChange = (category) => {
+  const handleCategoryChange = useCallback((category) => {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((cat) => cat !== category)
         : [...prev, category]
     );
-  };
+  }, []);
 
   const Arrow = (
     <span
@@ -366,9 +385,7 @@ export default function ProductGrid() {
           </div>
         ) : (
           sortedProducts.map((product) => (
-            <div key={product.id} className="animate-fadein">
-              <ProductCard product={product} />
-            </div>
+            <MemoizedProductItem key={product.id} product={product} />
           ))
         )}
       </div>
