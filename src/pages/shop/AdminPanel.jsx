@@ -604,7 +604,11 @@ export default function AdminPanel() {
             <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
               <FiUpload className="text-[#6EAEA2]" /> Dodatne slike
             </h4>
-            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow">
+            <Motion.label
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow-md hover:shadow-lg"
+            >
               <FiPlus /> Dodaj slike
               <input
                 type="file"
@@ -613,29 +617,33 @@ export default function AdminPanel() {
                 onChange={handleMultipleImages}
                 className="hidden"
               />
-            </label>
+            </Motion.label>
             <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-2 mt-3">
               <AnimatePresence>
                 {newProduct.images.map((img, idx) => (
                   <Motion.div
                     key={idx}
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
+                    initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                    animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                    exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
+                    transition={{ duration: 0.3, ease: "backOut" }}
+                    whileHover={{ scale: 1.05, rotate: 2 }}
                     className="relative group"
                   >
                     <img
                       src={img.preview}
                       alt={`Preview ${idx}`}
-                      className="w-full aspect-square object-cover rounded-lg border-2 border-[#6EAEA2]/40"
+                      className="w-full aspect-square object-cover rounded-lg border-2 border-[#6EAEA2]/40 shadow-md group-hover:shadow-xl transition-shadow"
                     />
-                    <button
+                    <Motion.button
                       type="button"
                       onClick={() => removeImage(idx)}
-                      className="absolute -top-2 -right-2 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow"
+                      whileHover={{ scale: 1.2, rotate: 90 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="absolute -top-2 -right-2 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
                     >
                       <FiX size={16} />
-                    </button>
+                    </Motion.button>
                   </Motion.div>
                 ))}
               </AnimatePresence>
@@ -656,44 +664,49 @@ export default function AdminPanel() {
             <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
               <FiPlus className="text-[#6EAEA2]" /> Karakteristike
             </h4>
-            <button
+            <Motion.button
               type="button"
               onClick={addFeature}
-              className="inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow mb-3"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow-md hover:shadow-lg mb-3"
             >
               <FiPlus /> Dodaj karakteristiku
-            </button>
+            </Motion.button>
             <div className="space-y-2">
               <AnimatePresence>
                 {newProduct.features.map((feature, idx) => (
                   <Motion.div
                     key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="flex gap-2 items-center"
+                    initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -20, scale: 0.9 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    className="flex gap-2 items-center p-2 rounded-lg bg-white/60 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
                   >
                     <input
                       type="text"
                       placeholder="Naziv (npr. Težina)"
                       value={feature.label}
                       onChange={(e) => updateFeature(idx, "label", e.target.value)}
-                      className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/80 backdrop-blur-sm"
+                      className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/90 backdrop-blur-sm transition-all"
                     />
                     <input
                       type="text"
                       placeholder="Vrednost (npr. 2kg)"
                       value={feature.value}
                       onChange={(e) => updateFeature(idx, "value", e.target.value)}
-                      className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/80 backdrop-blur-sm"
+                      className="flex-1 px-3 py-2 border border-[#6EAEA2]/40 rounded-lg focus:ring-2 focus:ring-[#6EAEA2] bg-white/90 backdrop-blur-sm transition-all"
                     />
-                    <button
+                    <Motion.button
                       type="button"
                       onClick={() => removeFeature(idx)}
-                      className="p-2 bg-[#AD5637] text-white rounded-lg hover:bg-[#8A4D34] transition-all"
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-2 bg-[#AD5637] text-white rounded-lg hover:bg-[#8A4D34] transition-all shadow-sm hover:shadow-md"
                     >
                       <FiTrash2 />
-                    </button>
+                    </Motion.button>
                   </Motion.div>
                 ))}
               </AnimatePresence>
@@ -714,7 +727,11 @@ export default function AdminPanel() {
             <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
               <FiFile className="text-[#6EAEA2]" /> Datasheets / Preuzimanja
             </h4>
-            <label className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow">
+            <Motion.label
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow-md hover:shadow-lg"
+            >
               <FiPlus /> Dodaj datoteke
               <input
                 type="file"
@@ -723,26 +740,35 @@ export default function AdminPanel() {
                 onChange={handleDatasheets}
                 className="hidden"
               />
-            </label>
+            </Motion.label>
             <div className="space-y-2 mt-3">
               <AnimatePresence>
                 {newProduct.datasheets.map((ds, idx) => (
                   <Motion.div
                     key={idx}
-                    initial={{ opacity: 0, x: -20 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -20 }}
-                    className="flex items-center gap-2 p-2 bg-white/80 backdrop-blur-sm rounded-lg border border-[#6EAEA2]/30"
+                    initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                    animate={{ opacity: 1, x: 0, scale: 1 }}
+                    exit={{ opacity: 0, x: -20, scale: 0.9 }}
+                    transition={{ duration: 0.3, ease: "easeOut" }}
+                    whileHover={{ scale: 1.02, x: 5 }}
+                    className="flex items-center gap-2 p-3 bg-white/80 backdrop-blur-sm rounded-lg border border-[#6EAEA2]/30 shadow-sm hover:shadow-md transition-shadow group"
                   >
-                    <FiFile className="text-[#6EAEA2]" />
-                    <span className="flex-1 text-sm text-[#1E3E49] truncate">{ds.name}</span>
-                    <button
+                    <Motion.div
+                      animate={{ rotate: [0, 10, -10, 0] }}
+                      transition={{ repeat: Infinity, duration: 2, ease: "easeInOut" }}
+                    >
+                      <FiFile className="text-[#6EAEA2]" size={20} />
+                    </Motion.div>
+                    <span className="flex-1 text-sm text-[#1E3E49] truncate font-medium">{ds.name}</span>
+                    <Motion.button
                       type="button"
                       onClick={() => removeDatasheet(idx)}
-                      className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                      whileHover={{ scale: 1.2 }}
+                      whileTap={{ scale: 0.9 }}
+                      className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm hover:shadow-md"
                     >
                       <FiX size={16} />
-                    </button>
+                    </Motion.button>
                   </Motion.div>
                 ))}
               </AnimatePresence>
@@ -1127,11 +1153,19 @@ export default function AdminPanel() {
               </label>
 
               {/* Edit Multiple Images */}
-              <div className="p-3 rounded-lg bg-[#CBCFBB]/10 border border-[#6EAEA2]/30">
+              <Motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="p-3 rounded-lg bg-[#CBCFBB]/10 backdrop-blur-sm border border-[#6EAEA2]/30 shadow-sm"
+              >
                 <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
                   <FiUpload className="text-[#6EAEA2]" /> Dodatne slike
                 </h4>
-                <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm">
+                <Motion.label 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm shadow-sm hover:shadow-md"
+                >
                   <FiPlus size={14} /> Dodaj slike
                   <input
                     type="file"
@@ -1140,90 +1174,136 @@ export default function AdminPanel() {
                     onChange={handleEditMultipleImages}
                     className="hidden"
                   />
-                </label>
+                </Motion.label>
                 <div className="grid grid-cols-4 gap-2 mt-2">
-                  {editProduct.images.map((img, idx) => (
-                    <div key={idx} className="relative group">
-                      <img
-                        src={img}
-                        alt={`Img ${idx}`}
-                        className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeEditImage(idx, false)}
-                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                  <AnimatePresence>
+                    {editProduct.images.map((img, idx) => (
+                      <Motion.div 
+                        key={idx} 
+                        initial={{ opacity: 0, scale: 0.8 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        exit={{ opacity: 0, scale: 0.8 }}
+                        whileHover={{ scale: 1.05 }}
+                        className="relative group"
                       >
-                        <FiX size={12} />
-                      </button>
-                    </div>
-                  ))}
-                  {editProduct.newImages && editProduct.newImages.map((img, idx) => (
-                    <div key={`new-${idx}`} className="relative group">
-                      <img
-                        src={img.preview}
-                        alt={`New ${idx}`}
-                        className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1]"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeEditImage(idx, true)}
-                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                        <img
+                          src={img}
+                          alt={`Img ${idx}`}
+                          className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 shadow-sm group-hover:shadow-md transition-shadow"
+                        />
+                        <Motion.button
+                          type="button"
+                          onClick={() => removeEditImage(idx, false)}
+                          whileHover={{ scale: 1.2, rotate: 90 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                        >
+                          <FiX size={12} />
+                        </Motion.button>
+                      </Motion.div>
+                    ))}
+                    {editProduct.newImages && editProduct.newImages.map((img, idx) => (
+                      <Motion.div 
+                        key={`new-${idx}`} 
+                        initial={{ opacity: 0, scale: 0.5, rotate: -10 }}
+                        animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                        exit={{ opacity: 0, scale: 0.5, rotate: 10 }}
+                        whileHover={{ scale: 1.05 }}
+                        className="relative group"
                       >
-                        <FiX size={12} />
-                      </button>
-                    </div>
-                  ))}
+                        <img
+                          src={img.preview}
+                          alt={`New ${idx}`}
+                          className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] shadow-sm group-hover:shadow-md transition-shadow"
+                        />
+                        <Motion.button
+                          type="button"
+                          onClick={() => removeEditImage(idx, true)}
+                          whileHover={{ scale: 1.2, rotate: 90 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                        >
+                          <FiX size={12} />
+                        </Motion.button>
+                      </Motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
-              </div>
+              </Motion.div>
 
               {/* Edit Features */}
-              <div className="p-3 rounded-lg bg-[#91CEC1]/10 border border-[#6EAEA2]/30">
+              <Motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="p-3 rounded-lg bg-[#91CEC1]/10 backdrop-blur-sm border border-[#6EAEA2]/30 shadow-sm"
+              >
                 <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
                   <FiPlus className="text-[#6EAEA2]" /> Karakteristike
                 </h4>
-                <button
+                <Motion.button
                   type="button"
                   onClick={addEditFeature}
-                  className="inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm mb-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm mb-2 shadow-sm hover:shadow-md"
                 >
                   <FiPlus size={14} /> Dodaj
-                </button>
+                </Motion.button>
                 <div className="space-y-2">
-                  {editProduct.features.map((feature, idx) => (
-                    <div key={idx} className="flex gap-2 items-center">
-                      <input
-                        type="text"
-                        placeholder="Naziv"
-                        value={feature.label}
-                        onChange={(e) => updateEditFeature(idx, "label", e.target.value)}
-                        className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2]"
-                      />
-                      <input
-                        type="text"
-                        placeholder="Vrednost"
-                        value={feature.value}
-                        onChange={(e) => updateEditFeature(idx, "value", e.target.value)}
-                        className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2]"
-                      />
-                      <button
-                        type="button"
-                        onClick={() => removeEditFeature(idx)}
-                        className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                  <AnimatePresence>
+                    {editProduct.features.map((feature, idx) => (
+                      <Motion.div 
+                        key={idx} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        className="flex gap-2 items-center p-2 rounded bg-white/60 backdrop-blur-sm shadow-sm hover:shadow-md transition-shadow"
                       >
-                        <FiTrash2 size={14} />
-                      </button>
-                    </div>
-                  ))}
+                        <input
+                          type="text"
+                          placeholder="Naziv"
+                          value={feature.label}
+                          onChange={(e) => updateEditFeature(idx, "label", e.target.value)}
+                          className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2] bg-white/80"
+                        />
+                        <input
+                          type="text"
+                          placeholder="Vrednost"
+                          value={feature.value}
+                          onChange={(e) => updateEditFeature(idx, "value", e.target.value)}
+                          className="flex-1 px-2 py-1 border border-[#6EAEA2]/40 rounded text-sm focus:ring-2 focus:ring-[#6EAEA2] bg-white/80"
+                        />
+                        <Motion.button
+                          type="button"
+                          onClick={() => removeEditFeature(idx)}
+                          whileHover={{ scale: 1.1 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm"
+                        >
+                          <FiTrash2 size={14} />
+                        </Motion.button>
+                      </Motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
-              </div>
+              </Motion.div>
 
               {/* Edit Datasheets */}
-              <div className="p-3 rounded-lg bg-[#1E3E49]/5 border border-[#6EAEA2]/30">
+              <Motion.div 
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="p-3 rounded-lg bg-[#1E3E49]/5 backdrop-blur-sm border border-[#6EAEA2]/30 shadow-sm"
+              >
                 <h4 className="font-semibold text-[#1E3E49] mb-2 text-sm flex items-center gap-2">
                   <FiFile className="text-[#6EAEA2]" /> Datasheets
                 </h4>
-                <label className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm">
+                <Motion.label 
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="cursor-pointer inline-flex items-center gap-2 px-3 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all text-sm shadow-sm hover:shadow-md"
+                >
                   <FiPlus size={14} /> Dodaj
                   <input
                     type="file"
@@ -1232,36 +1312,56 @@ export default function AdminPanel() {
                     onChange={handleEditDatasheets}
                     className="hidden"
                   />
-                </label>
+                </Motion.label>
                 <div className="space-y-2 mt-2">
-                  {editProduct.datasheets.map((ds, idx) => (
-                    <div key={idx} className="flex items-center gap-2 p-2 bg-white/60 rounded border border-[#6EAEA2]/30 text-sm">
-                      <FiFile className="text-[#6EAEA2]" size={14} />
-                      <span className="flex-1 truncate text-xs">{ds.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeEditDatasheet(idx, false)}
-                        className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                  <AnimatePresence>
+                    {editProduct.datasheets.map((ds, idx) => (
+                      <Motion.div 
+                        key={idx} 
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -20 }}
+                        whileHover={{ scale: 1.02, x: 5 }}
+                        className="flex items-center gap-2 p-2 bg-white/60 backdrop-blur-sm rounded border border-[#6EAEA2]/30 text-sm shadow-sm hover:shadow-md transition-shadow group"
                       >
-                        <FiX size={12} />
-                      </button>
-                    </div>
-                  ))}
-                  {editProduct.newDatasheets && editProduct.newDatasheets.map((ds, idx) => (
-                    <div key={`new-${idx}`} className="flex items-center gap-2 p-2 bg-[#91CEC1]/20 rounded border border-[#91CEC1] text-sm">
-                      <FiFile className="text-[#6EAEA2]" size={14} />
-                      <span className="flex-1 truncate text-xs">{ds.name}</span>
-                      <button
-                        type="button"
-                        onClick={() => removeEditDatasheet(idx, true)}
-                        className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all"
+                        <FiFile className="text-[#6EAEA2]" size={14} />
+                        <span className="flex-1 truncate text-xs font-medium">{ds.name}</span>
+                        <Motion.button
+                          type="button"
+                          onClick={() => removeEditDatasheet(idx, false)}
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm"
+                        >
+                          <FiX size={12} />
+                        </Motion.button>
+                      </Motion.div>
+                    ))}
+                    {editProduct.newDatasheets && editProduct.newDatasheets.map((ds, idx) => (
+                      <Motion.div 
+                        key={`new-${idx}`} 
+                        initial={{ opacity: 0, x: -20, scale: 0.9 }}
+                        animate={{ opacity: 1, x: 0, scale: 1 }}
+                        exit={{ opacity: 0, x: -20, scale: 0.9 }}
+                        whileHover={{ scale: 1.02, x: 5 }}
+                        className="flex items-center gap-2 p-2 bg-[#91CEC1]/20 backdrop-blur-sm rounded border border-[#91CEC1] text-sm shadow-sm hover:shadow-md transition-shadow group"
                       >
-                        <FiX size={12} />
-                      </button>
-                    </div>
-                  ))}
+                        <FiFile className="text-[#6EAEA2]" size={14} />
+                        <span className="flex-1 truncate text-xs font-medium">{ds.name}</span>
+                        <Motion.button
+                          type="button"
+                          onClick={() => removeEditDatasheet(idx, true)}
+                          whileHover={{ scale: 1.2 }}
+                          whileTap={{ scale: 0.9 }}
+                          className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm"
+                        >
+                          <FiX size={12} />
+                        </Motion.button>
+                      </Motion.div>
+                    ))}
+                  </AnimatePresence>
                 </div>
-              </div>
+              </Motion.div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">
                 <button
