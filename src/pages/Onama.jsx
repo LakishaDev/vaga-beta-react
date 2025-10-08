@@ -12,7 +12,7 @@
 // Animacije sa Tailwind CSS i animate.css
 // Koristi ProgressiveImage za optimizovane slike
 // Ikonice iz react-icons
-import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments } from "react-icons/fa";
+import { FaWeightHanging, FaTruckMoving, FaBalanceScale, FaClipboardCheck, FaTools, FaCogs, FaStar, FaCut, FaUserTie, FaHandshake, FaRegComments, FaFilePdf, FaDownload, FaFileAlt } from "react-icons/fa";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 
 export default function Onama() {
@@ -90,16 +90,167 @@ export default function Onama() {
         </ul>
       </section>
 
-      {/* Dokumentacija */}
-      <h3 className="text-xl text-[#1E3E49] font-bold mb-3 animate-pop">Dokumentacija o akreditaciji</h3>
-      <ul className="list-disc pl-6 text-[#6EAEA2] space-y-2 text-base animate-fadeup">
-        <li><a href="/dokumentacija/Sertifikat_o_akreditaciji.pdf" className="underline hover:text-[#AD5637]" target="_blank">Sertifikat o akreditaciji</a></li>
-        <li><a href="/dokumentacija/Odluka.pdf" className="underline hover:text-[#AD5637]" target="_blank">Odluka</a></li>
-        <li><a href="/dokumentacija/Predmet_Odluka.pdf" className="underline hover:text-[#AD5637]" target="_blank">Predmet Odluka</a></li>
-        <li><a href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_1.pdf" className="underline hover:text-[#AD5637]" target="_blank">Rešenje DMDM za V-B Lab 1</a></li>
-        <li><a href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_2.pdf" className="underline hover:text-[#AD5637]" target="_blank">Rešenje DMDM za V-B Lab 2</a></li>
-        <li><a href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_3.pdf" className="underline hover:text-[#AD5637]" target="_blank">Rešenje DMDM za V-B Lab 3</a></li>
-      </ul>
+      {/* Dokumentacija - Improved Modern Design */}
+      <section className="mt-8 animate-fadein">
+        <h3 className="text-2xl text-[#1E3E49] font-extrabold mb-6 text-center animate-pop flex items-center justify-center gap-3">
+          <FaFileAlt className="text-[#6EAEA2]" />
+          Dokumentacija o akreditaciji
+        </h3>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+          {/* Sertifikat o akreditaciji */}
+          <a
+            href="/dokumentacija/Sertifikat_o_akreditaciji.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative bg-gradient-to-br from-white/90 to-[#F5F9F7]/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-[#D8E2DC] transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fadeup"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] rounded-xl flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <FaFilePdf className="text-white text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-[#1E3E49] mb-1 group-hover:text-[#6EAEA2] transition-colors">
+                  Sertifikat o akreditaciji
+                </h4>
+                <p className="text-sm text-[#2F5363]/70">Dokument o akreditaciji</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2 text-[#6EAEA2] group-hover:text-[#AD5637] transition-colors">
+              <FaDownload className="text-sm" />
+              <span className="text-sm font-medium">Preuzmi PDF</span>
+            </div>
+          </a>
+
+          {/* Odluka */}
+          <a
+            href="/dokumentacija/Odluka.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative bg-gradient-to-br from-white/90 to-[#F5F9F7]/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-[#D8E2DC] transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fadeup delay-75"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#AD5637] to-[#8A4D34] rounded-xl flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <FaFilePdf className="text-white text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-[#1E3E49] mb-1 group-hover:text-[#6EAEA2] transition-colors">
+                  Odluka
+                </h4>
+                <p className="text-sm text-[#2F5363]/70">Zvanična odluka</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2 text-[#6EAEA2] group-hover:text-[#AD5637] transition-colors">
+              <FaDownload className="text-sm" />
+              <span className="text-sm font-medium">Preuzmi PDF</span>
+            </div>
+          </a>
+
+          {/* Predmet Odluka */}
+          <a
+            href="/dokumentacija/Predmet_Odluka.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative bg-gradient-to-br from-white/90 to-[#F5F9F7]/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-[#D8E2DC] transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fadeup delay-150"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#1E3E49] to-[#2F5363] rounded-xl flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <FaFilePdf className="text-white text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-[#1E3E49] mb-1 group-hover:text-[#6EAEA2] transition-colors">
+                  Predmet Odluka
+                </h4>
+                <p className="text-sm text-[#2F5363]/70">Odluka o predmetu</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2 text-[#6EAEA2] group-hover:text-[#AD5637] transition-colors">
+              <FaDownload className="text-sm" />
+              <span className="text-sm font-medium">Preuzmi PDF</span>
+            </div>
+          </a>
+
+          {/* Rešenje DMDM za V-B Lab 1 */}
+          <a
+            href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_1.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative bg-gradient-to-br from-white/90 to-[#F5F9F7]/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-[#D8E2DC] transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fadeup delay-200"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#91CEC1] to-[#6EAEA2] rounded-xl flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <FaFilePdf className="text-white text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-[#1E3E49] mb-1 group-hover:text-[#6EAEA2] transition-colors">
+                  Rešenje DMDM za V-B Lab 1
+                </h4>
+                <p className="text-sm text-[#2F5363]/70">Laboratorija 1</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2 text-[#6EAEA2] group-hover:text-[#AD5637] transition-colors">
+              <FaDownload className="text-sm" />
+              <span className="text-sm font-medium">Preuzmi PDF</span>
+            </div>
+          </a>
+
+          {/* Rešenje DMDM za V-B Lab 2 */}
+          <a
+            href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_2.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative bg-gradient-to-br from-white/90 to-[#F5F9F7]/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-[#D8E2DC] transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fadeup delay-300"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#CBCFBB] to-[#91CEC1] rounded-xl flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <FaFilePdf className="text-white text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-[#1E3E49] mb-1 group-hover:text-[#6EAEA2] transition-colors">
+                  Rešenje DMDM za V-B Lab 2
+                </h4>
+                <p className="text-sm text-[#2F5363]/70">Laboratorija 2</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2 text-[#6EAEA2] group-hover:text-[#AD5637] transition-colors">
+              <FaDownload className="text-sm" />
+              <span className="text-sm font-medium">Preuzmi PDF</span>
+            </div>
+          </a>
+
+          {/* Rešenje DMDM za V-B Lab 3 */}
+          <a
+            href="/dokumentacija/Rešenje_DMDM_za_V-B_Lab_3.pdf"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="group relative bg-gradient-to-br from-white/90 to-[#F5F9F7]/80 backdrop-blur-sm rounded-2xl p-6 shadow-md hover:shadow-2xl border border-[#D8E2DC] transition-all duration-500 hover:scale-105 hover:-translate-y-1 animate-fadeup delay-400"
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-[#AD5637] to-[#6EAEA2] rounded-xl flex items-center justify-center shadow-md group-hover:rotate-6 transition-transform duration-300">
+                <FaFilePdf className="text-white text-2xl" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h4 className="text-base font-bold text-[#1E3E49] mb-1 group-hover:text-[#6EAEA2] transition-colors">
+                  Rešenje DMDM za V-B Lab 3
+                </h4>
+                <p className="text-sm text-[#2F5363]/70">Laboratorija 3</p>
+              </div>
+            </div>
+            <div className="mt-4 flex items-center justify-end gap-2 text-[#6EAEA2] group-hover:text-[#AD5637] transition-colors">
+              <FaDownload className="text-sm" />
+              <span className="text-sm font-medium">Preuzmi PDF</span>
+            </div>
+          </a>
+        </div>
+
+        {/* Info box */}
+        <div className="mt-6 bg-gradient-to-r from-[#6EAEA2]/10 to-[#91CEC1]/10 backdrop-blur-sm rounded-2xl p-6 border border-[#D8E2DC] animate-fadein">
+          <p className="text-[#2F5363] text-center text-sm">
+            <FaStar className="inline text-[#F6B100] mr-2" />
+            Sva dokumenta su u PDF formatu i mogu se preuzeti klikom na karticu
+          </p>
+        </div>
+      </section>
     </main>
   );
 }
