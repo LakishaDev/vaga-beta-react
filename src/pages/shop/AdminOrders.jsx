@@ -18,7 +18,6 @@ import { getDocs, collection, updateDoc, doc } from "firebase/firestore";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
 import {
-  FaRegClock,
   FaCheckCircle,
   FaUserCircle,
   FaEnvelope,
@@ -31,7 +30,6 @@ import {
   FaEye,
   FaEdit,
   FaSave,
-  FaUndo,
   FaDollarSign,
   FaShippingFast,
 } from "react-icons/fa";
@@ -643,7 +641,7 @@ export default function AdminOrders() {
                           value={deliveryCompany}
                           onChange={(e) => setDeliveryCompany(e.target.value)}
                           className="w-full px-3 py-2 border-2 border-green-200 rounded-xl focus:border-green-400 focus:ring-2 focus:ring-green-200 transition-all bg-white/80 backdrop-blur-sm"
-                          placeholder="Ime firme (npr. DHL, DExpress...)"
+                          placeholder="Ime firme (npr. BEX, DExpress...)"
                         />
                       </div>
                     </div>
@@ -722,7 +720,8 @@ export default function AdminOrders() {
                                     className="bg-blue-500 text-white px-2 py-1 rounded text-xs flex items-center gap-1 hover:bg-blue-600 transition-colors"
                                     title="Kopiraj originalnu cenu"
                                   >
-                                    <FaUndo size={10} /> Kopiraj
+                                    <FaDollarSign size={10} /> Koristi
+                                    originalnu cenu
                                   </motion.button>
                                 </div>
                                 <div className="flex items-center gap-2">
