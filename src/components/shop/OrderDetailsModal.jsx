@@ -68,7 +68,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
           data-lenis-prevent
         >
           <motion.div
-            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-11/12 sm:max-h-screen relative flex flex-col overflow-y-auto my-20"
+            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-11/12 relative flex flex-col overflow-y-auto my-20"
             initial={{ scale: 0.88, y: 40, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 40, opacity: 0 }}
@@ -168,7 +168,9 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                                   <DollarSign size={12} />
                                   <span className="font-semibold">
                                     Predložena cena:{" "}
-                                    {prod.suggestedPrice.toLocaleString("sr-RS")}{" "}
+                                    {prod.suggestedPrice.toLocaleString(
+                                      "sr-RS"
+                                    )}{" "}
                                     RSD × {prod.qty}
                                   </span>
                                 </div>
