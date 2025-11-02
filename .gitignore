@@ -23,9 +23,3 @@ dist-ssr
 *.sln
 *.sw?
 .env.local
-# Documentation files for MarkdownPreview (keep local only)
-DESIGN_COMPARISON.md
-INTEGRATION_GUIDE.md
-MARKDOWN_PREVIEW_SUMMARY.md
-MarkdownPreview_README.md
-src/components/UI/MarkdownPreview.README.md

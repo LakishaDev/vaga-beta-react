@@ -17,23 +17,23 @@ import remarkGfm from "remark-gfm";
 import rehypeRaw from "rehype-raw";
 import { FileCode, Book } from "lucide-react";
 
-export default function MarkdownPreview({ 
-  content, 
-  title, 
+export default function MarkdownPreview({
+  content,
+  title,
   filename,
   showIcon = true,
   className = "",
   animationDelay = 0,
-  maxHeight = "600px"
+  maxHeight = "600px",
 }) {
   // Funkcija za izvlačenje čistog naslova iz imena fajla
   const getFileTitle = (name) => {
     if (!name) return "Dokument";
     // Ukloni timestamp i ekstenziju
     const cleanName = name
-      .replace(/^\d+_/, '') // Ukloni timestamp
-      .replace(/\.md$/i, '') // Ukloni .md
-      .replace(/_/g, ' ') // Zameni _ sa razmakom
+      .replace(/^\d+_/, "") // Ukloni timestamp
+      .replace(/\.md$/i, "") // Ukloni .md
+      .replace(/_/g, " ") // Zameni _ sa razmakom
       .trim();
     return cleanName || "Dokument";
   };
@@ -44,38 +44,42 @@ export default function MarkdownPreview({
     <Motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ 
+      transition={{
         delay: animationDelay,
         duration: 0.5,
-        ease: [0.25, 0.46, 0.45, 0.94] // Custom easing za smooth animaciju
+        ease: [0.25, 0.46, 0.45, 0.94], // Custom easing za smooth animaciju
       }}
       className={`group rounded-2xl backdrop-blur-xl border-2 shadow-xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.01] ${className}`}
       style={{
         background: "rgba(255, 255, 255, 0.65)",
         backdropFilter: "blur(20px)",
         border: "2px solid rgba(110, 174, 162, 0.25)",
-        boxShadow: "0 8px 32px rgba(37, 56, 105, 0.12), 0 2px 8px rgba(110, 174, 162, 0.08)",
+        boxShadow:
+          "0 8px 32px rgba(37, 56, 105, 0.12), 0 2px 8px rgba(110, 174, 162, 0.08)",
       }}
+      data-lenis-prevent
     >
       {/* Header sa naslovom */}
-      <Motion.div 
+      <Motion.div
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: animationDelay + 0.1, duration: 0.4 }}
         className="relative px-5 py-4 sm:px-6 sm:py-5 overflow-hidden"
         style={{
-          background: "linear-gradient(135deg, rgba(37, 56, 105, 0.08) 0%, rgba(110, 174, 162, 0.08) 100%)",
+          background:
+            "linear-gradient(135deg, rgba(37, 56, 105, 0.08) 0%, rgba(110, 174, 162, 0.08) 100%)",
           borderBottom: "1.5px solid rgba(110, 174, 162, 0.25)",
         }}
       >
         {/* Animated background gradient */}
-        <div 
+        <div
           className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700"
           style={{
-            background: "linear-gradient(135deg, rgba(37, 56, 105, 0.12) 0%, rgba(110, 174, 162, 0.12) 100%)",
+            background:
+              "linear-gradient(135deg, rgba(37, 56, 105, 0.12) 0%, rgba(110, 174, 162, 0.12) 100%)",
           }}
         />
-        
+
         {/* Decorative blur circles */}
         <div className="absolute -top-10 -right-10 w-32 h-32 bg-sheen/20 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
         <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-midnight/10 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
@@ -90,12 +94,12 @@ export default function MarkdownPreview({
               <FileCode size={20} className="text-midnight" />
             </Motion.div>
           )}
-          
+
           <div className="flex-1 min-w-0">
             <h3 className="font-bold text-lg sm:text-xl md:text-2xl text-midnight flex items-center gap-2 truncate">
               {displayTitle}
             </h3>
-            <Motion.div 
+            <Motion.div
               initial={{ scaleX: 0 }}
               animate={{ scaleX: 1 }}
               transition={{ delay: animationDelay + 0.3, duration: 0.6 }}
@@ -105,14 +109,14 @@ export default function MarkdownPreview({
 
           {/* Decorative icon */}
           <Motion.div
-            animate={{ 
+            animate={{
               y: [0, -5, 0],
-              opacity: [0.5, 1, 0.5]
+              opacity: [0.5, 1, 0.5],
             }}
-            transition={{ 
-              repeat: Infinity, 
+            transition={{
+              repeat: Infinity,
               duration: 3,
-              ease: "easeInOut"
+              ease: "easeInOut",
             }}
             className="hidden md:block"
           >
@@ -129,7 +133,7 @@ export default function MarkdownPreview({
         className="px-4 py-5 sm:px-6 sm:py-7 md:px-8 md:py-8 overflow-auto custom-scrollbar"
         style={{ maxHeight }}
       >
-        <div 
+        <div
           className="
             prose prose-sm sm:prose-base lg:prose-lg max-w-none
             
@@ -228,7 +232,7 @@ export default function MarkdownPreview({
       </Motion.div>
 
       {/* Footer decorative element */}
-      <Motion.div 
+      <Motion.div
         initial={{ scaleX: 0 }}
         animate={{ scaleX: 1 }}
         transition={{ delay: animationDelay + 0.4, duration: 0.8 }}
