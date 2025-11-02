@@ -186,8 +186,8 @@ export default function AdminPanel() {
    */
   const parsePriceInput = (formattedValue) => {
     if (!formattedValue) return "";
-    // Ukloni sve tačke (separatore hiljada)
-    const numericValue = formattedValue.replace(/\./g, "");
+    // Ukloni sve tačke (separatore hiljada) - srpski format koristi tačku za hiljade
+    const numericValue = formattedValue.replace(/[.]/g, "");
     return numericValue;
   };
 
@@ -540,6 +540,9 @@ export default function AdminPanel() {
    * @note Defensive programming - proverava postojanje editProduct state-a
    * @note Guard clauses sprečavaju invalid operacije (prva gore, poslednja dole)
    * @note Koristi dynamic property access sa arrayKey varijablom
+   * @param {number} index - Indeks slike koja se pomera
+   * @param {boolean} isNew - Da li je slika nova (true) ili postojeća (false)
+   * @param {('up'|'down')} direction - Smer pomeranja ('up' ili 'down')
    * @intellisense Optimizovana verzija koja sprečava code duplication
    */
   const moveEditImageInDirection = (index, isNew, direction) => {
