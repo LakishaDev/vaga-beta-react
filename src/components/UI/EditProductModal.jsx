@@ -1,6 +1,6 @@
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { FiUpload, FiPlus, FiTrash2, FiFile, FiX } from "react-icons/fi";
+import { FiUpload, FiPlus, FiTrash2, FiFile, FiX, FiChevronUp, FiChevronDown, FiEye } from "react-icons/fi";
 import FloatingLabelInput from "./FloatingLabelInput";
 import ProgressiveImage from "./ProgressiveImage";
 import ProgressBar from "./ProgressBar";
@@ -18,6 +18,10 @@ import SoftwareToggle from "./SoftwareToggle";
  * @param {Function} props.onChange - Field change callback
  * @param {boolean} props.loading - Loading state
  * @param {number} props.uploadProgress - Upload progress (0-100)
+ * @param {Function} props.onMoveImageUp - Move image up callback (index, isNew)
+ * @param {Function} props.onMoveImageDown - Move image down callback (index, isNew)
+ * @param {Function} props.onImageClick - Image click for preview (src, text)
+ * @param {Function} props.formatPriceInput - Optional price formatter
  */
 export default function EditProductModal({
   isOpen,
@@ -35,6 +39,10 @@ export default function EditProductModal({
   onRemoveDatasheet,
   onMarkdownChange,
   onRemoveMarkdown,
+  onMoveImageUp,
+  onMoveImageDown,
+  onImageClick,
+  formatPriceInput,
   loading = false,
   uploadProgress = 0,
 }) {
@@ -163,8 +171,8 @@ export default function EditProductModal({
             <FloatingLabelInput
               name="price"
               label="Cena (RSD)"
-              type="number"
-              value={product.price}
+              type="text"
+              value={formatPriceInput ? formatPriceInput(product.price) : product.price}
               onChange={onChange}
               required
             />
@@ -257,17 +265,87 @@ export default function EditProductModal({
                       whileHover={{ scale: 1.05 }}
                       className="relative group"
                     >
-                      <img
-                        src={img}
-                        alt={`Img ${idx}`}
-                        className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 shadow-sm group-hover:shadow-md transition-shadow"
-                      />
+                      <Motion.div
+                        className="relative overflow-hidden rounded"
+                        whileHover={{ scale: 1.08 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <img
+                          src={img}
+                          alt={`Img ${idx}`}
+                          className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
+                          onClick={() => onImageClick && onImageClick(img, `Postojeća slika ${idx + 1}`)}
+                        />
+                        {/* Hover overlay sa zoom ikonom */}
+                        <Motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/0 to-[#1E3E49]/0 group-hover:from-[#6EAEA2]/30 group-hover:to-[#1E3E49]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
+                          onClick={() => onImageClick && onImageClick(img, `Postojeća slika ${idx + 1}`)}
+                        >
+                          <Motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            whileHover={{ scale: 1, rotate: 0 }}
+                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FiEye className="text-white drop-shadow-lg" size={20} />
+                          </Motion.div>
+                        </Motion.div>
+                      </Motion.div>
+                      {/* Dugmad za reorder - FIXED ANIMATION */}
+                      <div className="absolute left-0.5 top-0.5 flex flex-col gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
+                        <Motion.button
+                          type="button"
+                          onClick={() => onMoveImageUp && onMoveImageUp(idx, false)}
+                          disabled={idx === 0}
+                          whileHover={{ 
+                            scale: 1.3,
+                            rotate: -15,
+                            backgroundColor: "#91CEC1",
+                          }}
+                          whileTap={{ 
+                            scale: 0.85,
+                            rotate: -15,
+                          }}
+                          className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                          }}
+                          aria-label="Pomeri gore"
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        >
+                          <FiChevronUp size={12} strokeWidth={3} />
+                        </Motion.button>
+                        <Motion.button
+                          type="button"
+                          onClick={() => onMoveImageDown && onMoveImageDown(idx, false)}
+                          disabled={idx === (product.images?.length || 0) - 1}
+                          whileHover={{ 
+                            scale: 1.3,
+                            rotate: 15,
+                            backgroundColor: "#91CEC1",
+                          }}
+                          whileTap={{ 
+                            scale: 0.85,
+                            rotate: 15,
+                          }}
+                          className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                          }}
+                          aria-label="Pomeri dole"
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        >
+                          <FiChevronDown size={12} strokeWidth={3} />
+                        </Motion.button>
+                      </div>
                       <Motion.button
                         type="button"
                         onClick={() => onRemoveImage(idx, false)}
                         whileHover={{ scale: 1.2, rotate: 90 }}
                         whileTap={{ scale: 0.9 }}
-                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity shadow-md"
+                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-md"
                         aria-label="Ukloni sliku"
                       >
                         <FiX size={14} />
@@ -283,17 +361,84 @@ export default function EditProductModal({
                       whileHover={{ scale: 1.05 }}
                       className="relative group"
                     >
-                      <img
-                        src={img.preview}
-                        alt={`New ${idx}`}
-                        className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] shadow-sm group-hover:shadow-md transition-shadow"
-                      />
+                      <Motion.div
+                        className="relative overflow-hidden rounded"
+                        whileHover={{ scale: 1.08 }}
+                        transition={{ type: "spring", stiffness: 300 }}
+                      >
+                        <img
+                          src={img.preview}
+                          alt={`New ${idx}`}
+                          className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
+                          onClick={() => onImageClick && onImageClick(img.preview, `Nova slika ${idx + 1}`)}
+                        />
+                        {/* Hover overlay sa zoom ikonom */}
+                        <Motion.div
+                          className="absolute inset-0 bg-gradient-to-br from-[#91CEC1]/0 to-[#6EAEA2]/0 group-hover:from-[#91CEC1]/30 group-hover:to-[#6EAEA2]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
+                          onClick={() => onImageClick && onImageClick(img.preview, `Nova slika ${idx + 1}`)}
+                        >
+                          <Motion.div
+                            initial={{ scale: 0, rotate: -180 }}
+                            whileHover={{ scale: 1, rotate: 0 }}
+                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                            className="opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <FiEye className="text-white drop-shadow-lg" size={20} />
+                          </Motion.div>
+                        </Motion.div>
+                      </Motion.div>
+                      {/* Dugmad za reorder - FIXED ANIMATION */}
+                      <div className="absolute left-0.5 top-0.5 flex flex-col gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
+                        <Motion.button
+                          type="button"
+                          onClick={() => onMoveImageUp && onMoveImageUp(idx, true)}
+                          disabled={idx === 0}
+                          whileHover={{ 
+                            scale: 1.3,
+                            rotate: -15,
+                            backgroundColor: "#91CEC1",
+                          }}
+                          whileTap={{ 
+                            scale: 0.85,
+                            rotate: -15,
+                          }}
+                          className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                          }}
+                          aria-label="Pomeri gore"
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        >
+                          <FiChevronUp size={12} strokeWidth={3} />
+                        </Motion.button>
+                        <Motion.button
+                          type="button"
+                          onClick={() => onMoveImageDown && onMoveImageDown(idx, true)}
+                          disabled={idx === (product.newImages?.length || 0) - 1}
+                          whileHover={{ 
+                            scale: 1.3,
+                            rotate: 15,
+                            backgroundColor: "#91CEC1",
+                          }}
+                          whileTap={{ scale: 0.85, rotate: 15 }}
+                          className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                          style={{
+                            backdropFilter: "blur(10px)",
+                            border: "1px solid rgba(255, 255, 255, 0.3)",
+                          }}
+                          aria-label="Pomeri dole"
+                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        >
+                          <FiChevronDown size={12} strokeWidth={3} />
+                        </Motion.button>
+                      </div>
                       <Motion.button
                         type="button"
                         onClick={() => onRemoveImage(idx, true)}
                         whileHover={{ scale: 1.2, rotate: 90 }}
                         whileTap={{ scale: 0.9 }}
-                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 md:group-hover:opacity-100 opacity-100 md:opacity-0 transition-opacity shadow-md"
+                        className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-md"
                         aria-label="Ukloni sliku"
                       >
                         <FiX size={14} />
