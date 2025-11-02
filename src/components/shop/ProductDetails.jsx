@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import ImageModal from "../UI/ImageModal";
+import MarkdownPreview from "../UI/MarkdownPreview";
 import {
   Star,
   Package,
@@ -36,9 +37,7 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { FiDownload, FiPackage } from "react-icons/fi";
 import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 import ScrollToTopOnMount from "../UI/ScrollToTopOnMount";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
+import { fetchMarkdownFiles } from "../../utils/markdownUtils";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -56,6 +55,7 @@ export default function ProductDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [markdownFilesWithContent, setMarkdownFilesWithContent] = useState([]);
 
   const openModal = () => {
     setShowImageModal(true);
@@ -116,7 +116,20 @@ export default function ProductDetails() {
   useEffect(() => {
     const fetchProduct = async () => {
       const snap = await getDoc(doc(db, "products", id));
-      setProduct(addDiscountInfo({ id: snap.id, ...snap.data() }));
+      const productData = addDiscountInfo({ id: snap.id, ...snap.data() });
+      setProduct(productData);
+
+      // Fetch markdown content if product has markdown files
+      if (
+        productData.isSoftware &&
+        productData.markdownFiles &&
+        productData.markdownFiles.length > 0
+      ) {
+        const filesWithContent = await fetchMarkdownFiles(
+          productData.markdownFiles
+        );
+        setMarkdownFilesWithContent(filesWithContent);
+      }
     };
     fetchProduct();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -675,6 +688,35 @@ export default function ProductDetails() {
                     </div>
                   </Motion.div>
                 )}
+              {product.isSoftware && markdownFilesWithContent.length > 0 && (
+                <Motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="p-4 rounded-xl backdrop-blur-md border shadow-lg"
+                  style={{
+                    background: "rgba(37, 56, 105, 0.06)",
+                    backdropFilter: "blur(10px)",
+                    border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                  }}
+                >
+                  <h3 className="font-bold text-[#1E3E49] mb-4 flex items-center gap-2 text-base">
+                    <FileCode className="text-[#6EAEA2]" size={20} />
+                    Dokumentacija
+                  </h3>
+                  <div className="space-y-6">
+                    {markdownFilesWithContent.map((mdFile, idx) => (
+                      <MarkdownPreview
+                        key={idx}
+                        content={mdFile.content}
+                        filename={mdFile.name}
+                        animationDelay={0.5 + idx * 0.15}
+                        showIcon={true}
+                      />
+                    ))}
+                  </div>
+                </Motion.div>
+              )}
             </div>
           </div>
         </div>
