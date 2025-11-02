@@ -179,6 +179,12 @@ src/
 └── configs/           # Konfiguracije
 ```
 
+## 📚 Dokumentacija
+
+- **[ADMINPANEL_DOKUMENTACIJA.md](./ADMINPANEL_DOKUMENTACIJA.md)** - Detaljna tehnička dokumentacija za AdminPanel komponentu
+- **[DIZAJN_DOKUMENTACIJA.md](./DIZAJN_DOKUMENTACIJA.md)** - Dizajn specifikacije i UI/UX dokumentacija
+- **[DIZAJN_PRIMERI.md](./DIZAJN_PRIMERI.md)** - Primeri dizajn pattern-a
+
 ## 🔥 Firebase Konfiguracija
 
 Aplikacija koristi sledeće Firebase servise:
