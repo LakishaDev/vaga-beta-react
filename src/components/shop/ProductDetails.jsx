@@ -15,6 +15,7 @@ import {
 } from "firebase/firestore";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import ImageModal from "../UI/ImageModal";
+import MarkdownPreview from "../UI/MarkdownPreview";
 import {
   Star,
   Package,
@@ -36,9 +37,7 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { FiDownload, FiPackage } from "react-icons/fi";
 import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 import ScrollToTopOnMount from "../UI/ScrollToTopOnMount";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
-import rehypeRaw from "rehype-raw";
+import { fetchMarkdownFiles } from "../../utils/markdownUtils";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -56,6 +55,7 @@ export default function ProductDetails() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [markdownFilesWithContent, setMarkdownFilesWithContent] = useState([]);
 
   const openModal = () => {
     setShowImageModal(true);
@@ -116,7 +116,14 @@ export default function ProductDetails() {
   useEffect(() => {
     const fetchProduct = async () => {
       const snap = await getDoc(doc(db, "products", id));
-      setProduct(addDiscountInfo({ id: snap.id, ...snap.data() }));
+      const productData = addDiscountInfo({ id: snap.id, ...snap.data() });
+      setProduct(productData);
+
+      // Fetch markdown content if product has markdown files
+      if (productData.isSoftware && productData.markdownFiles && productData.markdownFiles.length > 0) {
+        const filesWithContent = await fetchMarkdownFiles(productData.markdownFiles);
+        setMarkdownFilesWithContent(filesWithContent);
+      }
     };
     fetchProduct();
     window.scrollTo({ top: 0, behavior: "smooth" });
@@ -609,7 +616,7 @@ export default function ProductDetails() {
               )}
 
               {/* Markdown Documentation - samo za softver */}
-              {product.isSoftware && product.markdownFiles && product.markdownFiles.length > 0 && (
+              {product.isSoftware && markdownFilesWithContent.length > 0 && (
                 <Motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -626,47 +633,15 @@ export default function ProductDetails() {
                     Dokumentacija
                   </h3>
                   <div className="space-y-6">
-                    {product.markdownFiles.map((mdFile, idx) => {
-                      // Izvuci čist naslov iz imena fajla
-                      const getFileTitle = (filename) => {
-                        if (!filename) return "Dokument";
-                        // Ukloni timestamp i ekstenziju, npr: "1762106127475_PRODUCT_LAUNCH.md" -> "PRODUCT LAUNCH"
-                        const cleanName = filename
-                          .replace(/^\d+_/, '') // Ukloni timestamp na početku
-                          .replace(/\.md$/i, '') // Ukloni .md ekstenziju
-                          .replace(/_/g, ' ') // Zameni _ sa razmakom
-                          .trim();
-                        return cleanName;
-                      };
-
-                      return (
-                        <Motion.div
-                          key={idx}
-                          initial={{ opacity: 0, y: 10 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ delay: 0.5 + idx * 0.15 }}
-                          className="rounded-lg bg-white/60 backdrop-blur-sm border border-[#6EAEA2]/30 overflow-hidden"
-                        >
-                          {/* Naslov dokumenta */}
-                          <div className="bg-gradient-to-r from-[#253869]/10 to-[#6EAEA2]/10 border-b border-[#6EAEA2]/30 px-4 py-3">
-                            <h4 className="font-bold text-[#253869] text-base flex items-center gap-2">
-                              <FileCode size={18} className="text-[#6EAEA2]" />
-                              {getFileTitle(mdFile.name)}
-                            </h4>
-                          </div>
-                          
-                          {/* Markdown sadržaj */}
-                          <div className="p-4 prose prose-sm max-w-none prose-headings:text-[#253869] prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-p:text-[#1E3E49] prose-p:leading-relaxed prose-a:text-[#6EAEA2] prose-a:no-underline hover:prose-a:underline prose-strong:text-[#253869] prose-strong:font-bold prose-code:text-[#6EAEA2] prose-code:bg-[#253869]/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-[#253869] prose-pre:text-white prose-pre:rounded-lg prose-pre:shadow-lg prose-ul:list-disc prose-ol:list-decimal prose-li:text-[#1E3E49] prose-li:marker:text-[#6EAEA2] prose-blockquote:border-l-4 prose-blockquote:border-[#6EAEA2] prose-blockquote:bg-[#6EAEA2]/5 prose-blockquote:italic prose-blockquote:text-[#1E3E49]/80 prose-img:rounded-lg prose-img:shadow-md prose-hr:border-[#6EAEA2]/30">
-                            <ReactMarkdown
-                              remarkPlugins={[remarkGfm]}
-                              rehypePlugins={[rehypeRaw]}
-                            >
-                              {mdFile.content}
-                            </ReactMarkdown>
-                          </div>
-                        </Motion.div>
-                      );
-                    })}
+                    {markdownFilesWithContent.map((mdFile, idx) => (
+                      <MarkdownPreview
+                        key={idx}
+                        content={mdFile.content}
+                        filename={mdFile.name}
+                        animationDelay={0.5 + idx * 0.15}
+                        showIcon={true}
+                      />
+                    ))}
                   </div>
                 </Motion.div>
               )}
