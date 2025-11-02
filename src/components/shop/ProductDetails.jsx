@@ -26,6 +26,8 @@ import {
   ChevronRight,
   Trash2,
   Mail,
+  FileCode,
+  X,
 } from "lucide-react";
 import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
@@ -34,6 +36,9 @@ import { motion as Motion, AnimatePresence } from "framer-motion";
 import { FiDownload, FiPackage } from "react-icons/fi";
 import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 import ScrollToTopOnMount from "../UI/ScrollToTopOnMount";
+import ReactMarkdown from "react-markdown";
+import remarkGfm from "remark-gfm";
+import rehypeRaw from "rehype-raw";
 
 export default function ProductDetails() {
   const { id } = useParams();
@@ -599,6 +604,69 @@ export default function ProductDetails() {
                         />
                       </Motion.a>
                     ))}
+                  </div>
+                </Motion.div>
+              )}
+
+              {/* Markdown Documentation - samo za softver */}
+              {product.isSoftware && product.markdownFiles && product.markdownFiles.length > 0 && (
+                <Motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.4 }}
+                  className="p-4 rounded-xl backdrop-blur-md border shadow-lg"
+                  style={{
+                    background: "rgba(37, 56, 105, 0.06)",
+                    backdropFilter: "blur(10px)",
+                    border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                  }}
+                >
+                  <h3 className="font-bold text-[#1E3E49] mb-4 flex items-center gap-2 text-base">
+                    <FileCode className="text-[#6EAEA2]" size={20} />
+                    Dokumentacija
+                  </h3>
+                  <div className="space-y-6">
+                    {product.markdownFiles.map((mdFile, idx) => {
+                      // Izvuci čist naslov iz imena fajla
+                      const getFileTitle = (filename) => {
+                        if (!filename) return "Dokument";
+                        // Ukloni timestamp i ekstenziju, npr: "1762106127475_PRODUCT_LAUNCH.md" -> "PRODUCT LAUNCH"
+                        const cleanName = filename
+                          .replace(/^\d+_/, '') // Ukloni timestamp na početku
+                          .replace(/\.md$/i, '') // Ukloni .md ekstenziju
+                          .replace(/_/g, ' ') // Zameni _ sa razmakom
+                          .trim();
+                        return cleanName;
+                      };
+
+                      return (
+                        <Motion.div
+                          key={idx}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          transition={{ delay: 0.5 + idx * 0.15 }}
+                          className="rounded-lg bg-white/60 backdrop-blur-sm border border-[#6EAEA2]/30 overflow-hidden"
+                        >
+                          {/* Naslov dokumenta */}
+                          <div className="bg-gradient-to-r from-[#253869]/10 to-[#6EAEA2]/10 border-b border-[#6EAEA2]/30 px-4 py-3">
+                            <h4 className="font-bold text-[#253869] text-base flex items-center gap-2">
+                              <FileCode size={18} className="text-[#6EAEA2]" />
+                              {getFileTitle(mdFile.name)}
+                            </h4>
+                          </div>
+                          
+                          {/* Markdown sadržaj */}
+                          <div className="p-4 prose prose-sm max-w-none prose-headings:text-[#253869] prose-headings:font-bold prose-h1:text-xl prose-h2:text-lg prose-h3:text-base prose-p:text-[#1E3E49] prose-p:leading-relaxed prose-a:text-[#6EAEA2] prose-a:no-underline hover:prose-a:underline prose-strong:text-[#253869] prose-strong:font-bold prose-code:text-[#6EAEA2] prose-code:bg-[#253869]/10 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:font-mono prose-code:text-sm prose-code:before:content-[''] prose-code:after:content-[''] prose-pre:bg-[#253869] prose-pre:text-white prose-pre:rounded-lg prose-pre:shadow-lg prose-ul:list-disc prose-ol:list-decimal prose-li:text-[#1E3E49] prose-li:marker:text-[#6EAEA2] prose-blockquote:border-l-4 prose-blockquote:border-[#6EAEA2] prose-blockquote:bg-[#6EAEA2]/5 prose-blockquote:italic prose-blockquote:text-[#1E3E49]/80 prose-img:rounded-lg prose-img:shadow-md prose-hr:border-[#6EAEA2]/30">
+                            <ReactMarkdown
+                              remarkPlugins={[remarkGfm]}
+                              rehypePlugins={[rehypeRaw]}
+                            >
+                              {mdFile.content}
+                            </ReactMarkdown>
+                          </div>
+                        </Motion.div>
+                      );
+                    })}
                   </div>
                 </Motion.div>
               )}
