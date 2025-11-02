@@ -1,6 +1,15 @@
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
-import { FiUpload, FiPlus, FiTrash2, FiFile, FiX, FiChevronUp, FiChevronDown, FiEye } from "react-icons/fi";
+import {
+  FiUpload,
+  FiPlus,
+  FiTrash2,
+  FiFile,
+  FiX,
+  FiChevronUp,
+  FiChevronDown,
+  FiEye,
+} from "react-icons/fi";
 import FloatingLabelInput from "./FloatingLabelInput";
 import ProgressiveImage from "./ProgressiveImage";
 import ProgressBar from "./ProgressBar";
@@ -9,7 +18,7 @@ import SoftwareToggle from "./SoftwareToggle";
 /**
  * EditProductModal Component
  * Reusable modal for editing product details
- * 
+ *
  * @param {Object} props
  * @param {boolean} props.isOpen - Modal visibility
  * @param {Function} props.onClose - Close callback
@@ -65,6 +74,7 @@ export default function EditProductModal({
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
         onClick={onClose}
+        data-lenis-prevent
       >
         <Motion.div
           initial={{ scale: 0.9, opacity: 0, y: 20 }}
@@ -172,7 +182,11 @@ export default function EditProductModal({
               name="price"
               label="Cena (RSD)"
               type="text"
-              value={formatPriceInput ? formatPriceInput(product.price) : product.price}
+              value={
+                formatPriceInput
+                  ? formatPriceInput(product.price)
+                  : product.price
+              }
               onChange={onChange}
               required
             />
@@ -274,20 +288,33 @@ export default function EditProductModal({
                           src={img}
                           alt={`Img ${idx}`}
                           className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
-                          onClick={() => onImageClick && onImageClick(img, `Postojeća slika ${idx + 1}`)}
+                          onClick={() =>
+                            onImageClick &&
+                            onImageClick(img, `Postojeća slika ${idx + 1}`)
+                          }
                         />
                         {/* Hover overlay sa zoom ikonom */}
                         <Motion.div
                           className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/0 to-[#1E3E49]/0 group-hover:from-[#6EAEA2]/30 group-hover:to-[#1E3E49]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
-                          onClick={() => onImageClick && onImageClick(img, `Postojeća slika ${idx + 1}`)}
+                          onClick={() =>
+                            onImageClick &&
+                            onImageClick(img, `Postojeća slika ${idx + 1}`)
+                          }
                         >
                           <Motion.div
                             initial={{ scale: 0, rotate: -180 }}
                             whileHover={{ scale: 1, rotate: 0 }}
-                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 260,
+                              damping: 20,
+                            }}
                             className="opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <FiEye className="text-white drop-shadow-lg" size={20} />
+                            <FiEye
+                              className="text-white drop-shadow-lg"
+                              size={20}
+                            />
                           </Motion.div>
                         </Motion.div>
                       </Motion.div>
@@ -295,14 +322,16 @@ export default function EditProductModal({
                       <div className="absolute left-0.5 top-0.5 flex flex-col gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
                         <Motion.button
                           type="button"
-                          onClick={() => onMoveImageUp && onMoveImageUp(idx, false)}
+                          onClick={() =>
+                            onMoveImageUp && onMoveImageUp(idx, false)
+                          }
                           disabled={idx === 0}
-                          whileHover={{ 
+                          whileHover={{
                             scale: 1.3,
                             rotate: -15,
                             backgroundColor: "#91CEC1",
                           }}
-                          whileTap={{ 
+                          whileTap={{
                             scale: 0.85,
                             rotate: -15,
                           }}
@@ -312,20 +341,26 @@ export default function EditProductModal({
                             border: "1px solid rgba(255, 255, 255, 0.3)",
                           }}
                           aria-label="Pomeri gore"
-                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 10,
+                          }}
                         >
                           <FiChevronUp size={12} strokeWidth={3} />
                         </Motion.button>
                         <Motion.button
                           type="button"
-                          onClick={() => onMoveImageDown && onMoveImageDown(idx, false)}
+                          onClick={() =>
+                            onMoveImageDown && onMoveImageDown(idx, false)
+                          }
                           disabled={idx === (product.images?.length || 0) - 1}
-                          whileHover={{ 
+                          whileHover={{
                             scale: 1.3,
                             rotate: 15,
                             backgroundColor: "#91CEC1",
                           }}
-                          whileTap={{ 
+                          whileTap={{
                             scale: 0.85,
                             rotate: 15,
                           }}
@@ -335,7 +370,11 @@ export default function EditProductModal({
                             border: "1px solid rgba(255, 255, 255, 0.3)",
                           }}
                           aria-label="Pomeri dole"
-                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 10,
+                          }}
                         >
                           <FiChevronDown size={12} strokeWidth={3} />
                         </Motion.button>
@@ -370,20 +409,33 @@ export default function EditProductModal({
                           src={img.preview}
                           alt={`New ${idx}`}
                           className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
-                          onClick={() => onImageClick && onImageClick(img.preview, `Nova slika ${idx + 1}`)}
+                          onClick={() =>
+                            onImageClick &&
+                            onImageClick(img.preview, `Nova slika ${idx + 1}`)
+                          }
                         />
                         {/* Hover overlay sa zoom ikonom */}
                         <Motion.div
                           className="absolute inset-0 bg-gradient-to-br from-[#91CEC1]/0 to-[#6EAEA2]/0 group-hover:from-[#91CEC1]/30 group-hover:to-[#6EAEA2]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
-                          onClick={() => onImageClick && onImageClick(img.preview, `Nova slika ${idx + 1}`)}
+                          onClick={() =>
+                            onImageClick &&
+                            onImageClick(img.preview, `Nova slika ${idx + 1}`)
+                          }
                         >
                           <Motion.div
                             initial={{ scale: 0, rotate: -180 }}
                             whileHover={{ scale: 1, rotate: 0 }}
-                            transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 260,
+                              damping: 20,
+                            }}
                             className="opacity-0 group-hover:opacity-100 transition-opacity"
                           >
-                            <FiEye className="text-white drop-shadow-lg" size={20} />
+                            <FiEye
+                              className="text-white drop-shadow-lg"
+                              size={20}
+                            />
                           </Motion.div>
                         </Motion.div>
                       </Motion.div>
@@ -391,14 +443,16 @@ export default function EditProductModal({
                       <div className="absolute left-0.5 top-0.5 flex flex-col gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
                         <Motion.button
                           type="button"
-                          onClick={() => onMoveImageUp && onMoveImageUp(idx, true)}
+                          onClick={() =>
+                            onMoveImageUp && onMoveImageUp(idx, true)
+                          }
                           disabled={idx === 0}
-                          whileHover={{ 
+                          whileHover={{
                             scale: 1.3,
                             rotate: -15,
                             backgroundColor: "#91CEC1",
                           }}
-                          whileTap={{ 
+                          whileTap={{
                             scale: 0.85,
                             rotate: -15,
                           }}
@@ -408,15 +462,23 @@ export default function EditProductModal({
                             border: "1px solid rgba(255, 255, 255, 0.3)",
                           }}
                           aria-label="Pomeri gore"
-                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 10,
+                          }}
                         >
                           <FiChevronUp size={12} strokeWidth={3} />
                         </Motion.button>
                         <Motion.button
                           type="button"
-                          onClick={() => onMoveImageDown && onMoveImageDown(idx, true)}
-                          disabled={idx === (product.newImages?.length || 0) - 1}
-                          whileHover={{ 
+                          onClick={() =>
+                            onMoveImageDown && onMoveImageDown(idx, true)
+                          }
+                          disabled={
+                            idx === (product.newImages?.length || 0) - 1
+                          }
+                          whileHover={{
                             scale: 1.3,
                             rotate: 15,
                             backgroundColor: "#91CEC1",
@@ -428,7 +490,11 @@ export default function EditProductModal({
                             border: "1px solid rgba(255, 255, 255, 0.3)",
                           }}
                           aria-label="Pomeri dole"
-                          transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 400,
+                            damping: 10,
+                          }}
                         >
                           <FiChevronDown size={12} strokeWidth={3} />
                         </Motion.button>
