@@ -22,14 +22,14 @@
 // ✅ 3D animacije i glassmorphism efekti (Framer Motion) - FIXED
 // ✅ Firebase integracija (Firestore + Storage)
 // ✅ Email-based autorizacija sa .env konfiguracija
-// 
+//
 // REFACTORING CHANGES v3.0:
 // ==========================
 // 🆕 Komponente razbijene u manje, reusable module
 // 🆕 FIXED framer-motion rotate animation errors (spring + multi-keyframe)
 // 🆕 Koristi EditProductModal iz UI komponenti
 // 🆕 Bolja organizacija koda i separacija odgovornosti
-// 
+//
 // ===============================================================================
 
 import { useState, useContext, useEffect } from "react";
@@ -132,9 +132,16 @@ export default function AdminPanel() {
    * @returns {string} Formatirana cena sa tačkom kao separatorom
    */
   const formatPriceInput = (value) => {
-    if (!value) return "";
-    const numericValue = value.replace(/\D/g, "");
+    if (value == null) return ""; // proveravamo null i undefined
+
+    // Pretvori u string
+    const stringValue = String(value);
+
+    // Ukloni sve što nije broj
+    const numericValue = stringValue.replace(/\D/g, "");
     if (!numericValue) return "";
+
+    // Formatuj sa tačkom kao separatorom
     return new Intl.NumberFormat("sr-RS").format(parseInt(numericValue, 10));
   };
 
@@ -477,17 +484,20 @@ export default function AdminPanel() {
    */
   const moveEditImageInDirection = (index, isNew, direction) => {
     if (!editProduct) return;
-    
+
     const arrayKey = isNew ? "newImages" : "images";
     const sourceArray = editProduct[arrayKey] || [];
-    
+
     if (direction === "up" && index === 0) return;
     if (direction === "down" && index === sourceArray.length - 1) return;
-    
+
     const updated = [...sourceArray];
     const targetIndex = direction === "up" ? index - 1 : index + 1;
-    [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
-    
+    [updated[index], updated[targetIndex]] = [
+      updated[targetIndex],
+      updated[index],
+    ];
+
     setEditProduct({ ...editProduct, [arrayKey]: updated });
   };
 
