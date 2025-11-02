@@ -2,13 +2,13 @@
 // ===============================================================================
 // ADMIN PANEL ZA UPRAVLJANJE PROIZVODIMA
 // ===============================================================================
-// 
+//
 // @component AdminPanel
 // @description Admin panel za potpunu kontrolu nad e-commerce proizvodima
 // @version 2.0
 // @lastmodified 2025-11-02
 // @documentation Vidi: /ADMINPANEL_DOKUMENTACIJA.md za detaljnu dokumentaciju
-// 
+//
 // KLJUČNE FUNKCIONALNOSTI:
 // ========================
 // ✅ CRUD operacije (Create, Read, Update, Delete) proizvoda
@@ -22,7 +22,7 @@
 // ✅ 3D animacije i glassmorphism efekti (Framer Motion)
 // ✅ Firebase integracija (Firestore + Storage)
 // ✅ Email-based autorizacija sa .env konfiguracija
-// 
+//
 // NOVE FUNKCIONALNOSTI U v2.0:
 // =============================
 // 🆕 Reordering dodatnih slika - moveImageUp(), moveImageDown()
@@ -31,12 +31,12 @@
 // 🆕 Modal za prikaz slika - LepModal komponenta
 // 🆕 Hover overlay sa zoom ikonom i rotacijom
 // 🆕 Spring animacije na svim interaktivnim elementima
-// 
+//
 // AUTENTIFIKACIJA:
 // ================
 // Pristup je ograničen na email adrese iz VITE_ADMIN_EMAILS env varijable
 // Korisnici moraju biti prijavljeni i imati email u admin listi
-// 
+//
 // STATE MANAGEMENT:
 // =================
 // - newProduct: State za formu novog proizvoda
@@ -45,14 +45,14 @@
 // - imageModal: State za modal prikaza slika
 // - deleteConfirm: State za potvrdu brisanja
 // - loading: Loading state tokom Firebase operacija
-// 
+//
 // FIREBASE STRUKTURA:
 // ===================
 // Collection: "products"
 // Storage paths: products/, datasheets/, markdown/
-// Document fields: name, category, price, hiddenPrice, imgUrl, images, 
+// Document fields: name, category, price, hiddenPrice, imgUrl, images,
 //                 features, datasheets, isSoftware, markdownFiles, createdAt
-// 
+//
 // ===============================================================================
 import { useState, useContext, useEffect } from "react";
 import { db, storage, auth } from "../../utils/firebase.js";
@@ -70,7 +70,18 @@ import FloatingLabelInput from "../../components/UI/FloatingLabelInput.jsx";
 import ProgressiveImage from "../../components/UI/ProgressiveImage.jsx";
 import ProgressBar from "../../components/UI/ProgressBar.jsx";
 import SoftwareToggle from "../../components/UI/SoftwareToggle.jsx";
-import { FiUpload, FiX, FiPlus, FiTrash2, FiFile, FiChevronUp, FiChevronDown, FiDollarSign, FiEye, FiZoomIn } from "react-icons/fi";
+import {
+  FiUpload,
+  FiX,
+  FiPlus,
+  FiTrash2,
+  FiFile,
+  FiChevronUp,
+  FiChevronDown,
+  FiDollarSign,
+  FiEye,
+  FiZoomIn,
+} from "react-icons/fi";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 import LepModal from "../../components/UI/LepModal.jsx";
 
@@ -83,7 +94,11 @@ export default function AdminPanel() {
   const [editProduct, setEditProduct] = useState(null);
   const [editUploadProgress, setEditUploadProgress] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null); // za mobile modal
-  const [imageModal, setImageModal] = useState({ open: false, src: "", text: "" }); // za prikaz slika
+  const [imageModal, setImageModal] = useState({
+    open: false,
+    src: "",
+    text: "",
+  }); // za prikaz slika
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -135,7 +150,7 @@ export default function AdminPanel() {
   // ===============================================================================
   // PRICE FORMATTING FUNCTIONS
   // ===============================================================================
-  
+
   /**
    * Formatira cenu za prikaz sa separatorom za hiljade
    * @function formatPrice
@@ -164,12 +179,16 @@ export default function AdminPanel() {
    * @intellisense Koristi Intl.NumberFormat sa locale "sr-RS"
    */
   const formatPriceInput = (value) => {
-    if (!value) return "";
+    if (value == null) return ""; // proveravamo null i undefined
+
+    // Pretvori u string
+    const stringValue = String(value);
+
     // Ukloni sve što nije broj
-    const numericValue = value.replace(/\D/g, "");
+    const numericValue = stringValue.replace(/\D/g, "");
     if (!numericValue) return "";
+
     // Formatuj sa tačkom kao separatorom
-    // Koristimo parseInt jer cene u RSD su uvek cele (integer) vrednosti bez decimala
     return new Intl.NumberFormat("sr-RS").format(parseInt(numericValue, 10));
   };
 
@@ -225,7 +244,7 @@ export default function AdminPanel() {
   // ===============================================================================
   // IMAGE REORDERING FUNCTIONS (Main Form)
   // ===============================================================================
-  
+
   /**
    * Pomera dodatnu sliku jednu poziciju gore u glavnom formu
    * @function moveImageUp
@@ -525,7 +544,7 @@ export default function AdminPanel() {
   // ===============================================================================
   // IMAGE REORDERING FUNCTIONS (Edit Modal)
   // ===============================================================================
-  
+
   /**
    * Helper funkcija za premeštanje slika u edit modu (DRY principle)
    * Podržava i postojeće slike (images) i nove slike (newImages)
@@ -547,19 +566,22 @@ export default function AdminPanel() {
    */
   const moveEditImageInDirection = (index, isNew, direction) => {
     if (!editProduct) return; // Defensive check - sprečava greške ako state nije setovan
-    
+
     const arrayKey = isNew ? "newImages" : "images";
     const sourceArray = editProduct[arrayKey] || [];
-    
+
     // Guard clauses - provera validnosti operacije
     if (direction === "up" && index === 0) return;
     if (direction === "down" && index === sourceArray.length - 1) return;
-    
+
     // Kreiraj kopiju niza i zameni elemente (immutable pattern)
     const updated = [...sourceArray];
     const targetIndex = direction === "up" ? index - 1 : index + 1;
-    [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
-    
+    [updated[index], updated[targetIndex]] = [
+      updated[targetIndex],
+      updated[index],
+    ];
+
     // Ažuriraj state sa computed property name
     setEditProduct({ ...editProduct, [arrayKey]: updated });
   };
@@ -780,7 +802,7 @@ export default function AdminPanel() {
               onChange={handleChange}
               required
             />
-            <Motion.div 
+            <Motion.div
               className="relative group"
               whileHover={{ scale: 1.01 }}
               transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -819,23 +841,25 @@ export default function AdminPanel() {
                   },
                 }}
               >
-                <FiDollarSign 
-                  className="text-[#6EAEA2]" 
+                <FiDollarSign
+                  className="text-[#6EAEA2]"
                   size={14}
                   style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }}
                 />
-                <span className="text-[#1E3E49] font-black tracking-wide">RSD</span>
+                <span className="text-[#1E3E49] font-black tracking-wide">
+                  RSD
+                </span>
               </Motion.div>
-              
+
               {/* Tooltip hint */}
               <Motion.div
                 initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                animate={{ 
+                animate={{
                   opacity: 0,
                   y: 10,
                   scale: 0.8,
                 }}
-                whileFocus={{ 
+                whileFocus={{
                   opacity: 1,
                   y: 0,
                   scale: 1,
@@ -989,20 +1013,39 @@ export default function AdminPanel() {
                         src={img.preview}
                         alt={`Preview ${idx}`}
                         className="w-full aspect-square object-cover rounded-lg border-2 border-[#6EAEA2]/40 shadow-md group-hover:border-[#6EAEA2] transition-all cursor-pointer"
-                        onClick={() => setImageModal({ open: true, src: img.preview, text: `Dodatna slika ${idx + 1}` })}
+                        onClick={() =>
+                          setImageModal({
+                            open: true,
+                            src: img.preview,
+                            text: `Dodatna slika ${idx + 1}`,
+                          })
+                        }
                       />
                       {/* Hover overlay sa zoom ikonom */}
                       <Motion.div
                         className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/0 to-[#1E3E49]/0 group-hover:from-[#6EAEA2]/30 group-hover:to-[#1E3E49]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded-lg"
-                        onClick={() => setImageModal({ open: true, src: img.preview, text: `Dodatna slika ${idx + 1}` })}
+                        onClick={() =>
+                          setImageModal({
+                            open: true,
+                            src: img.preview,
+                            text: `Dodatna slika ${idx + 1}`,
+                          })
+                        }
                       >
                         <Motion.div
                           initial={{ scale: 0, rotate: -180 }}
                           whileHover={{ scale: 1, rotate: 0 }}
-                          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                          transition={{
+                            type: "spring",
+                            stiffness: 260,
+                            damping: 20,
+                          }}
                           className="opacity-0 group-hover:opacity-100 transition-opacity"
                         >
-                          <FiZoomIn className="text-white drop-shadow-lg" size={28} />
+                          <FiZoomIn
+                            className="text-white drop-shadow-lg"
+                            size={28}
+                          />
                         </Motion.div>
                       </Motion.div>
                     </Motion.div>
@@ -1012,12 +1055,12 @@ export default function AdminPanel() {
                         type="button"
                         onClick={() => moveImageUp(idx)}
                         disabled={idx === 0}
-                        whileHover={{ 
+                        whileHover={{
                           scale: 1.3,
                           rotate: [0, -10, 10, -10, 0],
                           backgroundColor: "#91CEC1",
                         }}
-                        whileTap={{ 
+                        whileTap={{
                           scale: 0.85,
                           rotate: -15,
                         }}
@@ -1027,7 +1070,11 @@ export default function AdminPanel() {
                           border: "1px solid rgba(255, 255, 255, 0.3)",
                         }}
                         aria-label="Pomeri gore"
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 10,
+                        }}
                       >
                         <FiChevronUp size={16} strokeWidth={3} />
                       </Motion.button>
@@ -1035,12 +1082,12 @@ export default function AdminPanel() {
                         type="button"
                         onClick={() => moveImageDown(idx)}
                         disabled={idx === newProduct.images.length - 1}
-                        whileHover={{ 
+                        whileHover={{
                           scale: 1.3,
                           rotate: [0, 10, -10, 10, 0],
                           backgroundColor: "#91CEC1",
                         }}
-                        whileTap={{ 
+                        whileTap={{
                           scale: 0.85,
                           rotate: 15,
                         }}
@@ -1050,7 +1097,11 @@ export default function AdminPanel() {
                           border: "1px solid rgba(255, 255, 255, 0.3)",
                         }}
                         aria-label="Pomeri dole"
-                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 400,
+                          damping: 10,
+                        }}
                       >
                         <FiChevronDown size={16} strokeWidth={3} />
                       </Motion.button>
@@ -1599,7 +1650,7 @@ export default function AdminPanel() {
                 onChange={handleEditChange}
                 required
               />
-              <Motion.div 
+              <Motion.div
                 className="relative group"
                 whileHover={{ scale: 1.01 }}
                 transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -1638,23 +1689,25 @@ export default function AdminPanel() {
                     },
                   }}
                 >
-                  <FiDollarSign 
-                    className="text-[#6EAEA2]" 
+                  <FiDollarSign
+                    className="text-[#6EAEA2]"
                     size={14}
                     style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }}
                   />
-                  <span className="text-[#1E3E49] font-black tracking-wide">RSD</span>
+                  <span className="text-[#1E3E49] font-black tracking-wide">
+                    RSD
+                  </span>
                 </Motion.div>
-                
+
                 {/* Tooltip hint */}
                 <Motion.div
                   initial={{ opacity: 0, y: 10, scale: 0.8 }}
-                  animate={{ 
+                  animate={{
                     opacity: 0,
                     y: 10,
                     scale: 0.8,
                   }}
-                  whileFocus={{ 
+                  whileFocus={{
                     opacity: 1,
                     y: 0,
                     scale: 1,
@@ -1743,20 +1796,39 @@ export default function AdminPanel() {
                             src={img}
                             alt={`Img ${idx}`}
                             className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
-                            onClick={() => setImageModal({ open: true, src: img, text: `Postojeća slika ${idx + 1}` })}
+                            onClick={() =>
+                              setImageModal({
+                                open: true,
+                                src: img,
+                                text: `Postojeća slika ${idx + 1}`,
+                              })
+                            }
                           />
                           {/* Hover overlay sa zoom ikonom */}
                           <Motion.div
                             className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/0 to-[#1E3E49]/0 group-hover:from-[#6EAEA2]/30 group-hover:to-[#1E3E49]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
-                            onClick={() => setImageModal({ open: true, src: img, text: `Postojeća slika ${idx + 1}` })}
+                            onClick={() =>
+                              setImageModal({
+                                open: true,
+                                src: img,
+                                text: `Postojeća slika ${idx + 1}`,
+                              })
+                            }
                           >
                             <Motion.div
                               initial={{ scale: 0, rotate: -180 }}
                               whileHover={{ scale: 1, rotate: 0 }}
-                              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 260,
+                                damping: 20,
+                              }}
                               className="opacity-0 group-hover:opacity-100 transition-opacity"
                             >
-                              <FiEye className="text-white drop-shadow-lg" size={20} />
+                              <FiEye
+                                className="text-white drop-shadow-lg"
+                                size={20}
+                              />
                             </Motion.div>
                           </Motion.div>
                         </Motion.div>
@@ -1766,12 +1838,12 @@ export default function AdminPanel() {
                             type="button"
                             onClick={() => moveEditImageUp(idx, false)}
                             disabled={idx === 0}
-                            whileHover={{ 
+                            whileHover={{
                               scale: 1.3,
                               rotate: [0, -10, 10, -10, 0],
                               backgroundColor: "#91CEC1",
                             }}
-                            whileTap={{ 
+                            whileTap={{
                               scale: 0.85,
                               rotate: -15,
                             }}
@@ -1781,20 +1853,26 @@ export default function AdminPanel() {
                               border: "1px solid rgba(255, 255, 255, 0.3)",
                             }}
                             aria-label="Pomeri gore"
-                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 10,
+                            }}
                           >
                             <FiChevronUp size={12} strokeWidth={3} />
                           </Motion.button>
                           <Motion.button
                             type="button"
                             onClick={() => moveEditImageDown(idx, false)}
-                            disabled={idx === (editProduct.images?.length || 0) - 1}
-                            whileHover={{ 
+                            disabled={
+                              idx === (editProduct.images?.length || 0) - 1
+                            }
+                            whileHover={{
                               scale: 1.3,
                               rotate: [0, 10, -10, 10, 0],
                               backgroundColor: "#91CEC1",
                             }}
-                            whileTap={{ 
+                            whileTap={{
                               scale: 0.85,
                               rotate: 15,
                             }}
@@ -1804,7 +1882,11 @@ export default function AdminPanel() {
                               border: "1px solid rgba(255, 255, 255, 0.3)",
                             }}
                             aria-label="Pomeri dole"
-                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            transition={{
+                              type: "spring",
+                              stiffness: 400,
+                              damping: 10,
+                            }}
                           >
                             <FiChevronDown size={12} strokeWidth={3} />
                           </Motion.button>
@@ -1840,20 +1922,39 @@ export default function AdminPanel() {
                               src={img.preview}
                               alt={`New ${idx}`}
                               className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
-                              onClick={() => setImageModal({ open: true, src: img.preview, text: `Nova slika ${idx + 1}` })}
+                              onClick={() =>
+                                setImageModal({
+                                  open: true,
+                                  src: img.preview,
+                                  text: `Nova slika ${idx + 1}`,
+                                })
+                              }
                             />
                             {/* Hover overlay sa zoom ikonom */}
                             <Motion.div
                               className="absolute inset-0 bg-gradient-to-br from-[#91CEC1]/0 to-[#6EAEA2]/0 group-hover:from-[#91CEC1]/30 group-hover:to-[#6EAEA2]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
-                              onClick={() => setImageModal({ open: true, src: img.preview, text: `Nova slika ${idx + 1}` })}
+                              onClick={() =>
+                                setImageModal({
+                                  open: true,
+                                  src: img.preview,
+                                  text: `Nova slika ${idx + 1}`,
+                                })
+                              }
                             >
                               <Motion.div
                                 initial={{ scale: 0, rotate: -180 }}
                                 whileHover={{ scale: 1, rotate: 0 }}
-                                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                transition={{
+                                  type: "spring",
+                                  stiffness: 260,
+                                  damping: 20,
+                                }}
                                 className="opacity-0 group-hover:opacity-100 transition-opacity"
                               >
-                                <FiEye className="text-white drop-shadow-lg" size={20} />
+                                <FiEye
+                                  className="text-white drop-shadow-lg"
+                                  size={20}
+                                />
                               </Motion.div>
                             </Motion.div>
                           </Motion.div>
@@ -1863,12 +1964,12 @@ export default function AdminPanel() {
                               type="button"
                               onClick={() => moveEditImageUp(idx, true)}
                               disabled={idx === 0}
-                              whileHover={{ 
+                              whileHover={{
                                 scale: 1.3,
                                 rotate: [0, -10, 10, -10, 0],
                                 backgroundColor: "#91CEC1",
                               }}
-                              whileTap={{ 
+                              whileTap={{
                                 scale: 0.85,
                                 rotate: -15,
                               }}
@@ -1878,20 +1979,26 @@ export default function AdminPanel() {
                                 border: "1px solid rgba(255, 255, 255, 0.3)",
                               }}
                               aria-label="Pomeri gore"
-                              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 10,
+                              }}
                             >
                               <FiChevronUp size={12} strokeWidth={3} />
                             </Motion.button>
                             <Motion.button
                               type="button"
                               onClick={() => moveEditImageDown(idx, true)}
-                              disabled={idx === (editProduct.newImages?.length || 0) - 1}
-                              whileHover={{ 
+                              disabled={
+                                idx === (editProduct.newImages?.length || 0) - 1
+                              }
+                              whileHover={{
                                 scale: 1.3,
                                 rotate: [0, 10, -10, 10, 0],
                                 backgroundColor: "#91CEC1",
                               }}
-                              whileTap={{ 
+                              whileTap={{
                                 scale: 0.85,
                                 rotate: 15,
                               }}
@@ -1901,7 +2008,11 @@ export default function AdminPanel() {
                                 border: "1px solid rgba(255, 255, 255, 0.3)",
                               }}
                               aria-label="Pomeri dole"
-                              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                              transition={{
+                                type: "spring",
+                                stiffness: 400,
+                                damping: 10,
+                              }}
                             >
                               <FiChevronDown size={12} strokeWidth={3} />
                             </Motion.button>
