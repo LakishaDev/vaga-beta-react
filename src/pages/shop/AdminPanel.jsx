@@ -25,6 +25,8 @@ import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext.jsx";
 import FloatingLabelInput from "../../components/UI/FloatingLabelInput.jsx";
 import ProgressiveImage from "../../components/UI/ProgressiveImage.jsx";
+import ProgressBar from "../../components/UI/ProgressBar.jsx";
+import SoftwareToggle from "../../components/UI/SoftwareToggle.jsx";
 import { FiUpload, FiX, FiPlus, FiTrash2, FiFile } from "react-icons/fi";
 import { motion as Motion, AnimatePresence } from "framer-motion";
 
@@ -48,6 +50,8 @@ export default function AdminPanel() {
     images: [], // Multiple images
     features: [], // Array of feature objects
     datasheets: [], // Array of datasheet files
+    isSoftware: false, // Software toggle
+    markdownFiles: [], // Markdown documentation files
   });
 
   const [products, setProducts] = useState([]);
@@ -158,6 +162,20 @@ export default function AdminPanel() {
     setNewProduct({ ...newProduct, datasheets: updated });
   };
 
+  // Handle markdown files
+  const handleMarkdownFiles = (files) => {
+    setNewProduct({
+      ...newProduct,
+      markdownFiles: [...newProduct.markdownFiles, ...files],
+    });
+  };
+
+  const removeMarkdownFile = (index) => {
+    const updated = [...newProduct.markdownFiles];
+    updated.splice(index, 1);
+    setNewProduct({ ...newProduct, markdownFiles: updated });
+  };
+
   // Simulacija upload progresa
   const simulateUpload = (setProgress) => {
     setProgress(0);
@@ -224,6 +242,21 @@ export default function AdminPanel() {
         });
       }
 
+      // Upload markdown files
+      const markdownUrls = [];
+      for (const md of newProduct.markdownFiles) {
+        const storageRef = ref(
+          storage,
+          `markdown/${Date.now()}_${md.file.name}`
+        );
+        await uploadBytes(storageRef, md.file);
+        const url = await getDownloadURL(storageRef);
+        markdownUrls.push({
+          name: md.file.name,
+          url: url,
+        });
+      }
+
       await addDoc(collection(db, "products"), {
         name: newProduct.name,
         category: newProduct.category,
@@ -235,6 +268,8 @@ export default function AdminPanel() {
         images: imageUrls,
         features: newProduct.features,
         datasheets: datasheetUrls,
+        isSoftware: newProduct.isSoftware,
+        markdownFiles: markdownUrls,
         createdAt: new Date(),
       });
 
@@ -243,11 +278,14 @@ export default function AdminPanel() {
         name: "",
         category: "",
         price: "",
+        hasHiddenPrice: false,
         imgFile: null,
         imgPreview: null,
         images: [],
         features: [],
         datasheets: [],
+        isSoftware: false,
+        markdownFiles: [],
       });
       setUploadProgress(0);
       fetchProducts();
@@ -298,6 +336,9 @@ export default function AdminPanel() {
       features: product.features || [],
       datasheets: product.datasheets || [],
       newDatasheets: [],
+      isSoftware: product.isSoftware || false,
+      markdownFiles: product.markdownFiles || [],
+      newMarkdownFiles: [],
     });
 
   const handleEditClose = () => {
@@ -387,6 +428,26 @@ export default function AdminPanel() {
     }
   };
 
+  // Edit handlers for markdown files
+  const handleEditMarkdownFiles = (files) => {
+    setEditProduct({
+      ...editProduct,
+      newMarkdownFiles: [...(editProduct.newMarkdownFiles || []), ...files],
+    });
+  };
+
+  const removeEditMarkdownFile = (index, isNew) => {
+    if (isNew) {
+      const updated = [...editProduct.newMarkdownFiles];
+      updated.splice(index, 1);
+      setEditProduct({ ...editProduct, newMarkdownFiles: updated });
+    } else {
+      const updated = [...editProduct.markdownFiles];
+      updated.splice(index, 1);
+      setEditProduct({ ...editProduct, markdownFiles: updated });
+    }
+  };
+
   const handleEditSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -434,8 +495,32 @@ export default function AdminPanel() {
         }
       }
 
+      // Upload new markdown files
+      const newMarkdownUrls = [];
+      if (
+        editProduct.newMarkdownFiles &&
+        editProduct.newMarkdownFiles.length > 0
+      ) {
+        for (const md of editProduct.newMarkdownFiles) {
+          const storageRef = ref(
+            storage,
+            `markdown/${Date.now()}_${md.file.name}`
+          );
+          await uploadBytes(storageRef, md.file);
+          const url = await getDownloadURL(storageRef);
+          newMarkdownUrls.push({
+            name: md.file.name,
+            url: url,
+          });
+        }
+      }
+
       const allImages = [...editProduct.images, ...newImageUrls];
       const allDatasheets = [...editProduct.datasheets, ...newDatasheetUrls];
+      const allMarkdownFiles = [
+        ...(editProduct.markdownFiles || []),
+        ...newMarkdownUrls,
+      ];
 
       await updateDoc(doc(db, "products", editProduct.id), {
         name: editProduct.name,
@@ -448,6 +533,8 @@ export default function AdminPanel() {
         images: allImages,
         features: editProduct.features,
         datasheets: allDatasheets,
+        isSoftware: editProduct.isSoftware,
+        markdownFiles: allMarkdownFiles,
       });
 
       showSnackbar("Proizvod izmenjen!", "success");
@@ -639,7 +726,8 @@ export default function AdminPanel() {
                       onClick={() => removeImage(idx)}
                       whileHover={{ scale: 1.2, rotate: 90 }}
                       whileTap={{ scale: 0.9 }}
-                      className="absolute -top-2 -right-2 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                      className="absolute -top-2 -right-2 bg-[#AD5637] text-white rounded-full p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-lg"
+                      aria-label="Ukloni sliku"
                     >
                       <FiX size={16} />
                     </Motion.button>
@@ -783,7 +871,46 @@ export default function AdminPanel() {
               </AnimatePresence>
             </div>
           </Motion.div>
+
+          {/* Software Toggle with Markdown Upload */}
+          <Motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <SoftwareToggle
+              isSoftware={newProduct.isSoftware}
+              onToggle={(checked) =>
+                setNewProduct({ ...newProduct, isSoftware: checked })
+              }
+              markdownFiles={newProduct.markdownFiles}
+              onFilesChange={handleMarkdownFiles}
+              onFileRemove={removeMarkdownFile}
+            />
+          </Motion.div>
         </div>
+
+        {/* Progress Bar for Upload */}
+        {uploadProgress > 0 && (
+          <Motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+          >
+            <ProgressBar
+              progress={uploadProgress}
+              status={
+                uploadProgress === 100
+                  ? "success"
+                  : uploadProgress > 0
+                  ? "uploading"
+                  : "idle"
+              }
+              label="Dodavanje proizvoda..."
+              showPercentage={true}
+            />
+          </Motion.div>
+        )}
 
         <button
           type="submit"
@@ -1058,6 +1185,22 @@ export default function AdminPanel() {
                 Izmena proizvoda
               </h3>
 
+              {/* Progress Bar for Edit Upload */}
+              {editUploadProgress > 0 && (
+                <ProgressBar
+                  progress={editUploadProgress}
+                  status={
+                    editUploadProgress === 100
+                      ? "success"
+                      : editUploadProgress > 0
+                      ? "uploading"
+                      : "idle"
+                  }
+                  label="Čuvanje izmena..."
+                  showPercentage={true}
+                />
+              )}
+
               {/* Trenutna slika */}
               <div className="flex justify-center">
                 <div className="relative">
@@ -1208,7 +1351,8 @@ export default function AdminPanel() {
                           onClick={() => removeEditImage(idx, false)}
                           whileHover={{ scale: 1.2, rotate: 90 }}
                           whileTap={{ scale: 0.9 }}
-                          className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                          className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-md"
+                          aria-label="Ukloni sliku"
                         >
                           <FiX size={12} />
                         </Motion.button>
@@ -1234,7 +1378,8 @@ export default function AdminPanel() {
                             onClick={() => removeEditImage(idx, true)}
                             whileHover={{ scale: 1.2, rotate: 90 }}
                             whileTap={{ scale: 0.9 }}
-                            className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity shadow-md"
+                            className="absolute -top-1 -right-1 bg-[#AD5637] text-white rounded-full p-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity shadow-md"
+                            aria-label="Ukloni sliku"
                           >
                             <FiX size={12} />
                           </Motion.button>
@@ -1383,6 +1528,37 @@ export default function AdminPanel() {
                       ))}
                   </AnimatePresence>
                 </div>
+              </Motion.div>
+
+              {/* Software Toggle for Edit */}
+              <Motion.div
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+              >
+                <SoftwareToggle
+                  isSoftware={editProduct.isSoftware || false}
+                  onToggle={(checked) =>
+                    setEditProduct({ ...editProduct, isSoftware: checked })
+                  }
+                  markdownFiles={[
+                    ...(editProduct.markdownFiles || []),
+                    ...(editProduct.newMarkdownFiles || []).map((mf) => ({
+                      name: mf.name,
+                      file: mf.file,
+                      preview: mf.preview,
+                    })),
+                  ]}
+                  onFilesChange={handleEditMarkdownFiles}
+                  onFileRemove={(idx) => {
+                    const totalOld = editProduct.markdownFiles?.length || 0;
+                    if (idx < totalOld) {
+                      removeEditMarkdownFile(idx, false);
+                    } else {
+                      removeEditMarkdownFile(idx - totalOld, true);
+                    }
+                  }}
+                />
               </Motion.div>
 
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-end">

@@ -1,5 +1,5 @@
 import { Link, useParams } from "react-router-dom";
-import { useEffect, useState, useContext, useCallback } from "react";
+import { useEffect, useState, useContext } from "react";
 import { db, auth } from "../../utils/firebase";
 import {
   doc,
@@ -14,13 +14,13 @@ import {
   serverTimestamp,
 } from "firebase/firestore";
 import ProgressiveImage from "../UI/ProgressiveImage";
+import ImageModal from "../UI/ImageModal";
 import {
   Star,
   Package,
   Download,
   MessageCircle,
   ShoppingCart,
-  X,
   Percent,
   ChevronLeft,
   ChevronRight,
@@ -49,23 +49,15 @@ export default function ProductDetails() {
   const { addToCart } = useContext(CartContext);
   const { showSnackbar } = useContext(SnackbarContext);
   const [showImageModal, setShowImageModal] = useState(false);
-  const [modalAnimating, setModalAnimating] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [modalImageIndex, setModalImageIndex] = useState(0);
-
-  const closeModal = () => {
-    setModalAnimating(true);
-    setTimeout(() => {
-      setShowImageModal(false);
-      setModalAnimating(false);
-    }, 520);
-  };
 
   const openModal = () => {
-    setModalImageIndex(currentImageIndex);
     setShowImageModal(true);
-    setModalAnimating(false);
+  };
+
+  const closeModal = () => {
+    setShowImageModal(false);
   };
 
   const openReviewModal = () => {
@@ -84,36 +76,6 @@ export default function ProductDetails() {
     setReview("");
     setRating(5);
   };
-
-  const nextModalImage = useCallback(() => {
-    if (!product) return;
-    const totalImages = 1 + (product.images?.length || 0);
-    setModalImageIndex((prev) => (prev === totalImages - 1 ? 0 : prev + 1));
-  }, [product]);
-
-  const prevModalImage = useCallback(() => {
-    if (!product) return;
-    const totalImages = 1 + (product.images?.length || 0);
-    setModalImageIndex((prev) => (prev === 0 ? totalImages - 1 : prev - 1));
-  }, [product]);
-
-  // Handle keyboard navigation in modal
-  useEffect(() => {
-    if (!showImageModal) return;
-
-    const handleKeyDown = (e) => {
-      if (e.key === "ArrowLeft") {
-        prevModalImage();
-      } else if (e.key === "ArrowRight") {
-        nextModalImage();
-      } else if (e.key === "Escape") {
-        closeModal();
-      }
-    };
-
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
-  }, [showImageModal, nextModalImage, prevModalImage]);
 
   function addDiscountInfo(product) {
     let percent = 0.1;
@@ -300,103 +262,14 @@ export default function ProductDetails() {
     <>
       <ScrollToTopOnMount offset={0} duration={1.2} delay={100} />
       <div className="min-h-screen flex flex-col items-center justify-center py-4 px-1 sm:py-8 sm:px-2 animate-pop">
-        {/* MODAL za sliku sa karuselom */}
-        {showImageModal && (
-          <div
-            className={`fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm
-          transition-all duration-500 ${
-            modalAnimating ? "image-modal-close" : "image-modal-open"
-          }`}
-          >
-            <div className="absolute inset-0" onClick={closeModal} />
-            <div className="relative z-10 flex flex-col items-center max-w-[95vw] max-h-[90vh]">
-              <button
-                className="absolute right-3 top-3 bg-black/60 hover:bg-black text-white rounded-full p-2 transition z-20 backdrop-blur-md"
-                onClick={closeModal}
-                aria-label="Zatvori modal"
-              >
-                <X size={28} />
-              </button>
-
-              {/* Navigation arrows - show only if there are multiple images */}
-              {product.images && product.images.length > 0 && (
-                <>
-                  <Motion.button
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={prevModalImage}
-                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md text-white p-3 rounded-full shadow-xl hover:bg-white/30 transition-all border border-white/30 z-20"
-                    aria-label="Prethodna slika"
-                  >
-                    <ChevronLeft size={28} />
-                  </Motion.button>
-                  <Motion.button
-                    whileHover={{ scale: 1.15 }}
-                    whileTap={{ scale: 0.9 }}
-                    onClick={nextModalImage}
-                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/20 backdrop-blur-md text-white p-3 rounded-full shadow-xl hover:bg-white/30 transition-all border border-white/30 z-20"
-                    aria-label="Sledeća slika"
-                  >
-                    <ChevronRight size={28} />
-                  </Motion.button>
-                </>
-              )}
-
-              {/* Image with animation */}
-              <AnimatePresence mode="wait">
-                <Motion.div
-                  key={modalImageIndex}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  transition={{ duration: 0.3 }}
-                  className="flex flex-col items-center"
-                >
-                  <img
-                    src={
-                      modalImageIndex === 0
-                        ? product.imgUrl
-                        : product.images?.[modalImageIndex - 1]
-                    }
-                    alt={`${product.name} - ${modalImageIndex + 1}`}
-                    className="rounded-2xl max-w-[88vw] max-h-[70vh] object-contain shadow-xl bg-white/10 backdrop-blur-md border border-white/20"
-                    style={{
-                      backdropFilter: "blur(10px)",
-                    }}
-                  />
-                  <div className="mt-4 text-center">
-                    <div className="text-lg font-semibold text-white drop-shadow-lg">
-                      {product.name}
-                    </div>
-                    {product.images && product.images.length > 0 && (
-                      <div className="mt-2 text-sm text-white/80 backdrop-blur-sm bg-black/30 px-3 py-1 rounded-full inline-block">
-                        {modalImageIndex + 1} / {1 + product.images.length}
-                      </div>
-                    )}
-                  </div>
-                </Motion.div>
-              </AnimatePresence>
-
-              {/* Dots indicator for modal */}
-              {product.images && product.images.length > 0 && (
-                <div className="flex justify-center gap-2 mt-4">
-                  {[...Array(1 + product.images.length)].map((_, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setModalImageIndex(idx)}
-                      className={`transition-all rounded-full ${
-                        idx === modalImageIndex
-                          ? "bg-white w-8 h-3"
-                          : "bg-white/50 hover:bg-white/70 w-3 h-3"
-                      }`}
-                      aria-label={`Idi na sliku ${idx + 1}`}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-        )}
+        {/* Image Modal with Zoom */}
+        <ImageModal
+          isOpen={showImageModal}
+          onClose={closeModal}
+          images={[product?.imgUrl, ...(product?.images || [])].filter(Boolean)}
+          initialIndex={currentImageIndex}
+          productName={product?.name || "Product"}
+        />
         <div
           className="w-full max-w-5xl rounded-[2rem] shadow-xl bg-white bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-60 border border-gray-300 flex flex-col md:flex-row p-0 overflow-hidden relative"
           style={{
