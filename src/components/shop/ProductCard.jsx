@@ -3,6 +3,8 @@ import { CartContext } from "../../contexts/shop/cart/CartContext";
 import { SnackbarContext } from "../../contexts/snackbar/SnackbarContext";
 import { Link } from "react-router-dom";
 import ProgressiveImage from "../UI/ProgressiveImage";
+import { Terminal } from "lucide-react";
+import { motion as Motion } from "framer-motion";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
@@ -49,6 +51,59 @@ export default function ProductCard({ product }) {
             -{product.discountPercent}% POPUST
           </span>
         )}
+
+      {/* Software Badge - gornji desni ugao */}
+      {product.isSoftware && (
+        <Motion.div
+          initial={{ opacity: 0, scale: 0.8, rotate: -10 }}
+          animate={{ opacity: 1, scale: 1, rotate: 0 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 260, 
+            damping: 20,
+            delay: 0.1 
+          }}
+          whileHover={{ 
+            scale: 1.1, 
+            rotate: 5,
+            transition: { duration: 0.2 }
+          }}
+          className="absolute top-4 right-4 sm:top-6 sm:right-7 z-20"
+        >
+          <div 
+            className="relative group cursor-pointer"
+            title="Softverski proizvod"
+          >
+            {/* Glow efekat u pozadini */}
+            <div className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2] to-[#253869] rounded-full opacity-50 blur-md group-hover:opacity-70 transition-opacity animate-pulse"></div>
+            
+            {/* Glavni badge sa glassmorphism */}
+            <div
+              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center backdrop-blur-md border-2 shadow-lg transition-all"
+              style={{
+                background: "linear-gradient(135deg, rgba(110, 174, 162, 0.9) 0%, rgba(37, 56, 105, 0.8) 100%)",
+                backdropFilter: "blur(10px)",
+                borderColor: "rgba(255, 255, 255, 0.3)",
+                boxShadow: "0 4px 20px rgba(110, 174, 162, 0.4), inset 0 1px 2px rgba(255, 255, 255, 0.3)"
+              }}
+            >
+              <Terminal 
+                size={18} 
+                className="text-white drop-shadow-md sm:w-5 sm:h-5" 
+                strokeWidth={2.5}
+              />
+            </div>
+            
+            {/* Tooltip na hover */}
+            <div className="absolute top-full right-0 mt-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
+              <div className="bg-[#253869] text-white text-xs font-semibold px-3 py-1.5 rounded-lg shadow-lg whitespace-nowrap backdrop-blur-sm border border-[#6EAEA2]/30">
+                Softver
+                <div className="absolute bottom-full right-4 w-0 h-0 border-l-4 border-r-4 border-b-4 border-transparent border-b-[#253869]"></div>
+              </div>
+            </div>
+          </div>
+        </Motion.div>
+      )}
 
       {/* Badge za skrivenu cenu ili običnu cenu gore desno */}
       {hasHiddenPrice ? (
