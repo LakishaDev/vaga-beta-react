@@ -9,6 +9,7 @@
 // - showIcon: Prikaži ikonicu u headeru (default: true)
 // - className: Dodatne CSS klase (opciono, default: "")
 // - animationDelay: Delay pre animacije u sekundama (default: 0)
+// - maxHeight: Maksimalna visina sadržaja (default: "600px")
 
 import { motion as Motion } from "framer-motion";
 import ReactMarkdown from "react-markdown";
@@ -22,7 +23,8 @@ export default function MarkdownPreview({
   filename,
   showIcon = true,
   className = "",
-  animationDelay = 0 
+  animationDelay = 0,
+  maxHeight = "600px"
 }) {
   // Funkcija za izvlačenje čistog naslova iz imena fajla
   const getFileTitle = (name) => {
@@ -124,7 +126,8 @@ export default function MarkdownPreview({
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: animationDelay + 0.2, duration: 0.5 }}
-        className="px-4 py-5 sm:px-6 sm:py-7 md:px-8 md:py-8 overflow-auto max-h-[600px] custom-scrollbar"
+        className="px-4 py-5 sm:px-6 sm:py-7 md:px-8 md:py-8 overflow-auto custom-scrollbar"
+        style={{ maxHeight }}
       >
         <div 
           className="
