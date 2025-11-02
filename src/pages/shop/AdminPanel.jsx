@@ -1,16 +1,59 @@
 // src/pages/shop/AdminPanel.jsx
-// Admin panel za upravljanje proizvodima
-// Omogućava dodavanje, izmenu i brisanje proizvoda
-// Pristup je ograničen na email-ove navedene u .env fajlu (VITE_ADMIN_EMAILS)
-// Koristi Firebase Firestore za skladištenje podataka o proizvodima
-// Koristi Firebase Storage za čuvanje slika proizvoda
-// Uključuje 3D animacije za dugmad i interaktivne elemente
-// Responsive dizajn za desktop i mobilne uređaje
-// Koristi SnackbarContext za prikaz notifikacija
-// Upravlja stanjem proizvoda, forme i modala pomoću useState i useEffect
-// Funkcije za dodavanje, izmenu i brisanje proizvoda su asinhrone i koriste Firebase API
-// Uključuje potvrdu pre brisanja proizvoda
-// Prikazuje progres bar tokom upload-a slika
+// ===============================================================================
+// ADMIN PANEL ZA UPRAVLJANJE PROIZVODIMA
+// ===============================================================================
+// 
+// @component AdminPanel
+// @description Admin panel za potpunu kontrolu nad e-commerce proizvodima
+// @version 2.0
+// @lastmodified 2025-11-02
+// @documentation Vidi: /ADMINPANEL_DOKUMENTACIJA.md za detaljnu dokumentaciju
+// 
+// KLJUČNE FUNKCIONALNOSTI:
+// ========================
+// ✅ CRUD operacije (Create, Read, Update, Delete) proizvoda
+// ✅ Upload glavne slike i dodatnih slika sa reordering funkcijom (↑/↓)
+// ✅ Lokalizacija cene sa automatskim separatorom za hiljade (sr-RS format)
+// ✅ Modal za prikaz slika u velikom formatu (zoom preview)
+// ✅ Upravljanje karakteristikama proizvoda (key-value parovi)
+// ✅ Upload datasheets (PDF, DOC dokumenti)
+// ✅ Software toggle sa markdown dokumentacijom
+// ✅ Responsive dizajn (desktop/mobile/tablet)
+// ✅ 3D animacije i glassmorphism efekti (Framer Motion)
+// ✅ Firebase integracija (Firestore + Storage)
+// ✅ Email-based autorizacija sa .env konfiguracija
+// 
+// NOVE FUNKCIONALNOSTI U v2.0:
+// =============================
+// 🆕 Reordering dodatnih slika - moveImageUp(), moveImageDown()
+// 🆕 Formatiranje cene - formatPriceInput(), parsePriceInput()
+// 🆕 RSD badge sa pulsing glow animacijom
+// 🆕 Modal za prikaz slika - LepModal komponenta
+// 🆕 Hover overlay sa zoom ikonom i rotacijom
+// 🆕 Spring animacije na svim interaktivnim elementima
+// 
+// AUTENTIFIKACIJA:
+// ================
+// Pristup je ograničen na email adrese iz VITE_ADMIN_EMAILS env varijable
+// Korisnici moraju biti prijavljeni i imati email u admin listi
+// 
+// STATE MANAGEMENT:
+// =================
+// - newProduct: State za formu novog proizvoda
+// - editProduct: State za Edit modal
+// - products: Lista svih proizvoda iz Firestore
+// - imageModal: State za modal prikaza slika
+// - deleteConfirm: State za potvrdu brisanja
+// - loading: Loading state tokom Firebase operacija
+// 
+// FIREBASE STRUKTURA:
+// ===================
+// Collection: "products"
+// Storage paths: products/, datasheets/, markdown/
+// Document fields: name, category, price, hiddenPrice, imgUrl, images, 
+//                 features, datasheets, isSoftware, markdownFiles, createdAt
+// 
+// ===============================================================================
 import { useState, useContext, useEffect } from "react";
 import { db, storage, auth } from "../../utils/firebase.js";
 import {
@@ -27,8 +70,9 @@ import FloatingLabelInput from "../../components/UI/FloatingLabelInput.jsx";
 import ProgressiveImage from "../../components/UI/ProgressiveImage.jsx";
 import ProgressBar from "../../components/UI/ProgressBar.jsx";
 import SoftwareToggle from "../../components/UI/SoftwareToggle.jsx";
-import { FiUpload, FiX, FiPlus, FiTrash2, FiFile } from "react-icons/fi";
+import { FiUpload, FiX, FiPlus, FiTrash2, FiFile, FiChevronUp, FiChevronDown, FiDollarSign, FiEye, FiZoomIn } from "react-icons/fi";
 import { motion as Motion, AnimatePresence } from "framer-motion";
+import LepModal from "../../components/UI/LepModal.jsx";
 
 export default function AdminPanel() {
   const { showSnackbar } = useContext(SnackbarContext);
@@ -39,6 +83,7 @@ export default function AdminPanel() {
   const [editProduct, setEditProduct] = useState(null);
   const [editUploadProgress, setEditUploadProgress] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null); // za mobile modal
+  const [imageModal, setImageModal] = useState({ open: false, src: "", text: "" }); // za prikaz slika
 
   const [newProduct, setNewProduct] = useState({
     name: "",
@@ -87,9 +132,63 @@ export default function AdminPanel() {
       </div>
     );
 
-  // Format cene sa separatorom za hiljade
+  // ===============================================================================
+  // PRICE FORMATTING FUNCTIONS
+  // ===============================================================================
+  
+  /**
+   * Formatira cenu za prikaz sa separatorom za hiljade
+   * @function formatPrice
+   * @param {number} price - Cena kao broj (integer)
+   * @returns {string} Formatirana cena sa tačkom kao separatorom (npr. "10.000")
+   * @example
+   * formatPrice(10000) // "10.000"
+   * formatPrice(1234567) // "1.234.567"
+   * @intellisense Koristi Intl.NumberFormat sa srpskim locale-om (sr-RS)
+   */
   const formatPrice = (price) => {
     return new Intl.NumberFormat("sr-RS").format(price);
+  };
+
+  /**
+   * Formatira unos cene tokom kucanja sa automatskim dodavanjem separatora
+   * @function formatPriceInput
+   * @param {string} value - Sirova vrednost iz input polja
+   * @returns {string} Formatirana cena sa tačkom kao separatorom
+   * @example
+   * formatPriceInput("10000") // "10.000"
+   * formatPriceInput("abc123def") // "123"
+   * formatPriceInput("") // ""
+   * @note Uklanja sve ne-numeričke karaktere pre formatiranja
+   * @note RSD cene su uvek integer vrednosti (bez decimala)
+   * @intellisense Koristi Intl.NumberFormat sa locale "sr-RS"
+   */
+  const formatPriceInput = (value) => {
+    if (!value) return "";
+    // Ukloni sve što nije broj
+    const numericValue = value.replace(/\D/g, "");
+    if (!numericValue) return "";
+    // Formatuj sa tačkom kao separatorom
+    // Koristimo parseInt jer cene u RSD su uvek cele (integer) vrednosti bez decimala
+    return new Intl.NumberFormat("sr-RS").format(parseInt(numericValue, 10));
+  };
+
+  /**
+   * Parsira formatiranu cenu nazad u "čisti" numerički string
+   * @function parsePriceInput
+   * @param {string} formattedValue - Formatirana cena (npr. "10.000")
+   * @returns {string} Čisti numerički string bez separatora (npr. "10000")
+   * @example
+   * parsePriceInput("10.000") // "10000"
+   * parsePriceInput("1.234.567") // "1234567"
+   * @note Uklanja sve tačke (separatore hiljada)
+   * @intellisense Vraća string zbog React controlled input-a
+   */
+  const parsePriceInput = (formattedValue) => {
+    if (!formattedValue) return "";
+    // Ukloni sve tačke (separatore hiljada) - srpski format koristi tačku za hiljade
+    const numericValue = formattedValue.replace(/[.]/g, "");
+    return numericValue;
   };
 
   // Unos i upload slike
@@ -120,6 +219,46 @@ export default function AdminPanel() {
   const removeImage = (index) => {
     const updated = [...newProduct.images];
     updated.splice(index, 1);
+    setNewProduct({ ...newProduct, images: updated });
+  };
+
+  // ===============================================================================
+  // IMAGE REORDERING FUNCTIONS (Main Form)
+  // ===============================================================================
+  
+  /**
+   * Pomera dodatnu sliku jednu poziciju gore u glavnom formu
+   * @function moveImageUp
+   * @param {number} index - Trenutni indeks slike u newProduct.images nizu
+   * @returns {void}
+   * @example
+   * moveImageUp(2) // Pomera sliku sa pozicije 2 na poziciju 1
+   * @note Guard clause sprečava pomeranje prve slike (index === 0)
+   * @note Koristi array destructuring za swap elemenata
+   * @intellisense Radi samo u glavnom formu za dodavanje proizvoda
+   */
+  const moveImageUp = (index) => {
+    if (index === 0) return; // Guard clause - prva slika ne može gore
+    const updated = [...newProduct.images];
+    [updated[index - 1], updated[index]] = [updated[index], updated[index - 1]];
+    setNewProduct({ ...newProduct, images: updated });
+  };
+
+  /**
+   * Pomera dodatnu sliku jednu poziciju dole u glavnom formu
+   * @function moveImageDown
+   * @param {number} index - Trenutni indeks slike u newProduct.images nizu
+   * @returns {void}
+   * @example
+   * moveImageDown(1) // Pomera sliku sa pozicije 1 na poziciju 2
+   * @note Guard clause sprečava pomeranje poslednje slike
+   * @note Koristi array destructuring za swap elemenata
+   * @intellisense Radi samo u glavnom formu za dodavanje proizvoda
+   */
+  const moveImageDown = (index) => {
+    if (index === newProduct.images.length - 1) return; // Guard clause - poslednja ne može dole
+    const updated = [...newProduct.images];
+    [updated[index], updated[index + 1]] = [updated[index + 1], updated[index]];
     setNewProduct({ ...newProduct, images: updated });
   };
 
@@ -383,6 +522,72 @@ export default function AdminPanel() {
     }
   };
 
+  // ===============================================================================
+  // IMAGE REORDERING FUNCTIONS (Edit Modal)
+  // ===============================================================================
+  
+  /**
+   * Helper funkcija za premeštanje slika u edit modu (DRY principle)
+   * Podržava i postojeće slike (images) i nove slike (newImages)
+   * @function moveEditImageInDirection
+   * @param {number} index - Indeks slike u odgovarajućem nizu
+   * @param {boolean} isNew - Da li je slika iz newImages (true) ili images (false)
+   * @param {string} direction - Pravac pomeranja: "up" ili "down"
+   * @returns {void}
+   * @example
+   * moveEditImageInDirection(2, false, "up") // Pomera postojeću sliku gore
+   * moveEditImageInDirection(0, true, "down") // Pomera novu sliku dole
+   * @note Defensive programming - proverava postojanje editProduct state-a
+   * @note Guard clauses sprečavaju invalid operacije (prva gore, poslednja dole)
+   * @note Koristi dynamic property access sa arrayKey varijablom
+   * @param {number} index - Indeks slike koja se pomera
+   * @param {boolean} isNew - Da li je slika nova (true) ili postojeća (false)
+   * @param {('up'|'down')} direction - Smer pomeranja ('up' ili 'down')
+   * @intellisense Optimizovana verzija koja sprečava code duplication
+   */
+  const moveEditImageInDirection = (index, isNew, direction) => {
+    if (!editProduct) return; // Defensive check - sprečava greške ako state nije setovan
+    
+    const arrayKey = isNew ? "newImages" : "images";
+    const sourceArray = editProduct[arrayKey] || [];
+    
+    // Guard clauses - provera validnosti operacije
+    if (direction === "up" && index === 0) return;
+    if (direction === "down" && index === sourceArray.length - 1) return;
+    
+    // Kreiraj kopiju niza i zameni elemente (immutable pattern)
+    const updated = [...sourceArray];
+    const targetIndex = direction === "up" ? index - 1 : index + 1;
+    [updated[index], updated[targetIndex]] = [updated[targetIndex], updated[index]];
+    
+    // Ažuriraj state sa computed property name
+    setEditProduct({ ...editProduct, [arrayKey]: updated });
+  };
+
+  /**
+   * Pomera sliku jednu poziciju gore u edit modalu
+   * @function moveEditImageUp
+   * @param {number} index - Indeks slike
+   * @param {boolean} isNew - Da li je nova slika (newImages) ili postojeća (images)
+   * @returns {void}
+   * @intellisense Wrapper funkcija koja koristi moveEditImageInDirection
+   */
+  const moveEditImageUp = (index, isNew) => {
+    moveEditImageInDirection(index, isNew, "up");
+  };
+
+  /**
+   * Pomera sliku jednu poziciju dole u edit modalu
+   * @function moveEditImageDown
+   * @param {number} index - Indeks slike
+   * @param {boolean} isNew - Da li je nova slika (newImages) ili postojeća (images)
+   * @returns {void}
+   * @intellisense Wrapper funkcija koja koristi moveEditImageInDirection
+   */
+  const moveEditImageDown = (index, isNew) => {
+    moveEditImageInDirection(index, isNew, "down");
+  };
+
   // Edit handlers for features
   const addEditFeature = () => {
     setEditProduct({
@@ -575,14 +780,73 @@ export default function AdminPanel() {
               onChange={handleChange}
               required
             />
-            <FloatingLabelInput
-              name="price"
-              label="Cena (RSD)"
-              type="number"
-              value={newProduct.price}
-              onChange={handleChange}
-              required
-            />
+            <Motion.div 
+              className="relative group"
+              whileHover={{ scale: 1.01 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              <FloatingLabelInput
+                name="price"
+                label="Cena"
+                type="text"
+                value={formatPriceInput(newProduct.price)}
+                onChange={(e) => {
+                  const numericValue = parsePriceInput(e.target.value);
+                  setNewProduct({ ...newProduct, price: numericValue });
+                }}
+                required
+              />
+              <Motion.div
+                className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white font-bold text-xs shadow-lg"
+                style={{
+                  background: "rgba(110, 174, 162, 0.15)",
+                  backdropFilter: "blur(10px)",
+                  border: "1px solid rgba(110, 174, 162, 0.3)",
+                }}
+                whileHover={{ scale: 1.05 }}
+                animate={{
+                  boxShadow: [
+                    "0 0 0 0 rgba(110, 174, 162, 0)",
+                    "0 0 0 8px rgba(110, 174, 162, 0.1)",
+                    "0 0 0 0 rgba(110, 174, 162, 0)",
+                  ],
+                }}
+                transition={{
+                  boxShadow: {
+                    repeat: Infinity,
+                    duration: 2,
+                    ease: "easeInOut",
+                  },
+                }}
+              >
+                <FiDollarSign 
+                  className="text-[#6EAEA2]" 
+                  size={14}
+                  style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }}
+                />
+                <span className="text-[#1E3E49] font-black tracking-wide">RSD</span>
+              </Motion.div>
+              
+              {/* Tooltip hint */}
+              <Motion.div
+                initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                animate={{ 
+                  opacity: 0,
+                  y: 10,
+                  scale: 0.8,
+                }}
+                whileFocus={{ 
+                  opacity: 1,
+                  y: 0,
+                  scale: 1,
+                }}
+                className="absolute -bottom-8 left-0 right-0 text-center"
+              >
+                <span className="inline-block px-3 py-1 bg-[#1E3E49] text-white text-xs rounded-lg shadow-lg">
+                  💡 Separator za hiljade se dodaje automatski
+                </span>
+              </Motion.div>
+            </Motion.div>
 
             <div className="flex items-center gap-2">
               <label className="flex items-center cursor-pointer relative group">
@@ -716,11 +980,81 @@ export default function AdminPanel() {
                     whileHover={{ scale: 1.05, rotate: 2 }}
                     className="relative group"
                   >
-                    <img
-                      src={img.preview}
-                      alt={`Preview ${idx}`}
-                      className="w-full aspect-square object-cover rounded-lg border-2 border-[#6EAEA2]/40 shadow-md group-hover:shadow-xl transition-shadow"
-                    />
+                    <Motion.div
+                      className="relative overflow-hidden rounded-lg"
+                      whileHover={{ scale: 1.05 }}
+                      transition={{ type: "spring", stiffness: 300 }}
+                    >
+                      <img
+                        src={img.preview}
+                        alt={`Preview ${idx}`}
+                        className="w-full aspect-square object-cover rounded-lg border-2 border-[#6EAEA2]/40 shadow-md group-hover:border-[#6EAEA2] transition-all cursor-pointer"
+                        onClick={() => setImageModal({ open: true, src: img.preview, text: `Dodatna slika ${idx + 1}` })}
+                      />
+                      {/* Hover overlay sa zoom ikonom */}
+                      <Motion.div
+                        className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/0 to-[#1E3E49]/0 group-hover:from-[#6EAEA2]/30 group-hover:to-[#1E3E49]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded-lg"
+                        onClick={() => setImageModal({ open: true, src: img.preview, text: `Dodatna slika ${idx + 1}` })}
+                      >
+                        <Motion.div
+                          initial={{ scale: 0, rotate: -180 }}
+                          whileHover={{ scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                          className="opacity-0 group-hover:opacity-100 transition-opacity"
+                        >
+                          <FiZoomIn className="text-white drop-shadow-lg" size={28} />
+                        </Motion.div>
+                      </Motion.div>
+                    </Motion.div>
+                    {/* Dugmad za reorder - elegantni dizajn */}
+                    <div className="absolute left-1 top-1 flex flex-col gap-1 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
+                      <Motion.button
+                        type="button"
+                        onClick={() => moveImageUp(idx)}
+                        disabled={idx === 0}
+                        whileHover={{ 
+                          scale: 1.3,
+                          rotate: [0, -10, 10, -10, 0],
+                          backgroundColor: "#91CEC1",
+                        }}
+                        whileTap={{ 
+                          scale: 0.85,
+                          rotate: -15,
+                        }}
+                        className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1.5 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-xl"
+                        style={{
+                          backdropFilter: "blur(10px)",
+                          border: "1px solid rgba(255, 255, 255, 0.3)",
+                        }}
+                        aria-label="Pomeri gore"
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      >
+                        <FiChevronUp size={16} strokeWidth={3} />
+                      </Motion.button>
+                      <Motion.button
+                        type="button"
+                        onClick={() => moveImageDown(idx)}
+                        disabled={idx === newProduct.images.length - 1}
+                        whileHover={{ 
+                          scale: 1.3,
+                          rotate: [0, 10, -10, 10, 0],
+                          backgroundColor: "#91CEC1",
+                        }}
+                        whileTap={{ 
+                          scale: 0.85,
+                          rotate: 15,
+                        }}
+                        className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1.5 shadow-lg disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-xl"
+                        style={{
+                          backdropFilter: "blur(10px)",
+                          border: "1px solid rgba(255, 255, 255, 0.3)",
+                        }}
+                        aria-label="Pomeri dole"
+                        transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                      >
+                        <FiChevronDown size={16} strokeWidth={3} />
+                      </Motion.button>
+                    </div>
                     <Motion.button
                       type="button"
                       onClick={() => removeImage(idx)}
@@ -1265,14 +1599,73 @@ export default function AdminPanel() {
                 onChange={handleEditChange}
                 required
               />
-              <FloatingLabelInput
-                name="price"
-                label="Cena"
-                type="number"
-                value={editProduct.price}
-                onChange={handleEditChange}
-                required
-              />
+              <Motion.div 
+                className="relative group"
+                whileHover={{ scale: 1.01 }}
+                transition={{ type: "spring", stiffness: 400, damping: 17 }}
+              >
+                <FloatingLabelInput
+                  name="price"
+                  label="Cena"
+                  type="text"
+                  value={formatPriceInput(editProduct.price)}
+                  onChange={(e) => {
+                    const numericValue = parsePriceInput(e.target.value);
+                    setEditProduct({ ...editProduct, price: numericValue });
+                  }}
+                  required
+                />
+                <Motion.div
+                  className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white font-bold text-xs shadow-lg"
+                  style={{
+                    background: "rgba(110, 174, 162, 0.15)",
+                    backdropFilter: "blur(10px)",
+                    border: "1px solid rgba(110, 174, 162, 0.3)",
+                  }}
+                  whileHover={{ scale: 1.05 }}
+                  animate={{
+                    boxShadow: [
+                      "0 0 0 0 rgba(110, 174, 162, 0)",
+                      "0 0 0 8px rgba(110, 174, 162, 0.1)",
+                      "0 0 0 0 rgba(110, 174, 162, 0)",
+                    ],
+                  }}
+                  transition={{
+                    boxShadow: {
+                      repeat: Infinity,
+                      duration: 2,
+                      ease: "easeInOut",
+                    },
+                  }}
+                >
+                  <FiDollarSign 
+                    className="text-[#6EAEA2]" 
+                    size={14}
+                    style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }}
+                  />
+                  <span className="text-[#1E3E49] font-black tracking-wide">RSD</span>
+                </Motion.div>
+                
+                {/* Tooltip hint */}
+                <Motion.div
+                  initial={{ opacity: 0, y: 10, scale: 0.8 }}
+                  animate={{ 
+                    opacity: 0,
+                    y: 10,
+                    scale: 0.8,
+                  }}
+                  whileFocus={{ 
+                    opacity: 1,
+                    y: 0,
+                    scale: 1,
+                  }}
+                  className="absolute -bottom-8 left-0 right-0 text-center"
+                >
+                  <span className="inline-block px-3 py-1 bg-[#1E3E49] text-white text-xs rounded-lg shadow-lg">
+                    💡 Separator za hiljade se dodaje automatski
+                  </span>
+                </Motion.div>
+              </Motion.div>
 
               <label className="flex items-center cursor-pointer relative group mb-4">
                 <input
@@ -1341,11 +1734,81 @@ export default function AdminPanel() {
                         whileHover={{ scale: 1.05 }}
                         className="relative group"
                       >
-                        <img
-                          src={img}
-                          alt={`Img ${idx}`}
-                          className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 shadow-sm group-hover:shadow-md transition-shadow"
-                        />
+                        <Motion.div
+                          className="relative overflow-hidden rounded"
+                          whileHover={{ scale: 1.08 }}
+                          transition={{ type: "spring", stiffness: 300 }}
+                        >
+                          <img
+                            src={img}
+                            alt={`Img ${idx}`}
+                            className="w-full aspect-square object-cover rounded border-2 border-[#6EAEA2]/40 group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
+                            onClick={() => setImageModal({ open: true, src: img, text: `Postojeća slika ${idx + 1}` })}
+                          />
+                          {/* Hover overlay sa zoom ikonom */}
+                          <Motion.div
+                            className="absolute inset-0 bg-gradient-to-br from-[#6EAEA2]/0 to-[#1E3E49]/0 group-hover:from-[#6EAEA2]/30 group-hover:to-[#1E3E49]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
+                            onClick={() => setImageModal({ open: true, src: img, text: `Postojeća slika ${idx + 1}` })}
+                          >
+                            <Motion.div
+                              initial={{ scale: 0, rotate: -180 }}
+                              whileHover={{ scale: 1, rotate: 0 }}
+                              transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                              className="opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <FiEye className="text-white drop-shadow-lg" size={20} />
+                            </Motion.div>
+                          </Motion.div>
+                        </Motion.div>
+                        {/* Dugmad za reorder - elegantni dizajn */}
+                        <div className="absolute left-0.5 top-0.5 flex flex-col gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
+                          <Motion.button
+                            type="button"
+                            onClick={() => moveEditImageUp(idx, false)}
+                            disabled={idx === 0}
+                            whileHover={{ 
+                              scale: 1.3,
+                              rotate: [0, -10, 10, -10, 0],
+                              backgroundColor: "#91CEC1",
+                            }}
+                            whileTap={{ 
+                              scale: 0.85,
+                              rotate: -15,
+                            }}
+                            className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                            style={{
+                              backdropFilter: "blur(10px)",
+                              border: "1px solid rgba(255, 255, 255, 0.3)",
+                            }}
+                            aria-label="Pomeri gore"
+                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          >
+                            <FiChevronUp size={12} strokeWidth={3} />
+                          </Motion.button>
+                          <Motion.button
+                            type="button"
+                            onClick={() => moveEditImageDown(idx, false)}
+                            disabled={idx === (editProduct.images?.length || 0) - 1}
+                            whileHover={{ 
+                              scale: 1.3,
+                              rotate: [0, 10, -10, 10, 0],
+                              backgroundColor: "#91CEC1",
+                            }}
+                            whileTap={{ 
+                              scale: 0.85,
+                              rotate: 15,
+                            }}
+                            className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                            style={{
+                              backdropFilter: "blur(10px)",
+                              border: "1px solid rgba(255, 255, 255, 0.3)",
+                            }}
+                            aria-label="Pomeri dole"
+                            transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                          >
+                            <FiChevronDown size={12} strokeWidth={3} />
+                          </Motion.button>
+                        </div>
                         <Motion.button
                           type="button"
                           onClick={() => removeEditImage(idx, false)}
@@ -1368,11 +1831,81 @@ export default function AdminPanel() {
                           whileHover={{ scale: 1.05 }}
                           className="relative group"
                         >
-                          <img
-                            src={img.preview}
-                            alt={`New ${idx}`}
-                            className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] shadow-sm group-hover:shadow-md transition-shadow"
-                          />
+                          <Motion.div
+                            className="relative overflow-hidden rounded"
+                            whileHover={{ scale: 1.08 }}
+                            transition={{ type: "spring", stiffness: 300 }}
+                          >
+                            <img
+                              src={img.preview}
+                              alt={`New ${idx}`}
+                              className="w-full aspect-square object-cover rounded border-2 border-[#91CEC1] group-hover:border-[#6EAEA2] shadow-sm transition-all cursor-pointer"
+                              onClick={() => setImageModal({ open: true, src: img.preview, text: `Nova slika ${idx + 1}` })}
+                            />
+                            {/* Hover overlay sa zoom ikonom */}
+                            <Motion.div
+                              className="absolute inset-0 bg-gradient-to-br from-[#91CEC1]/0 to-[#6EAEA2]/0 group-hover:from-[#91CEC1]/30 group-hover:to-[#6EAEA2]/50 flex items-center justify-center transition-all duration-300 cursor-pointer rounded"
+                              onClick={() => setImageModal({ open: true, src: img.preview, text: `Nova slika ${idx + 1}` })}
+                            >
+                              <Motion.div
+                                initial={{ scale: 0, rotate: -180 }}
+                                whileHover={{ scale: 1, rotate: 0 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 20 }}
+                                className="opacity-0 group-hover:opacity-100 transition-opacity"
+                              >
+                                <FiEye className="text-white drop-shadow-lg" size={20} />
+                              </Motion.div>
+                            </Motion.div>
+                          </Motion.div>
+                          {/* Dugmad za reorder - elegantni dizajn */}
+                          <div className="absolute left-0.5 top-0.5 flex flex-col gap-0.5 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-all duration-300">
+                            <Motion.button
+                              type="button"
+                              onClick={() => moveEditImageUp(idx, true)}
+                              disabled={idx === 0}
+                              whileHover={{ 
+                                scale: 1.3,
+                                rotate: [0, -10, 10, -10, 0],
+                                backgroundColor: "#91CEC1",
+                              }}
+                              whileTap={{ 
+                                scale: 0.85,
+                                rotate: -15,
+                              }}
+                              className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                              style={{
+                                backdropFilter: "blur(10px)",
+                                border: "1px solid rgba(255, 255, 255, 0.3)",
+                              }}
+                              aria-label="Pomeri gore"
+                              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            >
+                              <FiChevronUp size={12} strokeWidth={3} />
+                            </Motion.button>
+                            <Motion.button
+                              type="button"
+                              onClick={() => moveEditImageDown(idx, true)}
+                              disabled={idx === (editProduct.newImages?.length || 0) - 1}
+                              whileHover={{ 
+                                scale: 1.3,
+                                rotate: [0, 10, -10, 10, 0],
+                                backgroundColor: "#91CEC1",
+                              }}
+                              whileTap={{ 
+                                scale: 0.85,
+                                rotate: 15,
+                              }}
+                              className="bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white rounded-full p-1 shadow-md disabled:opacity-30 disabled:cursor-not-allowed transition-all hover:shadow-lg"
+                              style={{
+                                backdropFilter: "blur(10px)",
+                                border: "1px solid rgba(255, 255, 255, 0.3)",
+                              }}
+                              aria-label="Pomeri dole"
+                              transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                            >
+                              <FiChevronDown size={12} strokeWidth={3} />
+                            </Motion.button>
+                          </div>
                           <Motion.button
                             type="button"
                             onClick={() => removeEditImage(idx, true)}
@@ -1588,6 +2121,14 @@ export default function AdminPanel() {
           </div>
         </div>
       )}
+
+      {/* Modal za prikaz slika */}
+      <LepModal
+        open={imageModal.open}
+        src={imageModal.src}
+        text={imageModal.text}
+        onClose={() => setImageModal({ open: false, src: "", text: "" })}
+      />
     </div>
   );
 }
