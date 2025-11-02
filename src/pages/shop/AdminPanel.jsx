@@ -2,13 +2,13 @@
 // ===============================================================================
 // ADMIN PANEL ZA UPRAVLJANJE PROIZVODIMA - REFACTORED v3.0
 // ===============================================================================
-// 
+//
 // @component AdminPanel
 // @description Admin panel za potpunu kontrolu nad e-commerce proizvodima
 // @version 3.0 - REFACTORED
 // @lastmodified 2025-11-02
 // @documentation Vidi: /ADMINPANEL_DOKUMENTACIJA.md za detaljnu dokumentaciju
-// 
+//
 // KLJUČNE FUNKCIONALNOSTI:
 // ========================
 // ✅ CRUD operacije (Create, Read, Update, Delete) proizvoda
@@ -60,7 +60,11 @@ export default function AdminPanel() {
   const [editProduct, setEditProduct] = useState(null);
   const [editUploadProgress, setEditUploadProgress] = useState(0);
   const [selectedProduct, setSelectedProduct] = useState(null); // za mobile modal
-  const [imageModal, setImageModal] = useState({ open: false, src: "", text: "" }); // za prikaz slika
+  const [imageModal, setImageModal] = useState({
+    open: false,
+    src: "",
+    text: "",
+  }); // za prikaz slika
 
   const [newProduct, setNewProduct] = useState({
     name: "",
