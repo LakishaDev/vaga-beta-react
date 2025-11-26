@@ -31,11 +31,11 @@ import {
   FaUserCheck,
   FaClock
 } from "react-icons/fa";
-import ProgressiveImage from "../components/UI/ProgressiveImage";
+import { Link } from "react-router-dom";
 
 export default function Aplikacija() {
   return (
-    <main className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl p-6 sm:p-10 mt-14 border border-[#CBCFBB] animate-fadein animate__animated animate__fadeInUpBig">
+    <main className="max-w-6xl mx-auto bg-white/95 rounded-xl shadow-2xl p-6 sm:p-10 mt-14 border border-[#CBCFBB] animate-fadein">
       
       {/* Hero sekcija sa pozivom na akciju */}
       <section className="relative overflow-hidden rounded-2xl mb-10 animate-fadeup">
@@ -376,7 +376,7 @@ export default function Aplikacija() {
             <p className="text-[#2F5363] leading-relaxed">
               Aplikacija je trenutno u fazi ranog pristupa, što znači da aktivno radimo na njenom unapređenju. 
               Vaše povratne informacije su nam izuzetno važne! Ako primetite bilo kakve probleme ili imate sugestije, 
-              slobodno nas <a href="/kontakt" className="text-[#AD5637] font-semibold underline hover:text-[#1E3E49] transition-colors">kontaktirajte</a>.
+              slobodno nas <Link to="/kontakt" className="text-[#AD5637] font-semibold underline hover:text-[#1E3E49] transition-colors">kontaktirajte</Link>.
             </p>
           </div>
         </div>
