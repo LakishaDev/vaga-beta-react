@@ -15,6 +15,7 @@ import {
   FaEnvelope,
   FaInfoCircle,
   FaShoppingBag,
+  FaMobileAlt,
 } from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
 
@@ -120,6 +121,15 @@ export default function Navbar() {
           </li>
           <li>
             <Link
+              to="/aplikacija"
+              className="flex items-center gap-2 hover:text-[#6EAEA2] transition"
+              style={{ color: BOJE.bone }}
+            >
+              <FaMobileAlt /> Aplikacija
+            </Link>
+          </li>
+          <li>
+            <Link
               to="/kontakt"
               className="flex items-center gap-2 hover:text-[#8A4D34] transition"
               style={{ color: BOJE.bone }}
@@ -173,6 +183,16 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
             >
               <FaCogs /> Usluge
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/aplikacija"
+              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right"
+              style={{ color: BOJE.bone }}
+              onClick={() => setOpen(false)}
+            >
+              <FaMobileAlt /> Aplikacija
             </Link>
           </li>
           <li>
