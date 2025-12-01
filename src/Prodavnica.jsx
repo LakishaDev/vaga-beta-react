@@ -10,6 +10,7 @@
 // Učitava korisnički UID iz Firebase Auth
 // Kreira ili ažurira korisnički dokument u Firestore kolekciji "users"
 // Uključuje rute za: HeroSection, ProductGrid, ProductDetails, Cart, CheckoutForm, AuthForm, AdminPanel, Profile, VerifyEmailPage, AdminOrders, PasswordResetForm
+// Uključuje rute za admin licensing: LicensesPage, OrdersPage
 // Koristi komponente iz /components i /pages/shop
 // Koristi Firebase Auth i React Firebase Hooks
 // Error handling je uključen
@@ -35,6 +36,7 @@ import VerifyEmailPage from "./pages/shop/VerifyEmailPage";
 import AdminOrders from "./pages/shop/AdminOrders";
 import PasswordResetForm from "./components/shop/PasswordResetForm";
 import { AuthProvider } from "./contexts/shop/auth/AuthProvider";
+import { LicensesPage, OrdersPage } from "./pages/admin/licensing";
 
 function Prodavnica() {
   const [user] = useAuthState(auth);
@@ -72,6 +74,15 @@ function Prodavnica() {
             <Route
               path="/prodavnica/reset-password"
               element={<PasswordResetForm />}
+            />
+            {/* Admin Licensing Routes */}
+            <Route
+              path="/prodavnica/admin/licenses"
+              element={<LicensesPage />}
+            />
+            <Route
+              path="/prodavnica/admin/licenses/orders"
+              element={<OrdersPage />}
             />
           </Routes>
           <Footer />
