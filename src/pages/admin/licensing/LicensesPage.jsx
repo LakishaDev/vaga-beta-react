@@ -53,14 +53,30 @@ import {
 /**
  * Filter badge komponenta sa profesionalnim dizajnom
  */
-const FilterBadge = ({ label, isActive, onClick, count, color = "default" }) => {
+const FilterBadge = ({
+  label,
+  isActive,
+  onClick,
+  count,
+  color = "default",
+}) => {
   // Boje za različite tipove filtera
   const colorStyles = {
-    default: isActive ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25" : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
-    active: isActive ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200",
-    blocked: isActive ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-200" : "bg-white text-gray-600 hover:bg-red-50 border border-gray-200",
-    expired: isActive ? "bg-gradient-to-r from-gray-500 to-slate-500 text-white shadow-lg shadow-gray-200" : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
-    trial: isActive ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200" : "bg-white text-gray-600 hover:bg-amber-50 border border-gray-200",
+    default: isActive
+      ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+      : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
+    active: isActive
+      ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200"
+      : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200",
+    blocked: isActive
+      ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-200"
+      : "bg-white text-gray-600 hover:bg-red-50 border border-gray-200",
+    expired: isActive
+      ? "bg-gradient-to-r from-gray-500 to-slate-500 text-white shadow-lg shadow-gray-200"
+      : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
+    trial: isActive
+      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200"
+      : "bg-white text-gray-600 hover:bg-amber-50 border border-gray-200",
   };
 
   return (
@@ -104,7 +120,8 @@ export default function LicensesPage() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       const adminEmails =
-        import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
+        import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) ||
+        [];
       setAllowed(user && adminEmails.includes(user.email));
     });
     return () => unsubscribe();
@@ -156,7 +173,8 @@ export default function LicensesPage() {
   const statusCounts = {
     all: licenses.length,
     active: licenses.filter((l) => l.status === "active" && !l.isTrial).length,
-    blocked: licenses.filter((l) => l.status === "blocked" || l.isBlocked).length,
+    blocked: licenses.filter((l) => l.status === "blocked" || l.isBlocked)
+      .length,
     expired: licenses.filter((l) => l.status === "expired").length,
     trial: licenses.filter((l) => l.isTrial).length,
   };
@@ -259,7 +277,7 @@ export default function LicensesPage() {
   if (allowed === false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-white">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="text-center p-10 bg-white rounded-3xl shadow-2xl border border-red-100"
@@ -267,8 +285,12 @@ export default function LicensesPage() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
             <X size={32} className="text-red-600" />
           </div>
-          <h2 className="text-red-700 font-black text-2xl mb-2">Pristup odbijen</h2>
-          <p className="text-gray-500">Nemate dozvolu za pristup ovoj stranici.</p>
+          <h2 className="text-red-700 font-black text-2xl mb-2">
+            Pristup odbijen
+          </h2>
+          <p className="text-gray-500">
+            Nemate dozvolu za pristup ovoj stranici.
+          </p>
         </motion.div>
       </div>
     );
@@ -278,7 +300,7 @@ export default function LicensesPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-bluegreen/5">
       <div className="max-w-7xl mx-auto w-full p-4 sm:p-8 pt-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
@@ -291,7 +313,9 @@ export default function LicensesPage() {
               <h1 className="text-3xl font-black text-charcoal">
                 Upravljanje licencama
               </h1>
-              <p className="text-gray-500 text-sm mt-0.5">eVaga Desktop License Manager</p>
+              <p className="text-gray-500 text-sm mt-0.5">
+                eVaga Desktop License Manager
+              </p>
             </div>
           </div>
           <div className="flex gap-3">
@@ -309,7 +333,11 @@ export default function LicensesPage() {
               {showAnalytics ? "Lista" : "Analitika"}
             </motion.button>
             <motion.button
-              whileHover={{ scale: 1.05, y: -2, boxShadow: "0 20px 40px -15px rgba(110, 174, 162, 0.5)" }}
+              whileHover={{
+                scale: 1.05,
+                y: -2,
+                boxShadow: "0 20px 40px -15px rgba(110, 174, 162, 0.5)",
+              }}
               whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateModal(true)}
               className="px-5 py-2.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-bluegreen/25 transition-all"
@@ -336,7 +364,7 @@ export default function LicensesPage() {
         </AnimatePresence>
 
         {/* Search and Filters */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -372,7 +400,9 @@ export default function LicensesPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-2 mr-2 text-gray-400">
                 <Filter size={18} />
-                <span className="text-sm font-medium hidden sm:inline">Filter:</span>
+                <span className="text-sm font-medium hidden sm:inline">
+                  Filter:
+                </span>
               </div>
               <FilterBadge
                 label="Sve"
@@ -416,8 +446,17 @@ export default function LicensesPage() {
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
             <Sparkles size={14} className="text-bluegreen" />
             <span>
-              Pronađeno <strong className="text-charcoal">{filteredLicenses.length}</strong> licenci
-              {searchQuery && <span> za "<strong className="text-bluegreen">{searchQuery}</strong>"</span>}
+              Pronađeno{" "}
+              <strong className="text-charcoal">
+                {filteredLicenses.length}
+              </strong>{" "}
+              licenci
+              {searchQuery && (
+                <span>
+                  {" "}
+                  za "<strong className="text-bluegreen">{searchQuery}</strong>"
+                </span>
+              )}
             </span>
           </div>
         </motion.div>

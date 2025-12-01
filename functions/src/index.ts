@@ -26,6 +26,12 @@ export { adminBlockLicense } from "./licenses/adminBlockLicense";
 export { adminResetHardware } from "./licenses/adminResetHardware";
 export { licenseActivate } from "./licenses/licenseActivate";
 export { licenseVerify } from "./licenses/licenseVerify";
+export { adminExtendLicense } from "./licenses/adminExtendLicense";
+export { adminConvertTrial } from "./licenses/adminConvertTrial";
+export { adminRevokeLicense } from "./licenses/adminRevokeLicense";
+export { adminUnblockLicense } from "./licenses/adminUnblockLicense";
+export { adminRegenerateLicenseKey } from "./licenses/adminRegenerateLicenseKey";
+export { adminUpdateOrderStatus } from "./licenses/adminUpdateOrderStatus";
 
 // For cost control, you can set the maximum number of containers that can be
 // running at the same time. This helps mitigate the impact of unexpected
