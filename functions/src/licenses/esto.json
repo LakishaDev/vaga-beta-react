@@ -1,0 +1,13 @@
+{
+  "valid": true,
+  "payload": {
+    "licenseKey": "EVAGA-TEST-0001",
+    "hwidHash": "79798bc158fc354d88bdd2ed94e83c1b59bbccb501ba11f75a0f89fe5c2bbab8",
+    "ip": null,
+    "modules": { "ambalaza": true, "stampa": true },
+    "expiresAt": "2025-12-02T13:45:00.692Z",
+    "offlineUntil": "2025-12-15T14:50:23.621Z",
+    "issuedAt": "2025-12-01T14:50:23.621Z"
+  },
+  "signature": "LecblGkUfMLa+OaIfhFDmXWmN0TNzlrDBeZhCnGyZ8h+iXvN1bSYytKDSYXWaWTiAIVisFWPZd1o8mqgKW4d9U1fgsEtm+lGsvWIL7A1t8PPQz7Pvrc8u6Wy8fgN9VZDU9LcF4zDcbxojmtO/dxQb1RYi6mRjtOxNhq20m4DvY70SSPz/F3xbJY3O5Ozy7b6JfKxQqgTYMlpz7RX91PBPJj+HcQRrpsk4Sbzy7n7tE23IgGxaVgjD2ofx7M5xxoirE4IQ+7DVk/ur1aH81AKo+eRpd6ZAdUSxmAJ/KN5RIHjD7YBBSwv2BGjXaPdsM0dUrqr0/NxIxhXD5xBjatPvg=="
+}
