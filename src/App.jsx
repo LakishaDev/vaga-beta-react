@@ -20,6 +20,8 @@ import Home from "./pages/Home";
 import Usluge from "./pages/Usluge";
 import Kontakt from "./pages/Kontakt";
 import Onama from "./pages/Onama";
+import Aplikacija from "./pages/Aplikacija";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Prodavnica from "./Prodavnica";
 import Lenis from "lenis";
 import { useEffect } from "react";
@@ -43,6 +45,8 @@ function AppContent() {
           <Route path="/usluge" element={<Usluge />} />
           <Route path="/kontakt" element={<Kontakt />} />
           <Route path="/onama" element={<Onama />} />
+          <Route path="/aplikacija" element={<Aplikacija />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
       </main>
       <Footer />
