@@ -17,8 +17,19 @@
 // ✅ Poboljšani hover efekti
 // ===============================================================================
 
+// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
-import { Check, X, Package, Printer, Cloud, Zap, Crown, Star, Sparkles } from "lucide-react";
+import {
+  Check,
+  X,
+  Package,
+  Printer,
+  Cloud,
+  Zap,
+  Crown,
+  Star,
+  Sparkles,
+} from "lucide-react";
 import {
   LICENSE_TYPES,
   LICENSE_DEFAULTS,
@@ -31,9 +42,16 @@ import {
  */
 const FeatureRow = ({ feature, packages, selectedPackage }) => (
   <tr className="border-b border-gray-100/50 hover:bg-gray-50/30 transition-colors">
-    <td className="py-3.5 px-4 text-sm text-gray-700 font-medium">{feature.label}</td>
+    <td className="py-3.5 px-4 text-sm text-gray-700 font-medium">
+      {feature.label}
+    </td>
     {packages.map((pkg) => (
-      <td key={pkg} className={`py-3.5 px-4 text-center transition-all ${selectedPackage === pkg ? "bg-bluegreen/5" : ""}`}>
+      <td
+        key={pkg}
+        className={`py-3.5 px-4 text-center transition-all ${
+          selectedPackage === pkg ? "bg-bluegreen/5" : ""
+        }`}
+      >
         {feature.values[pkg] === true ? (
           <div className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-green-100">
             <Check className="text-green-600" size={14} />
@@ -71,7 +89,7 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
     [LICENSE_TYPES.PRO]: Crown,
     [LICENSE_TYPES.ENTERPRISE]: Sparkles,
   };
-  
+
   const PackageIcon = packageIcons[type] || Star;
 
   return (
@@ -92,10 +110,10 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-sheen/30 to-bluegreen/20 rounded-full blur-2xl" />
         </>
       )}
-      
+
       {/* Popular badge */}
       {isPopular && (
-        <motion.div 
+        <motion.div
           className="absolute -top-0 left-1/2 -translate-x-1/2 -translate-y-1/2"
           initial={{ y: -10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
@@ -111,10 +129,23 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
       <div className="relative z-10">
         {/* Icon and Name */}
         <div className="flex items-center gap-3 mb-4">
-          <div className={`p-2.5 rounded-xl ${isSelected ? "bg-gradient-to-br from-bluegreen to-sheen" : "bg-gray-100"} transition-all`}>
-            <PackageIcon size={22} className={isSelected ? "text-white" : "text-gray-600"} />
+          <div
+            className={`p-2.5 rounded-xl ${
+              isSelected
+                ? "bg-gradient-to-br from-bluegreen to-sheen"
+                : "bg-gray-100"
+            } transition-all`}
+          >
+            <PackageIcon
+              size={22}
+              className={isSelected ? "text-white" : "text-gray-600"}
+            />
           </div>
-          <h3 className={`text-xl font-black ${isSelected ? "text-white" : "text-charcoal"}`}>
+          <h3
+            className={`text-xl font-black ${
+              isSelected ? "text-white" : "text-charcoal"
+            }`}
+          >
             {getLicenseTypeLabel(type)}
           </h3>
         </div>
@@ -122,43 +153,102 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
         {/* Price */}
         <div className="mb-5">
           <div className="flex items-baseline gap-1">
-            <span className={`text-4xl font-black ${isSelected ? "text-white" : "text-bluegreen"}`}>
+            <span
+              className={`text-4xl font-black ${
+                isSelected ? "text-white" : "text-bluegreen"
+              }`}
+            >
               {price?.toLocaleString("sr-RS")}
             </span>
-            <span className={`text-lg ${isSelected ? "text-white/80" : "text-gray-500"}`}>
+            <span
+              className={`text-lg ${
+                isSelected ? "text-white/80" : "text-gray-500"
+              }`}
+            >
               RSD
             </span>
           </div>
-          <span className={`text-sm ${isSelected ? "text-white/60" : "text-gray-400"}`}>
+          <span
+            className={`text-sm ${
+              isSelected ? "text-white/60" : "text-gray-400"
+            }`}
+          >
             godišnje
           </span>
         </div>
 
         {/* Features */}
         <ul className="space-y-3 mb-5">
-          <li className={`flex items-center gap-2.5 text-sm ${isSelected ? "text-white/90" : "text-gray-600"}`}>
-            <div className={`p-1 rounded-full ${isSelected ? "bg-bluegreen/30" : "bg-green-100"}`}>
-              <Check size={12} className={isSelected ? "text-bluegreen" : "text-green-600"} />
+          <li
+            className={`flex items-center gap-2.5 text-sm ${
+              isSelected ? "text-white/90" : "text-gray-600"
+            }`}
+          >
+            <div
+              className={`p-1 rounded-full ${
+                isSelected ? "bg-bluegreen/30" : "bg-green-100"
+              }`}
+            >
+              <Check
+                size={12}
+                className={isSelected ? "text-bluegreen" : "text-green-600"}
+              />
             </div>
-            <span><strong>{defaults?.maxActivations}</strong> aktivacije</span>
+            <span>
+              <strong>{defaults?.maxActivations}</strong> aktivacije
+            </span>
           </li>
-          <li className={`flex items-center gap-2.5 text-sm ${isSelected ? "text-white/90" : "text-gray-600"}`}>
-            <div className={`p-1 rounded-full ${isSelected ? "bg-bluegreen/30" : "bg-green-100"}`}>
-              <Check size={12} className={isSelected ? "text-bluegreen" : "text-green-600"} />
+          <li
+            className={`flex items-center gap-2.5 text-sm ${
+              isSelected ? "text-white/90" : "text-gray-600"
+            }`}
+          >
+            <div
+              className={`p-1 rounded-full ${
+                isSelected ? "bg-bluegreen/30" : "bg-green-100"
+              }`}
+            >
+              <Check
+                size={12}
+                className={isSelected ? "text-bluegreen" : "text-green-600"}
+              />
             </div>
-            <span><strong>{defaults?.offlineDaysAllowed}</strong> dana offline</span>
+            <span>
+              <strong>{defaults?.offlineDaysAllowed}</strong> dana offline
+            </span>
           </li>
-          <li className={`flex items-center gap-2.5 text-sm ${isSelected ? "text-white/90" : "text-gray-600"}`}>
-            <div className={`p-1 rounded-full ${isSelected ? "bg-bluegreen/30" : "bg-green-100"}`}>
-              <Check size={12} className={isSelected ? "text-bluegreen" : "text-green-600"} />
+          <li
+            className={`flex items-center gap-2.5 text-sm ${
+              isSelected ? "text-white/90" : "text-gray-600"
+            }`}
+          >
+            <div
+              className={`p-1 rounded-full ${
+                isSelected ? "bg-bluegreen/30" : "bg-green-100"
+              }`}
+            >
+              <Check
+                size={12}
+                className={isSelected ? "text-bluegreen" : "text-green-600"}
+              />
             </div>
-            <span><strong>{defaults?.durationDays}</strong> dana trajanja</span>
+            <span>
+              <strong>{defaults?.durationDays}</strong> dana trajanja
+            </span>
           </li>
         </ul>
 
         {/* Modules */}
-        <div className={`pt-4 border-t ${isSelected ? "border-white/20" : "border-gray-100"}`}>
-          <p className={`text-xs font-bold mb-3 ${isSelected ? "text-white/70" : "text-gray-500"}`}>
+        <div
+          className={`pt-4 border-t ${
+            isSelected ? "border-white/20" : "border-gray-100"
+          }`}
+        >
+          <p
+            className={`text-xs font-bold mb-3 ${
+              isSelected ? "text-white/70" : "text-gray-500"
+            }`}
+          >
             Uključeni moduli:
           </p>
           <div className="flex flex-wrap gap-2">
@@ -180,10 +270,10 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
             })}
           </div>
         </div>
-        
+
         {/* Selection indicator */}
         {isSelected && (
-          <motion.div 
+          <motion.div
             initial={{ scale: 0 }}
             animate={{ scale: 1 }}
             className="absolute top-4 right-4"
@@ -206,7 +296,11 @@ export default function PackageSelector({
   onSelectPackage,
   showComparison = true,
 }) {
-  const packages = [LICENSE_TYPES.BASIC, LICENSE_TYPES.PRO, LICENSE_TYPES.ENTERPRISE];
+  const packages = [
+    LICENSE_TYPES.BASIC,
+    LICENSE_TYPES.PRO,
+    LICENSE_TYPES.ENTERPRISE,
+  ];
 
   const features = [
     {
@@ -348,10 +442,10 @@ export default function PackageSelector({
               </thead>
               <tbody>
                 {features.map((feature, index) => (
-                  <FeatureRow 
-                    key={index} 
-                    feature={feature} 
-                    packages={packages} 
+                  <FeatureRow
+                    key={index}
+                    feature={feature}
+                    packages={packages}
                     selectedPackage={selectedPackage}
                   />
                 ))}
