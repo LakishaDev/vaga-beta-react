@@ -1,53 +1,56 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { Timestamp } from "firebase-admin/firestore";
+import { db } from "../init";
 import { assertAdmin } from "../auth";
+import { generateLicenseKey } from "../utils/generateLicenseKey";
 
-export const adminCreateLicense = onCall(async (req) => {
-  assertAdmin(req);
+export const adminCreateLicense = onCall(
+  { region: "europe-west1" },
+  async (req) => {
+    assertAdmin(req);
 
-  const {
-    licenseKey,
-    expiresAt,
-    maxActivations = 1,
-    allowedOfflineDays = 14,
-    ipLockEnabled = false,
-    modules = {},
-    note = "",
-  } = req.data;
+    const {
+      clientName,
+      clientEmail,
+      licenseType,
+      expiresAt,
+      maxActivations = 1,
+      modules = {},
+      offlineDaysAllowed = 7,
+      isTrial = false,
+      autoRenew = false,
+    } = req.data;
 
-  if (!licenseKey || !expiresAt) {
-    throw new HttpsError(
-      "invalid-argument",
-      "licenseKey and expiresAt are required"
-    );
+    if (!licenseType) {
+      throw new HttpsError("invalid-argument", "licenseType required");
+    }
+
+    const licenseKey = generateLicenseKey();
+    const now = Timestamp.now();
+
+    const doc = {
+      licenseKey,
+      clientName: clientName ?? "",
+      clientEmail: clientEmail ?? "",
+      licenseType,
+      status: isTrial ? "trial" : "active",
+      isTrial,
+      maxActivations,
+      currentActivations: 0,
+      modules,
+      offlineDaysAllowed,
+      createdAt: now,
+      expiresAt: Timestamp.fromDate(new Date(expiresAt)),
+      isBlocked: false,
+      autoRenew,
+      hardwareId: null,
+      lastSeen: null,
+      activationHistory: [],
+      extensionHistory: [],
+    };
+
+    const ref = await db.collection("licenses").add(doc);
+
+    return { id: ref.id, licenseKey };
   }
-
-  const db = getFirestore();
-  const ref = db.collection("licenses").doc(licenseKey);
-  const snap = await ref.get();
-
-  if (snap.exists) {
-    throw new HttpsError("already-exists", "License already exists");
-  }
-
-  await ref.set({
-    licenseKey,
-    status: "active",
-    expiresAt: Timestamp.fromDate(new Date(expiresAt)),
-    createdAt: Timestamp.now(),
-
-    maxActivations,
-    allowedOfflineDays,
-
-    hardwareLocked: false,
-    hwidHash: null,
-
-    ipLockEnabled,
-    ipAddress: null,
-
-    modules,
-    note,
-  });
-
-  return { ok: true };
-});
+);

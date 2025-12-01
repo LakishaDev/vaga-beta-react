@@ -55,7 +55,7 @@ import {
  * Sekcija drawer-a sa glassmorphism efektom
  */
 const DrawerSection = ({ title, icon: Icon, children, className = "" }) => (
-  <motion.div 
+  <motion.div
     className={`mb-6 ${className}`}
     initial={{ opacity: 0, y: 10 }}
     animate={{ opacity: 1, y: 0 }}
@@ -106,7 +106,7 @@ export default function LicenseDetailsDrawer({
   if (!license) return null;
 
   const remainingDays = getRemainingDays(license.expiresAt);
-  
+
   // Definicija boja za status
   const getStatusStyles = (status, isTrial) => {
     const displayStatus = isTrial && status !== "blocked" ? "trial" : status;
@@ -165,24 +165,25 @@ export default function LicenseDetailsDrawer({
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
             transition={{ type: "spring", damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-lg z-50 bg-white/95 backdrop-blur-xl shadow-2xl overflow-y-auto"
+            className="fixed right-0 top-0 h-full w-full max-w-lg z-50 bg-white/95 backdrop-blur-xl shadow-2xl overflow-y-auto overflow-x-hidden"
+            data-lenis-prevent
           >
             {/* Decorative gradients */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-bluegreen/10 to-sheen/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-            
+
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-charcoal via-midnight to-charcoal p-6 text-white z-10 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
-              
+
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
-                whileTap={{ scale: 0.9 }}
+                whileTap={{ scale: 1.3 }}
                 onClick={onClose}
                 className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
               >
                 <X size={20} />
               </motion.button>
-              
+
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
@@ -190,12 +191,14 @@ export default function LicenseDetailsDrawer({
                   </div>
                   <h3 className="text-xl font-bold">Detalji licence</h3>
                 </div>
-                
+
                 <div className="flex items-center gap-3 flex-wrap">
                   <div className="font-mono text-base bg-white/15 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/10">
                     {license.licenseKey}
                   </div>
-                  <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 ${statusInfo.bg} rounded-full text-xs font-bold text-white shadow-lg`}>
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 ${statusInfo.bg} rounded-full text-xs font-bold text-white shadow-lg`}
+                  >
                     <StatusIcon size={12} />
                     {statusInfo.text}
                   </span>
@@ -210,7 +213,7 @@ export default function LicenseDetailsDrawer({
             </div>
 
             {/* Content */}
-            <div className="relative z-10 p-6">
+            <div className="relative p-6">
               {/* Klijent info */}
               <DrawerSection title="Informacije o klijentu" icon={User}>
                 <div className="bg-gradient-to-br from-gray-50/80 to-white rounded-2xl p-4 border border-gray-100/50 shadow-sm">
@@ -247,14 +250,24 @@ export default function LicenseDetailsDrawer({
                   <InfoRow
                     label="Ističe"
                     value={formatLicenseDate(license.expiresAt)}
-                    className={remainingDays <= 7 ? "text-red-600 font-bold" : ""}
+                    className={
+                      remainingDays <= 7 ? "text-red-600 font-bold" : ""
+                    }
                     icon={Clock}
                   />
                   <InfoRow
                     label="Preostalo dana"
                     value={
                       remainingDays > 0 ? (
-                        <span className={`px-2 py-0.5 rounded-lg ${remainingDays <= 7 ? "bg-red-100 text-red-700" : remainingDays <= 30 ? "bg-amber-100 text-amber-700" : "bg-green-100 text-green-700"} font-semibold text-xs`}>
+                        <span
+                          className={`px-2 py-0.5 rounded-lg ${
+                            remainingDays <= 7
+                              ? "bg-red-100 text-red-700"
+                              : remainingDays <= 30
+                              ? "bg-amber-100 text-amber-700"
+                              : "bg-green-100 text-green-700"
+                          } font-semibold text-xs`}
+                        >
                           {remainingDays} dana
                         </span>
                       ) : (
@@ -266,11 +279,15 @@ export default function LicenseDetailsDrawer({
                   />
                   <InfoRow
                     label="Probna verzija"
-                    value={license.isTrial ? (
-                      <span className="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-700 font-semibold text-xs">Da</span>
-                    ) : (
-                      <span className="text-gray-500">Ne</span>
-                    )}
+                    value={
+                      license.isTrial ? (
+                        <span className="px-2 py-0.5 rounded-lg bg-amber-100 text-amber-700 font-semibold text-xs">
+                          Da
+                        </span>
+                      ) : (
+                        <span className="text-gray-500">Ne</span>
+                      )
+                    }
                   />
                 </div>
               </DrawerSection>
@@ -282,13 +299,21 @@ export default function LicenseDetailsDrawer({
                     <span className="text-gray-500 text-sm">Iskorišćeno</span>
                     <div className="flex items-center gap-3">
                       <div className="w-24 h-2 bg-gray-200 rounded-full overflow-hidden">
-                        <div 
+                        <div
                           className="h-full bg-gradient-to-r from-bluegreen to-sheen rounded-full transition-all"
-                          style={{ width: `${Math.min(((license.currentActivations || 0) / license.maxActivations) * 100, 100)}%` }}
+                          style={{
+                            width: `${Math.min(
+                              ((license.currentActivations || 0) /
+                                license.maxActivations) *
+                                100,
+                              100
+                            )}%`,
+                          }}
                         />
                       </div>
                       <span className="font-bold text-charcoal">
-                        {license.currentActivations || 0}/{license.maxActivations}
+                        {license.currentActivations || 0}/
+                        {license.maxActivations}
                       </span>
                     </div>
                   </div>
@@ -348,14 +373,18 @@ export default function LicenseDetailsDrawer({
 
               {/* Auto renew toggle */}
               <DrawerSection title="Automatsko obnavljanje" icon={RefreshCw}>
-                <motion.div 
+                <motion.div
                   className={`flex items-center justify-between p-4 rounded-2xl border-2 transition-all duration-300 ${
-                    license.autoRenew 
-                      ? "bg-gradient-to-r from-bluegreen/10 to-sheen/5 border-bluegreen/30" 
+                    license.autoRenew
+                      ? "bg-gradient-to-r from-bluegreen/10 to-sheen/5 border-bluegreen/30"
                       : "bg-gradient-to-r from-gray-50 to-white border-gray-200"
                   }`}
                 >
-                  <span className={`text-sm font-medium ${license.autoRenew ? "text-bluegreen" : "text-gray-600"}`}>
+                  <span
+                    className={`text-sm font-medium ${
+                      license.autoRenew ? "text-bluegreen" : "text-gray-600"
+                    }`}
+                  >
                     Automatski produži licencu po isteku
                   </span>
                   <button
@@ -363,8 +392,8 @@ export default function LicenseDetailsDrawer({
                       onUpdateAutoRenew(license.id, !license.autoRenew)
                     }
                     className={`relative w-14 h-7 rounded-full transition-all duration-300 ${
-                      license.autoRenew 
-                        ? "bg-gradient-to-r from-bluegreen to-sheen shadow-lg shadow-bluegreen/20" 
+                      license.autoRenew
+                        ? "bg-gradient-to-r from-bluegreen to-sheen shadow-lg shadow-bluegreen/20"
                         : "bg-gray-300"
                     }`}
                   >
@@ -372,74 +401,85 @@ export default function LicenseDetailsDrawer({
                       layout
                       className="absolute top-1 w-5 h-5 bg-white rounded-full shadow-md"
                       animate={{ x: license.autoRenew ? 30 : 4 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     />
                   </button>
                 </motion.div>
               </DrawerSection>
 
               {/* Istorija aktivacija */}
-              {license.activationHistory && license.activationHistory.length > 0 && (
-                <DrawerSection title="Istorija aktivacija" icon={History}>
-                  <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
-                    {license.activationHistory.slice(-5).map((item, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-white rounded-xl text-xs border border-gray-100/50"
-                      >
-                        <div className="p-1.5 rounded-lg bg-gray-100">
-                          <Clock size={12} className="text-gray-500" />
-                        </div>
-                        <span className="flex-1 font-medium text-charcoal">
-                          {item.action === "hwid_reset"
-                            ? "HWID Reset"
-                            : item.action}
-                        </span>
-                        <span className="text-gray-400">
-                          {formatLicenseDate(item.timestamp)}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </DrawerSection>
-              )}
+              {license.activationHistory &&
+                license.activationHistory.length > 0 && (
+                  <DrawerSection title="Istorija aktivacija" icon={History}>
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                      {license.activationHistory
+                        .slice(-5)
+                        .map((item, index) => (
+                          <motion.div
+                            key={index}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: index * 0.1 }}
+                            className="flex items-center gap-3 p-3 bg-gradient-to-r from-gray-50 to-white rounded-xl text-xs border border-gray-100/50"
+                          >
+                            <div className="p-1.5 rounded-lg bg-gray-100">
+                              <Clock size={12} className="text-gray-500" />
+                            </div>
+                            <span className="flex-1 font-medium text-charcoal">
+                              {item.action === "hwid_reset"
+                                ? "HWID Reset"
+                                : item.action}
+                            </span>
+                            <span className="text-gray-400">
+                              {formatLicenseDate(item.timestamp)}
+                            </span>
+                          </motion.div>
+                        ))}
+                    </div>
+                  </DrawerSection>
+                )}
 
               {/* Istorija produženja */}
-              {license.extensionHistory && license.extensionHistory.length > 0 && (
-                <DrawerSection title="Istorija produženja" icon={ArrowUpRight}>
-                  <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
-                    {license.extensionHistory.slice(-5).map((item, index) => (
-                      <motion.div
-                        key={index}
-                        initial={{ opacity: 0, x: -10 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ delay: index * 0.1 }}
-                        className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-white rounded-xl text-xs border border-green-100/50"
-                      >
-                        <div className="p-1.5 rounded-lg bg-green-100">
-                          <Calendar size={12} className="text-green-600" />
-                        </div>
-                        <span className="flex-1 font-medium text-charcoal">
-                          {item.action === "trial_to_paid"
-                            ? `Konvertovana u ${item.to}`
-                            : `Produžena za ${item.days} dana`}
-                        </span>
-                        <span className="text-gray-400">
-                          {formatLicenseDate(item.timestamp)}
-                        </span>
-                      </motion.div>
-                    ))}
-                  </div>
-                </DrawerSection>
-              )}
+              {license.extensionHistory &&
+                license.extensionHistory.length > 0 && (
+                  <DrawerSection
+                    title="Istorija produženja"
+                    icon={ArrowUpRight}
+                  >
+                    <div className="space-y-2 max-h-40 overflow-y-auto pr-2">
+                      {license.extensionHistory.slice(-5).map((item, index) => (
+                        <motion.div
+                          key={index}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: index * 0.1 }}
+                          className="flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-white rounded-xl text-xs border border-green-100/50"
+                        >
+                          <div className="p-1.5 rounded-lg bg-green-100">
+                            <Calendar size={12} className="text-green-600" />
+                          </div>
+                          <span className="flex-1 font-medium text-charcoal">
+                            {item.action === "trial_to_paid"
+                              ? `Konvertovana u ${item.to}`
+                              : `Produžena za ${item.days} dana`}
+                          </span>
+                          <span className="text-gray-400">
+                            {formatLicenseDate(item.timestamp)}
+                          </span>
+                        </motion.div>
+                      ))}
+                    </div>
+                  </DrawerSection>
+                )}
 
               {/* Akcije */}
               <div className="space-y-3 pt-4 border-t border-gray-100">
                 <h4 className="text-sm font-bold text-charcoal mb-3">Akcije</h4>
-                
+
                 {/* Blokiraj/Odblokiraj */}
                 {license.isBlocked ? (
                   <motion.button
@@ -488,7 +528,7 @@ export default function LicenseDetailsDrawer({
                     Produži licencu
                   </motion.button>
                 ) : (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="p-4 bg-gradient-to-br from-bluegreen/5 to-sheen/5 rounded-2xl border border-bluegreen/20"
@@ -541,7 +581,7 @@ export default function LicenseDetailsDrawer({
                 )}
 
                 {showConvertForm && (
-                  <motion.div 
+                  <motion.div
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
                     className="p-5 bg-gradient-to-br from-bluegreen/5 via-sheen/5 to-bluegreen/5 rounded-2xl border border-bluegreen/20"
@@ -567,7 +607,13 @@ export default function LicenseDetailsDrawer({
                               : "border-gray-200 hover:border-bluegreen/50 bg-white"
                           }`}
                         >
-                          <div className={`font-bold text-sm ${convertType === type ? "text-bluegreen" : "text-charcoal"}`}>
+                          <div
+                            className={`font-bold text-sm ${
+                              convertType === type
+                                ? "text-bluegreen"
+                                : "text-charcoal"
+                            }`}
+                          >
                             {getLicenseTypeLabel(type)}
                           </div>
                           <div className="text-xs text-gray-500 mt-1">
@@ -590,7 +636,13 @@ export default function LicenseDetailsDrawer({
                         disabled={loading}
                         className="flex-1 px-4 py-2.5 bg-gradient-to-r from-bluegreen to-sheen text-white rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 font-semibold shadow-lg shadow-bluegreen/20"
                       >
-                        {loading ? "..." : <><Check size={16} /> Konvertuj</>}
+                        {loading ? (
+                          "..."
+                        ) : (
+                          <>
+                            <Check size={16} /> Konvertuj
+                          </>
+                        )}
                       </motion.button>
                     </div>
                   </motion.div>

@@ -3,7 +3,7 @@ import { Timestamp } from "firebase-admin/firestore";
 import { db } from "../init";
 import { assertAdmin } from "../auth";
 
-export const adminBlockLicense = onCall(
+export const adminRevokeLicense = onCall(
   { region: "europe-west1" },
   async (req) => {
     assertAdmin(req);
@@ -11,10 +11,10 @@ export const adminBlockLicense = onCall(
     const { licenseId, reason = "" } = req.data;
 
     await db.doc(`licenses/${licenseId}`).update({
+      status: "revoked",
+      revokedAt: Timestamp.now(),
+      revokeReason: reason,
       isBlocked: true,
-      status: "blocked",
-      blockedAt: Timestamp.now(),
-      blockReason: reason,
     });
   }
 );

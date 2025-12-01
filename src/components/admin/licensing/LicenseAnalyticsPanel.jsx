@@ -33,7 +33,7 @@ import {
   Sparkles,
   BarChart3,
 } from "lucide-react";
-import { getLicenseStats } from "../../../services/licenseService";
+import { getLicenses } from "../../../services/licenseService";
 
 /**
  * Pojedinačna kartica statistike sa glassmorphism efektom
@@ -104,14 +104,16 @@ const StatCard = ({
       {/* Decorative circles */}
       <div className="absolute -right-4 -top-4 w-20 h-20 rounded-full bg-white/20 blur-2xl" />
       <div className="absolute -left-2 -bottom-2 w-16 h-16 rounded-full bg-white/10 blur-xl" />
-      
+
       <div className="relative z-10">
         <div className="flex items-start justify-between mb-3">
-          <div className={`p-2.5 rounded-xl bg-gradient-to-br ${style.iconBg} shadow-lg`}>
+          <div
+            className={`p-2.5 rounded-xl bg-gradient-to-br ${style.iconBg} shadow-lg`}
+          >
             <IconComp size={20} className="text-white" />
           </div>
         </div>
-        <motion.div 
+        <motion.div
           className={`text-3xl font-black mb-1 ${style.text}`}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -119,8 +121,14 @@ const StatCard = ({
         >
           {value}
         </motion.div>
-        <div className={`text-sm font-semibold ${style.text} opacity-80`}>{title}</div>
-        {subtitle && <div className="text-xs opacity-60 mt-1 text-gray-600">{subtitle}</div>}
+        <div className={`text-sm font-semibold ${style.text} opacity-80`}>
+          {title}
+        </div>
+        {subtitle && (
+          <div className="text-xs opacity-60 mt-1 text-gray-600">
+            {subtitle}
+          </div>
+        )}
       </div>
     </motion.div>
   );
@@ -140,7 +148,7 @@ const ProgressBar = ({ label, value, max, color = "bluegreen", delay = 0 }) => {
   };
 
   return (
-    <motion.div 
+    <motion.div
       className="mb-4 last:mb-0"
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
@@ -170,7 +178,7 @@ export default function LicenseAnalyticsPanel() {
   const loadStats = useCallback(async () => {
     setLoading(true);
     try {
-      const data = await getLicenseStats(timeFilter);
+      const data = await getLicenses(timeFilter);
       setStats(data);
     } catch (err) {
       console.error("Greška pri učitavanju statistika:", err);
@@ -190,13 +198,15 @@ export default function LicenseAnalyticsPanel() {
           <div className="w-12 h-12 border-4 border-bluegreen/30 rounded-full" />
           <div className="w-12 h-12 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
         </div>
-        <p className="mt-4 text-gray-500 font-medium">Učitavanje statistika...</p>
+        <p className="mt-4 text-gray-500 font-medium">
+          Učitavanje statistika...
+        </p>
       </div>
     );
   }
 
   return (
-    <motion.div 
+    <motion.div
       className="space-y-6"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
@@ -208,7 +218,9 @@ export default function LicenseAnalyticsPanel() {
             <BarChart3 size={20} className="text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-charcoal">Statistika licenci</h3>
+            <h3 className="text-lg font-bold text-charcoal">
+              Statistika licenci
+            </h3>
             <p className="text-sm text-gray-500">Pregled ključnih metrika</p>
           </div>
         </div>
@@ -245,7 +257,9 @@ export default function LicenseAnalyticsPanel() {
           value={stats.activeLicenses}
           icon={CheckCircle}
           color="green"
-          subtitle={`${((stats.activeLicenses / stats.totalLicenses) * 100 || 0).toFixed(0)}% od ukupno`}
+          subtitle={`${(
+            (stats.activeLicenses / stats.totalLicenses) * 100 || 0
+          ).toFixed(0)}% od ukupno`}
           delay={0.1}
         />
         <StatCard
@@ -308,7 +322,7 @@ export default function LicenseAnalyticsPanel() {
         >
           {/* Decorative element */}
           <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-bluegreen/10 to-sheen/5 blur-2xl" />
-          
+
           <div className="relative z-10">
             <h4 className="text-sm font-bold text-charcoal mb-5 flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-gradient-to-br from-bluegreen/20 to-sheen/10">
@@ -356,7 +370,7 @@ export default function LicenseAnalyticsPanel() {
         >
           {/* Decorative element */}
           <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full bg-gradient-to-br from-sheen/10 to-bluegreen/5 blur-2xl" />
-          
+
           <div className="relative z-10">
             <h4 className="text-sm font-bold text-charcoal mb-5 flex items-center gap-2">
               <div className="p-1.5 rounded-lg bg-gradient-to-br from-bluegreen/20 to-sheen/10">
@@ -366,31 +380,35 @@ export default function LicenseAnalyticsPanel() {
             </h4>
 
             <div className="space-y-3">
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-between p-3.5 bg-gradient-to-r from-gray-50/80 to-white rounded-xl border border-gray-100/50"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 }}
               >
-                <span className="text-sm text-gray-600 font-medium">Prosečno aktivacija</span>
+                <span className="text-sm text-gray-600 font-medium">
+                  Prosečno aktivacija
+                </span>
                 <span className="font-bold text-charcoal bg-bluegreen/10 px-3 py-1 rounded-lg">
                   {stats.avgActivationsPerLicense} po licenci
                 </span>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-between p-3.5 bg-gradient-to-r from-gray-50/80 to-white rounded-xl border border-gray-100/50"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.7 }}
               >
-                <span className="text-sm text-gray-600 font-medium">Trial/Paid odnos</span>
+                <span className="text-sm text-gray-600 font-medium">
+                  Trial/Paid odnos
+                </span>
                 <span className="font-bold text-charcoal bg-amber-100/50 px-3 py-1 rounded-lg">
                   {stats.trialToPaidRatio} : 1
                 </span>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-between p-3.5 bg-gradient-to-r from-gray-50/80 to-white rounded-xl border border-gray-100/50"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -402,11 +420,12 @@ export default function LicenseAnalyticsPanel() {
                 <span className="font-bold text-charcoal bg-green-100/50 px-3 py-1 rounded-lg">
                   {(
                     (stats.recentlyActive / stats.totalLicenses) * 100 || 0
-                  ).toFixed(1)}%
+                  ).toFixed(1)}
+                  %
                 </span>
               </motion.div>
 
-              <motion.div 
+              <motion.div
                 className="flex items-center justify-between p-4 bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 rounded-xl border border-bluegreen/20"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
@@ -425,7 +444,8 @@ export default function LicenseAnalyticsPanel() {
                           (stats.trialLicenses + stats.paidLicenses)) *
                         100
                       ).toFixed(1)
-                    : 0}%
+                    : 0}
+                  %
                 </span>
               </motion.div>
             </div>
