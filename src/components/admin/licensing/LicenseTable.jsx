@@ -18,6 +18,7 @@
 // ✅ Hardware lock indikator
 // ===============================================================================
 
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Eye,
@@ -90,7 +91,9 @@ const StatusBadge = ({ status, isTrial, autoRenew }) => {
       <span
         className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold border ${style.bg} ${style.text} ${style.border} shadow-sm ${style.glow}`}
       >
-        <span className={`w-1.5 h-1.5 rounded-full ${style.dot} animate-pulse`} />
+        <span
+          className={`w-1.5 h-1.5 rounded-full ${style.dot} animate-pulse`}
+        />
         {labels[displayStatus] || displayStatus}
       </span>
       {autoRenew && (
@@ -193,14 +196,20 @@ const LicenseMobileCard = ({
             {license.licenseKey}
           </span>
         </div>
-        <StatusBadge status={license.status} isTrial={license.isTrial} autoRenew={license.autoRenew} />
+        <StatusBadge
+          status={license.status}
+          isTrial={license.isTrial}
+          autoRenew={license.autoRenew}
+        />
       </div>
 
       {/* Info Grid */}
       <div className="space-y-2.5 text-sm">
         <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
           <User size={14} className="text-charcoal/60" />
-          <span className="font-medium">{license.clientName || "Bez imena"}</span>
+          <span className="font-medium">
+            {license.clientName || "Bez imena"}
+          </span>
         </div>
 
         <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
@@ -224,7 +233,11 @@ const LicenseMobileCard = ({
           <div className="flex items-center gap-2.5 text-gray-600">
             <Monitor size={14} className="text-charcoal/60" />
             <span>
-              Aktivacije: <span className="font-semibold text-charcoal">{license.currentActivations || 0}</span>/{license.maxActivations}
+              Aktivacije:{" "}
+              <span className="font-semibold text-charcoal">
+                {license.currentActivations || 0}
+              </span>
+              /{license.maxActivations}
             </span>
           </div>
           {license.hardwareId && (
@@ -282,8 +295,12 @@ export default function LicenseTable({
         <div className="p-4 rounded-2xl bg-gray-100/50 inline-block mb-4">
           <Key size={48} className="text-gray-300" />
         </div>
-        <p className="text-lg text-gray-500 font-medium">Nema licenci za prikaz</p>
-        <p className="text-sm text-gray-400 mt-1">Kreirajte novu licencu klikom na dugme iznad</p>
+        <p className="text-lg text-gray-500 font-medium">
+          Nema licenci za prikaz
+        </p>
+        <p className="text-sm text-gray-400 mt-1">
+          Kreirajte novu licencu klikom na dugme iznad
+        </p>
       </div>
     );
   }
@@ -388,18 +405,28 @@ export default function LicenseTable({
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden max-w-[60px]">
-                            <div 
+                            <div
                               className="h-full bg-gradient-to-r from-bluegreen to-sheen rounded-full transition-all"
-                              style={{ width: `${Math.min(((license.currentActivations || 0) / license.maxActivations) * 100, 100)}%` }}
+                              style={{
+                                width: `${Math.min(
+                                  ((license.currentActivations || 0) /
+                                    license.maxActivations) *
+                                    100,
+                                  100
+                                )}%`,
+                              }}
                             />
                           </div>
                           <span className="text-sm font-medium text-charcoal">
-                            {license.currentActivations || 0}/{license.maxActivations}
+                            {license.currentActivations || 0}/
+                            {license.maxActivations}
                           </span>
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <div className="text-sm text-charcoal">{formatLicenseDate(license.expiresAt)}</div>
+                        <div className="text-sm text-charcoal">
+                          {formatLicenseDate(license.expiresAt)}
+                        </div>
                         {remainingDays > 0 && remainingDays <= 30 && (
                           <span className="inline-block mt-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-700 text-xs font-medium">
                             {remainingDays} dana

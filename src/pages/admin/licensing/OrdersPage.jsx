@@ -18,6 +18,7 @@
 // ===============================================================================
 
 import { useState, useEffect, useContext } from "react";
+// eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import {
@@ -56,19 +57,22 @@ const OrderStatusBadge = ({ status }) => {
     paid: {
       label: "Plaćeno",
       icon: CheckCircle,
-      className: "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-green-200 shadow-green-100",
+      className:
+        "bg-gradient-to-r from-green-50 to-emerald-50 text-green-700 border-green-200 shadow-green-100",
       iconColor: "text-green-600",
     },
     pending: {
       label: "Na čekanju",
       icon: Clock,
-      className: "bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border-amber-200 shadow-amber-100",
+      className:
+        "bg-gradient-to-r from-amber-50 to-orange-50 text-amber-700 border-amber-200 shadow-amber-100",
       iconColor: "text-amber-600",
     },
     failed: {
       label: "Neuspešno",
       icon: XCircle,
-      className: "bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200 shadow-red-100",
+      className:
+        "bg-gradient-to-r from-red-50 to-rose-50 text-red-700 border-red-200 shadow-red-100",
       iconColor: "text-red-600",
     },
   };
@@ -89,12 +93,26 @@ const OrderStatusBadge = ({ status }) => {
 /**
  * Filter badge komponenta sa profesionalnim dizajnom
  */
-const FilterBadge = ({ label, isActive, onClick, count, color = "default" }) => {
+const FilterBadge = ({
+  label,
+  isActive,
+  onClick,
+  count,
+  color = "default",
+}) => {
   const colorStyles = {
-    default: isActive ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25" : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
-    paid: isActive ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200" : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200",
-    pending: isActive ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200" : "bg-white text-gray-600 hover:bg-amber-50 border border-gray-200",
-    failed: isActive ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-200" : "bg-white text-gray-600 hover:bg-red-50 border border-gray-200",
+    default: isActive
+      ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+      : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
+    paid: isActive
+      ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200"
+      : "bg-white text-gray-600 hover:bg-green-50 border border-gray-200",
+    pending: isActive
+      ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white shadow-lg shadow-amber-200"
+      : "bg-white text-gray-600 hover:bg-amber-50 border border-gray-200",
+    failed: isActive
+      ? "bg-gradient-to-r from-red-500 to-rose-500 text-white shadow-lg shadow-red-200"
+      : "bg-white text-gray-600 hover:bg-red-50 border border-gray-200",
   };
 
   return (
@@ -195,7 +213,8 @@ export default function OrdersPage() {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
       const adminEmails =
-        import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
+        import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) ||
+        [];
       setAllowed(user && adminEmails.includes(user.email));
     });
     return () => unsubscribe();
@@ -227,7 +246,8 @@ export default function OrdersPage() {
       const matchesName = order.clientName?.toLowerCase().includes(query);
       const matchesEmail = order.clientEmail?.toLowerCase().includes(query);
       const matchesKey = order.licenseKey?.toLowerCase().includes(query);
-      if (!matchesId && !matchesName && !matchesEmail && !matchesKey) return false;
+      if (!matchesId && !matchesName && !matchesEmail && !matchesKey)
+        return false;
     }
 
     // Status filter
@@ -276,7 +296,7 @@ export default function OrdersPage() {
   if (allowed === false) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-red-50 to-white">
-        <motion.div 
+        <motion.div
           initial={{ scale: 0.9, opacity: 0 }}
           animate={{ scale: 1, opacity: 1 }}
           className="text-center p-10 bg-white rounded-3xl shadow-2xl border border-red-100"
@@ -284,8 +304,12 @@ export default function OrdersPage() {
           <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
             <X size={32} className="text-red-600" />
           </div>
-          <h2 className="text-red-700 font-black text-2xl mb-2">Pristup odbijen</h2>
-          <p className="text-gray-500">Nemate dozvolu za pristup ovoj stranici.</p>
+          <h2 className="text-red-700 font-black text-2xl mb-2">
+            Pristup odbijen
+          </h2>
+          <p className="text-gray-500">
+            Nemate dozvolu za pristup ovoj stranici.
+          </p>
         </motion.div>
       </div>
     );
@@ -295,7 +319,7 @@ export default function OrdersPage() {
     <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-bluegreen/5">
       <div className="max-w-7xl mx-auto w-full p-4 sm:p-8 pt-8">
         {/* Header */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
@@ -308,7 +332,9 @@ export default function OrdersPage() {
               <h1 className="text-3xl font-black text-charcoal">
                 Porudžbine licenci
               </h1>
-              <p className="text-gray-500 text-sm mt-0.5">Pregled svih porudžbina</p>
+              <p className="text-gray-500 text-sm mt-0.5">
+                Pregled svih porudžbina
+              </p>
             </div>
           </div>
           <Link
@@ -321,7 +347,7 @@ export default function OrdersPage() {
         </motion.div>
 
         {/* Search and Filters */}
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
@@ -357,7 +383,9 @@ export default function OrdersPage() {
             <div className="flex items-center gap-2 flex-wrap">
               <div className="flex items-center gap-2 mr-2 text-gray-400">
                 <Filter size={18} />
-                <span className="text-sm font-medium hidden sm:inline">Filter:</span>
+                <span className="text-sm font-medium hidden sm:inline">
+                  Filter:
+                </span>
               </div>
               <FilterBadge
                 label="Sve"
@@ -394,8 +422,15 @@ export default function OrdersPage() {
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
             <Sparkles size={14} className="text-bluegreen" />
             <span>
-              Pronađeno <strong className="text-charcoal">{filteredOrders.length}</strong> porudžbina
-              {searchQuery && <span> za "<strong className="text-bluegreen">{searchQuery}</strong>"</span>}
+              Pronađeno{" "}
+              <strong className="text-charcoal">{filteredOrders.length}</strong>{" "}
+              porudžbina
+              {searchQuery && (
+                <span>
+                  {" "}
+                  za "<strong className="text-bluegreen">{searchQuery}</strong>"
+                </span>
+              )}
             </span>
           </div>
         </motion.div>
@@ -412,15 +447,21 @@ export default function OrdersPage() {
                 <div className="w-16 h-16 border-4 border-bluegreen/30 rounded-full" />
                 <div className="w-16 h-16 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
               </div>
-              <p className="mt-4 text-gray-500 font-medium">Učitavanje porudžbina...</p>
+              <p className="mt-4 text-gray-500 font-medium">
+                Učitavanje porudžbina...
+              </p>
             </div>
           ) : filteredOrders.length === 0 ? (
             <div className="text-center py-16 bg-gradient-to-br from-gray-50 to-white rounded-2xl border border-gray-100">
               <div className="p-4 rounded-2xl bg-gray-100/50 inline-block mb-4">
                 <ShoppingCart size={48} className="text-gray-300" />
               </div>
-              <p className="text-lg text-gray-500 font-medium">Nema porudžbina za prikaz</p>
-              <p className="text-sm text-gray-400 mt-1">Porudžbine će se pojaviti ovde kada korisnici kupe licence</p>
+              <p className="text-lg text-gray-500 font-medium">
+                Nema porudžbina za prikaz
+              </p>
+              <p className="text-sm text-gray-400 mt-1">
+                Porudžbine će se pojaviti ovde kada korisnici kupe licence
+              </p>
             </div>
           ) : (
             <>
@@ -562,7 +603,7 @@ export default function OrdersPage() {
               >
                 {/* Decorative gradients */}
                 <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-bluegreen/20 to-sheen/10 rounded-full blur-3xl" />
-                
+
                 {/* Header */}
                 <div className="relative bg-gradient-to-r from-charcoal via-midnight to-charcoal p-5 text-white overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
@@ -574,84 +615,118 @@ export default function OrdersPage() {
                   >
                     <X size={18} />
                   </motion.button>
-                  
+
                   <div className="relative z-10 flex items-center gap-3">
                     <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
                       <Receipt size={20} />
                     </div>
                     <div>
                       <h3 className="text-lg font-bold">Detalji porudžbine</h3>
-                      <p className="text-white/60 text-xs font-mono">#{selectedOrder.id.slice(0, 12)}</p>
+                      <p className="text-white/60 text-xs font-mono">
+                        #{selectedOrder.id.slice(0, 12)}
+                      </p>
                     </div>
                   </div>
                 </div>
 
                 <div className="relative z-10 p-5 space-y-4">
                   <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                    <div className="text-xs text-gray-500 mb-1 font-medium">ID porudžbine</div>
-                    <div className="font-mono font-bold text-charcoal text-sm">{selectedOrder.id}</div>
+                    <div className="text-xs text-gray-500 mb-1 font-medium">
+                      ID porudžbine
+                    </div>
+                    <div className="font-mono font-bold text-charcoal text-sm">
+                      {selectedOrder.id}
+                    </div>
                   </div>
 
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                      <div className="text-xs text-gray-500 mb-2 font-medium">Status</div>
+                      <div className="text-xs text-gray-500 mb-2 font-medium">
+                        Status
+                      </div>
                       <OrderStatusBadge status={selectedOrder.status} />
                     </div>
                     <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                      <div className="text-xs text-gray-500 mb-1 font-medium">Iznos</div>
+                      <div className="text-xs text-gray-500 mb-1 font-medium">
+                        Iznos
+                      </div>
                       <div className="font-black text-charcoal text-lg">
-                        {selectedOrder.amount?.toLocaleString("sr-RS")} <span className="text-sm font-normal text-gray-500">RSD</span>
+                        {selectedOrder.amount?.toLocaleString("sr-RS")}{" "}
+                        <span className="text-sm font-normal text-gray-500">
+                          RSD
+                        </span>
                       </div>
                     </div>
                   </div>
 
                   <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                    <div className="text-xs text-gray-500 mb-3 font-medium">Klijent</div>
+                    <div className="text-xs text-gray-500 mb-3 font-medium">
+                      Klijent
+                    </div>
                     <div className="flex items-center gap-2.5 mb-2">
                       <div className="p-1.5 rounded-lg bg-gray-100">
                         <User size={12} className="text-gray-500" />
                       </div>
-                      <span className="font-semibold text-charcoal">{selectedOrder.clientName || "-"}</span>
+                      <span className="font-semibold text-charcoal">
+                        {selectedOrder.clientName || "-"}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2.5">
                       <div className="p-1.5 rounded-lg bg-gray-100">
                         <Mail size={12} className="text-gray-500" />
                       </div>
-                      <span className="text-sm text-gray-600">{selectedOrder.clientEmail || "-"}</span>
+                      <span className="text-sm text-gray-600">
+                        {selectedOrder.clientEmail || "-"}
+                      </span>
                     </div>
                   </div>
 
                   <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                    <div className="text-xs text-gray-500 mb-3 font-medium">Licenca</div>
+                    <div className="text-xs text-gray-500 mb-3 font-medium">
+                      Licenca
+                    </div>
                     <div className="flex items-center gap-2.5 mb-2">
                       <div className="p-1.5 rounded-lg bg-bluegreen/10">
                         <Key size={12} className="text-bluegreen" />
                       </div>
-                      <span className="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded-lg">{selectedOrder.licenseKey || "-"}</span>
+                      <span className="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded-lg">
+                        {selectedOrder.licenseKey || "-"}
+                      </span>
                     </div>
                     <div className="text-sm text-gray-600">
-                      Paket: <span className="font-semibold text-charcoal px-2 py-0.5 bg-bluegreen/10 rounded-lg">{getLicenseTypeLabel(selectedOrder.licenseType)}</span>
+                      Paket:{" "}
+                      <span className="font-semibold text-charcoal px-2 py-0.5 bg-bluegreen/10 rounded-lg">
+                        {getLicenseTypeLabel(selectedOrder.licenseType)}
+                      </span>
                     </div>
                   </div>
 
                   <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                    <div className="text-xs text-gray-500 mb-2 font-medium">Datum kreiranja</div>
+                    <div className="text-xs text-gray-500 mb-2 font-medium">
+                      Datum kreiranja
+                    </div>
                     <div className="flex items-center gap-2.5">
                       <div className="p-1.5 rounded-lg bg-gray-100">
                         <Calendar size={12} className="text-gray-500" />
                       </div>
-                      <span className="font-medium text-charcoal">{formatLicenseDate(selectedOrder.createdAt)}</span>
+                      <span className="font-medium text-charcoal">
+                        {formatLicenseDate(selectedOrder.createdAt)}
+                      </span>
                     </div>
                   </div>
 
                   {selectedOrder.paymentMethod && (
                     <div className="p-4 bg-gradient-to-br from-gray-50/80 to-white rounded-2xl border border-gray-100/50">
-                      <div className="text-xs text-gray-500 mb-2 font-medium">Način plaćanja</div>
+                      <div className="text-xs text-gray-500 mb-2 font-medium">
+                        Način plaćanja
+                      </div>
                       <div className="flex items-center gap-2.5">
                         <div className="p-1.5 rounded-lg bg-gray-100">
                           <CreditCard size={12} className="text-gray-500" />
                         </div>
-                        <span className="font-medium text-charcoal">{selectedOrder.paymentMethod}</span>
+                        <span className="font-medium text-charcoal">
+                          {selectedOrder.paymentMethod}
+                        </span>
                       </div>
                     </div>
                   )}
