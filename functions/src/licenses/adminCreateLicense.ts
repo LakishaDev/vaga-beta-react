@@ -25,10 +25,10 @@ export const adminCreateLicense = onCall(
       throw new HttpsError("invalid-argument", "licenseType required");
     }
 
-    const licenseKey = generateLicenseKey();
+    const licenseKey = generateLicenseKey(); // <- biće ID dokumenta
     const now = Timestamp.now();
 
-    const doc = {
+    const docData = {
       licenseKey,
       clientName: clientName ?? "",
       clientEmail: clientEmail ?? "",
@@ -49,8 +49,13 @@ export const adminCreateLicense = onCall(
       extensionHistory: [],
     };
 
-    const ref = await db.collection("licenses").add(doc);
+    // ✅ ID dokumenta = licenseKey
+    const ref = db.collection("licenses").doc(licenseKey);
+    await ref.set(docData);
 
-    return { id: ref.id, licenseKey };
+    return {
+      id: licenseKey,
+      licenseKey,
+    };
   }
 );

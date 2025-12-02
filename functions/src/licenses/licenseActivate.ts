@@ -1,3 +1,14 @@
+/// <summary>
+/// Aktivacija licence
+/// </summary>
+/// <remarks>
+/// Endpoint za aktivaciju licence. Provjerava valjanost licence, HWID i IP adresu (ako je zaključano).
+/// Ako je sve u redu, vraća potpisani token s informacijama o licenci.
+/// </remarks>
+/// <param name="req">HTTP zahtjev s podacima o licenci</param>
+/// <param name="res">HTTP odgovor s rezultatom aktivacije</param>
+/// <returns>JSON odgovor s informacijama o valjanosti licence i potpisanim tokenom</returns>
+
 import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import { signPayload } from "../crypto/signToken";

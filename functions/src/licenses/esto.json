@@ -1,13 +1,37 @@
-{
-  "valid": true,
-  "payload": {
+[
+  {
+    "valid": true,
+    "payload": {
+      "licenseKey": "EVAGA-TEST-0001",
+      "hwidHash": "79798bc158fc354d88bdd2ed94e83c1b59bbccb501ba11f75a0f89fe5c2bbab8",
+      "ip": null,
+      "modules": { "ambalaza": true, "stampa": true },
+      "expiresAt": "2025-12-02T13:45:00.692Z",
+      "offlineUntil": "2025-12-15T14:50:23.621Z",
+      "issuedAt": "2025-12-01T14:50:23.621Z"
+    },
+    "signature": "LecblGkUfMLa+OaIfhFDmXWmN0TNzlrDBeZhCnGyZ8h+iXvN1bSYytKDSYXWaWTiAIVisFWPZd1o8mqgKW4d9U1fgsEtm+lGsvWIL7A1t8PPQz7Pvrc8u6Wy8fgN9VZDU9LcF4zDcbxojmtO/dxQb1RYi6mRjtOxNhq20m4DvY70SSPz/F3xbJY3O5Ozy7b6JfKxQqgTYMlpz7RX91PBPJj+HcQRrpsk4Sbzy7n7tE23IgGxaVgjD2ofx7M5xxoirE4IQ+7DVk/ur1aH81AKo+eRpd6ZAdUSxmAJ/KN5RIHjD7YBBSwv2BGjXaPdsM0dUrqr0/NxIxhXD5xBjatPvg=="
+  },
+  {
+    "valid": true,
+    "payload": {
+      "licenseKey": "EVAGA-TEST-0001",
+      "hwidHash": "79798bc158fc354d88bdd2ed94e83c1b59bbccb501ba11f75a0f89fe5c2bbab8",
+      "ip": null,
+      "modules": ["ambalaza", "stampa"],
+      "expiresAt": "2026-12-02T13:45:00.463Z",
+      "offlineUntil": "2025-12-16T17:51:59.209Z",
+      "issuedAt": "2025-12-02T17:51:59.209Z"
+    },
+    "signature": "6TpNjeJSJZgIX3UV9sipYdDfs+5B1K+CjkR03AC30CR+FfH7OahZcABTw4uNeknTLuwcWKlFPGVLdsgx7ehdxHgAWuH8r0evG8rD/Lah7zuWTnCw3SGlOG0jRskGEhjCuxw7XCQ9ZUWNQu59ebkoY/fP885KXIimksezAzSSOguWM9oXtnsXnxvTPOrjIHVCP3Vs91TBg5g5g8RbJZbIwbmGo51QNOVzZfPOxxCnzHqyue0AyXH3U+8f4QFwc1iol3Z2P1HZogPNdWasQT+5xKq8ax4T+qe7TrsZSNuDBzFWkiDt6GEa/fDFmQRJke67oFgCnj9J73M5b/5Qm49WYQ=="
+  },
+  {
     "licenseKey": "EVAGA-TEST-0001",
     "hwidHash": "79798bc158fc354d88bdd2ed94e83c1b59bbccb501ba11f75a0f89fe5c2bbab8",
     "ip": null,
-    "modules": { "ambalaza": true, "stampa": true },
-    "expiresAt": "2025-12-02T13:45:00.692Z",
-    "offlineUntil": "2025-12-15T14:50:23.621Z",
-    "issuedAt": "2025-12-01T14:50:23.621Z"
-  },
-  "signature": "LecblGkUfMLa+OaIfhFDmXWmN0TNzlrDBeZhCnGyZ8h+iXvN1bSYytKDSYXWaWTiAIVisFWPZd1o8mqgKW4d9U1fgsEtm+lGsvWIL7A1t8PPQz7Pvrc8u6Wy8fgN9VZDU9LcF4zDcbxojmtO/dxQb1RYi6mRjtOxNhq20m4DvY70SSPz/F3xbJY3O5Ozy7b6JfKxQqgTYMlpz7RX91PBPJj+HcQRrpsk4Sbzy7n7tE23IgGxaVgjD2ofx7M5xxoirE4IQ+7DVk/ur1aH81AKo+eRpd6ZAdUSxmAJ/KN5RIHjD7YBBSwv2BGjXaPdsM0dUrqr0/NxIxhXD5xBjatPvg=="
-}
+    "modules": ["ambalaza", "stampa"],
+    "expiresAt": "2026-12-02T13:45:00.463Z",
+    "offlineUntil": "2025-12-16T19:30:44.647Z",
+    "issuedAt": "2025-12-02T18:46:08.316Z"
+  }
+]
