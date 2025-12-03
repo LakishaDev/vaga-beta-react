@@ -1,12 +1,12 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("./serviceAccountKey.json");
+const serviceAccount = require("../serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
   projectId: serviceAccount.project_id, // VAŽNO
 });
 
-const uid = "6pNKbRhqivg4cWQmuqpGD5TONxY2";
+const uid = "some-unique-user-id"; // Zameni sa stvarnim UID-om korisnika kojem želiš dodeliti
 
 admin
   .auth()
