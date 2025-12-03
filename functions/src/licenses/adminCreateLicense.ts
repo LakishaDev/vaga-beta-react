@@ -14,7 +14,7 @@ export const adminCreateLicense = onCall(async (req) => {
     expiresAt,
     maxActivations = 1,
     modules = {},
-    offlineDaysAllowed = 7,
+    allowedOfflineDays = 7,
     isTrial = false,
     autoRenew = false,
   } = req.data;
@@ -36,7 +36,7 @@ export const adminCreateLicense = onCall(async (req) => {
     maxActivations,
     currentActivations: 0,
     modules,
-    offlineDaysAllowed,
+    allowedOfflineDays,
     createdAt: now,
     expiresAt: Timestamp.fromDate(new Date(expiresAt)),
     isBlocked: false,

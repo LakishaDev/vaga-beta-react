@@ -107,9 +107,15 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
       ...prev,
       isTrial,
       licenseType: isTrial ? LICENSE_TYPES.TRIAL : LICENSE_TYPES.BASIC,
-      maxActivations: isTrial ? 1 : LICENSE_DEFAULTS[LICENSE_TYPES.BASIC]?.maxActivations || 2,
-      offlineDaysAllowed: isTrial ? 0 : LICENSE_DEFAULTS[LICENSE_TYPES.BASIC]?.offlineDaysAllowed || 7,
-      modules: isTrial ? ["ambalaza"] : LICENSE_DEFAULTS[LICENSE_TYPES.BASIC]?.modules || ["ambalaza"],
+      maxActivations: isTrial
+        ? 1
+        : LICENSE_DEFAULTS[LICENSE_TYPES.BASIC]?.maxActivations || 2,
+      offlineDaysAllowed: isTrial
+        ? 0
+        : LICENSE_DEFAULTS[LICENSE_TYPES.BASIC]?.offlineDaysAllowed || 7,
+      modules: isTrial
+        ? ["ambalaza"]
+        : LICENSE_DEFAULTS[LICENSE_TYPES.BASIC]?.modules || ["ambalaza"],
       expiresAt: getDefaultExpiryDate(
         isTrial ? LICENSE_TYPES.TRIAL : LICENSE_TYPES.BASIC,
         isTrial
@@ -181,6 +187,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
         exit={{ opacity: 0 }}
         className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/40 backdrop-blur-md"
         onClick={onClose}
+        data-lenis-prevent
       >
         <motion.div
           initial={{ scale: 0.9, opacity: 0, y: 30 }}
@@ -193,13 +200,13 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
           {/* Decorative gradients */}
           <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-bluegreen/30 to-sheen/20 rounded-full blur-3xl" />
           <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-sheen/30 to-bluegreen/20 rounded-full blur-3xl" />
-          
+
           {/* Header */}
           <div className="relative bg-gradient-to-r from-charcoal via-midnight to-charcoal p-6 text-white overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
             <button
               onClick={onClose}
-              className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all hover:rotate-90 duration-300"
+              className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all hover:rotate-90 duration-300 z-30"
             >
               <X size={20} />
             </button>
@@ -217,26 +224,48 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
           </div>
 
           {/* Form */}
-          <form onSubmit={handleSubmit} className="relative z-10 p-6 space-y-6 max-h-[70vh] overflow-y-auto">
+          <form
+            onSubmit={handleSubmit}
+            className="relative z-10 p-6 space-y-6 max-h-[70vh] overflow-y-auto"
+          >
             {/* Trial Toggle - Premium design */}
-            <motion.div 
+            <motion.div
               className={`relative p-5 rounded-2xl border-2 transition-all duration-300 ${
-                formData.isTrial 
-                  ? "bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-amber-300 shadow-lg shadow-amber-100" 
+                formData.isTrial
+                  ? "bg-gradient-to-r from-amber-50 via-orange-50 to-amber-50 border-amber-300 shadow-lg shadow-amber-100"
                   : "bg-gradient-to-r from-gray-50 to-white border-gray-200"
               }`}
               whileHover={{ scale: 1.01 }}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-xl ${formData.isTrial ? "bg-gradient-to-br from-amber-400 to-orange-500" : "bg-gray-200"} transition-all duration-300`}>
-                    <Clock size={20} className={formData.isTrial ? "text-white" : "text-gray-500"} />
+                  <div
+                    className={`p-2 rounded-xl ${
+                      formData.isTrial
+                        ? "bg-gradient-to-br from-amber-400 to-orange-500"
+                        : "bg-gray-200"
+                    } transition-all duration-300`}
+                  >
+                    <Clock
+                      size={20}
+                      className={
+                        formData.isTrial ? "text-white" : "text-gray-500"
+                      }
+                    />
                   </div>
                   <div>
-                    <span className={`font-bold ${formData.isTrial ? "text-amber-800" : "text-gray-700"}`}>
+                    <span
+                      className={`font-bold ${
+                        formData.isTrial ? "text-amber-800" : "text-gray-700"
+                      }`}
+                    >
                       Probna licenca (Trial)
                     </span>
-                    <p className={`text-xs ${formData.isTrial ? "text-amber-600" : "text-gray-500"}`}>
+                    <p
+                      className={`text-xs ${
+                        formData.isTrial ? "text-amber-600" : "text-gray-500"
+                      }`}
+                    >
                       7 dana, 1 aktivacija, bez reset HWID opcije
                     </p>
                   </div>
@@ -245,16 +274,19 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                   type="button"
                   onClick={() => handleTrialToggle(!formData.isTrial)}
                   className={`relative w-16 h-8 rounded-full transition-all duration-300 ${
-                    formData.isTrial 
-                      ? "bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg shadow-amber-200" 
+                    formData.isTrial
+                      ? "bg-gradient-to-r from-amber-400 to-orange-500 shadow-lg shadow-amber-200"
                       : "bg-gray-300"
                   }`}
                 >
                   <motion.span
                     layout
                     className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-md"
-                    animate={{ x: formData.isTrial ? 34 : 4 }}
+                    animate={{ x: formData.isTrial ? 3.5 : -28 }}
                     transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                    whileHover={{
+                      backgroundColor: formData.isTrial ? "#FFEDD5" : "#E5E7EB",
+                    }}
                   />
                 </button>
               </div>
@@ -283,12 +315,22 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                 </div>
                 <motion.button
                   type="button"
-                  whileHover={{ scale: 1.05, rotate: 180 }}
-                  whileTap={{ scale: 0.95 }}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95, speed: 0.1 }}
                   onClick={regenerateKey}
                   className="px-4 py-3.5 bg-gradient-to-br from-bluegreen to-sheen text-white rounded-xl hover:shadow-lg hover:shadow-bluegreen/25 transition-all"
                 >
-                  <RefreshCw size={20} />
+                  <motion.span
+                    whileHover={{ scale: 1.05, rotate: 180 }}
+                    className="flex items-center justify-center"
+                    transition={{
+                      type: "tween",
+                      duration: 0.4,
+                      ease: "easeInOut",
+                    }}
+                  >
+                    <RefreshCw size={20} />
+                  </motion.span>
                 </motion.button>
               </div>
               {errors.licenseKey && (
@@ -361,15 +403,28 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                         <motion.div
                           layoutId="selectedType"
                           className="absolute inset-0 bg-gradient-to-br from-bluegreen/10 to-sheen/5"
-                          transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                          transition={{
+                            type: "spring",
+                            bounce: 0.2,
+                            duration: 0.6,
+                          }}
                         />
                       )}
                       <div className="relative z-10">
-                        <span className={`font-bold ${formData.licenseType === type ? "text-bluegreen" : "text-charcoal"}`}>
+                        <span
+                          className={`font-bold ${
+                            formData.licenseType === type
+                              ? "text-bluegreen"
+                              : "text-charcoal"
+                          }`}
+                        >
                           {getLicenseTypeLabel(type)}
                         </span>
                         {formData.licenseType === type && (
-                          <Check size={16} className="absolute -top-1 -right-1 text-bluegreen" />
+                          <Check
+                            size={16}
+                            className="absolute -top-1 -right-1 text-bluegreen"
+                          />
                         )}
                       </div>
                     </motion.button>
@@ -444,19 +499,27 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                     type="button"
                     whileHover={{ scale: formData.isTrial ? 1 : 1.05 }}
                     whileTap={{ scale: formData.isTrial ? 1 : 0.95 }}
-                    onClick={() => !formData.isTrial && handleModuleToggle(module)}
+                    onClick={() =>
+                      !formData.isTrial && handleModuleToggle(module)
+                    }
                     disabled={formData.isTrial}
                     className={`px-5 py-2.5 rounded-full border-2 transition-all duration-300 font-medium flex items-center gap-2 ${
                       formData.modules.includes(module)
                         ? "border-bluegreen bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
                         : "border-gray-200 hover:border-bluegreen/50 bg-white text-charcoal"
-                    } ${formData.isTrial ? "opacity-50 cursor-not-allowed" : ""}`}
+                    } ${
+                      formData.isTrial ? "opacity-50 cursor-not-allowed" : ""
+                    }`}
                   >
                     {formData.modules.includes(module) && (
                       <motion.span
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
-                        transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                        transition={{
+                          type: "spring",
+                          stiffness: 500,
+                          damping: 30,
+                        }}
                       >
                         <Check size={16} />
                       </motion.span>
@@ -502,23 +565,46 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
 
             {/* Auto renew toggle */}
             {!formData.isTrial && (
-              <motion.div 
+              <motion.div
                 className={`relative p-5 rounded-2xl border-2 transition-all duration-300 ${
-                  formData.autoRenew 
-                    ? "bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 border-bluegreen/30 shadow-lg shadow-bluegreen/5" 
+                  formData.autoRenew
+                    ? "bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 border-bluegreen/30 shadow-lg shadow-bluegreen/5"
                     : "bg-gradient-to-r from-gray-50 to-white border-gray-200"
                 }`}
               >
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className={`p-2 rounded-xl transition-all duration-300 ${formData.autoRenew ? "bg-gradient-to-br from-bluegreen to-sheen" : "bg-gray-200"}`}>
-                      <RefreshCw size={20} className={formData.autoRenew ? "text-white" : "text-gray-500"} />
+                    <div
+                      className={`p-2 rounded-xl transition-all duration-300 ${
+                        formData.autoRenew
+                          ? "bg-gradient-to-br from-bluegreen to-sheen"
+                          : "bg-gray-200"
+                      }`}
+                    >
+                      <RefreshCw
+                        size={20}
+                        className={
+                          formData.autoRenew ? "text-white" : "text-gray-500"
+                        }
+                      />
                     </div>
                     <div>
-                      <span className={`font-bold ${formData.autoRenew ? "text-bluegreen" : "text-gray-700"}`}>
+                      <span
+                        className={`font-bold ${
+                          formData.autoRenew
+                            ? "text-bluegreen"
+                            : "text-gray-700"
+                        }`}
+                      >
                         Automatsko obnavljanje
                       </span>
-                      <p className={`text-xs ${formData.autoRenew ? "text-bluegreen/70" : "text-gray-500"}`}>
+                      <p
+                        className={`text-xs ${
+                          formData.autoRenew
+                            ? "text-zinc-700/90"
+                            : "text-gray-500"
+                        }`}
+                      >
                         Licenca se automatski produžava po isteku
                       </p>
                     </div>
@@ -526,19 +612,26 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                   <button
                     type="button"
                     onClick={() =>
-                      setFormData({ ...formData, autoRenew: !formData.autoRenew })
+                      setFormData({
+                        ...formData,
+                        autoRenew: !formData.autoRenew,
+                      })
                     }
                     className={`relative w-16 h-8 rounded-full transition-all duration-300 ${
-                      formData.autoRenew 
-                        ? "bg-gradient-to-r from-bluegreen to-sheen shadow-lg shadow-bluegreen/20" 
+                      formData.autoRenew
+                        ? "bg-gradient-to-r from-bluegreen to-sheen shadow-lg shadow-bluegreen/20"
                         : "bg-gray-300"
                     }`}
                   >
                     <motion.span
                       layout
                       className="absolute top-1 w-6 h-6 bg-white rounded-full shadow-md"
-                      animate={{ x: formData.autoRenew ? 34 : 4 }}
-                      transition={{ type: "spring", stiffness: 500, damping: 30 }}
+                      animate={{ x: formData.autoRenew ? 3.5 : -28 }}
+                      transition={{
+                        type: "spring",
+                        stiffness: 500,
+                        damping: 30,
+                      }}
                     />
                   </button>
                 </div>
@@ -558,7 +651,10 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
               </motion.button>
               <motion.button
                 type="submit"
-                whileHover={{ scale: 1.02, boxShadow: "0 20px 40px -15px rgba(110, 174, 162, 0.5)" }}
+                whileHover={{
+                  scale: 1.02,
+                  boxShadow: "0 20px 40px -15px rgba(110, 174, 162, 0.5)",
+                }}
                 whileTap={{ scale: 0.98 }}
                 disabled={loading}
                 className="flex-1 px-6 py-3.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold shadow-lg shadow-bluegreen/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
