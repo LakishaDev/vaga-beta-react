@@ -1,3 +1,7 @@
+import { onRequest, HttpsError } from "firebase-functions/v2/https";
+import { getFirestore, Timestamp } from "firebase-admin/firestore";
+import { signPayload } from "../crypto/signToken";
+
 /// <summary>
 /// Aktivacija licence
 /// </summary>
@@ -8,11 +12,6 @@
 /// <param name="req">HTTP zahtjev s podacima o licenci</param>
 /// <param name="res">HTTP odgovor s rezultatom aktivacije</param>
 /// <returns>JSON odgovor s informacijama o valjanosti licence i potpisanim tokenom</returns>
-
-import { onRequest, HttpsError } from "firebase-functions/v2/https";
-import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { signPayload } from "../crypto/signToken";
-
 export const licenseActivate = onRequest(async (req, res) => {
   try {
     if (req.method !== "POST") {

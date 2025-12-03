@@ -153,6 +153,7 @@ export default function LicenseDetailsDrawer({
         <>
           {/* Overlay */}
           <motion.div
+            key="license-overlay"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -162,6 +163,7 @@ export default function LicenseDetailsDrawer({
 
           {/* Drawer */}
           <motion.div
+            key="license-drawer"
             initial={{ x: "100%" }}
             animate={{ x: 0 }}
             exit={{ x: "100%" }}
@@ -173,14 +175,19 @@ export default function LicenseDetailsDrawer({
             <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-bluegreen/10 to-sheen/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             {/* Header */}
-            <div className="sticky top-0 bg-gradient-to-r from-charcoal via-midnight to-charcoal p-6 text-white z-10 overflow-hidden">
+            <div className="top-0 bg-gradient-to-r from-charcoal via-midnight to-charcoal p-6 text-white z-10 overflow-hidden">
               <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
 
               <motion.button
-                whileHover={{ scale: 1.1, rotate: 90 }}
+                whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 1.3 }}
+                transition={{
+                  type: "spring",
+                  stiffness: 900,
+                  damping: 70,
+                }}
                 onClick={onClose}
-                className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
+                className="absolute z-50 right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all"
               >
                 <X size={20} />
               </motion.button>
