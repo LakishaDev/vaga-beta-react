@@ -22,6 +22,7 @@ import {
   X,
   Scale,
   Home,
+  KeyRoundIcon,
 } from "lucide-react";
 import TypingText from "../UI/TypingText";
 import { MdAdminPanelSettings } from "react-icons/md";
@@ -155,6 +156,14 @@ export default function Navbar() {
               Admin
             </Link>
             <Link
+              to="/prodavnica/admin/licenses"
+              className={navLinkClass("/prodavnica/admin/licenses")}
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <KeyRoundIcon size={22} />
+              Licence
+            </Link>
+            <Link
               to="/prodavnica/porudzbine"
               className={navLinkClass("/prodavnica/porudzbine")}
               onClick={() => setMobileMenuOpen(false)}
@@ -263,6 +272,14 @@ export default function Navbar() {
               >
                 <MdAdminPanelSettings size={22} />
                 Admin
+              </Link>
+              <Link
+                to="/prodavnica/admin/licenses"
+                className={navLinkClass("/prodavnica/admin/licenses")}
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <KeyRoundIcon size={22} />
+                Licence
               </Link>
               <Link
                 to="/prodavnica/porudzbine"
