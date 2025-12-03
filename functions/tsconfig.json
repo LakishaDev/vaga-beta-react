@@ -15,6 +15,6 @@
 
     "esModuleInterop": true
   },
-  "include": ["src", "src/setAdmin.js"],
+  "include": ["src", "src/utils/setAdmin.ts"],
   "exclude": ["node_modules", "../node_modules", "lib"]
 }
