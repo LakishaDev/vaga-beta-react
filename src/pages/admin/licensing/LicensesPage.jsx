@@ -19,7 +19,7 @@
 // ✅ Glassmorphism dizajn
 // ===============================================================================
 
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -33,17 +33,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { auth } from "../../../utils/firebase";
-import { SnackbarContext } from "../../../contexts/snackbar/SnackbarContext";
-import {
-  subscribeLicenses,
-  adminCreateLicense,
-  adminBlockLicense,
-  adminUnblockLicense,
-  adminResetHardware,
-  adminUpdateLicense,
-  extendLicense,
-  convertTrialToPaid,
-} from "../../../services/licenseService";
+import { useLicenseOptimistic } from "../../../hooks/useLicenseOptimistic";
 import {
   LicenseTable,
   LicenseCreateModal,
@@ -105,15 +95,29 @@ export default function LicensesPage() {
   // ===============================================================================
   // STATE
   // ===============================================================================
-  const { showSnackbar } = useContext(SnackbarContext);
   const [allowed, setAllowed] = useState(null);
-  const [licenses, setLicenses] = useState([]);
-  const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
+
+  // Optimistic updates hook
+  const {
+    licenses,
+    loading,
+    operations: {
+      createLicense,
+      updateLicense,
+      blockLicense,
+      unblockLicense,
+      resetHardware,
+      extendLicense: extendLicenseOpt,
+      convertTrialToPaid: convertTrialToPaidOpt,
+    },
+  } = useLicenseOptimistic(
+    statusFilter !== "all" ? { status: statusFilter } : {}
+  );
 
   // ===============================================================================
   // AUTH CHECK
@@ -128,23 +132,7 @@ export default function LicensesPage() {
     return () => unsubscribe();
   }, []);
 
-  // ===============================================================================
-  // DATA LOADING
-  // ===============================================================================
-  useEffect(() => {
-    if (!allowed) return;
 
-    setLoading(true);
-    const unsubscribe = subscribeLicenses(
-      (data) => {
-        setLicenses(data);
-        setLoading(false);
-      },
-      statusFilter !== "all" ? { status: statusFilter } : {}
-    );
-
-    return () => unsubscribe();
-  }, [allowed, statusFilter]);
 
   // ===============================================================================
   // FILTERED DATA
@@ -181,79 +169,46 @@ export default function LicensesPage() {
   };
 
   // ===============================================================================
-  // HANDLERS
+  // HANDLERS - Koriste optimistic updates iz hooka
   // ===============================================================================
   const handleCreateLicense = async (licenseData) => {
-    try {
-      await adminCreateLicense(licenseData);
-      showSnackbar("Licenca uspešno kreirana!", "success");
+    const success = await createLicense(licenseData);
+    if (success) {
       setShowCreateModal(false);
-    } catch (error) {
-      showSnackbar("Greška pri kreiranju licence.", "error");
-      throw error;
     }
   };
 
   const handleBlockLicense = async (licenseId) => {
-    try {
-      await adminBlockLicense(licenseId);
-      showSnackbar("Licenca je blokirana.", "success");
+    const success = await blockLicense(licenseId);
+    if (success) {
       setSelectedLicense(null);
-    } catch {
-      showSnackbar("Greška pri blokiranju licence.", "error");
     }
   };
 
   const handleUnblockLicense = async (licenseId) => {
-    try {
-      await adminUnblockLicense(licenseId);
-      showSnackbar("Licenca je odblokirana.", "success");
+    const success = await unblockLicense(licenseId);
+    if (success) {
       setSelectedLicense(null);
-    } catch {
-      showSnackbar("Greška pri odblokiranju licence.", "error");
     }
   };
 
   const handleResetHwid = async (licenseId) => {
-    try {
-      await adminResetHardware(licenseId);
-      showSnackbar("Hardware ID je resetovan.", "success");
-    } catch {
-      showSnackbar("Greška pri resetovanju HWID-a.", "error");
-    }
+    await resetHardware(licenseId);
   };
 
   const handleExtendLicense = async (licenseId, days) => {
-    try {
-      await extendLicense(licenseId, days);
-      showSnackbar(`Licenca produžena za ${days} dana.`, "success");
-    } catch {
-      showSnackbar("Greška pri produženju licence.", "error");
-    }
+    await extendLicenseOpt(licenseId, days);
   };
 
   const handleConvertToPaid = async (licenseId, orderData) => {
-    try {
-      await convertTrialToPaid(licenseId, orderData);
-      showSnackbar("Licenca konvertovana u plaćenu.", "success");
+    const success = await convertTrialToPaidOpt(licenseId, orderData);
+    if (success) {
       setSelectedLicense(null);
-    } catch {
-      showSnackbar("Greška pri konverziji licence.", "error");
     }
   };
 
   const handleUpdateAutoRenew = async (licenseId, autoRenew) => {
-    try {
-      await adminUpdateLicense(licenseId, { autoRenew });
-      showSnackbar(
-        autoRenew
-          ? "Automatsko obnavljanje uključeno."
-          : "Automatsko obnavljanje isključeno.",
-        "success"
-      );
-    } catch {
-      showSnackbar("Greška pri ažuriranju.", "error");
-    }
+    await updateLicense(licenseId, { autoRenew });
   };
 
   const handleViewLicense = (license) => {
