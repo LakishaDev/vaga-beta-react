@@ -1,5 +1,5 @@
 const admin = require("firebase-admin");
-const serviceAccount = require("../serviceAccountKey.json");
+const serviceAccount = require("../../serviceAccountKey.json");
 
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount),
@@ -15,7 +15,7 @@ admin
     console.log("Admin claim set successfully!");
     process.exit(0);
   })
-  .catch((err) => {
+  .catch((err: any) => {
     console.error(err);
     process.exit(1);
   });

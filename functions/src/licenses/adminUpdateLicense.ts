@@ -1,6 +1,6 @@
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
-import { assertAdmin } from "../auth";
+import { assertAdmin } from "../utils/auth";
 
 export const adminUpdateLicense = onCall(async (req) => {
   assertAdmin(req);
