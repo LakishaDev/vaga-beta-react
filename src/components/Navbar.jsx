@@ -113,15 +113,6 @@ export default function Navbar() {
           </li>
           <li>
             <Link
-              to="/prodavnica/admin/licenses"
-              className="flex items-center gap-2 hover:text-[#6EAEA2] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaKey /> Licenses
-            </Link>
-          </li>
-          <li>
-            <Link
               to="/usluge"
               className="flex items-center gap-2 hover:text-[#91CEC1] transition"
               style={{ color: BOJE.bone }}
@@ -183,16 +174,6 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
             >
               <FaShoppingBag /> Prodavnica
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/prodavnica/admin/licenses"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaKey /> Licenses
             </Link>
           </li>
           <li>

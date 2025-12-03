@@ -19,7 +19,7 @@
 // ✅ Glassmorphism dizajn
 // ===============================================================================
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -103,6 +103,10 @@ export default function LicensesPage() {
   const [showAnalytics, setShowAnalytics] = useState(false);
 
   // Optimistic updates hook
+  const filters = useMemo(() => {
+    return statusFilter !== "all" ? { status: statusFilter } : {};
+  }, [statusFilter]);
+
   const {
     licenses,
     loading,
@@ -115,9 +119,7 @@ export default function LicensesPage() {
       extendLicense: extendLicenseOpt,
       convertTrialToPaid: convertTrialToPaidOpt,
     },
-  } = useLicenseOptimistic(
-    statusFilter !== "all" ? { status: statusFilter } : {}
-  );
+  } = useLicenseOptimistic(filters);
 
   // ===============================================================================
   // AUTH CHECK
@@ -131,8 +133,6 @@ export default function LicensesPage() {
     });
     return () => unsubscribe();
   }, []);
-
-
 
   // ===============================================================================
   // FILTERED DATA

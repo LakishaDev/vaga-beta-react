@@ -17,7 +17,7 @@
 //
 // OPERACIJE SA OPTIMISTIC UPDATES:
 // - adminCreateLicense - kreiranje nove licence
-// - adminUpdateLicense - ažuriranje licence  
+// - adminUpdateLicense - ažuriranje licence
 // - adminBlockLicense - blokiranje licence
 // - adminUnblockLicense - odblokiranje licence
 // - adminResetHardware - resetovanje hardware ID-a
@@ -32,7 +32,7 @@ import { SnackbarContext } from "../contexts/snackbar/SnackbarContext";
 
 /**
  * Custom hook za optimistic updates licenci
- * 
+ *
  * @param {Object} filters - Firestore filteri (status, isTrial, etc.)
  * @returns {Object} - { licenses, loading, operations }
  */
@@ -47,14 +47,11 @@ export const useLicenseOptimistic = (filters = {}) => {
   // ==============================================================================
   useEffect(() => {
     setLoading(true);
-    const unsubscribe = subscribeLicenses(
-      (data) => {
-        setFirestoreLicenses(data);
-        setLicenses(data);
-        setLoading(false);
-      },
-      filters
-    );
+    const unsubscribe = subscribeLicenses((data) => {
+      setFirestoreLicenses(data);
+      setLicenses(data);
+      setLoading(false);
+    }, filters);
 
     return () => unsubscribe();
   }, [filters]);
