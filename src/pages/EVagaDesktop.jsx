@@ -16,107 +16,17 @@ import {
   ChevronUp,
 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useEVagaDesktop } from "../contexts/EVagaDesktopContext";
 
 const EVagaDesktop = () => {
   const [openFaq, setOpenFaq] = useState(null);
-  const [selectedPackage, setSelectedPackage] = useState(null);
+  const {
+    desktopPackages: packages,
+    desktopAdditionalServices: additionalServices,
+    formatPrice,
+  } = useEVagaDesktop();
 
-  // Paketi
-  const packages = [
-    {
-      id: "starter",
-      name: "Starter paket",
-      price: 89990,
-      recommended: false,
-      features: [
-        "eVaga Desktop - Serverska strana",
-        "eVaga Desktop - Klijentska strana (1 licenca)",
-        "SQL Server Express integracija",
-        "Osnovne funkcionalnosti merenja",
-        "Evidencija fizičkih i pravnih lica",
-        "Upravljanje vozilima i robom",
-        "Štampanje izveštaja",
-        "Email podrška",
-        "1 mesec besplatne podrške",
-      ],
-      description: "Idealan za male firme i individualne preduzetnike",
-    },
-    {
-      id: "professional",
-      name: "Professional paket",
-      price: 149990,
-      recommended: true,
-      features: [
-        "Sve iz Starter paketa",
-        "eVaga Desktop - Klijentske stanice (do 5 licenci)",
-        "Client-Server arhitektura",
-        "WebSocket komunikacija u realnom vremenu",
-        "Kontrola pristupa sa 2 nivoa korisnika",
-        "Postavke firme sa logoima",
-        "Automatska sinhronizacija podataka",
-        "Remote pristup podacima",
-        "Email i telefon podrška",
-        "3 meseca besplatne podrške",
-        "Obuka korisnika (2h)",
-      ],
-      description: "Najpopularniji izbor za srednje firme",
-    },
-    {
-      id: "enterprise",
-      name: "Enterprise paket",
-      price: 249990,
-      recommended: false,
-      features: [
-        "Sve iz Professional paketa",
-        "Neograničen broj klijentskih stanica",
-        "SQL Server Standard/Enterprise integracija",
-        "Prilagođeni izveštaji i štampanje",
-        "Backup i restore automatizacija",
-        "VPN pristup za remote konekcije",
-        "Integracija sa drugim sistemima (API)",
-        "Monitoring i alerting sistem",
-        "Dedikovan account manager",
-        "6 meseci besplatne podrške",
-        "Obuka korisnika (5h)",
-        "On-site instalacija i setup",
-      ],
-      description: "Kompletno rešenje za velike firme",
-    },
-  ];
 
-  // Dodatne usluge
-  const additionalServices = [
-    {
-      name: "Dodatna klijentska licenca",
-      price: 15000,
-      unit: "po licenci",
-    },
-    {
-      name: "Tehnička podrška - mesečna",
-      price: 5000,
-      unit: "mesečno",
-    },
-    {
-      name: "Tehnička podrška - godišnja",
-      price: 50000,
-      unit: "godišnje (ušteda 17%)",
-    },
-    {
-      name: "Dodatna obuka korisnika",
-      price: 8000,
-      unit: "po satu",
-    },
-    {
-      name: "Prilagođavanje softvera",
-      price: 12000,
-      unit: "po satu",
-    },
-    {
-      name: "On-site instalacija",
-      price: 20000,
-      unit: "jednokratno",
-    },
-  ];
 
   // Tehnički detalji
   const technicalSpecs = [
@@ -222,11 +132,6 @@ const EVagaDesktop = () => {
     },
   ];
 
-  // Format cene
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat("sr-RS").format(price) + " RSD";
-  };
-
   return (
     <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white rounded-t-2xl mt-14">
       {/* Hero sekcija */}
@@ -240,6 +145,34 @@ const EVagaDesktop = () => {
             transition={{ duration: 0.6 }}
             className="text-center mb-12"
           >
+            {/* Logoi */}
+            <div className="flex justify-center items-center gap-8 mb-8 flex-wrap">
+              <motion.img
+                src="/imgs/evagadesktop/eVagaServer.png"
+                alt="eVaga Server"
+                className="h-16 md:h-20 object-contain filter drop-shadow-lg"
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              />
+              <motion.img
+                src="/imgs/evagadesktop/evaga.png"
+                alt="eVaga Desktop"
+                className="h-20 md:h-24 object-contain filter drop-shadow-2xl"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.3 }}
+              />
+              <motion.img
+                src="/imgs/evagadesktop/eVagaKlijent.png"
+                alt="eVaga Klijent"
+                className="h-16 md:h-20 object-contain filter drop-shadow-lg"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ duration: 0.6, delay: 0.2 }}
+              />
+            </div>
+
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
               eVaga Desktop
             </h1>
