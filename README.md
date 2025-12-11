@@ -181,9 +181,25 @@ src/
 
 ## 📚 Dokumentacija
 
-- **[ADMINPANEL_DOKUMENTACIJA.md](./ADMINPANEL_DOKUMENTACIJA.md)** - Detaljna tehnička dokumentacija za AdminPanel komponentu
-- **[DIZAJN_DOKUMENTACIJA.md](./DIZAJN_DOKUMENTACIJA.md)** - Dizajn specifikacije i UI/UX dokumentacija
-- **[DIZAJN_PRIMERI.md](./DIZAJN_PRIMERI.md)** - Primeri dizajn pattern-a
+Kompletna dokumentacija projekta je organizovana u [`/docs`](./docs) folderu:
+
+### 🛠️ Admin Panel
+- **[ADMINPANEL_DOKUMENTACIJA.md](./docs/admin-panel/ADMINPANEL_DOKUMENTACIJA.md)** - Detaljna tehnička dokumentacija
+- **[ADMINPANEL_REFACTORING_GUIDE.md](./docs/admin-panel/ADMINPANEL_REFACTORING_GUIDE.md)** - Vodič za refaktorisanje
+- **[REFACTORING_ADMINPANEL_v3.md](./docs/admin-panel/REFACTORING_ADMINPANEL_v3.md)** - v3.0 refactoring detalji
+
+### 🎨 Design System
+- **[DIZAJN_DOKUMENTACIJA.md](./docs/design/DIZAJN_DOKUMENTACIJA.md)** - Dizajn specifikacije i UI/UX
+- **[DIZAJN_PRIMERI.md](./docs/design/DIZAJN_PRIMERI.md)** - Primeri dizajn pattern-a
+- **[UI_IMPROVEMENTS.md](./docs/design/UI_IMPROVEMENTS.md)** - UI improvement changelog
+
+### ✨ Features
+- **[OPTIMISTIC_UPDATES_DOKUMENTACIJA.md](./docs/features/OPTIMISTIC_UPDATES_DOKUMENTACIJA.md)** - Optimistic updates pattern
+- **[IMPLEMENTATION_SUMMARY.md](./docs/features/IMPLEMENTATION_SUMMARY.md)** - Pregled feature-a
+
+### 📖 Više Dokumentacije
+- **[Dokumentacija Index](./docs/README.md)** - Kompletan pregled dokumentacije
+- **[CHANGELOG.md](./docs/CHANGELOG.md)** - Istorija verzija i izmena
 
 ## 🔥 Firebase Konfiguracija
 

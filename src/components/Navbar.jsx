@@ -122,6 +122,15 @@ export default function Navbar() {
           </li>
           <li>
             <Link
+              to="/evaga-desktop"
+              className="flex items-center gap-2 hover:text-[#AD5637] transition"
+              style={{ color: BOJE.bone }}
+            >
+              <FaBoxes /> Program
+            </Link>
+          </li>
+          <li>
+            <Link
               to="/aplikacija"
               className="flex items-center gap-2 hover:text-[#6EAEA2] transition"
               style={{ color: BOJE.bone }}
@@ -184,6 +193,16 @@ export default function Navbar() {
               onClick={() => setOpen(false)}
             >
               <FaCogs /> Usluge
+            </Link>
+          </li>
+          <li>
+            <Link
+              to="/evaga-desktop"
+              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#AD5637]/20 w-full text-right"
+              style={{ color: BOJE.bone }}
+              onClick={() => setOpen(false)}
+            >
+              <FaBoxes /> Program
             </Link>
           </li>
           <li>

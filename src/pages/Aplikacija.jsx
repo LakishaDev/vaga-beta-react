@@ -62,7 +62,7 @@ export default function Aplikacija() {
 
               <h1 className="text-4xl sm:text-5xl font-extrabold mb-4 tracking-tight">
                 <span className="bg-gradient-to-r from-white via-[#91CEC1] to-white bg-clip-text text-transparent">
-                  eVaga Client Mobile
+                  eVaga Mobile
                 </span>
               </h1>
 
@@ -88,12 +88,17 @@ export default function Aplikacija() {
 
             {/* Desna strana - Mobilna ikonica */}
             <div className="flex-shrink-0 animate-slidein-right">
-              <div className="relative">
+              <img
+                src="/imgs/logos/logo.png"
+                alt="eVaga Client Mobile App Mockup"
+                className="w-48 sm:w-64 mx-auto"
+              />
+              {/* <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-[#91CEC1] to-[#6EAEA2] rounded-full blur-2xl opacity-50 animate-pulse"></div>
                 <div className="relative bg-white/10 backdrop-blur-md rounded-3xl p-8 border border-white/20 shadow-2xl">
                   <FaMobileAlt className="text-8xl text-[#91CEC1]" />
                 </div>
-              </div>
+              </div> */}
             </div>
           </div>
         </div>
@@ -105,8 +110,8 @@ export default function Aplikacija() {
           Vaša mobilna laboratorija u džepu
         </h2>
         <p className="text-[#2F5363] text-lg mb-3 leading-relaxed">
-          <span className="font-bold text-[#AD5637]">eVaga Client Mobile</span>{" "}
-          je mobilna aplikacija dizajnirana da{" "}
+          <span className="font-bold text-[#AD5637]">eVaga Mobile</span> je
+          mobilna aplikacija dizajnirana da{" "}
           <span className="text-[#6EAEA2] font-semibold">
             pojednostavi i ubrza
           </span>{" "}

@@ -23,6 +23,7 @@ import Onama from "./pages/Onama";
 import Aplikacija from "./pages/Aplikacija";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Prodavnica from "./Prodavnica";
+import EVagaDesktop from "./pages/EVagaDesktop";
 import Lenis from "lenis";
 import { useEffect } from "react";
 
@@ -46,6 +47,7 @@ function AppContent() {
           <Route path="/kontakt" element={<Kontakt />} />
           <Route path="/onama" element={<Onama />} />
           <Route path="/aplikacija" element={<Aplikacija />} />
+          <Route path="/evaga-desktop" element={<EVagaDesktop />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
         </Routes>
       </main>
