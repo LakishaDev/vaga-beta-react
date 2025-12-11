@@ -24,6 +24,7 @@ import Aplikacija from "./pages/Aplikacija";
 import PrivacyPolicy from "./pages/PrivacyPolicy";
 import Prodavnica from "./Prodavnica";
 import EVagaDesktop from "./pages/EVagaDesktop";
+import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import Lenis from "lenis";
 import { useEffect } from "react";
 
@@ -74,11 +75,13 @@ function App() {
   }, []);
 
   return (
-    <div className="min-h-screen w-full napredniGradient">
-      <Router>
-        <AppContent />
-      </Router>
-    </div>
+    <EVagaDesktopProvider>
+      <div className="min-h-screen w-full napredniGradient">
+        <Router>
+          <AppContent />
+        </Router>
+      </div>
+    </EVagaDesktopProvider>
   );
 }
 
