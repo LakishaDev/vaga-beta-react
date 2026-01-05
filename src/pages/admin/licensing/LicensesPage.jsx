@@ -31,6 +31,8 @@ import {
   List,
   X,
   Sparkles,
+  Shield,
+  Users,
 } from "lucide-react";
 import { auth } from "../../../utils/firebase";
 import { useLicenseOptimistic } from "../../../hooks/useLicenseOptimistic";
@@ -39,6 +41,7 @@ import {
   LicenseCreateModal,
   LicenseDetailsDrawer,
   LicenseAnalyticsPanel,
+  UserManagementTab,
 } from "../../../components/admin/licensing";
 
 /**
@@ -96,6 +99,7 @@ export default function LicensesPage() {
   // STATE
   // ===============================================================================
   const [allowed, setAllowed] = useState(null);
+  const [activeTab, setActiveTab] = useState("licenses"); // New: Tab state
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -275,183 +279,249 @@ export default function LicensesPage() {
             </div>
           </div>
           <div className="flex gap-3">
+            {activeTab === "licenses" && (
+              <>
+                <motion.button
+                  whileHover={{ scale: 1.05, y: -2 }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowAnalytics(!showAnalytics)}
+                  className={`px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all shadow-sm ${
+                    showAnalytics
+                      ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+                      : "bg-white text-charcoal hover:bg-gray-50 border border-gray-200"
+                  }`}
+                >
+                  {showAnalytics ? <List size={18} /> : <BarChart3 size={18} />}
+                  {showAnalytics ? "Lista" : "Analitika"}
+                </motion.button>
+                <motion.button
+                  whileHover={{
+                    scale: 1.05,
+                    y: -2,
+                    boxShadow: "0 20px 40px -15px rgba(110, 174, 162, 0.5)",
+                  }}
+                  whileTap={{ scale: 0.95 }}
+                  onClick={() => setShowCreateModal(true)}
+                  className="px-5 py-2.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-bluegreen/25 transition-all"
+                  style={{ backgroundSize: "200% 100%" }}
+                >
+                  <Plus size={18} />
+                  Nova licenca
+                </motion.button>
+              </>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Tabs */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="mb-6"
+        >
+          <div className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg border border-gray-100/50 p-2 inline-flex gap-2">
             <motion.button
-              whileHover={{ scale: 1.05, y: -2 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowAnalytics(!showAnalytics)}
-              className={`px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all shadow-sm ${
-                showAnalytics
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveTab("licenses")}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                activeTab === "licenses"
                   ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
-                  : "bg-white text-charcoal hover:bg-gray-50 border border-gray-200"
+                  : "text-gray-600 hover:bg-gray-50"
               }`}
             >
-              {showAnalytics ? <List size={18} /> : <BarChart3 size={18} />}
-              {showAnalytics ? "Lista" : "Analitika"}
+              <Key className="w-5 h-5" />
+              Licence
             </motion.button>
             <motion.button
-              whileHover={{
-                scale: 1.05,
-                y: -2,
-                boxShadow: "0 20px 40px -15px rgba(110, 174, 162, 0.5)",
-              }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowCreateModal(true)}
-              className="px-5 py-2.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-bluegreen/25 transition-all"
-              style={{ backgroundSize: "200% 100%" }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setActiveTab("users")}
+              className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                activeTab === "users"
+                  ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+                  : "text-gray-600 hover:bg-gray-50"
+              }`}
             >
-              <Plus size={18} />
-              Nova licenca
+              <Users className="w-5 h-5" />
+              Korisnici
             </motion.button>
           </div>
         </motion.div>
 
-        {/* Analytics Panel */}
-        <AnimatePresence>
-          {showAnalytics && (
+        {/* Tab Content */}
+        <AnimatePresence mode="wait">
+          {activeTab === "licenses" ? (
             <motion.div
-              initial={{ opacity: 0, height: 0, marginBottom: 0 }}
-              animate={{ opacity: 1, height: "auto", marginBottom: 32 }}
-              exit={{ opacity: 0, height: 0, marginBottom: 0 }}
-              className="overflow-hidden"
+              key="licenses"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
             >
-              <LicenseAnalyticsPanel />
+              {/* Analytics Panel */}
+              <AnimatePresence>
+                {showAnalytics && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    animate={{ opacity: 1, height: "auto", marginBottom: 32 }}
+                    exit={{ opacity: 0, height: 0, marginBottom: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <LicenseAnalyticsPanel />
+                  </motion.div>
+                )}
+              </AnimatePresence>
+
+              {/* Search and Filters */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 }}
+                className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-5 mb-6 border border-gray-100/50"
+              >
+                <div className="flex flex-col lg:flex-row gap-4">
+                  {/* Search */}
+                  <div className="flex-1 relative">
+                    <Search
+                      className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
+                      size={20}
+                    />
+                    <input
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      placeholder="Pretraži po ključu, imenu ili emailu..."
+                      className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+                    />
+                    {searchQuery && (
+                      <motion.button
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        onClick={() => setSearchQuery("")}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 transition-all"
+                      >
+                        <X size={14} />
+                      </motion.button>
+                    )}
+                  </div>
+
+                  {/* Filters */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <div className="flex items-center gap-2 mr-2 text-gray-400">
+                      <Filter size={18} />
+                      <span className="text-sm font-medium hidden sm:inline">
+                        Filter:
+                      </span>
+                    </div>
+                    <FilterBadge
+                      label="Sve"
+                      isActive={statusFilter === "all"}
+                      onClick={() => setStatusFilter("all")}
+                      count={statusCounts.all}
+                      color="default"
+                    />
+                    <FilterBadge
+                      label="Aktivne"
+                      isActive={statusFilter === "active"}
+                      onClick={() => setStatusFilter("active")}
+                      count={statusCounts.active}
+                      color="active"
+                    />
+                    <FilterBadge
+                      label="Blokirane"
+                      isActive={statusFilter === "blocked"}
+                      onClick={() => setStatusFilter("blocked")}
+                      count={statusCounts.blocked}
+                      color="blocked"
+                    />
+                    <FilterBadge
+                      label="Istekle"
+                      isActive={statusFilter === "expired"}
+                      onClick={() => setStatusFilter("expired")}
+                      count={statusCounts.expired}
+                      color="expired"
+                    />
+                    <FilterBadge
+                      label="Trial"
+                      isActive={statusFilter === "trial"}
+                      onClick={() => setStatusFilter("trial")}
+                      count={statusCounts.trial}
+                      color="trial"
+                    />
+                  </div>
+                </div>
+
+                {/* Results count */}
+                <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
+                  <Sparkles size={14} className="text-bluegreen" />
+                  <span>
+                    Pronađeno{" "}
+                    <strong className="text-charcoal">
+                      {filteredLicenses.length}
+                    </strong>{" "}
+                    licenci
+                    {searchQuery && (
+                      <span>
+                        {" "}
+                        za "
+                        <strong className="text-bluegreen">{searchQuery}</strong>
+                        "
+                      </span>
+                    )}
+                  </span>
+                </div>
+              </motion.div>
+
+              {/* License Table */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <LicenseTable
+                  licenses={filteredLicenses}
+                  loading={loading}
+                  onView={handleViewLicense}
+                  onBlock={handleBlockLicense}
+                  onUnblock={handleUnblockLicense}
+                  onResetHwid={handleResetHwid}
+                />
+              </motion.div>
+
+              {/* Create Modal */}
+              <LicenseCreateModal
+                isOpen={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+                onSubmit={handleCreateLicense}
+              />
+
+              {/* Details Drawer */}
+              <LicenseDetailsDrawer
+                license={selectedLicense}
+                isOpen={!!selectedLicense}
+                onClose={() => setSelectedLicense(null)}
+                onBlock={handleBlockLicense}
+                onUnblock={handleUnblockLicense}
+                onResetHwid={handleResetHwid}
+                onExtend={handleExtendLicense}
+                onConvertToPaid={handleConvertToPaid}
+                onUpdateAutoRenew={handleUpdateAutoRenew}
+              />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="users"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.2 }}
+            >
+              <UserManagementTab />
             </motion.div>
           )}
         </AnimatePresence>
-
-        {/* Search and Filters */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="bg-white/80 backdrop-blur-xl rounded-2xl shadow-lg p-5 mb-6 border border-gray-100/50"
-        >
-          <div className="flex flex-col lg:flex-row gap-4">
-            {/* Search */}
-            <div className="flex-1 relative">
-              <Search
-                className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400"
-                size={20}
-              />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Pretraži po ključu, imenu ili emailu..."
-                className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
-              />
-              {searchQuery && (
-                <motion.button
-                  initial={{ scale: 0 }}
-                  animate={{ scale: 1 }}
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 p-1 rounded-full bg-gray-200 hover:bg-gray-300 text-gray-500 transition-all"
-                >
-                  <X size={14} />
-                </motion.button>
-              )}
-            </div>
-
-            {/* Filters */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="flex items-center gap-2 mr-2 text-gray-400">
-                <Filter size={18} />
-                <span className="text-sm font-medium hidden sm:inline">
-                  Filter:
-                </span>
-              </div>
-              <FilterBadge
-                label="Sve"
-                isActive={statusFilter === "all"}
-                onClick={() => setStatusFilter("all")}
-                count={statusCounts.all}
-                color="default"
-              />
-              <FilterBadge
-                label="Aktivne"
-                isActive={statusFilter === "active"}
-                onClick={() => setStatusFilter("active")}
-                count={statusCounts.active}
-                color="active"
-              />
-              <FilterBadge
-                label="Blokirane"
-                isActive={statusFilter === "blocked"}
-                onClick={() => setStatusFilter("blocked")}
-                count={statusCounts.blocked}
-                color="blocked"
-              />
-              <FilterBadge
-                label="Istekle"
-                isActive={statusFilter === "expired"}
-                onClick={() => setStatusFilter("expired")}
-                count={statusCounts.expired}
-                color="expired"
-              />
-              <FilterBadge
-                label="Trial"
-                isActive={statusFilter === "trial"}
-                onClick={() => setStatusFilter("trial")}
-                count={statusCounts.trial}
-                color="trial"
-              />
-            </div>
-          </div>
-
-          {/* Results count */}
-          <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
-            <Sparkles size={14} className="text-bluegreen" />
-            <span>
-              Pronađeno{" "}
-              <strong className="text-charcoal">
-                {filteredLicenses.length}
-              </strong>{" "}
-              licenci
-              {searchQuery && (
-                <span>
-                  {" "}
-                  za "<strong className="text-bluegreen">{searchQuery}</strong>"
-                </span>
-              )}
-            </span>
-          </div>
-        </motion.div>
-
-        {/* License Table */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
-          <LicenseTable
-            licenses={filteredLicenses}
-            loading={loading}
-            onView={handleViewLicense}
-            onBlock={handleBlockLicense}
-            onUnblock={handleUnblockLicense}
-            onResetHwid={handleResetHwid}
-          />
-        </motion.div>
-
-        {/* Create Modal */}
-        <LicenseCreateModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={handleCreateLicense}
-        />
-
-        {/* Details Drawer */}
-        <LicenseDetailsDrawer
-          license={selectedLicense}
-          isOpen={!!selectedLicense}
-          onClose={() => setSelectedLicense(null)}
-          onBlock={handleBlockLicense}
-          onUnblock={handleUnblockLicense}
-          onResetHwid={handleResetHwid}
-          onExtend={handleExtendLicense}
-          onConvertToPaid={handleConvertToPaid}
-          onUpdateAutoRenew={handleUpdateAutoRenew}
-        />
       </div>
     </div>
   );
