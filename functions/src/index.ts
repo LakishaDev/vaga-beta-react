@@ -32,3 +32,9 @@ export { adminRevokeLicense } from "./licenses/adminRevokeLicense";
 export { adminUnblockLicense } from "./licenses/adminUnblockLicense";
 export { adminRegenerateLicenseKey } from "./licenses/adminRegenerateLicenseKey";
 export { adminUpdateOrderStatus } from "./licenses/adminUpdateOrderStatus";
+
+// User management functions
+export { adminCreateUser } from "./users/adminCreateUser";
+export { adminUpdateUser } from "./users/adminUpdateUser";
+export { adminDeleteUser } from "./users/adminDeleteUser";
+export { adminChangePassword } from "./users/adminChangePassword";

@@ -13,3 +13,15 @@ export { default as LicenseCreateModal } from "./LicenseCreateModal";
 export { default as LicenseDetailsDrawer } from "./LicenseDetailsDrawer";
 export { default as LicenseAnalyticsPanel } from "./LicenseAnalyticsPanel";
 export { default as PackageSelector } from "./PackageSelector";
+
+// User Management Components
+export { default as UserManagementTab } from "./UserManagementTab";
+export { default as UserTable } from "./UserTable";
+export { default as UserCreateModal } from "./UserCreateModal";
+export { default as UserEditDrawer } from "./UserEditDrawer";
+export { default as UserMobileCard } from "./UserMobileCard";
+
+// Responsive Components (DEO 3)
+export { default as ResponsiveModal } from "./ResponsiveModal";
+export { default as ResponsiveDrawer } from "./ResponsiveDrawer";
+export { default as BottomSheet } from "./BottomSheet";

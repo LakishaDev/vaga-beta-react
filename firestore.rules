@@ -1,0 +1,114 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    
+    // ===============================================================================
+    // HELPER FUNCTIONS
+    // ===============================================================================
+    
+    // Check if user is authenticated
+    function isSignedIn() {
+      return request.auth != null;
+    }
+    
+    // Check if user is admin
+    function isAdmin() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/nalozi/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/nalozi/$(request.auth.uid)).data.isAdmin == true;
+    }
+    
+    // Check if user is active
+    function isActive() {
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/users/$(request.auth.uid)) &&
+             get(/databases/$(database)/documents/users/$(request.auth.uid)).data.active == true;
+    }
+    
+    // Check if user owns the resource
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+    
+    // ===============================================================================
+    // USERS COLLECTION - eVagaClientMobile korisnici
+    // ===============================================================================
+    match /users/{userId} {
+      // Read: Admin može videti sve, korisnik samo svoj profil
+      allow read: if isAdmin() || isOwner(userId);
+      
+      // Create: Samo admin može kreirati korisnike (ili Cloud Function)
+      allow create: if isAdmin();
+      
+      // Update: Admin može ažurirati sve, korisnik samo svoj profil (ali ne isAdmin i role)
+      allow update: if isAdmin() || 
+                       (isOwner(userId) && 
+                        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['isAdmin', 'role']));
+      
+      // Delete: Samo admin može obrisati korisnike
+      allow delete: if isAdmin();
+    }
+    
+    // ===============================================================================
+    // LICENSES COLLECTION - eVaga Desktop licence
+    // ===============================================================================
+    match /licenses/{licenseId} {
+      // Read: Admin može videti sve
+      allow read: if isAdmin();
+      
+      // Create: Samo admin može kreirati licence
+      allow create: if isAdmin();
+      
+      // Update: Samo admin može ažurirati licence
+      allow update: if isAdmin();
+      
+      // Delete: Samo admin može obrisati licence
+      allow delete: if isAdmin();
+    }
+    
+    // ===============================================================================
+    // ORDERS COLLECTION - Narudžbine
+    // ===============================================================================
+    match /orders/{orderId} {
+      // Read: Admin može videti sve
+      allow read: if isAdmin();
+      
+      // Create: Admin i authenticated users mogu kreirati
+      allow create: if isSignedIn();
+      
+      // Update: Samo admin može ažurirati
+      allow update: if isAdmin();
+      
+      // Delete: Samo admin može obrisati
+      allow delete: if isAdmin();
+    }
+    
+    // ===============================================================================
+    // PRODUCTS COLLECTION - Proizvodi
+    // ===============================================================================
+    match /products/{productId} {
+      // Read: Svi mogu čitati proizvode
+      allow read: if true;
+      
+      // Write: Samo admin
+      allow write: if isAdmin();
+    }
+    
+    // ===============================================================================
+    // CART COLLECTION - Korpe korisnika
+    // ===============================================================================
+    match /carts/{userId} {
+      // Read/Write: Samo vlasnik ili admin
+      allow read, write: if isOwner(userId) || isAdmin();
+    }
+    
+    // ===============================================================================
+    // DEFAULT DENY
+    // ===============================================================================
+    // Sve ostalo je zabranjeno
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

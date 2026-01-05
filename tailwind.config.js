@@ -1,6 +1,9 @@
 export const content = ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"];
 export const theme = {
   extend: {
+    screens: {
+      'xs': '475px',
+    },
     colors: {
       bone: "#CBCFBB",
       midnight: "#1E3E49",

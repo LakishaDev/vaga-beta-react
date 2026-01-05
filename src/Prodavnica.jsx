@@ -37,6 +37,7 @@ import AdminOrders from "./pages/shop/AdminOrders";
 import PasswordResetForm from "./components/shop/PasswordResetForm";
 import { AuthProvider } from "./contexts/shop/auth/AuthProvider";
 import { LicensesPage, OrdersPage } from "./pages/admin/licensing";
+import { Toaster } from "react-hot-toast";
 
 function Prodavnica() {
   const [user] = useAuthState(auth);
@@ -53,6 +54,50 @@ function Prodavnica() {
     <SnackbarProvider>
       <AuthProvider>
         <CartProvider>
+          <Toaster
+            position="top-right"
+            reverseOrder={false}
+            gutter={8}
+            toastOptions={{
+              duration: 3000,
+              style: {
+                background: "#fff",
+                color: "#1f2937",
+                padding: "16px",
+                borderRadius: "12px",
+                border: "1px solid #e5e7eb",
+                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                fontSize: "14px",
+                fontWeight: "500",
+              },
+              success: {
+                duration: 3000,
+                iconTheme: {
+                  primary: "#10b981",
+                  secondary: "#fff",
+                },
+                style: {
+                  border: "1px solid #10b981",
+                },
+              },
+              error: {
+                duration: 4000,
+                iconTheme: {
+                  primary: "#ef4444",
+                  secondary: "#fff",
+                },
+                style: {
+                  border: "1px solid #ef4444",
+                },
+              },
+              loading: {
+                iconTheme: {
+                  primary: "#3b82f6",
+                  secondary: "#fff",
+                },
+              },
+            }}
+          />
           <Navbar />
           <Routes>
             <Route path="/prodavnica" element={<HeroSection />} />
