@@ -51,8 +51,12 @@ const StatsCard = ({ icon: Icon, label, value, color = "blue" }) => {
     >
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
-          <p className="text-xs sm:text-sm text-gray-600 mb-1 truncate">{label}</p>
-          <p className="text-2xl sm:text-3xl font-bold text-gray-900">{value}</p>
+          <p className="text-xs sm:text-sm text-gray-600 mb-1 truncate">
+            {label}
+          </p>
+          <p className="text-2xl sm:text-3xl font-bold text-gray-900">
+            {value}
+          </p>
         </div>
         <div
           className={`w-12 h-12 sm:w-14 sm:h-14 rounded-xl sm:rounded-2xl bg-gradient-to-br ${colorStyles[color]} flex items-center justify-center shadow-lg flex-shrink-0 ml-3`}
@@ -81,7 +85,7 @@ const FilterBadge = ({ label, isActive, onClick, icon: Icon }) => {
     >
       {Icon && <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 flex-shrink-0" />}
       <span className="hidden xs:inline">{label}</span>
-      <span className="xs:hidden">{label.split(' ')[0]}</span>
+      <span className="xs:hidden">{label.split(" ")[0]}</span>
     </motion.button>
   );
 };
@@ -160,7 +164,7 @@ function UserManagementTabContent() {
   const handleUpdateUser = async (userId, userData) => {
     // Save original for rollback
     const originalUsers = [...users];
-    
+
     // Optimistic update
     setUsers((prev) =>
       prev.map((u) =>
@@ -190,7 +194,7 @@ function UserManagementTabContent() {
 
     // Save original for rollback
     const originalUsers = [...users];
-    
+
     // Optimistic update
     setUsers((prev) => prev.filter((u) => u.id !== user.id));
 
@@ -234,11 +238,13 @@ function UserManagementTabContent() {
     // Save original for rollback
     const originalUsers = [...users];
     const newStatus = !user.active;
-    
+
     // Optimistic update
     setUsers((prev) =>
       prev.map((u) =>
-        u.id === user.id ? { ...u, active: newStatus, updatedAt: new Date() } : u
+        u.id === user.id
+          ? { ...u, active: newStatus, updatedAt: new Date() }
+          : u
       )
     );
 
@@ -285,10 +291,30 @@ function UserManagementTabContent() {
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {[
-          { icon: UsersIcon, label: "Ukupno korisnika", value: stats.total, color: "blue" },
-          { icon: CheckIcon, label: "Aktivni", value: stats.active, color: "green" },
-          { icon: XCloseIcon, label: "Neaktivni", value: stats.inactive, color: "red" },
-          { icon: ShieldIcon, label: "Administratori", value: stats.admins, color: "purple" },
+          {
+            icon: UsersIcon,
+            label: "Ukupno korisnika",
+            value: stats.total,
+            color: "blue",
+          },
+          {
+            icon: CheckIcon,
+            label: "Aktivni",
+            value: stats.active,
+            color: "green",
+          },
+          {
+            icon: XCloseIcon,
+            label: "Neaktivni",
+            value: stats.inactive,
+            color: "red",
+          },
+          {
+            icon: ShieldIcon,
+            label: "Administratori",
+            value: stats.admins,
+            color: "purple",
+          },
         ].map((stat, index) => (
           <motion.div
             key={stat.label}
@@ -331,132 +357,128 @@ function UserManagementTabContent() {
             </motion.button>
           </div>
 
-        {/* Filters */}
-        <motion.div className="pt-3 sm:pt-4 border-t border-gray-200">
-          {/* Mobile Filter Toggle */}
-          <div className="sm:hidden mb-3">
-            <motion.button
-              whileTap={{ scale: 0.98 }}
-              onClick={() => setShowFilters(!showFilters)}
-              className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
-            >
-              <span className="flex items-center gap-2 text-sm font-semibold text-gray-700">
-                <FilterIcon className="w-4 h-4" />
-                Filteri
-              </span>
-              <motion.span
-                animate={{ rotate: showFilters ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
+          {/* Filters */}
+          <motion.div className="pt-3 sm:pt-4 border-t border-gray-200">
+            {/* Mobile Filter Toggle */}
+            <div className="sm:hidden mb-3">
+              <motion.button
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setShowFilters(!showFilters)}
+                className="w-full flex items-center justify-between px-4 py-2.5 bg-gray-50 hover:bg-gray-100 rounded-lg transition-colors"
               >
-                ▼
-              </motion.span>
-            </motion.button>
-          </div>
-
-          {/* Filter Content */}
-          <div className={`space-y-3 ${showFilters ? 'block' : 'hidden sm:block'}`}>
-            {/* Active Filter */}
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-2 w-full sm:w-auto mb-1 sm:mb-0">
-                <FilterIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />
-                <span className="text-xs sm:text-sm font-semibold text-gray-700">
-                  Status:
+                <span className="flex items-center gap-2 text-sm font-semibold text-gray-700">
+                  <FilterIcon className="w-4 h-4" />
+                  Filteri
                 </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <FilterBadge
-                  label="Svi"
-                  isActive={filters.active === "all"}
-                  onClick={() => setFilters({ ...filters, active: "all" })}
-                />
-                <FilterBadge
-                  label="Aktivni"
-                  isActive={filters.active === true}
-                  onClick={() => setFilters({ ...filters, active: true })}
-                  icon={CheckIcon}
-                />
-                <FilterBadge
-                  label="Neaktivni"
-                  isActive={filters.active === false}
-                  onClick={() => setFilters({ ...filters, active: false })}
-                  icon={XCloseIcon}
-                />
-              </div>
+                <motion.span
+                  animate={{ rotate: showFilters ? 180 : 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  ▼
+                </motion.span>
+              </motion.button>
             </div>
 
-            <div className="border-t border-gray-200 sm:hidden" />
+            {/* Filter Content */}
+            <div
+              className={`space-y-3 ${
+                showFilters ? "block" : "hidden sm:block"
+              }`}
+            >
+              {/* Active Filter */}
+              <div className="flex flex-wrap items-center gap-2">
+                <div className="flex items-center gap-2 w-full sm:w-auto mb-1 sm:mb-0">
+                  <FilterIcon className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-500" />
+                  <span className="text-xs sm:text-sm font-semibold text-gray-700">
+                    Status:
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2">
+                  <FilterBadge
+                    label="Svi"
+                    isActive={filters.active === "all"}
+                    onClick={() => setFilters({ ...filters, active: "all" })}
+                  />
+                  <FilterBadge
+                    label="Aktivni"
+                    isActive={filters.active === true}
+                    onClick={() => setFilters({ ...filters, active: true })}
+                    icon={CheckIcon}
+                  />
+                  <FilterBadge
+                    label="Neaktivni"
+                    isActive={filters.active === false}
+                    onClick={() => setFilters({ ...filters, active: false })}
+                    icon={XCloseIcon}
+                  />
+                </div>
+              </div>
 
-            {/* Role Filter */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs sm:text-sm font-semibold text-gray-700 w-full sm:w-auto">
-                Rola:
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <FilterBadge
-                  label="Sve"
-                  isActive={filters.role === "all"}
-                  onClick={() => setFilters({ ...filters, role: "all" })}
-                />
-                <FilterBadge
-                  label="Admin"
-                  isActive={filters.role === "admin"}
-                  onClick={() => setFilters({ ...filters, role: "admin" })}
-                  icon={ShieldIcon}
-                />
-                <FilterBadge
-                  label="Operator"
-                  isActive={filters.role === "operator"}
-                  onClick={() => setFilters({ ...filters, role: "operator" })}
-                />
-                <FilterBadge
-                  label="User"
-                  isActive={filters.role === "user"}
-                  onClick={() => setFilters({ ...filters, role: "user" })}
-                />
+              <div className="border-t border-gray-200 sm:hidden" />
+
+              {/* Role Filter */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs sm:text-sm font-semibold text-gray-700 w-full sm:w-auto">
+                  Rola:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <FilterBadge
+                    label="Sve"
+                    isActive={filters.role === "all"}
+                    onClick={() => setFilters({ ...filters, role: "all" })}
+                  />
+                  <FilterBadge
+                    label="Admin"
+                    isActive={filters.role === "admin"}
+                    onClick={() => setFilters({ ...filters, role: "admin" })}
+                    icon={ShieldIcon}
+                  />
+                  <FilterBadge
+                    label="Operator"
+                    isActive={filters.role === "operator"}
+                    onClick={() => setFilters({ ...filters, role: "operator" })}
+                  />
+                  <FilterBadge
+                    label="User"
+                    isActive={filters.role === "user"}
+                    onClick={() => setFilters({ ...filters, role: "user" })}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t border-gray-200 sm:hidden" />
+
+              {/* Product Filter */}
+              <div className="flex flex-wrap items-center gap-2">
+                <span className="text-xs sm:text-sm font-semibold text-gray-700 w-full sm:w-auto">
+                  Proizvod:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  <FilterBadge
+                    label="Svi"
+                    isActive={filters.proizvod === "all"}
+                    onClick={() => setFilters({ ...filters, proizvod: "all" })}
+                  />
+                  <FilterBadge
+                    label="eVagaHub"
+                    isActive={filters.proizvod === "evagahub"}
+                    onClick={() =>
+                      setFilters({ ...filters, proizvod: "evagahub" })
+                    }
+                    icon={PackageIcon}
+                  />
+                  <FilterBadge
+                    label="eVagaTruck"
+                    isActive={filters.proizvod === "evagatruck"}
+                    onClick={() =>
+                      setFilters({ ...filters, proizvod: "evagatruck" })
+                    }
+                    icon={PackageIcon}
+                  />
+                </div>
               </div>
             </div>
-
-            <div className="border-t border-gray-200 sm:hidden" />
-
-            {/* Product Filter */}
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="text-xs sm:text-sm font-semibold text-gray-700 w-full sm:w-auto">
-                Proizvod:
-              </span>
-              <div className="flex flex-wrap gap-2">
-                <FilterBadge
-                  label="Svi"
-                  isActive={filters.proizvod === "all"}
-                  onClick={() => setFilters({ ...filters, proizvod: "all" })}
-                />
-                <FilterBadge
-                  label="eVagaHub"
-                  isActive={filters.proizvod === "evagahub"}
-                  onClick={() => setFilters({ ...filters, proizvod: "evagahub" })}
-                  icon={PackageIcon}
-                />
-                <FilterBadge
-                  label="eVagaTruck"
-                  isActive={filters.proizvod === "evagatruck"}
-                  onClick={() =>
-                    setFilters({ ...filters, proizvod: "evagatruck" })
-                  }
-                  icon={PackageIcon}
-                />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-      </div>
-
-      {/* Info Alert */}
-      <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 flex items-start gap-3">
-        <AlertCircleIcon className="w-5 h-5 text-blue-600 flex-shrink-0 mt-0.5" />
-        <div className="text-sm text-blue-700">
-          <strong>eVagaClientMobile pristup:</strong> Ovi korisnici mogu da se
-          prijave na mobilnu aplikaciju koristeći email i lozinku. Aktivni
-          korisnici mogu pristupiti odabranim proizvodima.
+          </motion.div>
         </div>
       </div>
 
