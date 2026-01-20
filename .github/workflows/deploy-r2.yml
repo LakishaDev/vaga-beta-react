@@ -1,0 +1,51 @@
+name: Deploy R2 Cache Worker
+
+on:
+#   push:
+#     branches:
+#       - main
+#       - develop
+#     paths:
+#       - "src/workers/**"
+#       - "wrangler.toml"
+#       - ".github/workflows/deploy-r2.yml"
+#   workflow_dispatch:
+
+jobs:
+  deploy:
+    name: Deploy to Cloudflare
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Deploy Worker
+        uses: cloudflare/wrangler-action@v3
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+      - name: Test Worker
+        run: |
+          curl -f https://vaga-beta-r2.lakisha.workers.dev/health || exit 1
+
+      - name: Notify Slack (optional)
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: "R2 Worker Deploy: ${{ job.status }}"
+          webhook_url: ${{ secrets.SLACK_WEBHOOK }}
+        continue-on-error: true
