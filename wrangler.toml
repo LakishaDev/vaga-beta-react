@@ -1,12 +1,13 @@
 name = "vaga-beta-r2"
 account_id = "031ca9685557ca09a945ef3d0ba54f8e"
+main = "src/workers/r2-cache-worker.js"
 workers_dev = true
 compatibility_date = "2026-01-20"
 
 # R2 Bucket Configuration
 [[r2_buckets]]
-binding = "R2_BUCKET"
 bucket_name = "vaga-beta-cache"
+binding = "R2_BUCKET"
 jurisdiction = "eu"
 
 # KV Namespace for cache metadata
@@ -18,7 +19,13 @@ preview_id = "2bb2f5778aaa459382c4731b60f3405a"
 # Routes configuration
 [env.production]
 routes = [
-  { pattern = "https://cache.vaga-beta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" }
+  { pattern = "https://worker.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" }
+]
+r2_buckets = [
+  { bucket_name = "vaga-beta-cache", binding = "R2_BUCKET", jurisdiction = "eu" }
+]
+kv_namespaces = [
+  { binding = "CACHE_METADATA", id = "2bb2f5778aaa459382c4731b60f3405a", preview_id = "2bb2f5778aaa459382c4731b60f3405a" }
 ]
 
 [env.development]
