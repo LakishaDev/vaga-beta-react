@@ -12,10 +12,11 @@
 // Boje iz BOJE objekta
 // Animacije: fadein, fadeup, pop
 
-import { useState } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 import Slider from "../components/Slider";
+import EvagaVideoPlayer from "../components/UI/EvagaVideoPlayer";
 import {
   FaTools,
   FaShippingFast,
@@ -29,6 +30,8 @@ import {
 import LepModal from "../components/UI/LepModal";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
+import { onAuthStateChanged } from "firebase/auth";
+import { auth } from "../utils/firebase";
 
 export default function Home() {
   const [modalData, setModalData] = useState({
@@ -36,11 +39,83 @@ export default function Home() {
     src: "",
     text: "",
   });
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [videoStats, setVideoStats] = useState({
+    plays: 0,
+    pauses: 0,
+    ended: 0,
+    shares: 0,
+    rateChanges: 0,
+    maxPercent: 0,
+    seeks: 0,
+  });
+  const [ctaStats, setCtaStats] = useState({ test: 0, demo: 0 });
+  const faqItems = [
+    {
+      q: "Da li sistem podržava više vaga?",
+      a: "Da, možete umrežiti više vaga i pratiti ih iz jedinstvene aplikacije sa centralnom bazom podataka.",
+    },
+    {
+      q: "Kako se vrši unos robe?",
+      a: "Radnici unose merenja direktno sa tableta ili telefona, a podaci se čuvaju trajno i dostupni su 24/7.",
+    },
+    {
+      q: "Da li postoji prilagođavanje po meri?",
+      a: "Program je modularan i možemo ga prilagoditi specifičnim procesima i izveštajima vašeg poslovanja.",
+    },
+  ];
+
+  const galleryShots = [
+    { src: "/imgs/home/slika2.png", title: "Kontrolni panel" },
+    { src: "/imgs/home/slika3.png", title: "Laboratorijsko merenje" },
+    { src: "/imgs/home/slika8.jpg", title: "Industrijska vaga" },
+  ];
+
+  const testimonials = [
+    {
+      name: "Logistika Plus",
+      text: "Centralizovali smo praćenje ulaza i izlaza robe, greške su svedene na minimum.",
+    },
+    {
+      name: "Agro Trade",
+      text: "Tablet unos na licu mesta ubrzao je rad za 30% i obezbedio potpunu trasu podataka.",
+    },
+  ];
 
   const openModal = ({ src, text }) => setModalData({ open: true, src, text });
 
   const closeModal = () => setModalData((prev) => ({ ...prev, open: false }));
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const adminEmails =
+      import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
+    const unsub = onAuthStateChanged(auth, (user) => {
+      if (user && adminEmails.includes(user.email)) setIsAdmin(true);
+      else setIsAdmin(false);
+    });
+    return () => unsub();
+  }, []);
+
+  const handleVideoAnalytics = useCallback((event, payload) => {
+    setVideoStats((prev) => {
+      const next = { ...prev };
+      if (event === "play") next.plays += 1;
+      if (event === "pause") next.pauses += 1;
+      if (event === "ended") next.ended += 1;
+      if (event === "share") next.shares += 1;
+      if (event === "rate_change") next.rateChanges += 1;
+      if (event === "seek") next.seeks += 1;
+      if (event === "progress" && payload?.maxPercent !== undefined) {
+        next.maxPercent = Math.max(next.maxPercent, payload.maxPercent || 0);
+      }
+      return next;
+    });
+  }, []);
+
+  const handleCtaClick = (type) => {
+    setCtaStats((prev) => ({ ...prev, [type]: (prev[type] || 0) + 1 }));
+  };
 
   return (
     <>
@@ -78,6 +153,185 @@ export default function Home() {
             profesionalno i sa garancijom.
           </p>
         </section>
+
+        {/* e-Vaga Program Video Prezentacija Sekcija */}
+        <EvagaVideoPlayer
+          filename="eVaga Program 2026.mp4"
+          namespace="videos"
+          title="e-Vaga Program Prezentacija - Kontrola i Praćenje Merenja"
+          description="U nastavku vam predstavljamo video prezentaciju programa-sistema koji je namenjen za kontrolu i praćenje merenja robe na vagama, sa mogućnošću umrežavanja više vaga. Saznaću više o mogućnostima, automatizaciji i kako ovaj sistem može poboljšati vašu poslovanje."
+          autoplay={true}
+          enableAnalytics={isAdmin}
+          onAnalyticsEvent={handleVideoAnalytics}
+        />
+
+        {/* Info box ispod videa */}
+        <section className="grid gap-4 sm:grid-cols-2 bg-[#F5F9F7] border border-[#D7DACF] rounded-xl p-5 shadow-sm animate-fadein duration-700">
+          <div>
+            <h4 className="text-xl font-bold text-[#1E3E49] mb-2">
+              Ključne mogućnosti e-Vage
+            </h4>
+            <ul className="space-y-2 text-[#2F5363] text-sm sm:text-base list-disc pl-5">
+              <li>Evidencija primljene i izdate robe po artiklima</li>
+              <li>Praćenje rada zaposlenih sa tableta/telefona</li>
+              <li>Centralna baza podataka, 24/7 pristup</li>
+              <li>Umrežavanje više vaga u jednom sistemu</li>
+              <li>Detaljna istorija merenja i izveštaji po periodu</li>
+              <li>Modularna prilagođavanja vašim procesima</li>
+            </ul>
+          </div>
+          <div className="bg-white/70 rounded-lg p-4 border border-[#E2E7DE] shadow-inner">
+            <h5 className="text-lg font-semibold text-[#6EAEA2] mb-2">
+              Brz uvid u prednosti
+            </h5>
+            <p className="text-[#2F5363] text-sm sm:text-base leading-relaxed">
+              Kontrola zaliha u realnom vremenu, manje grešaka u merenju, i
+              jasna traživost svakog unosa. Povežite teren, magacin i menadžment
+              u jednu sliku.
+            </p>
+          </div>
+        </section>
+
+        {/* CTA sekcija */}
+        <section className="my-8 bg-gradient-to-r from-[#1E3E49] via-[#2F5363] to-[#6EAEA2] text-white rounded-2xl p-6 sm:p-8 shadow-lg animate-pop">
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+              <p className="text-sm uppercase tracking-wide opacity-80">
+                Automatizacija merenja
+              </p>
+              <h3 className="text-2xl sm:text-3xl font-extrabold mt-1">
+                Spremni za potpunu kontrolu robe?
+              </h3>
+              <p className="text-white/90 mt-2 max-w-2xl text-sm sm:text-base">
+                Testirajte e-Vagu u realnom okruženju ili zakažite demo sa našim
+                timom. Brzo postavljanje, jasni izveštaji, sigurni podaci.
+              </p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-3">
+              <Link
+                to="/prodavnica"
+                onClick={() => handleCtaClick("test")}
+                className="px-5 py-3 rounded-xl bg-white text-[#1E3E49] font-bold shadow hover:shadow-lg hover:-translate-y-0.5 transition"
+              >
+                Testiraj e-Vagu
+              </Link>
+              <Link
+                to="/kontakt"
+                onClick={() => handleCtaClick("demo")}
+                className="px-5 py-3 rounded-xl border border-white/70 text-white font-bold hover:bg-white/10 hover:-translate-y-0.5 transition"
+              >
+                Kontaktiraj nas za demo
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ + galerija + testimoniali */}
+        <section className="grid gap-6 lg:grid-cols-3 my-8">
+          <div className="bg-white/80 border border-[#E2E7DE] rounded-xl p-5 shadow-sm lg:col-span-2">
+            <h4 className="text-xl font-bold text-[#1E3E49] mb-3">
+              Česta pitanja
+            </h4>
+            <div className="space-y-3">
+              {faqItems.map((item) => (
+                <details
+                  key={item.q}
+                  className="group border border-[#E6E9E0] rounded-lg p-3 bg-[#F8FAF8]"
+                >
+                  <summary className="cursor-pointer font-semibold text-[#1E3E49] flex items-center justify-between">
+                    {item.q}
+                    <span className="text-[#6EAEA2] group-open:rotate-45 transition-transform">
+                      +
+                    </span>
+                  </summary>
+                  <p className="mt-2 text-sm text-[#2F5363] leading-relaxed">
+                    {item.a}
+                  </p>
+                </details>
+              ))}
+            </div>
+          </div>
+
+          <div className="bg-white/80 border border-[#E2E7DE] rounded-xl p-5 shadow-sm">
+            <h4 className="text-xl font-bold text-[#1E3E49] mb-3">
+              Testimoniali
+            </h4>
+            <div className="space-y-3">
+              {testimonials.map((t) => (
+                <div
+                  key={t.name}
+                  className="p-3 rounded-lg bg-[#F5F9F7] border border-[#D7DACF]"
+                >
+                  <p className="text-[#2F5363] text-sm leading-relaxed">
+                    “{t.text}”
+                  </p>
+                  <p className="mt-2 text-xs font-semibold text-[#1E3E49]">
+                    {t.name}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="my-8">
+          <h4 className="text-xl font-bold text-[#1E3E49] mb-3">
+            Galerija aplikacije
+          </h4>
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-4">
+            {galleryShots.map((shot) => (
+              <div
+                key={shot.src}
+                className="rounded-xl overflow-hidden border border-[#E2E7DE] shadow-sm bg-white"
+              >
+                <ProgressiveImage
+                  src={shot.src}
+                  alt={shot.title}
+                  className="w-full h-40 object-cover"
+                />
+                <div className="p-3 text-sm font-semibold text-[#1E3E49]">
+                  {shot.title}
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        {isAdmin && (
+          <section className="my-6 bg-[#F0F4F1] border border-[#D7DACF] rounded-xl p-5 shadow-sm">
+            <h5 className="text-lg font-bold text-[#1E3E49] mb-2">
+              Video Analytics (admin)
+            </h5>
+            <div className="grid sm:grid-cols-3 md:grid-cols-4 gap-3 text-sm text-[#1E3E49]">
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Play: <strong>{videoStats.plays}</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Pause: <strong>{videoStats.pauses}</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Seeks: <strong>{videoStats.seeks}</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Share: <strong>{videoStats.shares}</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Rate promene: <strong>{videoStats.rateChanges}</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Max odgledano:{" "}
+                <strong>{Math.round(videoStats.maxPercent)}%</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                Završeno: <strong>{videoStats.ended}</strong>
+              </div>
+              <div className="p-3 rounded-lg bg-white/90 border border-[#E6E9E0]">
+                CTA Testiraj: <strong>{ctaStats.test}</strong> / Demo:{" "}
+                <strong>{ctaStats.demo}</strong>
+              </div>
+            </div>
+          </section>
+        )}
 
         {/* SEKCIJA – vodič ka žigu/overavanju, stilski uklopljena */}
         <section
