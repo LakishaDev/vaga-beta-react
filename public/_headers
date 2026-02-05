@@ -1,0 +1,43 @@
+# _headers fajl za Netlify deployment
+# Primenjuje security headere na sve stranice
+
+/*
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; img-src 'self' data: https: blob:; font-src 'self' data: https://fonts.gstatic.com; connect-src 'self' https://*.firebase.googleapis.com https://*.firebaseio.com https://*.cloudfunctions.net https://www.google-analytics.com; frame-src 'self' https://www.youtube.com https://www.facebook.com; object-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; upgrade-insecure-requests
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  X-XSS-Protection: 1; mode=block
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self), interest-cohort=()
+  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  X-Permitted-Cross-Domain-Policies: none
+
+# Cache control za statičke resurse
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/imgs/*
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+
+# Ne keširaj HTML fajlove
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Manifest i service worker
+/manifest.json
+  Cache-Control: public, max-age=0, must-revalidate
+  Content-Type: application/manifest+json
+
+/service-worker.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# API rute
+/api/*
+  Cache-Control: no-cache, no-store, must-revalidate
+  Pragma: no-cache
+  Expires: 0

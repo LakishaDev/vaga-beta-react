@@ -17,17 +17,19 @@ import {
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import Home from "./pages/Home";
-import Usluge from "./pages/Usluge";
-import Kontakt from "./pages/Kontakt";
-import Onama from "./pages/Onama";
-import Aplikacija from "./pages/Aplikacija";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import Prodavnica from "./Prodavnica";
-import EVagaDesktop from "./pages/EVagaDesktop";
+import Loader from "./components/Loader";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import Lenis from "lenis";
-import { useEffect } from "react";
+import { lazy, Suspense, useEffect } from "react";
+
+const Home = lazy(() => import("./pages/Home"));
+const Usluge = lazy(() => import("./pages/Usluge"));
+const Kontakt = lazy(() => import("./pages/Kontakt"));
+const Onama = lazy(() => import("./pages/Onama"));
+const Aplikacija = lazy(() => import("./pages/Aplikacija"));
+const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const EVagaDesktop = lazy(() => import("./pages/EVagaDesktop"));
+const Prodavnica = lazy(() => import("./Prodavnica"));
 
 function AppContent() {
   const location = useLocation();
@@ -35,7 +37,11 @@ function AppContent() {
 
   // Ako je ruta za prodavnicu, renderuj samo Prodavnica komponentu
   if (isShop) {
-    return <Prodavnica />;
+    return (
+      <Suspense fallback={<Loader />}>
+        <Prodavnica />
+      </Suspense>
+    );
   }
 
   // Inače renderuj glavne stranice sa Navbar i Footer
@@ -43,15 +49,17 @@ function AppContent() {
     <>
       <Navbar />
       <main className="max-w-5xl mx-auto px-3 sm:px-8 py-8 pt-16">
-        <Routes>
-          <Route path="/" element={<Home />} />
-          <Route path="/usluge" element={<Usluge />} />
-          <Route path="/kontakt" element={<Kontakt />} />
-          <Route path="/onama" element={<Onama />} />
-          <Route path="/aplikacija" element={<Aplikacija />} />
-          <Route path="/evaga-desktop" element={<EVagaDesktop />} />
-          <Route path="/privacy" element={<PrivacyPolicy />} />
-        </Routes>
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/usluge" element={<Usluge />} />
+            <Route path="/kontakt" element={<Kontakt />} />
+            <Route path="/onama" element={<Onama />} />
+            <Route path="/aplikacija" element={<Aplikacija />} />
+            <Route path="/evaga-desktop" element={<EVagaDesktop />} />
+            <Route path="/privacy" element={<PrivacyPolicy />} />
+          </Routes>
+        </Suspense>
       </main>
       <Footer />
     </>

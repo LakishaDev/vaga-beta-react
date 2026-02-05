@@ -1,35 +1,74 @@
-<!DOCTYPE html>
-<html lang="en">
+<!doctype html>
+<html lang="sr">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="imgs/vaga-beta-logo.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vaga Beta | Žigosanje, Overavanje vaga</title>
+
+    <!-- Viewport & Mobile Optimization -->
     <meta
-      name="description"
-      content="Vaga Beta je lider za servis, softver, žigosanje i digitalne vage. Pouzdanost, brzina i stručnost na jednom mestu!"
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=5.0"
+    />
+    <meta name="theme-color" content="#1a1a1a" />
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
     />
 
-    <!-- Open Graph za lep embed kad pošalješ link na Viber, Messenger, Facebook, Twitter... -->
+    <!-- Primary Meta Tags -->
+    <title>Vaga Beta | Žigosanje, Overavanje i Servis Vaga | Srbija</title>
+    <meta
+      name="title"
+      content="Vaga Beta | Žigosanje, Overavanje i Servis Vaga | Srbija"
+    />
+    <meta
+      name="description"
+      content="Vaga Beta - Profesionalan servis, žigosanje, overavanje i softverska rešenja za vage. Ovlašćeni servis sa 20+ godina iskustva. Brza usluga, konkurentne cene. Pozovite nas!"
+    />
+    <meta
+      name="keywords"
+      content="vaga, vage, žigosanje vaga, overavanje vaga, servis vaga, digitalne vage, laboratorijske vage, industrijske vage, softver za vage, kalibrisanje vaga, metroloski servis, vage srbija, vaga beta"
+    />
+    <meta name="author" content="Vaga Beta" />
+    <meta
+      name="robots"
+      content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+    />
+    <meta name="googlebot" content="index, follow" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://vagabeta.rs/" />
+
+    <!-- Language Alternatives -->
+    <link rel="alternate" hreflang="sr" href="https://vagabeta.rs/" />
+    <link rel="alternate" hreflang="x-default" href="https://vagabeta.rs/" />
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://vagabeta.rs/" />
+    <meta property="og:site_name" content="Vaga Beta" />
+    <meta property="og:locale" content="sr_RS" />
     <meta
       property="og:title"
-      content="Vaga Beta | Žigosanje, Overavanje vaga, Programi za vage"
+      content="Vaga Beta | Žigosanje, Overavanje i Servis Vaga"
     />
     <meta
       property="og:description"
-      content="Servisiranje, žigosanje, softver za vage. Brzina, stručnost, inovacija - sve na jednom mestu. Proverite zašto je Vaga Beta broj 1!"
+      content="Profesionalan servis za vage - žigosanje, overavanje, softver. Brza usluga, 20+ godina iskustva. Pozovite nas danas!"
     />
     <meta
       property="og:image"
       content="https://vagabeta.rs/imgs/vaga-logo.png"
     />
-    <!-- Stavi OVDE tvoj javni URL slike! -->
-    <meta property="og:url" content="https://vagabeta.rs" />
-    <meta property="og:type" content="website" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Vaga Beta Logo" />
 
-    <!-- Twitter Card (embed preview na X/Twitter) -->
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Vaga Beta | Preciznost i inovacija" />
+    <meta name="twitter:url" content="https://vagabeta.rs/" />
+    <meta name="twitter:title" content="Vaga Beta | Preciznost i Inovacija" />
     <meta
       name="twitter:description"
       content="Servis za vage, softver, žigosanje i digitalna rešenja - brzi, pouzdani, stručni. Tu smo za Vas!"
@@ -39,16 +78,122 @@
       content="https://vagabeta.rs/imgs/vaga-logo.png"
     />
 
-    <!-- Favicon za browser tab -->
-    <link rel="icon" type="image/png" href="/imgs/vaga-logo.png" />
+    <!-- Favicons -->
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="32x32"
+      href="/imgs/vaga-logo.png"
+    />
+    <link
+      rel="icon"
+      type="image/png"
+      sizes="16x16"
+      href="/imgs/vaga-logo.png"
+    />
+    <link rel="apple-touch-icon" sizes="180x180" href="/imgs/vaga-logo.png" />
+    <link rel="mask-icon" href="/imgs/vaga-logo.png" color="#1a1a1a" />
+
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/manifest.json" />
+
+    <!-- Google Search Console Verification -->
     <meta
       name="google-site-verification"
       content="-p5dumrOGU3-ImALt9SkTRL1KVdGd1_XWNtAvk6YDpo"
     />
+
+    <!-- Preconnect to External Domains -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://www.googletagmanager.com" />
+    <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+
+    <!-- Structured Data - Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Vaga Beta",
+        "url": "https://vagabeta.rs",
+        "logo": "https://vagabeta.rs/imgs/vaga-logo.png",
+        "description": "Profesionalan servis za vage, žigosanje, overavanje i softverska rešenja",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "RS",
+          "addressLocality": "Srbija"
+        },
+        "sameAs": [
+          "https://www.facebook.com/vagabeta",
+          "https://www.instagram.com/vagabeta"
+        ],
+        "contactPoint": {
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "availableLanguage": ["Serbian"]
+        }
+      }
+    </script>
+
+    <!-- Structured Data - LocalBusiness -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Vaga Beta",
+        "image": "https://vagabeta.rs/imgs/vaga-logo.png",
+        "url": "https://vagabeta.rs",
+        "description": "Ovlašćeni servis za vage - žigosanje, overavanje, kalibrisanje i softver",
+        "priceRange": "$$",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "RS"
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "reviewCount": "150"
+        }
+      }
+    </script>
+
+    <!-- Structured Data - WebSite -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "Vaga Beta",
+        "url": "https://vagabeta.rs",
+        "potentialAction": {
+          "@type": "SearchAction",
+          "target": "https://vagabeta.rs/search?q={search_term_string}",
+          "query-input": "required name=search_term_string"
+        }
+      }
+    </script>
+
+    <!-- Performance: Preload Critical Resources -->
+    <link rel="preload" as="script" href="/src/main.jsx" />
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
+
+    <!-- No-JS Fallback -->
+    <noscript>
+      <div
+        style="
+          text-align: center;
+          padding: 50px;
+          font-family: Arial, sans-serif;
+        "
+      >
+        <h1>JavaScript je potreban</h1>
+        <p>
+          Molimo Vas omogućite JavaScript u Vašem pretraživaču da biste
+          koristili ovaj sajt.
+        </p>
+      </div>
+    </noscript>
   </body>
 </html>
