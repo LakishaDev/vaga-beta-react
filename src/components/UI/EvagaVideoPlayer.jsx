@@ -86,11 +86,11 @@ export default function EvagaVideoPlayer({
           const viewportHeight = window.innerHeight;
           const videoCenter = rect.top + rect.height / 2;
           const viewportCenter = viewportHeight / 2;
-          
+
           // Pokreni video samo ako je centar videa blizu centra ekrana (±30% tolerancija)
           const tolerance = viewportHeight * 0.3;
           if (Math.abs(videoCenter - viewportCenter) < tolerance) {
-            videoRef.current.play().catch(err => {
+            videoRef.current.play().catch((err) => {
               console.log("Auto-play nije dozvoljen:", err);
             });
             setIsPlaying(true);
@@ -98,9 +98,9 @@ export default function EvagaVideoPlayer({
           }
         }
       },
-      { 
+      {
         threshold: [0.3, 0.5, 0.7], // Više threshold-a za bolju detekciju
-        rootMargin: '0px' 
+        rootMargin: "0px",
       },
     );
 
@@ -112,16 +112,16 @@ export default function EvagaVideoPlayer({
   // PIP support detection i touch device detekcija
   useEffect(() => {
     setPipSupported(document.pictureInPictureEnabled === true);
-    
+
     // Detektuj touch uređaje
     const checkTouchDevice = () => {
       return (
-        'ontouchstart' in window ||
+        "ontouchstart" in window ||
         navigator.maxTouchPoints > 0 ||
         navigator.msMaxTouchPoints > 0
       );
     };
-    
+
     setIsTouchDevice(checkTouchDevice());
   }, []);
 
@@ -150,13 +150,13 @@ export default function EvagaVideoPlayer({
   const handleContainerClick = () => {
     if (isTouchDevice) {
       // Na touch uređajima toggle-uj kontrole
-      setShowControls(prev => !prev);
-      
+      setShowControls((prev) => !prev);
+
       // Auto-sakrij kontrole nakon 3 sekunde ako se video reprodukuje
       if (controlsTimeout.current) {
         clearTimeout(controlsTimeout.current);
       }
-      
+
       if (isPlaying) {
         controlsTimeout.current = setTimeout(() => {
           setShowControls(false);
@@ -390,6 +390,11 @@ export default function EvagaVideoPlayer({
             onWaiting={handleWaiting}
             onPlaying={handlePlaying}
             onEnded={handleEnded}
+            onError={(e) => {
+              console.error("Video load error:", e);
+              setLoadError(true);
+              setIsLoading(false);
+            }}
           >
             {captionsSrc && (
               <track
@@ -429,9 +434,15 @@ export default function EvagaVideoPlayer({
           </div>
 
           {/* Controls Bar - Responsive */}
-          <div className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-2 sm:p-4 transition-opacity duration-300 z-15 ${
-            isTouchDevice ? (showControls ? 'opacity-100' : 'opacity-0') : 'opacity-0 group-hover:opacity-100'
-          }`}>
+          <div
+            className={`absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black via-black/60 to-transparent p-2 sm:p-4 transition-opacity duration-300 z-15 ${
+              isTouchDevice
+                ? showControls
+                  ? "opacity-100"
+                  : "opacity-0"
+                : "opacity-0 group-hover:opacity-100"
+            }`}
+          >
             {/* Progress bar */}
             <div className="mb-2 sm:mb-4 flex items-center gap-1 sm:gap-2">
               <div
@@ -470,7 +481,11 @@ export default function EvagaVideoPlayer({
                   className="p-1.5 sm:p-2 hover:bg-white/20 rounded-lg transition-colors text-white"
                   title={isPlaying ? "Pauziraj" : "Reprodukuj"}
                 >
-                  {isPlaying ? <FaPause size={14} className="sm:w-4 sm:h-4" /> : <FaPlay size={14} className="sm:w-4 sm:h-4" />}
+                  {isPlaying ? (
+                    <FaPause size={14} className="sm:w-4 sm:h-4" />
+                  ) : (
+                    <FaPlay size={14} className="sm:w-4 sm:h-4" />
+                  )}
                 </button>
 
                 {/* Mute Toggle */}
@@ -480,7 +495,10 @@ export default function EvagaVideoPlayer({
                   title={isMuted ? "Odmutuj" : "Mutuj"}
                 >
                   {isMuted ? (
-                    <FaVolumeMute size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    <FaVolumeMute
+                      size={16}
+                      className="sm:w-[18px] sm:h-[18px]"
+                    />
                   ) : (
                     <FaVolumeUp size={16} className="sm:w-[18px] sm:h-[18px]" />
                   )}
@@ -530,7 +548,10 @@ export default function EvagaVideoPlayer({
                     className="hidden sm:block p-1.5 sm:p-2 hover:bg-white/20 rounded-lg transition-colors text-white"
                     title="Mini-player (PiP)"
                   >
-                    <MdPictureInPictureAlt size={16} className="sm:w-[18px] sm:h-[18px]" />
+                    <MdPictureInPictureAlt
+                      size={16}
+                      className="sm:w-[18px] sm:h-[18px]"
+                    />
                   </button>
                 )}
 
@@ -563,16 +584,19 @@ export default function EvagaVideoPlayer({
         {/* Napomena */}
         <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-[#F5F9F7] rounded-xl border border-[#D7DACF]">
           <p className="text-[#2F5363] text-xs sm:text-sm leading-relaxed">
-            <strong>Napomena:</strong> Video se automatski pokreće kada doskrolujete do njega i kada se pojavi na sredini ekrana. 
+            <strong>Napomena:</strong> Video se automatski pokreće kada
+            doskrolujete do njega i kada se pojavi na sredini ekrana.
             {isTouchDevice ? (
               <>
-                Tapnite na video da prikažete kontrole za pauziranje, podešavanje zvuka i prelazak u fullscreen režim. 
-                Kontrole se automatski sakrivaju nakon 3 sekunde.
+                Tapnite na video da prikažete kontrole za pauziranje,
+                podešavanje zvuka i prelazak u fullscreen režim. Kontrole se
+                automatski sakrivaju nakon 3 sekunde.
               </>
             ) : (
               <>
-                Kliknite na video ili dugme za reprodukciju da ga pauzate. Koristite dugme za zvuk da omogućite audio, 
-                a fullscreen dugme za prikaz na celom ekranu.
+                Kliknite na video ili dugme za reprodukciju da ga pauzate.
+                Koristite dugme za zvuk da omogućite audio, a fullscreen dugme
+                za prikaz na celom ekranu.
               </>
             )}
           </p>

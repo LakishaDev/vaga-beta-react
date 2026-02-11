@@ -91,16 +91,12 @@ function createMockAnalytics() {
 const initServices = () => {
   if (isInitialized || !app) return;
 
-  if (!validateConfig()) {
-    console.warn("⚠️ Firebase config incomplete - using mock services");
-    // Create mock services to prevent null errors
-    db = createMockFirestore();
-    auth = createMockAuth();
-    storage = createMockStorage();
-    functions = createMockFunctions();
-    analytics = createMockAnalytics();
-    isInitialized = true; // Mark as initialized even with mocks
-    return;
+  // Proveri config ali UVIJEK inicijalizuj - Firebase će raditi offline mode
+  const configValid = validateConfig();
+  if (!configValid) {
+    console.warn(
+      "⚠️ Firebase config incomplete - services will run in limited mode",
+    );
   }
 
   try {
@@ -110,10 +106,14 @@ const initServices = () => {
     storage = getStorage(app);
     functions = getFunctions(app, "europe-west1");
     isInitialized = true;
-    console.log("✅ Firebase services initialized");
+    console.log(
+      configValid
+        ? "✅ Firebase services initialized"
+        : "⚠️ Firebase initialized with dummy config (limited mode)",
+    );
   } catch (error) {
-    console.warn("⚠️ Firebase services init error:", error.message);
-    // Create mocks on error
+    console.error("❌ Firebase services init error:", error.message);
+    // Pokušaj ponovo sa mock objektima kao krajnji fallback
     db = createMockFirestore();
     auth = createMockAuth();
     storage = createMockStorage();
