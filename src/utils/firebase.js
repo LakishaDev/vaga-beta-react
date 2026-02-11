@@ -61,7 +61,14 @@ const initServices = () => {
   if (isInitialized || !app) return;
 
   if (!validateConfig()) {
-    console.warn("⚠️ Firebase config incomplete - services may not work");
+    console.warn("⚠️ Firebase config incomplete - using mock services");
+    // Create mock services to prevent null errors
+    db = { type: "mock-firestore" };
+    auth = { type: "mock-auth" };
+    storage = { type: "mock-storage" };
+    functions = { type: "mock-functions" };
+    analytics = { type: "mock-analytics" };
+    isInitialized = true; // Mark as initialized even with mocks
     return;
   }
 
@@ -74,7 +81,14 @@ const initServices = () => {
     isInitialized = true;
     console.log("✅ Firebase services initialized");
   } catch (error) {
-    console.warn("⚠️ Firebase services init:", error.message);
+    console.warn("⚠️ Firebase services init error:", error.message);
+    // Create mocks on error
+    db = { type: "mock-firestore" };
+    auth = { type: "mock-auth" };
+    storage = { type: "mock-storage" };
+    functions = { type: "mock-functions" };
+    analytics = { type: "mock-analytics" };
+    isInitialized = true;
   }
 };
 
@@ -123,10 +137,16 @@ export function initializeAppCheckIfNeeded() {
   }
 }
 
-// Export with getters
+// Export with safe fallbacks
 export { app };
 export { analytics };
 export { db };
 export { auth };
 export { storage };
 export { functions };
+
+// Export initialization status
+export const isFirebaseInitialized = () => isInitialized && auth && !auth.type;
+
+// Export helper to check if using real Firebase or mocks
+export const isUsingMockFirebase = () => auth?.type === "mock-auth";

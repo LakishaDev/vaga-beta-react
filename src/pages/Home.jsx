@@ -31,7 +31,7 @@ import LepModal from "../components/UI/LepModal";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../utils/firebase";
+import { auth, isUsingMockFirebase } from "../utils/firebase";
 
 export default function Home() {
   const [modalData, setModalData] = useState({
@@ -88,6 +88,12 @@ export default function Home() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    // Skip auth check if using mock Firebase
+    if (isUsingMockFirebase()) {
+      console.warn("⚠️ Using mock Firebase - auth disabled");
+      return;
+    }
+
     const adminEmails =
       import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
     const unsub = onAuthStateChanged(auth, (user) => {
