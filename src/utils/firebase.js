@@ -15,29 +15,90 @@ import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
-const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+// Validuj environment varijable
+const validateConfig = () => {
+  const required = [
+    "VITE_FIREBASE_API_KEY",
+    "VITE_FIREBASE_AUTH_DOMAIN",
+    "VITE_FIREBASE_PROJECT_ID",
+    "VITE_FIREBASE_STORAGE_BUCKET",
+    "VITE_FIREBASE_MESSAGING_SENDER_ID",
+    "VITE_FIREBASE_APP_ID",
+  ];
+
+  const missing = required.filter((key) => !import.meta.env[key]);
+
+  if (missing.length > 0) {
+    console.error("❌ Missing Firebase env vars:", missing);
+    return false;
+  }
+
+  return true;
 };
 
-export const app = initializeApp(firebaseConfig);
+const firebaseConfig = {
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy-key",
+  authDomain:
+    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dummy.firebaseapp.com",
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "dummy-project",
+  storageBucket:
+    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "dummy.appspot.com",
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "0",
+  appId: import.meta.env.VITE_FIREBASE_APP_ID || "0:0:web:0",
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "",
+};
 
-// Inicijalizuj App Check samo ako su dostupni potrebni env vars
-export let appCheck = null;
+let app = null;
+let analytics = null;
+let db = null;
+let auth = null;
+let storage = null;
+let functions = null;
+let appCheck = null;
+let isInitialized = false;
+
+const initServices = () => {
+  if (isInitialized || !app) return;
+
+  if (!validateConfig()) {
+    console.warn("⚠️ Firebase config incomplete - services may not work");
+    return;
+  }
+
+  try {
+    analytics = getAnalytics(app);
+    db = getFirestore(app);
+    auth = getAuth(app);
+    storage = getStorage(app);
+    functions = getFunctions(app, "europe-west1");
+    isInitialized = true;
+    console.log("✅ Firebase services initialized");
+  } catch (error) {
+    console.warn("⚠️ Firebase services init:", error.message);
+  }
+};
+
+try {
+  app = initializeApp(firebaseConfig);
+  console.log("✅ Firebase app initialized");
+  // Try to init services immediately, but fail gracefully
+  initServices();
+} catch (error) {
+  console.error("❌ Firebase app error:", error.message);
+}
+
+// Retry initialization if failed
+export function initializeFirebaseIfNeeded() {
+  if (isInitialized && db && auth) return;
+  initServices();
+}
 
 export function initializeAppCheckIfNeeded() {
-  if (appCheck) return appCheck; // Već inicijaliziran
+  if (appCheck || !app) return appCheck;
 
   const siteKey = import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY;
   if (!siteKey) {
-    console.warn(
-      "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY nije dostupan - App Check disabled",
-    );
+    console.warn("⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY unavailable");
     return null;
   }
 
@@ -54,23 +115,18 @@ export function initializeAppCheckIfNeeded() {
       provider: new ReCaptchaV3Provider(siteKey),
       isTokenAutoRefreshEnabled: true,
     });
-    console.log("✅ App Check inicijalizovan");
+    console.log("✅ App Check initialized");
     return appCheck;
   } catch (error) {
-    console.error("❌ Error initializing App Check:", error);
+    console.warn("⚠️ App Check error:", error.message);
     return null;
   }
 }
 
-// Inicijalizuj App Check čim je aplikacija gotova
-if (import.meta.env.PROD) {
-  setTimeout(() => {
-    initializeAppCheckIfNeeded();
-  }, 0);
-}
-
-export const analytics = getAnalytics(app);
-export const db = getFirestore(app);
-export const auth = getAuth(app);
-export const storage = getStorage(app);
-export const functions = getFunctions(app, "europe-west1");
+// Export with getters
+export { app };
+export { analytics };
+export { db };
+export { auth };
+export { storage };
+export { functions };

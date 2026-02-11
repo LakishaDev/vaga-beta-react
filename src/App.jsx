@@ -20,7 +20,10 @@ import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import CloudflareDeploymentDebug from "./components/CloudflareDeploymentDebug";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
-import { initializeAppCheckIfNeeded } from "./utils/firebase";
+import {
+  initializeAppCheckIfNeeded,
+  initializeFirebaseIfNeeded,
+} from "./utils/firebase";
 import Lenis from "lenis";
 import { lazy, Suspense, useEffect } from "react";
 
@@ -72,7 +75,33 @@ function AppContent() {
 function App() {
   // Inicijalizuj App Check čim se App montira
   useEffect(() => {
+    initializeFirebaseIfNeeded();
     initializeAppCheckIfNeeded();
+
+    // DEBUG: Log environment variables
+    console.log("🔍 Firebase Environment Check:");
+    console.log(
+      "✓ VITE_FIREBASE_API_KEY:",
+      import.meta.env.VITE_FIREBASE_API_KEY ? "✅ SET" : "❌ MISSING",
+    );
+    console.log(
+      "✓ VITE_FIREBASE_PROJECT_ID:",
+      import.meta.env.VITE_FIREBASE_PROJECT_ID ? "✅ SET" : "❌ MISSING",
+    );
+    console.log(
+      "✓ VITE_FIREBASE_AUTH_DOMAIN:",
+      import.meta.env.VITE_FIREBASE_AUTH_DOMAIN ? "✅ SET" : "❌ MISSING",
+    );
+    console.log(
+      "✓ VITE_FIREBASE_STORAGE_BUCKET:",
+      import.meta.env.VITE_FIREBASE_STORAGE_BUCKET ? "✅ SET" : "❌ MISSING",
+    );
+    console.log(
+      "✓ VITE_FIREBASE_RECAPTCHA_SITE_KEY:",
+      import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY
+        ? "✅ SET"
+        : "❌ MISSING",
+    );
   }, []);
 
   // Inicijalizacija Lenis za glatko skrolovanje
