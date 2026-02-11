@@ -1,2 +1,0 @@
-# Cloudflare Pages automatically handles SPA routing for Vite/React apps
-# No explicit redirects needed - removes infinite loop warning
