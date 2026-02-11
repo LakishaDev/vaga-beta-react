@@ -1,13 +1,18 @@
 /**
  * R2 Cache Service - Upravljanje Cloudflare R2 storage-om
  * Pruža funkcionalnost za upload, download i caching fajlova
+ *
+ * ⚠️ OPTIONAL: R2 cache service je opcionalan
+ * Ako VITE_R2_WORKER_URL nije dostupan, service će biti disabled
  */
 
 const R2_WORKER_URL = import.meta.env.VITE_R2_WORKER_URL;
 
-if (!R2_WORKER_URL) {
-  throw new Error(
-    "VITE_R2_WORKER_URL is missing. Set it in your environment (Cloudflare/Pages build env).",
+const isR2Enabled = !!R2_WORKER_URL;
+
+if (!isR2Enabled) {
+  console.warn(
+    "⚠️ R2 Cache disabled: VITE_R2_WORKER_URL not set. App will work without R2 caching.",
   );
 }
 
@@ -15,12 +20,14 @@ class R2CacheService {
   constructor() {
     this.workerUrl = R2_WORKER_URL;
     this.cacheVersion = "v1";
+    this.enabled = isR2Enabled;
   }
 
   /**
    * Generiši unikatan cache key na osnovu fajla i metapodataka
    */
   generateCacheKey(filename, namespace = "general") {
+    if (!this.enabled) return null;
     return `${this.cacheVersion}/${namespace}/${filename}`;
   }
 
@@ -28,6 +35,10 @@ class R2CacheService {
    * Upload fajl na R2 sa cache metadata-om
    */
   async uploadFile(file, options = {}) {
+    if (!this.enabled) {
+      console.warn("⚠️ R2 Cache disabled - upload skipped");
+      return { success: false, error: "R2 Cache disabled" };
+    }
     try {
       const {
         namespace = "general",
