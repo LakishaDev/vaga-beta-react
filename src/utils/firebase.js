@@ -57,17 +57,48 @@ let functions = null;
 let appCheck = null;
 let isInitialized = false;
 
+// Mock Firebase services to prevent crashes when env vars are missing
+function createMockAuth() {
+  return {
+    type: "mock-auth",
+    currentUser: null,
+    onAuthStateChanged: (callback) => {
+      console.warn("⚠️ Mock Firebase Auth - onAuthStateChanged called");
+      // Call immediately with null user
+      setTimeout(() => callback(null), 0);
+      // Return unsubscribe function
+      return () => {};
+    },
+  };
+}
+
+function createMockFirestore() {
+  return { type: "mock-firestore" };
+}
+
+function createMockStorage() {
+  return { type: "mock-storage" };
+}
+
+function createMockFunctions() {
+  return { type: "mock-functions" };
+}
+
+function createMockAnalytics() {
+  return { type: "mock-analytics" };
+}
+
 const initServices = () => {
   if (isInitialized || !app) return;
 
   if (!validateConfig()) {
     console.warn("⚠️ Firebase config incomplete - using mock services");
     // Create mock services to prevent null errors
-    db = { type: "mock-firestore" };
-    auth = { type: "mock-auth" };
-    storage = { type: "mock-storage" };
-    functions = { type: "mock-functions" };
-    analytics = { type: "mock-analytics" };
+    db = createMockFirestore();
+    auth = createMockAuth();
+    storage = createMockStorage();
+    functions = createMockFunctions();
+    analytics = createMockAnalytics();
     isInitialized = true; // Mark as initialized even with mocks
     return;
   }
@@ -83,11 +114,11 @@ const initServices = () => {
   } catch (error) {
     console.warn("⚠️ Firebase services init error:", error.message);
     // Create mocks on error
-    db = { type: "mock-firestore" };
-    auth = { type: "mock-auth" };
-    storage = { type: "mock-storage" };
-    functions = { type: "mock-functions" };
-    analytics = { type: "mock-analytics" };
+    db = createMockFirestore();
+    auth = createMockAuth();
+    storage = createMockStorage();
+    functions = createMockFunctions();
+    analytics = createMockAnalytics();
     isInitialized = true;
   }
 };

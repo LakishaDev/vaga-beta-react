@@ -102,6 +102,20 @@ class R2CacheService {
    * Preuzmi fajl sa R2 cache-a sa fallback-om
    */
   async getFile(filename, namespace = "general", options = {}) {
+    if (!this.enabled) {
+      console.warn(
+        `⚠️ R2 Cache disabled - attempting local file: /videos/${filename}`,
+      );
+      try {
+        const response = await fetch(`/videos/${filename}`);
+        if (!response.ok) throw new Error("Local file not found");
+        return await response.blob();
+      } catch (error) {
+        console.error("Failed to load local file:", error);
+        throw error;
+      }
+    }
+
     try {
       const { useCache = true, forceRefresh = false } = options;
 
@@ -250,8 +264,16 @@ class R2CacheService {
 
   /**
    * Preuzmi URL fajla sa R2 za direktan pristup
+   * Ako je R2 disabled, vraća lokalni URL
    */
   getFileUrl(filename, namespace = "general") {
+    if (!this.enabled) {
+      // Fallback na local files u public folder
+      console.warn(
+        `⚠️ R2 Cache disabled - using local file: /videos/${filename}`,
+      );
+      return `/videos/${filename}`;
+    }
     const cacheKey = this.generateCacheKey(filename, namespace);
     return `${this.workerUrl}/download/${cacheKey}`;
   }
