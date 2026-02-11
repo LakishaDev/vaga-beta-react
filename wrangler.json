@@ -1,0 +1,27 @@
+{
+  "type": "module",
+  "build": {
+    "command": "npm run build:prod",
+    "cwd": ".",
+    "watch_paths": ["src/**/*.{js,jsx,ts,tsx}", "public/**/*"]
+  },
+  "observability": {
+    "enabled": true
+  },
+  "env": {
+    "production": {
+      "name": "vaga-beta",
+      "routes": [
+        {
+          "pattern": "https://vagabeta.rs/*",
+          "zone_id": "8e9adffbe324937621ebe15e3595b23c"
+        },
+        {
+          "pattern": "https://www.vagabeta.rs/*",
+          "zone_id": "8e9adffbe324937621ebe15e3595b23c"
+        }
+      ]
+    }
+  },
+  "pages_build_output_dir": "dist"
+}

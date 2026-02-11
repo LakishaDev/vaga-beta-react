@@ -18,6 +18,7 @@ import {
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
+import CloudflareDeploymentDebug from "./components/CloudflareDeploymentDebug";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import Lenis from "lenis";
 import { lazy, Suspense, useEffect } from "react";
@@ -89,6 +90,7 @@ function App() {
         <Router>
           <AppContent />
         </Router>
+        <CloudflareDeploymentDebug />
       </div>
     </EVagaDesktopProvider>
   );
