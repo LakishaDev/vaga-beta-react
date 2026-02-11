@@ -99,21 +99,13 @@ class R2CacheService {
   }
 
   /**
-   * Preuzmi fajl sa R2 cache-a sa fallback-om
+   * Preuzmi fajl sa R2 cache-a (REQUIRED - R2 must be configured)
    */
   async getFile(filename, namespace = "general", options = {}) {
     if (!this.enabled) {
-      console.warn(
-        `⚠️ R2 Cache disabled - attempting local file: /videos/${filename}`,
+      throw new Error(
+        "R2 Cache not configured - VITE_R2_WORKER_URL environment variable is required",
       );
-      try {
-        const response = await fetch(`/videos/${filename}`);
-        if (!response.ok) throw new Error("Local file not found");
-        return await response.blob();
-      } catch (error) {
-        console.error("Failed to load local file:", error);
-        throw error;
-      }
     }
 
     try {
@@ -263,16 +255,13 @@ class R2CacheService {
   }
 
   /**
-   * Preuzmi URL fajla sa R2 za direktan pristup
-   * Ako je R2 disabled, vraća lokalni URL
+   * Preuzmi URL fajla sa R2 za direktan pristup (REQUIRED - R2 must be configured)
    */
   getFileUrl(filename, namespace = "general") {
     if (!this.enabled) {
-      // Fallback na local files u public folder
-      console.warn(
-        `⚠️ R2 Cache disabled - using local file: /videos/${filename}`,
+      throw new Error(
+        "R2 Cache not configured - VITE_R2_WORKER_URL environment variable is required",
       );
-      return `/videos/${filename}`;
     }
     const cacheKey = this.generateCacheKey(filename, namespace);
     return `${this.workerUrl}/download/${cacheKey}`;

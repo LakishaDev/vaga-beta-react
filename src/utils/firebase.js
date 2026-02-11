@@ -1,12 +1,9 @@
 // src/utils/firebase.js
 // Firebase konfiguracija i inicijalizacija
 // Uključuje Firestore, Auth, Storage, Analytics, App Check
-// Konfiguracija koristi environment varijable iz .env fajla
+// Konfiguracija koristi environment varijable
 // App Check koristi reCAPTCHA v3
-// Inicijalizacija je podešena za automatsko osvežavanje tokena
-// Uključuje error handling i debug mod za App Check
-// Eksportuje app, db, auth, storage, analytics, appCheck
-// Koristi Firebase v9 modularni SDK
+// Eksportuje app, db, auth, storage, analytics, appCheck, functions
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
@@ -29,124 +26,41 @@ const validateConfig = () => {
   const missing = required.filter((key) => !import.meta.env[key]);
 
   if (missing.length > 0) {
-    console.error("❌ Missing Firebase env vars:", missing);
-    return false;
+    console.error("❌ Missing Firebase environment variables:", missing);
+    console.error(
+      "Please set these in Cloudflare Pages Environment Variables (as Plaintext, NOT Secret)",
+    );
+    throw new Error(`Missing Firebase config: ${missing.join(", ")}`);
   }
 
   return true;
 };
 
+// Validate before initialization
+validateConfig();
+
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "dummy-key",
-  authDomain:
-    import.meta.env.VITE_FIREBASE_AUTH_DOMAIN || "dummy.firebaseapp.com",
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "dummy-project",
-  storageBucket:
-    import.meta.env.VITE_FIREBASE_STORAGE_BUCKET || "dummy.appspot.com",
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID || "0",
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "0:0:web:0",
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID || "",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
 };
 
-let app = null;
-let analytics = null;
-let db = null;
-let auth = null;
-let storage = null;
-let functions = null;
+// Initialize Firebase
+export const app = initializeApp(firebaseConfig);
+export const analytics = getAnalytics(app);
+export const db = getFirestore(app);
+export const auth = getAuth(app);
+export const storage = getStorage(app);
+export const functions = getFunctions(app, "europe-west1");
+
+// Initialize App Check (optional - only if reCAPTCHA key is set)
 let appCheck = null;
-let isInitialized = false;
 
-// Mock Firebase services to prevent crashes when env vars are missing
-function createMockAuth() {
-  return {
-    type: "mock-auth",
-    currentUser: null,
-    onAuthStateChanged: (callback) => {
-      console.warn("⚠️ Mock Firebase Auth - onAuthStateChanged called");
-      // Call immediately with null user
-      setTimeout(() => callback(null), 0);
-      // Return unsubscribe function
-      return () => {};
-    },
-  };
-}
-
-function createMockFirestore() {
-  return { type: "mock-firestore" };
-}
-
-function createMockStorage() {
-  return { type: "mock-storage" };
-}
-
-function createMockFunctions() {
-  return { type: "mock-functions" };
-}
-
-function createMockAnalytics() {
-  return { type: "mock-analytics" };
-}
-
-const initServices = () => {
-  if (isInitialized || !app) return;
-
-  // Proveri config ali UVIJEK inicijalizuj - Firebase će raditi offline mode
-  const configValid = validateConfig();
-  if (!configValid) {
-    console.warn(
-      "⚠️ Firebase config incomplete - services will run in limited mode",
-    );
-  }
-
-  try {
-    analytics = getAnalytics(app);
-    db = getFirestore(app);
-    auth = getAuth(app);
-    storage = getStorage(app);
-    functions = getFunctions(app, "europe-west1");
-    isInitialized = true;
-    console.log(
-      configValid
-        ? "✅ Firebase services initialized"
-        : "⚠️ Firebase initialized with dummy config (limited mode)",
-    );
-  } catch (error) {
-    console.error("❌ Firebase services init error:", error.message);
-    // Pokušaj ponovo sa mock objektima kao krajnji fallback
-    db = createMockFirestore();
-    auth = createMockAuth();
-    storage = createMockStorage();
-    functions = createMockFunctions();
-    analytics = createMockAnalytics();
-    isInitialized = true;
-  }
-};
-
-try {
-  app = initializeApp(firebaseConfig);
-  console.log("✅ Firebase app initialized");
-  // Try to init services immediately, but fail gracefully
-  initServices();
-} catch (error) {
-  console.error("❌ Firebase app error:", error.message);
-}
-
-// Retry initialization if failed
-export function initializeFirebaseIfNeeded() {
-  if (isInitialized && db && auth) return;
-  initServices();
-}
-
-export function initializeAppCheckIfNeeded() {
-  if (appCheck || !app) return appCheck;
-
-  const siteKey = import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY;
-  if (!siteKey) {
-    console.warn("⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY unavailable");
-    return null;
-  }
-
+if (import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY) {
   if (
     import.meta.env.DEV &&
     import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN
@@ -157,27 +71,21 @@ export function initializeAppCheckIfNeeded() {
 
   try {
     appCheck = initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(siteKey),
+      provider: new ReCaptchaV3Provider(
+        import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY,
+      ),
       isTokenAutoRefreshEnabled: true,
     });
-    console.log("✅ App Check initialized");
-    return appCheck;
+    console.log("✅ Firebase App Check initialized");
   } catch (error) {
-    console.warn("⚠️ App Check error:", error.message);
-    return null;
+    console.warn("⚠️ App Check initialization error:", error.message);
   }
+} else {
+  console.warn(
+    "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY not set - App Check disabled",
+  );
 }
 
-// Export with safe fallbacks
-export { app };
-export { analytics };
-export { db };
-export { auth };
-export { storage };
-export { functions };
+export { appCheck };
 
-// Export initialization status
-export const isFirebaseInitialized = () => isInitialized && auth && !auth.type;
-
-// Export helper to check if using real Firebase or mocks
-export const isUsingMockFirebase = () => auth?.type === "mock-auth";
+console.log("✅ Firebase initialized successfully");
