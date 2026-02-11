@@ -55,21 +55,28 @@ In the **Set up builds and deployments** section:
 | **Root directory**         | (leave empty or `/`)   |
 | **Environment variables**  | (see below if needed)  |
 
-### Step 4: Environment Variables (Optional)
+### Step 4: Environment Variables ⚠️ **OBAVEZNO**
 
-If your app needs Firebase or other environment variables during build:
+**Firebase environment variables su OBAVEZNE** za ispravan rad aplikacije!
 
-Click **Add variable** and add:
+**📖 Detaljne instrukcije:** [CLOUDFLARE_ENV_SETUP.md](CLOUDFLARE_ENV_SETUP.md)
 
-- `VITE_FIREBASE_API_KEY`
-- `VITE_FIREBASE_AUTH_DOMAIN`
-- `VITE_FIREBASE_PROJECT_ID`
-- `VITE_FIREBASE_STORAGE_BUCKET`
-- `VITE_FIREBASE_MESSAGING_SENDER_ID`
-- `VITE_FIREBASE_APP_ID`
-- `VITE_FIREBASE_MEASUREMENT_ID`
+Click **Add variable** i dodaj **SVE** varijable:
 
-> **Note**: Get these values from your [Firebase Console](https://console.firebase.google.com/)
+```env
+VITE_FIREBASE_API_KEY=AIzaSyCi4Dv4xX0uLr5texK-UoQMgAx6LYyLRGk
+VITE_FIREBASE_AUTH_DOMAIN=vaga-beta-sajt.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=vaga-beta-sajt
+VITE_FIREBASE_STORAGE_BUCKET=vaga-beta-sajt.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=128255475317
+VITE_FIREBASE_APP_ID=1:128255475317:web:940cd944e6f1f762b9423c
+VITE_FIREBASE_MEASUREMENT_ID=G-WQFDTPZEXB
+VITE_FIREBASE_APPCHECK_DEBUG_TOKEN=C0D542DB-96AE-4886-A47F-6A6B7FD27D30
+VITE_FIREBASE_RECAPTCHA_SITE_KEY=6LdhT-ArAAAAAA93PlM7Ua3eE3TttZAjFcSpwySS
+VITE_ADMIN_EMAILS=lazar.cve@gmail.com
+```
+
+> **Napomena:** Vrednosti su iz tvog `.env.local` fajla. **Bez ovih varijabli, aplikacija NEĆE raditi!**
 
 ### Step 5: Deploy!
 
