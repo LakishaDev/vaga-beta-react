@@ -20,6 +20,7 @@ import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import CloudflareDeploymentDebug from "./components/CloudflareDeploymentDebug";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
+import { initializeAppCheckIfNeeded } from "./utils/firebase";
 import Lenis from "lenis";
 import { lazy, Suspense, useEffect } from "react";
 
@@ -69,6 +70,11 @@ function AppContent() {
 
 // Glavna App komponenta sa Router-om
 function App() {
+  // Inicijalizuj App Check čim se App montira
+  useEffect(() => {
+    initializeAppCheckIfNeeded();
+  }, []);
+
   // Inicijalizacija Lenis za glatko skrolovanje
   useEffect(() => {
     const lenis = new Lenis({

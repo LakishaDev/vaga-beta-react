@@ -27,17 +27,47 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 
-if (import.meta.env.DEV && import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN) {
-  self.FIREBASE_APPCHECK_DEBUG_TOKEN =
-    import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
+// Inicijalizuj App Check samo ako su dostupni potrebni env vars
+export let appCheck = null;
+
+export function initializeAppCheckIfNeeded() {
+  if (appCheck) return appCheck; // Već inicijaliziran
+
+  const siteKey = import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY;
+  if (!siteKey) {
+    console.warn(
+      "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY nije dostupan - App Check disabled",
+    );
+    return null;
+  }
+
+  if (
+    import.meta.env.DEV &&
+    import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN
+  ) {
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN =
+      import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
+  }
+
+  try {
+    appCheck = initializeAppCheck(app, {
+      provider: new ReCaptchaV3Provider(siteKey),
+      isTokenAutoRefreshEnabled: true,
+    });
+    console.log("✅ App Check inicijalizovan");
+    return appCheck;
+  } catch (error) {
+    console.error("❌ Error initializing App Check:", error);
+    return null;
+  }
 }
 
-export const appCheck = initializeAppCheck(app, {
-  provider: new ReCaptchaV3Provider(
-    import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY
-  ),
-  isTokenAutoRefreshEnabled: true,
-});
+// Inicijalizuj App Check čim je aplikacija gotova
+if (import.meta.env.PROD) {
+  setTimeout(() => {
+    initializeAppCheckIfNeeded();
+  }, 0);
+}
 
 export const analytics = getAnalytics(app);
 export const db = getFirestore(app);
