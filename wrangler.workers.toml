@@ -1,0 +1,80 @@
+# wrangler.workers.toml - Cloudflare Workers Configuration for R2 Cache
+# Verzija: 3.0.0 - Separate Workers deployment
+# Deploy this worker separately: wrangler deploy --config wrangler.workers.toml
+
+name = "vaga-beta-r2-worker"
+account_id = "031ca9685557ca09a945ef3d0ba54f8e"
+main = "src/workers/r2-cache-worker.js"
+workers_dev = true
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat", "streams_enable_constructors"]
+
+# R2 Bucket Configuration
+[[r2_buckets]]
+bucket_name = "vaga-beta-cache"
+binding = "R2_BUCKET"
+jurisdiction = "eu"
+
+[[r2_buckets]]
+bucket_name = "vaga-beta-cdn"
+binding = "R2_CDN"
+jurisdiction = "eu"
+
+# KV Namespace for cache metadata
+[[kv_namespaces]]
+binding = "CACHE_METADATA"
+id = "2bb2f5778aaa459382c4731b60f3405a"
+preview_id = "2bb2f5778aaa459382c4731b60f3405a"
+
+# Analytics Engine binding
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Production environment
+[env.production]
+name = "vaga-beta-r2-production"
+workers_dev = false
+
+routes = [
+  { pattern = "https://cache.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" },
+  { pattern = "https://cdn.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" }
+]
+
+[[env.production.r2_buckets]]
+bucket_name = "vaga-beta-cache"
+binding = "R2_BUCKET"
+jurisdiction = "eu"
+
+[[env.production.r2_buckets]]
+bucket_name = "vaga-beta-cdn"
+binding = "R2_CDN"
+jurisdiction = "eu"
+
+[[env.production.kv_namespaces]]
+binding = "CACHE_METADATA"
+id = "2bb2f5778aaa459382c4731b60f3405a"
+
+[[env.production.analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Development environment
+[env.development]
+name = "vaga-beta-r2-development"
+workers_dev = true
+
+vars = { ENVIRONMENT = "development", DEBUG = "true" }
+
+[[env.development.r2_buckets]]
+bucket_name = "vaga-beta-cache"
+binding = "R2_BUCKET"
+jurisdiction = "eu"
+
+[[env.development.kv_namespaces]]
+binding = "CACHE_METADATA"
+id = "2bb2f5778aaa459382c4731b60f3405a"
+
+# Environment variables
+[vars]
+ENVIRONMENT = "production"
+CORS_ORIGIN = "https://vagabeta.rs"
+MAX_FILE_SIZE = "104857600"

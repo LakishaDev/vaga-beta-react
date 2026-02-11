@@ -1,103 +1,17 @@
-# wrangler.toml - Optimizovano za Cloudflare Pages + Workers + R2
-# Verzija: 2.0.0
-# Za Cloudflare Pages sa Workers i R2 integration
+# wrangler.toml - Cloudflare Pages Configuration
+# Verzija: 3.0.0 - Pages-compatible
+# For GitHub integration deployment to Cloudflare Pages
+# Build settings should be configured in Cloudflare Pages Dashboard
 
-name = "vaga-beta-cloudflare"
-account_id = "031ca9685557ca09a945ef3d0ba54f8e"
-workers_dev = false
-compatibility_date = "2026-02-05"
-compatibility_flags = ["nodejs_compat", "streams_enable_constructors"]
+name = "vaga-beta"
+pages_build_output_dir = "dist"
+compatibility_date = "2024-01-01"
 
-# Main worker za R2 cache
-main = "src/workers/r2-cache-worker.js"
-
-# R2 Bucket Configuration
-[[r2_buckets]]
-bucket_name = "vaga-beta-cache"
-binding = "R2_BUCKET"
-jurisdiction = "eu"
-
-# Production R2 bucket
-[[r2_buckets]]
-bucket_name = "vaga-beta-cdn"
-binding = "R2_CDN"
-jurisdiction = "eu"
-
-# KV Namespace za cache metadata
-[[kv_namespaces]]
-binding = "CACHE_METADATA"
-id = "2bb2f5778aaa459382c4731b60f3405a"
-preview_id = "2bb2f5778aaa459382c4731b60f3405a"
-
-# Analytics Engine binding
-[[analytics_engine_datasets]]
-binding = "ANALYTICS"
-
-# Durable Objects (opciono za session handling)
-[[durable_objects.bindings]]
-name = "SESSION_STORE"
-class_name = "SessionStore"
-
-# Production environment
-[env.production]
-name = "vaga-beta-production"
-account_id = "031ca9685557ca09a945ef3d0ba54f8e"
-workers_dev = false
-
-routes = [
-  { pattern = "https://cache.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" },
-  { pattern = "https://cdn.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" }
-]
-
-[[env.production.r2_buckets]]
-bucket_name = "vaga-beta-cache"
-binding = "R2_BUCKET"
-jurisdiction = "eu"
-
-[[env.production.r2_buckets]]
-bucket_name = "vaga-beta-cdn"
-binding = "R2_CDN"
-jurisdiction = "eu"
-
-[[env.production.kv_namespaces]]
-binding = "CACHE_METADATA"
-id = "2bb2f5778aaa459382c4731b60f3405a"
-preview_id = "2bb2f5778aaa459382c4731b60f3405a"
-
-[[env.production.analytics_engine_datasets]]
-binding = "ANALYTICS"
-
-# Development environment
-[env.development]
-name = "vaga-beta-development"
-workers_dev = true
-
-vars = { ENVIRONMENT = "development", DEBUG = "true" }
-
-[[env.development.r2_buckets]]
-bucket_name = "vaga-beta-cache"
-binding = "R2_BUCKET"
-jurisdiction = "eu"
-
-[[env.development.kv_namespaces]]
-binding = "CACHE_METADATA"
-id = "2bb2f5778aaa459382c4731b60f3405a"
-preview_id = "2bb2f5778aaa459382c4731b60f3405a"
-
-# Build opcije
-[build]
-command = "npm run build:prod"
-cwd = "."
-main = "src/workers/r2-cache-worker.js"
-
-[build.upload]
-format = "service-worker"
-
-# Vars za sve okruženja
-[vars]
-ENVIRONMENT = "production"
-CORS_ORIGIN = "https://vagabeta.rs"
-MAX_FILE_SIZE = "104857600"
+# Note: Build command and environment variables should be set in
+# Cloudflare Pages Dashboard under Settings > Builds & deployments
+# Build command: npm run build:prod
+# Build output directory: dist
+# Node version: 18 or higher
 CACHE_TTL = "31536000"
 VIDEO_TTL = "86400"
 
