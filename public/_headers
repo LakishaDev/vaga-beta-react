@@ -1,15 +1,26 @@
 # _headers fajl za Cloudflare Pages deployment
-# Ultra-permisivan setup - dozvoljava sve eksterne resurse
+# Bezbedni security headers + Performance optimizacije
 
 /*
+  # Security Headers
   X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
   X-XSS-Protection: 1; mode=block
   Referrer-Policy: strict-origin-when-cross-origin
-  Strict-Transport-Security: max-age=31536000; includeSubDomains; preload
+  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  
+  # Permissions Policy - Ograniči pristup osetljivim API-ima
+  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  
+  # CORS - Dozvoli sve izvore za CDN, ali ograniči metode
   Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, HEAD, OPTIONS, POST, PUT, DELETE
-  Access-Control-Allow-Headers: Content-Type, Authorization, x-api-key, X-Requested-With
+  Access-Control-Allow-Methods: GET, HEAD, OPTIONS
+  Access-Control-Allow-Headers: Content-Type, Accept
+  Access-Control-Max-Age: 86400
+  
+  # Content Security Policy - JAKO VAŽNO!
+  # Dozvoli samo bezbedne izvore za skripte, stilove, slike
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://*.firebaseapp.com https://*.firebase.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https: http:; connect-src 'self' https://*.firebaseapp.com https://*.firebase.com https://*.googleapis.com https://*.google-analytics.com https://*.vagabeta.rs wss://*.firebaseio.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
 
 # Cache control za statičke resurse - optimizovano za Cloudflare
 /assets/*

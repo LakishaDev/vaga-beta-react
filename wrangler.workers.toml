@@ -1,9 +1,14 @@
 # wrangler.workers.toml - Cloudflare Workers Configuration for R2 Cache
 # Verzija: 3.0.0 - Separate Workers deployment
 # Deploy this worker separately: wrangler deploy --config wrangler.workers.toml
+# SECURITY: Account ID i Zone ID su sada u .env.local
 
 name = "vaga-beta-r2-worker"
-account_id = "031ca9685557ca09a945ef3d0ba54f8e"
+
+# SECURITY: Uklonio account_id iz ovog fajla
+# Cloudflare CLI će ga pročitati iz auth ili .env.local
+# account_id = "your_account_id" # NE DODAJ OVDE!
+
 main = "src/workers/r2-cache-worker.js"
 workers_dev = true
 compatibility_date = "2024-01-01"
@@ -21,24 +26,28 @@ binding = "R2_CDN"
 jurisdiction = "eu"
 
 # KV Namespace for cache metadata
+# SECURITY: KV ID je premešteno u .env.local ili CLI auth
 [[kv_namespaces]]
 binding = "CACHE_METADATA"
-id = "2bb2f5778aaa459382c4731b60f3405a"
-preview_id = "2bb2f5778aaa459382c4731b60f3405a"
+# id = "your_kv_id" # Dodaj samo u .env.local!
+# preview_id = "your_kv_preview_id" # Dodaj samo u .env.local!
 
 # Analytics Engine binding
 [[analytics_engine_datasets]]
 binding = "ANALYTICS"
 
 # Production environment
+# SECURITY: Zone ID i routes su uklonjeni - dodaj samo u .env.local!
 [env.production]
 name = "vaga-beta-r2-production"
 workers_dev = false
 
-routes = [
-  { pattern = "https://cache.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" },
-  { pattern = "https://cdn.vagabeta.rs/*", zone_id = "8e9adffbe324937621ebe15e3595b23c" }
-]
+# routes = [
+#   { pattern = "https://cache.your-domain.com/*", zone_id = "YOUR_ZONE_ID" },
+#   { pattern = "https://cdn.your-domain.com/*", zone_id = "YOUR_ZONE_ID" }
+# ]
+# Za production routes, konfiguriši ih direktno u Cloudflare Dashboard
+# ili dodaj zone_id u .env.local i učitaj preko wrangler CLI
 
 [[env.production.r2_buckets]]
 bucket_name = "vaga-beta-cache"

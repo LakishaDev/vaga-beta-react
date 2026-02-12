@@ -1,0 +1,54 @@
+# wrangler.workers.toml.example - Kopiraj u wrangler.workers.local.toml i dodaj prave vrednosti
+# NIKAD ne commit-uj wrangler.workers.toml sa tajnim vrednostima!
+
+name = "vaga-beta-r2-worker"
+
+# TAJNO: Dodaj Account ID samo u .env.local
+# account_id = "your_account_id_here"
+# account_id se čita iz .env.local ili Cloudflare CLI auth
+
+main = "src/workers/r2-cache-worker.js"
+workers_dev = true
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat", "streams_enable_constructors"]
+
+# R2 Bucket Configuration
+[[r2_buckets]]
+bucket_name = "vaga-beta-cache"
+binding = "R2_BUCKET"
+jurisdiction = "eu"
+
+[[r2_buckets]]
+bucket_name = "vaga-beta-cdn"
+binding = "R2_CDN"
+jurisdiction = "eu"
+
+# KV Namespace for cache metadata
+[[kv_namespaces]]
+binding = "CACHE_METADATA"
+id = "your_kv_id_here"
+preview_id = "your_kv_preview_id_here"
+
+# Analytics Engine binding
+[[analytics_engine_datasets]]
+binding = "ANALYTICS"
+
+# Production environment - ZONE_ID je tajnost!
+[env.production]
+name = "vaga-beta-r2-production"
+workers_dev = false
+
+# routes = [
+#   { pattern = "https://cache.your-domain.com/*", zone_id = "your_zone_id" },
+#   { pattern = "https://cdn.your-domain.com/*", zone_id = "your_zone_id" }
+# ]
+
+[[env.production.r2_buckets]]
+bucket_name = "vaga-beta-cache"
+binding = "R2_BUCKET"
+jurisdiction = "eu"
+
+[[env.production.r2_buckets]]
+bucket_name = "vaga-beta-cdn"
+binding = "R2_CDN"
+jurisdiction = "eu"
