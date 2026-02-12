@@ -2,9 +2,10 @@
 
 ## ✅ Implementirane Optimizacije
 
-### 1. **Security Headers (_headers fajl)**
+### 1. **Security Headers (\_headers fajl)**
 
 #### Content Security Policy (CSP)
+
 Zaštita od XSS, injection attacks, i unauthorized scripts:
 
 ```
@@ -15,15 +16,18 @@ connect-src ... Firebase, Google APIs     // API connections
 ```
 
 **Napomena**: CSP može blokirati neke spoljne resurse. Ako vidiš greške u konzoli tipa:
+
 ```
-Refused to load the script 'https://example.com/script.js' 
+Refused to load the script 'https://example.com/script.js'
 because it violates the following Content Security Policy directive
 ```
 
 Dodaj taj origin u odgovarajuću CSP direktivu u `public/_headers`.
 
 #### Permissions Policy
+
 Onemogućava pristup osetljivim API-ima:
+
 - geolocation
 - microphone
 - camera
@@ -31,6 +35,7 @@ Onemogućava pristup osetljivim API-ima:
 - USB devices
 
 #### HSTS (HTTP Strict Transport Security)
+
 ```
 max-age=63072000 (2 godine)
 includeSubDomains
@@ -40,12 +45,14 @@ preload
 ### 2. **Environment Variables Segregacija**
 
 **`.env`** - Safe to commit, public values only:
+
 ```env
 VITE_R2_WORKER_URL=https://worker.vagabeta.rs
 VITE_R2_BUCKET_NAME=vaga-beta-cache
 ```
 
 **`.env.local`** - NIKAD ne commit, tajne vrednosti:
+
 ```env
 VITE_FIREBASE_API_KEY=...
 VITE_CLOUDFLARE_ACCOUNT_ID=...
@@ -53,23 +60,27 @@ VITE_CLOUDFLARE_API_TOKEN=...
 ```
 
 **Cloudflare Pages Env Vars** - Deployment-time:
+
 - Sve `VITE_FIREBASE_*` → **Plaintext** (build-time)
 - `VITE_CLOUDFLARE_API_TOKEN` → **Secret** (runtime only)
 
 ### 3. **Wrangler Config Cleanup**
 
 **Uklonio**:
+
 - account_id (čita iz Cloudflare CLI auth)
 - KV namespace IDs (čita iz env vars)
 - Zone IDs (konfiguriši u Dashboard)
 
 **Sada se koristi**:
+
 - `wrangler.workers.example.toml` → template sa placeholder vrednostima
 - Prave vrednosti podesi lokalno ili u Cloudflare Dashboard
 
 ### 4. **.gitignore Proširenje**
 
 Dodati su:
+
 ```
 .env
 .env.local
@@ -89,6 +100,7 @@ serviceAccountKey.json
 ### Vite Config Optimizations
 
 #### 1. **Code Splitting**
+
 ```javascript
 manualChunks: {
   'react-vendor': ['react', 'react-dom', 'react-router-dom'],
@@ -99,11 +111,13 @@ manualChunks: {
 ```
 
 **Benefiti**:
+
 - Cache busting po vendor-u
 - Paralelno preuzimanje chunks
 - Manje initial load vreme
 
 #### 2. **Terser Minification**
+
 ```javascript
 terserOptions: {
   compress: {
@@ -115,16 +129,19 @@ terserOptions: {
 ```
 
 **Benefiti**:
+
 - Manji bundle size (~30% smanjenje)
 - Uklanja debug kod u production
 
 #### 3. **CSS Optimization**
+
 ```javascript
 cssCodeSplit: true,
 cssMinify: true,
 ```
 
 **Benefiti**:
+
 - Samo potreban CSS za svaku stranicu
 - GZIP/Brotli friendly
 
@@ -135,21 +152,25 @@ cssMinify: true,
 ### Build Settings
 
 **Build command**:
+
 ```bash
 npm run build:cloudflare
 ```
 
 **Build output directory**:
+
 ```
 dist
 ```
 
 **Root directory**:
+
 ```
 /
 ```
 
 **Node version**:
+
 ```
 18 ili 20 (LTS)
 ```
@@ -168,6 +189,7 @@ VITE_FIREBASE_RECAPTCHA_SITE_KEY=...
 ```
 
 **Secrets** (ako treba):
+
 ```env
 VITE_CLOUDFLARE_API_TOKEN=...
 ```
@@ -179,12 +201,14 @@ VITE_CLOUDFLARE_API_TOKEN=...
 ### Expected Lighthouse Scores
 
 **Desktop**:
+
 - Performance: 95-100
 - Accessibility: 95-100
 - Best Practices: 95-100
 - SEO: 95-100
 
 **Mobile**:
+
 - Performance: 85-95
 - Accessibility: 95-100
 - Best Practices: 95-100
@@ -210,8 +234,9 @@ Largest chunks:
 ### 1. **Image Optimization**
 
 Koristi Cloudflare Image Resizing:
+
 ```html
-<img 
+<img
   src="https://vagabeta.rs/cdn-cgi/image/width=800,quality=85/imgs/hero.jpg"
   alt="Hero image"
 />
@@ -220,6 +245,7 @@ Koristi Cloudflare Image Resizing:
 ### 2. **Preload Critical Resources**
 
 Dodaj u `index.html`:
+
 ```html
 <link rel="preload" as="script" href="/assets/js/react-vendor.js" />
 <link rel="preload" as="style" href="/assets/css/index.css" />
@@ -229,17 +255,18 @@ Dodaj u `index.html`:
 ### 3. **Service Worker za Offline Support**
 
 Kreiraj `public/service-worker.js`:
+
 ```javascript
-self.addEventListener('install', (event) => {
+self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open('v1').then((cache) => {
+    caches.open("v1").then((cache) => {
       return cache.addAll([
-        '/',
-        '/index.html',
-        '/assets/css/index.css',
+        "/",
+        "/index.html",
+        "/assets/css/index.css",
         // ... critical resources
       ]);
-    })
+    }),
   );
 });
 ```
@@ -247,6 +274,7 @@ self.addEventListener('install', (event) => {
 ### 4. **HTTP/3 + QUIC**
 
 Cloudflare automatski koristi HTTP/3, ali proveri:
+
 - SSL/TLS → Edge Certificates → Enable HTTP/3 (QUIC)
 - Speed → Optimization → Enable "Auto Minify" (HTML, CSS, JS)
 
@@ -255,6 +283,7 @@ Cloudflare automatski koristi HTTP/3, ali proveri:
 Cloudflare automatski kompresuje Brotli ako browser podržava!
 
 Proveri:
+
 ```bash
 curl -H "Accept-Encoding: br" https://vagabeta.rs -I
 # Traži: content-encoding: br
@@ -267,22 +296,26 @@ curl -H "Accept-Encoding: br" https://vagabeta.rs -I
 Ako trebaš da dozvolis dodatne izvore:
 
 **Google Fonts**:
+
 ```
 style-src 'self' 'unsafe-inline' https://fonts.googleapis.com;
 font-src 'self' https://fonts.gstatic.com;
 ```
 
 **External APIs**:
+
 ```
 connect-src 'self' https://api.example.com;
 ```
 
 **Inline scripts** (samo ako je APSOLUTNO potrebno):
+
 ```
 script-src 'self' 'unsafe-inline';  // Manje bezbedno!
 ```
 
 **Nonce-based CSP** (najbezbednije):
+
 ```javascript
 // Generiši nonce tokom build-a
 const nonce = generateNonce();
@@ -301,6 +334,7 @@ Content-Security-Policy: script-src 'self' 'nonce-${nonce}';
 ### Cloudflare Analytics
 
 Cloudflare automatski pruža:
+
 - Request count
 - Bandwidth usage
 - Cache hit ratio
@@ -309,8 +343,9 @@ Cloudflare automatski pruža:
 ### Firebase Analytics
 
 Već konfigurisano! Proveri:
+
 ```javascript
-logEvent(analytics, 'page_view', {
+logEvent(analytics, "page_view", {
   page_title: document.title,
   page_location: window.location.href,
 });
@@ -319,6 +354,7 @@ logEvent(analytics, 'page_view', {
 ### Real User Monitoring (RUM)
 
 Dodaj u `index.html`:
+
 ```html
 <script>
   // Core Web Vitals tracking
@@ -327,7 +363,9 @@ Dodaj u `index.html`:
       console.log(entry.name, entry.value);
       // Pošalji na analytics
     }
-  }).observe({ entryTypes: ['largest-contentful-paint', 'first-input', 'layout-shift'] });
+  }).observe({
+    entryTypes: ["largest-contentful-paint", "first-input", "layout-shift"],
+  });
 </script>
 ```
 

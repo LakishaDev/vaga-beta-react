@@ -3,13 +3,16 @@
 ## 🔐 Bezbednosni Problemi Rešeni
 
 ### 1. **Tajne Uklonjene iz Git Repo-a**
+
 - ✅ `.env` sada ima samo javne vrednosti
 - ✅ `wrangler.workers.toml` više nema Account ID, Zone ID, KV IDs
 - ✅ Kreirani `.example` fajlovi sa placeholder vrednostima
 - ✅ `.gitignore` ažuriran da spreči commit tajnih fajlova
 
 ### 2. **Security Headers Dodati**
+
 Novi `public/_headers` uključuje:
+
 - ✅ **Content Security Policy (CSP)** - Zaštita od XSS
 - ✅ **Permissions Policy** - Blokira pristup osetljivim API-ima
 - ✅ **HSTS** - Force HTTPS sa 2-godine max-age
@@ -20,6 +23,7 @@ Novi `public/_headers` uključuje:
 ### 3. **Dokumentacija Kreirana**
 
 #### **SECURITY_GUIDE.md**
+
 - Koje tajne nikada ne treba commit-ovati
 - Kako koristiti `.env.local` vs `.env`
 - Cloudflare Pages environment variables setup
@@ -27,6 +31,7 @@ Novi `public/_headers` uključuje:
 - Pre-deployment checklist
 
 #### **docs/deployment/PERFORMANCE_SECURITY.md**
+
 - Implementirane optimizacije
 - Build konfiguracija
 - Performance metrics targets
@@ -34,6 +39,7 @@ Novi `public/_headers` uključuje:
 - Monitoring & analytics setup
 
 #### **docs/deployment/SECRET_ROTATION.md**
+
 - Lista kompromitovanih tajni
 - Kako rotirati Firebase API keys
 - Kako rotirati Cloudflare API tokens
@@ -45,6 +51,7 @@ Novi `public/_headers` uključuje:
 ## ⚡ Performance Optimizacije
 
 ### Build Optimizations
+
 - ✅ Code splitting po vendor-u (react, ui, three, markdown)
 - ✅ Terser minification sa `drop_console`
 - ✅ CSS code splitting i minification
@@ -52,6 +59,7 @@ Novi `public/_headers` uključuje:
 - ✅ Gzip compression optimizations
 
 ### Cache Headers
+
 ```
 Static assets (JS/CSS/imgs): max-age=31536000 (1 godina)
 HTML: no-cache, must-revalidate
@@ -59,6 +67,7 @@ Sitemap/Robots: max-age=86400 (1 dan)
 ```
 
 ### Expected Results
+
 - Bundle size: ~1.2-1.5 MB → ~300-400 KB (gzipped)
 - Lighthouse score: 95+ (all categories)
 - First Contentful Paint: < 1.5s
@@ -75,10 +84,11 @@ Sitemap/Robots: max-age=86400 (1 dan)
    - [ ] Cloudflare API Token
    - [ ] reCAPTCHA Site Key
    - [ ] Firebase App Check Debug Token
-   
+
    **Guide**: Vidi `docs/deployment/SECRET_ROTATION.md`
 
 2. **Očisti git history** (opcionalno ali preporučeno):
+
    ```bash
    # Koristi BFG Repo-Cleaner
    java -jar bfg.jar --replace-text secrets.txt .git
@@ -95,6 +105,7 @@ Sitemap/Robots: max-age=86400 (1 dan)
 ### ✅ Pre Deployment-a
 
 1. **Kreiraj `.env.local`**:
+
    ```bash
    cp .env.local.example .env.local
    # Popuni prave vrednosti (NE commit-uj!)
@@ -106,6 +117,7 @@ Sitemap/Robots: max-age=86400 (1 dan)
    - Build command: `npm run build:cloudflare`
 
 3. **Test lokalno**:
+
    ```bash
    npm run build:cloudflare
    npm run preview
@@ -144,6 +156,7 @@ Sitemap/Robots: max-age=86400 (1 dan)
 ## 📊 Metrics to Track
 
 ### Performance
+
 - **TTFB** (Time to First Byte): < 200ms
 - **FCP** (First Contentful Paint): < 1.5s
 - **LCP** (Largest Contentful Paint): < 2.5s
@@ -151,12 +164,14 @@ Sitemap/Robots: max-age=86400 (1 dan)
 - **CLS** (Cumulative Layout Shift): < 0.1
 
 ### Security
+
 - **CSP Violations**: 0
 - **Mixed Content Warnings**: 0
 - **Insecure Requests**: 0
 - **Failed Auth Attempts**: Monitor daily
 
 ### Availability
+
 - **Uptime**: 99.9%+
 - **Error Rate**: < 0.1%
 - **Cache Hit Ratio**: > 80%
@@ -166,22 +181,28 @@ Sitemap/Robots: max-age=86400 (1 dan)
 ## 🆘 Known Issues & Resolutions
 
 ### Issue: CSP blocking external scripts
+
 **Symptom**: Console error `Refused to load script...`
 **Fix**: Dodaj origin u `script-src` direktivu u `public/_headers`
 
 ### Issue: Build fails sa "Missing env vars"
+
 **Symptom**: `Missing Firebase config: VITE_FIREBASE_API_KEY...`
-**Fix**: 
+**Fix**:
+
 1. Proveri da `.env.local` postoji lokalno
 2. U Cloudflare Pages, konfiguriši env vars kao **Plaintext**
 
 ### Issue: Firebase ne radi u production
+
 **Symptom**: `Firebase: Error (auth/configuration-not-found)`
 **Fix**: Build komanda mora biti `npm run build:cloudflare`, ne `npm run build:prod`
 
 ### Issue: Wrangler deploy fails
+
 **Symptom**: `Error: Failed to find account_id`
-**Fix**: 
+**Fix**:
+
 ```bash
 wrangler login
 # Ili dodaj CLOUDFLARE_ACCOUNT_ID u .env.local
