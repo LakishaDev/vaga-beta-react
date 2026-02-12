@@ -13,32 +13,61 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const envPath = path.join(__dirname, "..", ".env.production");
+const envLocalPath = path.join(__dirname, "..", ".env.local");
 
 console.log("🔨 Cloudflare Pages Build Script");
 console.log("================================\n");
 
-// Prikupi sve VITE_* varijable iz sistema
+// Prikupi sve VITE_* varijable
 const viteVars = {};
 let foundCount = 0;
+let source = "process.env";
 
-for (const [key, value] of Object.entries(process.env)) {
-  if (key.startsWith("VITE_")) {
-    viteVars[key] = value;
-    foundCount++;
-    console.log(`✓ ${key}`);
+// Prvo pokušaj čitati iz .env.local ako postoji (za lokalne teste)
+if (fs.existsSync(envLocalPath)) {
+  console.log(`📖 Čitam iz .env.local...\n`);
+  source = ".env.local";
+  const envLocalContent = fs.readFileSync(envLocalPath, "utf8");
+  const lines = envLocalContent.split("\n");
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (trimmed && !trimmed.startsWith("#")) {
+      const [key, value] = trimmed.split("=");
+      if (key && key.startsWith("VITE_")) {
+        viteVars[key] = value;
+        foundCount++;
+        console.log(`✓ ${key}`);
+      }
+    }
+  });
+  console.log("");
+}
+
+// Ako nema varijabli iz .env.local, čitaj iz process.env (Cloudflare Pages okruženje)
+if (foundCount === 0) {
+  console.log(`📖 Čitam iz process.env (Cloudflare Pages okruženje)...\n`);
+  source = "process.env";
+
+  for (const [key, value] of Object.entries(process.env)) {
+    if (key.startsWith("VITE_")) {
+      viteVars[key] = value;
+      foundCount++;
+      console.log(`✓ ${key}`);
+    }
   }
 }
 
-console.log(`\n📋 Pronađeno ${foundCount} VITE_* varijable\n`);
+console.log(`\n📋 Pronađeno ${foundCount} VITE_* varijable iz ${source}\n`);
 
 if (foundCount === 0) {
-  console.warn("⚠️  Upozorenje: Nema pronađenih VITE_* varijabli u okruženju!");
+  console.warn("⚠️  Upozorenje: Nema pronađenih VITE_* varijabli!");
+  console.warn("   Proveri:");
+  console.warn("   1. .env.local fajl (za lokalne teste)");
   console.warn(
-    "   Proveri da li su varijable postavljene u Cloudflare Pages Dashboard",
+    "   2. Cloudflare Pages Environment Variables u Dashboard-u (za production)",
   );
-  console.warn(
-    "   ili lokalno - trebale bi da budu dostupne kao plaintext varijable\n",
-  );
+  console.warn("   Varijable moraju biti Plaintext, ne Secret!\n");
 }
 
 // Kreiraj .env.production fajl

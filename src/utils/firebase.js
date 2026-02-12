@@ -12,6 +12,20 @@ import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
+// Helper da čita varijable sa fallback na process.env tokom build-a
+const getEnvVar = (key) => {
+  // Prvo pokušaj import.meta.env (Vite production)
+  if (import.meta.env[key]) {
+    return import.meta.env[key];
+  }
+  // Fallback na process.env (Cloudflare Pages build environment)
+  if (typeof process !== "undefined" && process.env && process.env[key]) {
+    console.log(`ℹ️  Čitam ${key} iz process.env (Cloudflare deployment)`);
+    return process.env[key];
+  }
+  return undefined;
+};
+
 // Validuj environment varijable
 const validateConfig = () => {
   const required = [
@@ -23,7 +37,7 @@ const validateConfig = () => {
     "VITE_FIREBASE_APP_ID",
   ];
 
-  const missing = required.filter((key) => !import.meta.env[key]);
+  const missing = required.filter((key) => !getEnvVar(key));
 
   if (missing.length > 0) {
     console.error("❌ Missing Firebase environment variables:", missing);
@@ -40,13 +54,13 @@ const validateConfig = () => {
 validateConfig();
 
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
-  measurementId: import.meta.env.VITE_FIREBASE_MEASUREMENT_ID,
+  apiKey: getEnvVar("VITE_FIREBASE_API_KEY"),
+  authDomain: getEnvVar("VITE_FIREBASE_AUTH_DOMAIN"),
+  projectId: getEnvVar("VITE_FIREBASE_PROJECT_ID"),
+  storageBucket: getEnvVar("VITE_FIREBASE_STORAGE_BUCKET"),
+  messagingSenderId: getEnvVar("VITE_FIREBASE_MESSAGING_SENDER_ID"),
+  appId: getEnvVar("VITE_FIREBASE_APP_ID"),
+  measurementId: getEnvVar("VITE_FIREBASE_MEASUREMENT_ID"),
 };
 
 // Initialize Firebase
@@ -60,20 +74,17 @@ export const functions = getFunctions(app, "europe-west1");
 // Initialize App Check (optional - only if reCAPTCHA key is set)
 let appCheck = null;
 
-if (import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY) {
-  if (
-    import.meta.env.DEV &&
-    import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN
-  ) {
-    self.FIREBASE_APPCHECK_DEBUG_TOKEN =
-      import.meta.env.VITE_FIREBASE_APPCHECK_DEBUG_TOKEN;
+const recaptchaKey = getEnvVar("VITE_FIREBASE_RECAPTCHA_SITE_KEY");
+const appCheckDebugToken = getEnvVar("VITE_FIREBASE_APPCHECK_DEBUG_TOKEN");
+
+if (recaptchaKey) {
+  if (import.meta.env.DEV && appCheckDebugToken) {
+    self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken;
   }
 
   try {
     appCheck = initializeAppCheck(app, {
-      provider: new ReCaptchaV3Provider(
-        import.meta.env.VITE_FIREBASE_RECAPTCHA_SITE_KEY,
-      ),
+      provider: new ReCaptchaV3Provider(recaptchaKey),
       isTokenAutoRefreshEnabled: true,
     });
     console.log("✅ Firebase App Check initialized");
