@@ -11,6 +11,7 @@
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "analyze": "vite build --mode analyze",
     "build:prod": "npm run lint && npm run generate:sitemap && vite build",
+    "build:cloudflare": "node scripts/build-cloudflare.js && npm run generate:sitemap && vite build",
     "serve": "vite preview --port 4173"
   },
   "dependencies": {
