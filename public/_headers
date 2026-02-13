@@ -19,8 +19,8 @@
   Access-Control-Max-Age: 86400
   
   # Content Security Policy - JAKO VAŽNO!
-  # Dozvoli samo bezbedne izvore za skripte, stilove, slike
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://*.firebaseapp.com https://*.firebase.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https: http:; connect-src 'self' https://*.firebaseapp.com https://*.firebase.com https://*.googleapis.com https://*.google-analytics.com https://*.vagabeta.rs wss://*.firebaseio.com; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
+  # Dozvoli sve potrebne izvore za skripte, stilove, slike, media
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://*.firebaseapp.com https://*.firebase.com https://static.cloudflareinsights.com https://www.google.com/recaptcha/ https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com data:; img-src 'self' data: blob: https: http:; media-src 'self' blob: https: http:; connect-src 'self' https://*.firebaseapp.com https://*.firebase.com https://*.googleapis.com https://*.google-analytics.com https://*.vagabeta.rs https://worker.vagabeta.rs https://static.cloudflareinsights.com wss://*.firebaseio.com; frame-ancestors 'self'; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
 
 # Cache control za statičke resurse - optimizovano za Cloudflare
 /assets/*
