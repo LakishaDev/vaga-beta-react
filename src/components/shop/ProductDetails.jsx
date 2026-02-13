@@ -1,5 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
+import { Helmet } from "react-helmet-async";
 import { db, auth } from "../../utils/firebase";
 import {
   doc,
@@ -69,7 +70,7 @@ export default function ProductDetails() {
     if (!currentUser) {
       showSnackbar(
         "Morate biti prijavljeni da biste ostavili recenziju",
-        "error"
+        "error",
       );
       return;
     }
@@ -88,7 +89,7 @@ export default function ProductDetails() {
     else if (product.price < 14000) percent = 0.1;
     else if (product.price > 500000) percent = 0.3;
     let originalPrice = Math.round(
-      (product.price || product.hiddenPrice || 0) / (1 - percent)
+      (product.price || product.hiddenPrice || 0) / (1 - percent),
     );
     return {
       ...product,
@@ -126,7 +127,7 @@ export default function ProductDetails() {
         productData.markdownFiles.length > 0
       ) {
         const filesWithContent = await fetchMarkdownFiles(
-          productData.markdownFiles
+          productData.markdownFiles,
         );
         setMarkdownFilesWithContent(filesWithContent);
       }
@@ -135,12 +136,65 @@ export default function ProductDetails() {
     window.scrollTo({ top: 0, behavior: "smooth" });
   }, [id]);
 
+  // SEO Meta Tags and Schema
+  useEffect(() => {
+    if (!product) return;
+
+    // Product schema za Google
+    const productSchema = {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      name: product.name,
+      description: product.description || product.name,
+      image: product.images?.[0] || product.imgUrl,
+      brand: {
+        "@type": "Brand",
+        name: "Vaga Beta",
+      },
+      offers: {
+        "@type": "Offer",
+        url: window.location.href,
+        priceCurrency: "RSD",
+        price:
+          product.price?.toString() || product.hiddenPrice?.toString() || "0",
+        availability:
+          product.stock > 0
+            ? "https://schema.org/InStock"
+            : "https://schema.org/OutOfStock",
+      },
+      aggregateRating:
+        reviews.length > 0
+          ? {
+              "@type": "AggregateRating",
+              ratingValue: (
+                reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+              ).toFixed(1),
+              reviewCount: reviews.length,
+            }
+          : undefined,
+    };
+
+    // Remove undefined aggregateRating if no reviews
+    if (!productSchema.aggregateRating) {
+      delete productSchema.aggregateRating;
+    }
+
+    // Update canonical URL
+    let canonical = document.querySelector('link[rel="canonical"]');
+    if (!canonical) {
+      canonical = document.createElement("link");
+      canonical.rel = "canonical";
+      document.head.appendChild(canonical);
+    }
+    canonical.href = window.location.href;
+  }, [product, reviews]);
+
   // Real-time reviews with onSnapshot
   useEffect(() => {
     const q = query(
       collection(db, "reviews"),
       where("productId", "==", id),
-      orderBy("createdAt", "desc")
+      orderBy("createdAt", "desc"),
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -159,7 +213,7 @@ export default function ProductDetails() {
     if (!currentUser) {
       showSnackbar(
         "Morate biti prijavljeni da biste ostavili recenziju",
-        "error"
+        "error",
       );
       return;
     }
@@ -276,8 +330,88 @@ export default function ProductDetails() {
     product.originalPrice &&
     product.originalPrice > product.price;
 
+  // Pripremi Product schema za rendering
+  const productSchema = product
+    ? {
+        "@context": "https://schema.org/",
+        "@type": "Product",
+        name: product.name,
+        description: product.description || product.name,
+        image: product.images?.[0] || product.imgUrl,
+        brand: {
+          "@type": "Brand",
+          name: "Vaga Beta",
+        },
+        offers: {
+          "@type": "Offer",
+          url: window.location.href,
+          priceCurrency: "RSD",
+          price:
+            product.price?.toString() || product.hiddenPrice?.toString() || "0",
+          availability:
+            product.stock > 0
+              ? "https://schema.org/InStock"
+              : "https://schema.org/OutOfStock",
+        },
+        aggregateRating:
+          reviews.length > 0
+            ? {
+                "@type": "AggregateRating",
+                ratingValue: (
+                  reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length
+                ).toFixed(1),
+                reviewCount: reviews.length,
+              }
+            : undefined,
+      }
+    : null;
+
+  if (productSchema?.aggregateRating === undefined) {
+    delete productSchema?.aggregateRating;
+  }
+
   return (
     <>
+      <Helmet>
+        {product && (
+          <>
+            <title>{product.name} | Vaga Beta Shop</title>
+            <meta
+              name="description"
+              content={product.description || product.name}
+            />
+            <meta
+              name="keywords"
+              content={`${product.name}, vage, prodavnica, kupovina`}
+            />
+            <meta property="og:title" content={product.name} />
+            <meta
+              property="og:description"
+              content={product.description || product.name}
+            />
+            <meta
+              property="og:image"
+              content={product.images?.[0] || product.imgUrl}
+            />
+            <meta property="og:type" content="product" />
+            <meta property="og:url" content={window.location.href} />
+            <meta name="twitter:card" content="product" />
+            <meta name="twitter:title" content={product.name} />
+            <meta
+              name="twitter:description"
+              content={product.description || product.name}
+            />
+            <meta
+              name="twitter:image"
+              content={product.images?.[0] || product.imgUrl}
+            />
+            <link rel="canonical" href={window.location.href} />
+            <script type="application/ld+json">
+              {JSON.stringify(productSchema)}
+            </script>
+          </>
+        )}
+      </Helmet>
       <ScrollToTopOnMount offset={0} duration={1.2} delay={100} />
       <div className="min-h-screen flex flex-col items-center justify-center py-4 px-1 sm:py-8 sm:px-2 animate-pop">
         {/* Image Modal with Zoom */}
@@ -408,7 +542,7 @@ export default function ProductDetails() {
                       onClick={() => {
                         const totalImages = 1 + (product.images?.length || 0);
                         setCurrentImageIndex((prev) =>
-                          prev === 0 ? totalImages - 1 : prev - 1
+                          prev === 0 ? totalImages - 1 : prev - 1,
                         );
                       }}
                       className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
@@ -422,7 +556,7 @@ export default function ProductDetails() {
                       onClick={() => {
                         const totalImages = 1 + (product.images?.length || 0);
                         setCurrentImageIndex((prev) =>
-                          prev === totalImages - 1 ? 0 : prev + 1
+                          prev === totalImages - 1 ? 0 : prev + 1,
                         );
                       }}
                       className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
@@ -444,7 +578,7 @@ export default function ProductDetails() {
                                 : "bg-gray-300 hover:bg-[#6EAEA2]/50"
                             }`}
                           />
-                        )
+                        ),
                       )}
                     </div>
                   </>
@@ -887,7 +1021,7 @@ export default function ProductDetails() {
                           <p className="text-xs text-gray-400 mt-2">
                             {r.createdAt.toDate
                               ? new Date(
-                                  r.createdAt.toDate()
+                                  r.createdAt.toDate(),
                                 ).toLocaleDateString("sr-RS", {
                                   year: "numeric",
                                   month: "long",
