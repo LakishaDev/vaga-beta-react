@@ -2,25 +2,34 @@
 # Bezbedni security headers + Performance optimizacije
 
 /*
-  # Security Headers
-  X-Frame-Options: SAMEORIGIN
+  # ===== PERMISIVNI SECURITY HEADERS =====
+  
+  # Frame embedding - dozvoli više sources
+  X-Frame-Options: ALLOW-FROM *
+  
+  # Content Type
   X-Content-Type-Options: nosniff
-  X-XSS-Protection: 1; mode=block
-  Referrer-Policy: strict-origin-when-cross-origin
-  Strict-Transport-Security: max-age=63072000; includeSubDomains; preload
+  X-XSS-Protection: 0
   
-  # Permissions Policy - Ograniči pristup osetljivim API-ima
-  Permissions-Policy: geolocation=(), microphone=(), camera=(), payment=(), usb=(), magnetometer=(), gyroscope=(), accelerometer=()
+  # Referrer Policy - fleksibilna
+  Referrer-Policy: no-referrer-when-downgrade
   
-  # CORS - Dozvoli sve izvore za CDN, ali ograniči metode
+  # HSTS - omekšana
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  
+  # === PERMISIVNI CORS - Dozvoli sve ===
   Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, HEAD, OPTIONS
-  Access-Control-Allow-Headers: Content-Type, Accept
+  Access-Control-Allow-Methods: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS
+  Access-Control-Allow-Headers: *
+  Access-Control-Allow-Credentials: true
   Access-Control-Max-Age: 86400
+  Access-Control-Expose-Headers: *
   
-  # Content Security Policy - JAKO VAŽNO!
-  # Dozvoli sve potrebne izvore za skripte, stilove, slike, media
-  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval' data: https://www.googletagmanager.com https://www.google-analytics.com https://maps.googleapis.com https://*.firebaseapp.com https://*.firebase.com https://static.cloudflareinsights.com https://www.google.com/recaptcha/ https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com https://www.gstatic.com data:; img-src 'self' data: blob: https: http:; media-src 'self' blob: https: http:; connect-src 'self' https://*.firebaseapp.com https://*.firebase.com https://*.googleapis.com https://*.google-analytics.com https://*.vagabeta.rs https://worker.vagabeta.rs https://static.cloudflareinsights.com wss://*.firebaseio.com; frame-ancestors 'self'; frame-src https://www.google.com/recaptcha/ https://recaptcha.google.com; base-uri 'self'; form-action 'self'; upgrade-insecure-requests;
+  # === PERMISIVNA CSP - Praktično bez ograničenja ===
+  Content-Security-Policy: default-src *; script-src * 'unsafe-inline' 'unsafe-eval' data:; style-src * 'unsafe-inline'; img-src * data: blob:; media-src * data: blob:; font-src * data:; connect-src * data: blob: ws: wss:; frame-src *; object-src *; base-uri *; form-action *; frame-ancestors *;
+  
+  # Permissions Policy - omogući sve
+  Permissions-Policy: geolocation=*, microphone=*, camera=*, payment=*, usb=*, magnetometer=*, gyroscope=*, accelerometer=*, vr=(), xr-spatial-tracking=*
 
 # Cache control za statičke resurse - optimizovano za Cloudflare
 /assets/*
