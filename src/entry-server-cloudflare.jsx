@@ -7,8 +7,19 @@ import React from "react";
 import { StaticRouter } from "react-router-dom";
 import App from "./App";
 
-// Mock HelmetProvider za SSR (preko Helmet će biti dodano kasnije)
-const HelmetProvider = ({ children }) => children;
+// Za SSR, koristi minimal HelmetProvider koji ne zahteva async cleanup
+// React Helmet Async može biti problematičan u Workers, pa koristimo mock verziju
+const HelmetProvider = ({ children, context }) => {
+  // Postavi defaultni context ako nije prosleđen
+  if (context && !context.helmet) {
+    context.helmet = {
+      title: "Vaga Beta",
+      meta: [],
+      link: [],
+    };
+  }
+  return children;
+};
 
 /**
  * Renderuje React aplikaciju u HTML string za Cloudflare Workers
@@ -29,7 +40,11 @@ export async function render(url) {
     );
 
     // Izvuci helmet podatke POSLE renderovanja
-    const { helmet } = helmetContext;
+    const helmet = helmetContext.helmet || {
+      title: "Vaga Beta",
+      meta: [],
+      link: [],
+    };
 
     return {
       html,
