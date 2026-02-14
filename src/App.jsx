@@ -1,14 +1,7 @@
 // src/App.jsx
 // Glavna aplikaciona komponenta
 // Koristi React Router za navigaciju
-// Uključuje rute za Home, Usluge, Kontakt, Onama i Prodavnica
-// Ako je ruta /prodavnica/*, renderuje samo Prodavnica komponentu
-// Inače renderuje Navbar, Footer i glavne stranice
-// Stilizovana sa Tailwind CSS
-// Responsive i pristupačna
-// Koristi React Router v6
-// test
-// SSR kompatibilna verzija
+// SSR kompatibilna verzija - bez useLocation u roditeljskoj komponenti
 
 import { Routes, Route, useLocation } from "react-router-dom";
 
@@ -33,6 +26,8 @@ const DesignSystemDemo = lazy(() => import("./pages/DesignSystemDemo"));
 const Prodavnica = lazy(() => import("./Prodavnica"));
 
 function AppContent() {
+  // useLocation hook - dobija se iz router context-a
+  // Sigurno je koristiti jer je App uvek unutar BrowserRouter ili StaticRouter
   const location = useLocation();
   const isShop = location.pathname.startsWith("/prodavnica");
 
