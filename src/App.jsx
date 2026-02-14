@@ -46,7 +46,7 @@ function AppContent() {
   return (
     <>
       <Navbar />
-      <main className="pt-24 sm:pt-28">
+      <main className="pt-24 sm:pt-28" suppressHydrationWarning>
         <RenderBoundary>
           <Suspense fallback={<Loader />}>
             <Routes>
@@ -96,7 +96,10 @@ function App() {
 
   return (
     <EVagaDesktopProvider>
-      <div className="min-h-screen w-full bg-neutral-bg text-text-primary">
+      <div
+        className="min-h-screen w-full bg-neutral-bg text-text-primary"
+        suppressHydrationWarning
+      >
         <AppContent />
         <CloudflareDeploymentDebug />
       </div>

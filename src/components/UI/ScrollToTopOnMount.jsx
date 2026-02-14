@@ -4,7 +4,7 @@
 // offset: dodatno pomeranje od vrha (pozitivno ili negativno)
 // duration: trajanje skrolovanja u sekundama
 // delay: vreme u ms pre nego što krene skrolovanje
-import { useLayoutEffect } from "react";
+import { useEffect } from "react";
 
 const ScrollToHashOrTopOnMount = ({
   offset = 0,
@@ -13,7 +13,7 @@ const ScrollToHashOrTopOnMount = ({
   useHash = true, // da li koristi hash iz URL
   hash: customHash = "", // možeš proslediti custom hash
 }) => {
-  useLayoutEffect(() => {
+  useEffect(() => {
     let el = null;
     if (useHash) {
       const hash = customHash || window.location.hash;
