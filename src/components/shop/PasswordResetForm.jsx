@@ -98,13 +98,13 @@ const PasswordResetForm = () => {
 
   if (verifying) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-bluegreen/10 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-brand-accent/20 to-brand-secondary/10 flex items-center justify-center p-4">
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           className="bg-white rounded-3xl shadow-2xl p-8 text-center"
         >
-          <div className="w-16 h-16 border-4 border-bluegreen border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <div className="w-16 h-16 border-4 border-brand-secondary border-t-transparent rounded-full animate-spin mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-800">
             Verifikujem kod...
           </h3>
@@ -126,7 +126,7 @@ const PasswordResetForm = () => {
           <p className="text-gray-600 mb-6">{error}</p>
           <button
             onClick={() => navigate("/prodavnica/prijava")}
-            className="px-6 py-3 bg-bluegreen text-white font-semibold rounded-xl hover:bg-bluegreen/90 transition-colors"
+            className="px-6 py-3 bg-brand-secondary text-white font-semibold rounded-xl hover:bg-brand-secondary/90 transition-colors"
           >
             Nazad na prijavu
           </button>
@@ -149,14 +149,14 @@ const PasswordResetForm = () => {
             Lozinka je uspešno resetovana. Preusmeriću vas na stranicu za
             prijavu...
           </p>
-          <div className="w-8 h-8 border-2 border-bluegreen border-t-transparent rounded-full animate-spin mx-auto" />
+          <div className="w-8 h-8 border-2 border-brand-secondary border-t-transparent rounded-full animate-spin mx-auto" />
         </motion.div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-bluegreen/10 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-brand-accent/20 to-brand-secondary/10 flex items-center justify-center p-4">
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -165,8 +165,8 @@ const PasswordResetForm = () => {
       >
         {/* Header */}
         <div className="text-center mb-8">
-          <div className="w-20 h-20 bg-bluegreen/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <KeyRound size={40} className="text-bluegreen" />
+          <div className="w-20 h-20 bg-brand-secondary/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <KeyRound size={40} className="text-brand-secondary" />
           </div>
           <h2 className="text-2xl font-bold text-gray-800 mb-2">
             Nova lozinka
@@ -257,7 +257,7 @@ const PasswordResetForm = () => {
           <motion.button
             type="submit"
             disabled={loading || !isStrongPassword || !passwordsMatch}
-            className="w-full px-4 py-4 bg-bluegreen text-white font-bold rounded-xl shadow-lg hover:shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
+            className="w-full px-4 py-4 bg-brand-secondary text-white font-bold rounded-xl shadow-lg hover:shadow-xl disabled:bg-gray-300 disabled:cursor-not-allowed transition-all"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
           >
@@ -275,7 +275,7 @@ const PasswordResetForm = () => {
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate("/prodavnica/prijava")}
-            className="text-bluegreen text-sm font-medium hover:underline"
+            className="text-brand-secondary text-sm font-medium hover:underline"
           >
             ← Nazad na prijavu
           </button>

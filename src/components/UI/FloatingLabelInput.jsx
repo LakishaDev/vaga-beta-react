@@ -40,7 +40,7 @@ export default function FloatingLabelInput({
         onBlur={() => setFocused(false)}
         className={`
           block w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/95 backdrop-blur-sm
-          focus:border-bluegreen focus:ring-2 focus:ring-bluegreen/20 focus:outline-none
+          focus:border-brand-secondary focus:ring-2 focus:ring-brand-secondary/20 focus:outline-none
           transition-all duration-200 text-gray-800 font-medium shadow hover:shadow-lg peer
         `}
         placeholder=""
@@ -53,7 +53,7 @@ export default function FloatingLabelInput({
           transition-all duration-200
           ${
             isFloating
-              ? "top-[-1.25rem] text-xs text-bluegreen px-3 bg-white rounded shadow-md border-bluegreen border"
+              ? "top-[-1.25rem] text-xs text-brand-secondary px-3 bg-white rounded shadow-md border-brand-secondary border"
               : "top-[1.1rem] text-gray-400 text-base"
           }
         `}

@@ -13,7 +13,7 @@ export default function Loader() {
       initial={{ opacity: 0, scale: 0.67 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ duration: 0.27 }}
-      className="w-full flex flex-col items-center justify-center h-[350px] bg-gradient-to-br from-bluegreen/25 via-white/80 to-bone/30 rounded-3xl shadow-2xl"
+      className="w-full flex flex-col items-center justify-center h-[350px] bg-gradient-to-br from-brand-secondary/25 via-white/80 to-neutral-200/30 rounded-3xl shadow-2xl"
     >
       {/* 3D animirana bubble + glowing shadow + orbit dots */}
       <motion.div
@@ -33,7 +33,7 @@ export default function Loader() {
           repeatType: "mirror",
           ease: "easeInOut",
         }}
-        className="relative w-[68px] h-[68px] rounded-full bg-gradient-to-tr from-bluegreen/60 via-white/40 to-blue-100/20 shadow-2xl flex items-center justify-center"
+        className="relative w-[68px] h-[68px] rounded-full bg-gradient-to-tr from-brand-secondary/60 via-white/40 to-blue-100/20 shadow-2xl flex items-center justify-center"
       >
         {/* 3d ikon */}
         <ProgressiveImage
@@ -45,7 +45,7 @@ export default function Loader() {
         {[...Array(6)].map((_, i) => (
           <motion.span
             key={i}
-            className="absolute w-2 h-2 rounded-full bg-bluegreen/80"
+            className="absolute w-2 h-2 rounded-full bg-brand-secondary/80"
             style={{
               top: `${30 + 26 * Math.sin((i * Math.PI) / 3)}px`,
               left: `${30 + 26 * Math.cos((i * Math.PI) / 3)}px`,
@@ -60,7 +60,7 @@ export default function Loader() {
           />
         ))}
       </motion.div>
-      <span className="mt-7 text-bluegreen text-lg font-semibold tracking-wide drop-shadow-xl">
+      <span className="mt-7 text-brand-secondary text-lg font-semibold tracking-wide drop-shadow-xl">
         Učitavam profil
       </span>
     </motion.div>

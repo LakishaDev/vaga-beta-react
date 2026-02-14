@@ -17,6 +17,7 @@ import { Link, useNavigate } from "react-router-dom";
 import ProgressiveImage from "../components/UI/ProgressiveImage";
 import Slider from "../components/Slider";
 import EvagaVideoPlayer from "../components/UI/EvagaVideoPlayer";
+import { designTokens } from "../configs/designTokens";
 import {
   FaTools,
   FaShippingFast,
@@ -119,7 +120,13 @@ export default function Home() {
 
   return (
     <>
-      <main className="max-w-full sm:max-w-6xl mx-auto p-2 sm:p-8 bg-white/80 rounded-xl shadow-lg mt-10 animate-fadein border border-[#CBCFBB]">
+      <main
+        className="max-w-full sm:max-w-6xl mx-auto p-2 sm:p-8 bg-white/90 rounded-xl shadow-xl mt-10 animate-fadein"
+        style={{
+          borderColor: designTokens.colors.neutral.borderLight,
+          borderWidth: "1px",
+        }}
+      >
         <div className="relative rounded-2xl overflow-hidden mb-6 animate-fadein duration-1000">
           {/* /imgs/home/slika1.png */}
           <ProgressiveImage
@@ -127,8 +134,11 @@ export default function Home() {
             alt="Elektronske vage i programiranje"
             className="w-full object-center"
           />
-          {/* <div className="absolute inset-0 bg-gradient-to-br from-[#CBCFBB]/80 to-transparent" /> */}
-          <div className="absolute bottom-5 left-8 text-3xl text-[#1E3E49] font-bold drop-shadow animate-pop">
+          {/* <div className="absolute inset-0 bg-gradient-to-br from-blue-100/80 to-transparent" /> */}
+          <div
+            className="absolute bottom-5 left-8 text-3xl font-bold drop-shadow animate-pop"
+            style={{ color: designTokens.colors.brand.primary }}
+          >
             Vaga Beta
           </div>
         </div>

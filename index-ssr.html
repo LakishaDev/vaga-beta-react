@@ -1,0 +1,32 @@
+<!-- index-ssr.html -->
+<!-- SSR template fajl - zameni src/main.jsx sa entry-client.jsx -->
+<!-- Server renderuje React komponentu i injektuje HTML -->
+<!doctype html>
+<html lang="sr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#0B3A8D" />
+
+    <!-- Preconnect za brže učitavanje -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Google Fonts - Inter & Manrope -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Manrope:wght@600;700;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Sitemap za SEO -->
+    <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+
+    <!-- Slot za render-ovane meta tagove -->
+    <meta name="ssr-meta" />
+  </head>
+  <body>
+    <div id="root"><!--ssr-outlet--></div>
+    <script type="module" src="/src/entry-client.jsx"></script>
+  </body>
+</html>

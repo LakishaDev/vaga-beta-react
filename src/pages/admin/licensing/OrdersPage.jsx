@@ -102,7 +102,7 @@ const FilterBadge = ({
 }) => {
   const colorStyles = {
     default: isActive
-      ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+      ? "bg-gradient-to-r from-brand-secondary to-brand-accent text-white shadow-lg shadow-brand-secondary/25"
       : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
     paid: isActive
       ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200"
@@ -150,10 +150,10 @@ const OrderMobileCard = ({ order, onSelect }) => (
   >
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-xl bg-gradient-to-br from-bluegreen/10 to-sheen/10">
-          <Receipt className="text-bluegreen" size={18} />
+        <div className="p-2 rounded-xl bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10">
+          <Receipt className="text-brand-secondary" size={18} />
         </div>
-        <span className="font-mono text-sm font-bold text-charcoal">
+        <span className="font-mono text-sm font-bold text-text-primary">
           #{order.id.slice(0, 8)}
         </span>
       </div>
@@ -162,13 +162,13 @@ const OrderMobileCard = ({ order, onSelect }) => (
 
     <div className="space-y-2.5 text-sm">
       <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
-        <User size={14} className="text-charcoal/60" />
+        <User size={14} className="text-text-primary/60" />
         <span className="font-medium">{order.clientName || "Bez imena"}</span>
       </div>
 
       <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
-        <CreditCard size={14} className="text-charcoal/60" />
-        <span className="font-bold text-charcoal">
+        <CreditCard size={14} className="text-text-primary/60" />
+        <span className="font-bold text-text-primary">
           {order.amount?.toLocaleString("sr-RS")} RSD
         </span>
         <span className="text-gray-400">•</span>
@@ -178,7 +178,7 @@ const OrderMobileCard = ({ order, onSelect }) => (
       </div>
 
       <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
-        <Calendar size={14} className="text-charcoal/60" />
+        <Calendar size={14} className="text-text-primary/60" />
         <span>{formatLicenseDate(order.createdAt)}</span>
       </div>
     </div>
@@ -186,7 +186,7 @@ const OrderMobileCard = ({ order, onSelect }) => (
     <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
       <Link
         to="/prodavnica/admin/licenses"
-        className="text-bluegreen text-sm font-semibold flex items-center gap-1.5 hover:underline px-3 py-1.5 rounded-lg hover:bg-bluegreen/5 transition-all"
+        className="text-brand-secondary text-sm font-semibold flex items-center gap-1.5 hover:underline px-3 py-1.5 rounded-lg hover:bg-brand-secondary/5 transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         Licenca <ExternalLink size={14} />
@@ -285,8 +285,8 @@ export default function OrdersPage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
         <div className="relative">
-          <div className="w-20 h-20 border-4 border-bluegreen/30 rounded-full" />
-          <div className="w-20 h-20 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
+          <div className="w-20 h-20 border-4 border-brand-secondary/30 rounded-full" />
+          <div className="w-20 h-20 border-4 border-brand-secondary border-t-transparent rounded-full animate-spin absolute inset-0" />
         </div>
         <p className="mt-6 text-gray-500 font-medium">Provera pristupa...</p>
       </div>
@@ -316,7 +316,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-bluegreen/5">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-brand-secondary/5">
       <div className="max-w-7xl mx-auto w-full p-4 sm:p-8 pt-8">
         {/* Header */}
         <motion.div
@@ -325,11 +325,11 @@ export default function OrdersPage() {
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
         >
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg shadow-bluegreen/25">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-brand-secondary to-brand-accent shadow-lg shadow-brand-secondary/25">
               <ShoppingCart className="text-white" size={28} />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-charcoal">
+              <h1 className="text-3xl font-black text-text-primary">
                 Porudžbine licenci
               </h1>
               <p className="text-gray-500 text-sm mt-0.5">
@@ -339,7 +339,7 @@ export default function OrdersPage() {
           </div>
           <Link
             to="/prodavnica/admin/licenses"
-            className="px-5 py-2.5 bg-white text-charcoal rounded-xl font-semibold flex items-center gap-2 hover:bg-gray-50 transition-all border border-gray-200 shadow-sm"
+            className="px-5 py-2.5 bg-white text-text-primary rounded-xl font-semibold flex items-center gap-2 hover:bg-gray-50 transition-all border border-gray-200 shadow-sm"
           >
             <Key size={18} />
             Nazad na licence
@@ -365,7 +365,7 @@ export default function OrdersPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Pretraži po ID-u, imenu ili emailu..."
-                className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+                className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-brand-secondary focus:ring-4 focus:ring-brand-secondary/10 transition-all placeholder:text-gray-400"
               />
               {searchQuery && (
                 <motion.button
@@ -420,15 +420,21 @@ export default function OrdersPage() {
 
           {/* Results count */}
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
-            <Sparkles size={14} className="text-bluegreen" />
+            <Sparkles size={14} className="text-brand-secondary" />
             <span>
               Pronađeno{" "}
-              <strong className="text-charcoal">{filteredOrders.length}</strong>{" "}
+              <strong className="text-text-primary">
+                {filteredOrders.length}
+              </strong>{" "}
               porudžbina
               {searchQuery && (
                 <span>
                   {" "}
-                  za "<strong className="text-bluegreen">{searchQuery}</strong>"
+                  za "
+                  <strong className="text-brand-secondary">
+                    {searchQuery}
+                  </strong>
+                  "
                 </span>
               )}
             </span>
@@ -444,8 +450,8 @@ export default function OrdersPage() {
           {loading ? (
             <div className="flex flex-col justify-center items-center py-20">
               <div className="relative">
-                <div className="w-16 h-16 border-4 border-bluegreen/30 rounded-full" />
-                <div className="w-16 h-16 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
+                <div className="w-16 h-16 border-4 border-brand-secondary/30 rounded-full" />
+                <div className="w-16 h-16 border-4 border-brand-secondary border-t-transparent rounded-full animate-spin absolute inset-0" />
               </div>
               <p className="mt-4 text-gray-500 font-medium">
                 Učitavanje porudžbina...
@@ -469,41 +475,50 @@ export default function OrdersPage() {
               <div className="hidden lg:block overflow-hidden rounded-2xl shadow-lg border border-gray-200/80 bg-white">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10">
+                    <thead className="bg-gradient-to-r from-brand-secondary/10 via-brand-accent/5 to-brand-secondary/10">
                       <tr>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <Receipt size={16} className="text-bluegreen" />
+                            <Receipt
+                              size={16}
+                              className="text-brand-secondary"
+                            />
                             ID porudžbine
                           </div>
                         </th>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <User size={16} className="text-bluegreen" />
+                            <User size={16} className="text-brand-secondary" />
                             Klijent
                           </div>
                         </th>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <Key size={16} className="text-bluegreen" />
+                            <Key size={16} className="text-brand-secondary" />
                             Licencni ključ
                           </div>
                         </th>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           Paket
                         </th>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <CreditCard size={16} className="text-bluegreen" />
+                            <CreditCard
+                              size={16}
+                              className="text-brand-secondary"
+                            />
                             Iznos
                           </div>
                         </th>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           Status
                         </th>
-                        <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                        <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <Calendar size={16} className="text-bluegreen" />
+                            <Calendar
+                              size={16}
+                              className="text-brand-secondary"
+                            />
                             Datum
                           </div>
                         </th>
@@ -518,19 +533,19 @@ export default function OrdersPage() {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ delay: index * 0.03 }}
-                            className={`hover:bg-gradient-to-r hover:from-bluegreen/5 hover:to-transparent transition-all cursor-pointer group ${
+                            className={`hover:bg-gradient-to-r hover:from-brand-secondary/5 hover:to-transparent transition-all cursor-pointer group ${
                               index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                             }`}
                             onClick={() => setSelectedOrder(order)}
                           >
                             <td className="px-5 py-4">
-                              <span className="font-mono text-sm font-semibold text-charcoal bg-gray-100 px-2 py-1 rounded-lg group-hover:bg-bluegreen/10 transition-colors">
+                              <span className="font-mono text-sm font-semibold text-text-primary bg-gray-100 px-2 py-1 rounded-lg group-hover:bg-brand-secondary/10 transition-colors">
                                 #{order.id.slice(0, 8)}
                               </span>
                             </td>
                             <td className="px-5 py-4">
                               <div>
-                                <div className="font-semibold text-charcoal">
+                                <div className="font-semibold text-text-primary">
                                   {order.clientName || "-"}
                                 </div>
                                 <div className="text-xs text-gray-500">
@@ -544,12 +559,12 @@ export default function OrdersPage() {
                               </span>
                             </td>
                             <td className="px-5 py-4">
-                              <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 text-xs font-semibold text-charcoal border border-gray-200">
+                              <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 text-xs font-semibold text-text-primary border border-gray-200">
                                 {getLicenseTypeLabel(order.licenseType)}
                               </span>
                             </td>
                             <td className="px-5 py-4">
-                              <span className="font-bold text-charcoal">
+                              <span className="font-bold text-text-primary">
                                 {order.amount?.toLocaleString("sr-RS")} RSD
                               </span>
                             </td>
@@ -590,7 +605,7 @@ export default function OrdersPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
-              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/40 backdrop-blur-md"
+              className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-text-primary/40 backdrop-blur-md"
               onClick={() => setSelectedOrder(null)}
             >
               <motion.div
@@ -602,11 +617,11 @@ export default function OrdersPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Decorative gradients */}
-                <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-bluegreen/20 to-sheen/10 rounded-full blur-3xl" />
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-brand-secondary/20 to-brand-accent/10 rounded-full blur-3xl" />
 
                 {/* Header */}
-                <div className="relative bg-gradient-to-r from-charcoal via-midnight to-charcoal p-5 text-white overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
+                <div className="relative bg-gradient-to-r from-text-primary via-neutral-900 to-text-primary p-5 text-white overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-r from-brand-secondary/20 via-transparent to-brand-accent/20" />
                   <motion.button
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
@@ -617,7 +632,7 @@ export default function OrdersPage() {
                   </motion.button>
 
                   <div className="relative z-10 flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-brand-secondary to-brand-accent shadow-lg">
                       <Receipt size={20} />
                     </div>
                     <div>
@@ -634,7 +649,7 @@ export default function OrdersPage() {
                     <div className="text-xs text-gray-500 mb-1 font-medium">
                       ID porudžbine
                     </div>
-                    <div className="font-mono font-bold text-charcoal text-sm">
+                    <div className="font-mono font-bold text-text-primary text-sm">
                       {selectedOrder.id}
                     </div>
                   </div>
@@ -650,7 +665,7 @@ export default function OrdersPage() {
                       <div className="text-xs text-gray-500 mb-1 font-medium">
                         Iznos
                       </div>
-                      <div className="font-black text-charcoal text-lg">
+                      <div className="font-black text-text-primary text-lg">
                         {selectedOrder.amount?.toLocaleString("sr-RS")}{" "}
                         <span className="text-sm font-normal text-gray-500">
                           RSD
@@ -667,7 +682,7 @@ export default function OrdersPage() {
                       <div className="p-1.5 rounded-lg bg-gray-100">
                         <User size={12} className="text-gray-500" />
                       </div>
-                      <span className="font-semibold text-charcoal">
+                      <span className="font-semibold text-text-primary">
                         {selectedOrder.clientName || "-"}
                       </span>
                     </div>
@@ -686,8 +701,8 @@ export default function OrdersPage() {
                       Licenca
                     </div>
                     <div className="flex items-center gap-2.5 mb-2">
-                      <div className="p-1.5 rounded-lg bg-bluegreen/10">
-                        <Key size={12} className="text-bluegreen" />
+                      <div className="p-1.5 rounded-lg bg-brand-secondary/10">
+                        <Key size={12} className="text-brand-secondary" />
                       </div>
                       <span className="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded-lg">
                         {selectedOrder.licenseKey || "-"}
@@ -695,7 +710,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-sm text-gray-600">
                       Paket:{" "}
-                      <span className="font-semibold text-charcoal px-2 py-0.5 bg-bluegreen/10 rounded-lg">
+                      <span className="font-semibold text-text-primary px-2 py-0.5 bg-brand-secondary/10 rounded-lg">
                         {getLicenseTypeLabel(selectedOrder.licenseType)}
                       </span>
                     </div>
@@ -709,7 +724,7 @@ export default function OrdersPage() {
                       <div className="p-1.5 rounded-lg bg-gray-100">
                         <Calendar size={12} className="text-gray-500" />
                       </div>
-                      <span className="font-medium text-charcoal">
+                      <span className="font-medium text-text-primary">
                         {formatLicenseDate(selectedOrder.createdAt)}
                       </span>
                     </div>
@@ -724,7 +739,7 @@ export default function OrdersPage() {
                         <div className="p-1.5 rounded-lg bg-gray-100">
                           <CreditCard size={12} className="text-gray-500" />
                         </div>
-                        <span className="font-medium text-charcoal">
+                        <span className="font-medium text-text-primary">
                           {selectedOrder.paymentMethod}
                         </span>
                       </div>

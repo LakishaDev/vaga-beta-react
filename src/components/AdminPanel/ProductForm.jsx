@@ -2,12 +2,12 @@
 // ===============================================================================
 // PRODUCT FORM COMPONENT
 // ===============================================================================
-// 
+//
 // @component ProductForm
 // @description Kompletan form za dodavanje novih proizvoda sa svim poljima
 // @version 2.0
 // @lastmodified 2025-11-02
-// 
+//
 // FUNKCIONALNOSTI:
 // ================
 // ✅ Osnovna polja (naziv, kategorija, cena)
@@ -19,7 +19,7 @@
 // ✅ Software toggle sa markdown fajlovima
 // ✅ Progress bar tokom uploada
 // ✅ Responsive dizajn
-// 
+//
 // ===============================================================================
 
 import { motion as Motion } from "framer-motion";
@@ -74,7 +74,7 @@ export default function ProductForm({
   return (
     <form
       onSubmit={onSubmit}
-      className="flex flex-col gap-6 bg-gradient-to-br from-slate-50 to-blue-50 rounded-xl p-4 sm:p-6 lg:p-8 shadow animate-pop w-full"
+      className="flex flex-col gap-6 bg-neutral-surface rounded-xl p-4 sm:p-6 lg:p-8 shadow animate-pop w-full border border-neutral-border"
     >
       <div className="flex flex-col lg:flex-row items-start gap-6 w-full">
         <div className="flex flex-col gap-4 w-full pt-2">
@@ -92,7 +92,7 @@ export default function ProductForm({
             onChange={onChange}
             required
           />
-          <Motion.div 
+          <Motion.div
             className="relative group"
             whileHover={{ scale: 1.01 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
@@ -109,18 +109,18 @@ export default function ProductForm({
               required
             />
             <Motion.div
-              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-br from-[#6EAEA2] to-[#91CEC1] text-white font-bold text-xs shadow-lg"
+              className="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-brand-secondary/15 text-white font-bold text-xs shadow-lg"
               style={{
-                background: "rgba(110, 174, 162, 0.15)",
+                background: "rgba(145, 206, 193, 0.15)",
                 backdropFilter: "blur(10px)",
-                border: "1px solid rgba(110, 174, 162, 0.3)",
+                border: "1px solid rgba(145, 206, 193, 0.3)",
               }}
               whileHover={{ scale: 1.05 }}
               animate={{
                 boxShadow: [
-                  "0 0 0 0 rgba(110, 174, 162, 0)",
-                  "0 0 0 8px rgba(110, 174, 162, 0.1)",
-                  "0 0 0 0 rgba(110, 174, 162, 0)",
+                  "0 0 0 0 rgba(145, 206, 193, 0)",
+                  "0 0 0 8px rgba(145, 206, 193, 0.1)",
+                  "0 0 0 0 rgba(145, 206, 193, 0)",
                 ],
               }}
               transition={{
@@ -131,30 +131,32 @@ export default function ProductForm({
                 },
               }}
             >
-              <FiDollarSign 
-                className="text-[#6EAEA2]" 
+              <FiDollarSign
+                className="text-brand-secondary"
                 size={14}
                 style={{ filter: "drop-shadow(0 1px 2px rgba(0,0,0,0.1))" }}
               />
-              <span className="text-[#1E3E49] font-black tracking-wide">RSD</span>
+              <span className="text-text-primary font-black tracking-wide">
+                RSD
+              </span>
             </Motion.div>
-            
+
             {/* Tooltip hint */}
             <Motion.div
               initial={{ opacity: 0, y: 10, scale: 0.8 }}
-              animate={{ 
+              animate={{
                 opacity: 0,
                 y: 10,
                 scale: 0.8,
               }}
-              whileFocus={{ 
+              whileFocus={{
                 opacity: 1,
                 y: 0,
                 scale: 1,
               }}
               className="absolute -bottom-8 left-0 right-0 text-center"
             >
-              <span className="inline-block px-3 py-1 bg-[#1E3E49] text-white text-xs rounded-lg shadow-lg">
+              <span className="inline-block px-3 py-1 bg-text-primary text-white text-xs rounded-lg shadow-lg">
                 💡 Separator za hiljade se dodaje automatski
               </span>
             </Motion.div>
@@ -311,8 +313,8 @@ export default function ProductForm({
               uploadProgress === 100
                 ? "success"
                 : uploadProgress > 0
-                ? "uploading"
-                : "idle"
+                  ? "uploading"
+                  : "idle"
             }
             label="Dodavanje proizvoda..."
             showPercentage={true}

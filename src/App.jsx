@@ -8,28 +8,28 @@
 // Responsive i pristupačna
 // Koristi React Router v6
 // test
-import {
-  BrowserRouter as Router,
-  Routes,
-  Route,
-  useLocation,
-} from "react-router-dom";
+// SSR kompatibilna verzija
+
+import { Routes, Route, useLocation } from "react-router-dom";
 
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
+import RenderBoundary from "./components/RenderBoundary";
 import CloudflareDeploymentDebug from "./components/CloudflareDeploymentDebug";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import Lenis from "lenis";
 import { lazy, Suspense, useEffect } from "react";
 
-const Home = lazy(() => import("./pages/Home"));
-const Usluge = lazy(() => import("./pages/Usluge"));
-const Kontakt = lazy(() => import("./pages/Kontakt"));
-const Onama = lazy(() => import("./pages/Onama"));
+const Home = lazy(() => import("./pages/home/HomeModern"));
+const Usluge = lazy(() => import("./pages/services/UslugaModern"));
+const Kontakt = lazy(() => import("./pages/contact/KontaktModern"));
+const Onama = lazy(() => import("./pages/about/OnamaModern"));
 const Aplikacija = lazy(() => import("./pages/Aplikacija"));
+const Booking = lazy(() => import("./pages/Booking"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
 const EVagaDesktop = lazy(() => import("./pages/EVagaDesktop"));
+const DesignSystemDemo = lazy(() => import("./pages/DesignSystemDemo"));
 const Prodavnica = lazy(() => import("./Prodavnica"));
 
 function AppContent() {
@@ -39,9 +39,11 @@ function AppContent() {
   // Ako je ruta za prodavnicu, renderuj samo Prodavnica komponentu
   if (isShop) {
     return (
-      <Suspense fallback={<Loader />}>
-        <Prodavnica />
-      </Suspense>
+      <RenderBoundary>
+        <Suspense fallback={<Loader />}>
+          <Prodavnica />
+        </Suspense>
+      </RenderBoundary>
     );
   }
 
@@ -49,28 +51,41 @@ function AppContent() {
   return (
     <>
       <Navbar />
-      <main className="max-w-5xl mx-auto px-3 sm:px-8 py-8 pt-16">
-        <Suspense fallback={<Loader />}>
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/usluge" element={<Usluge />} />
-            <Route path="/kontakt" element={<Kontakt />} />
-            <Route path="/onama" element={<Onama />} />
-            <Route path="/aplikacija" element={<Aplikacija />} />
-            <Route path="/evaga-desktop" element={<EVagaDesktop />} />
-            <Route path="/privacy" element={<PrivacyPolicy />} />
-          </Routes>
-        </Suspense>
+      <main className="pt-24 sm:pt-28">
+        <RenderBoundary>
+          <Suspense fallback={<Loader />}>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/usluge" element={<Usluge />} />
+              <Route path="/kontakt" element={<Kontakt />} />
+              <Route path="/onama" element={<Onama />} />
+              <Route path="/aplikacija" element={<Aplikacija />} />
+              <Route path="/booking" element={<Booking />} />
+              <Route path="/evaga-desktop" element={<EVagaDesktop />} />
+              <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route
+                path="/design-system-demo"
+                element={<DesignSystemDemo />}
+              />
+            </Routes>
+          </Suspense>
+        </RenderBoundary>
       </main>
       <Footer />
     </>
   );
 }
 
-// Glavna App komponenta sa Router-om
+// Glavna App komponenta - bez Router wrapper-a
+// Router se dodeljuje na entry-client.jsx i entry-server.jsx
 function App() {
   // Inicijalizacija Lenis za glatko skrolovanje
+  // Samo u browser okruženju (ne na serveru)
   useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+
     const lenis = new Lenis({
       lerp: 0.08, // smoothness (0 - 1)
       smoothWheel: true, // enables smooth for mouse/touchpad
@@ -86,10 +101,8 @@ function App() {
 
   return (
     <EVagaDesktopProvider>
-      <div className="min-h-screen w-full napredniGradient">
-        <Router>
-          <AppContent />
-        </Router>
+      <div className="min-h-screen w-full bg-neutral-bg text-text-primary">
+        <AppContent />
         <CloudflareDeploymentDebug />
       </div>
     </EVagaDesktopProvider>

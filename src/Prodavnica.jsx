@@ -19,13 +19,14 @@ import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "./contexts/shop/cart/CartProvider";
 import { SnackbarProvider } from "./contexts/snackbar/SnackbarProvider";
 import { useEffect } from "react";
-import HeroSection from "./pages/shop/HeroSection";
+import HeroSectionModern from "./pages/shop/HeroSectionModern";
 import ProductGrid from "./components/shop/ProductGrid";
 import Cart from "./pages/shop/Cart";
 import CheckoutForm from "./pages/shop/CheckoutForm";
 import AuthForm from "./pages/shop/AuthForm";
 import AdminPanel from "./pages/shop/AdminPanel";
 import Navbar from "./components/shop/Navbar";
+import RenderBoundary from "./components/RenderBoundary";
 import Profile from "./pages/shop/Profile";
 import ProductDetails from "./components/shop/ProductDetails";
 import { useAuthState } from "react-firebase-hooks/auth";
@@ -66,7 +67,8 @@ function Prodavnica() {
                 padding: "16px",
                 borderRadius: "12px",
                 border: "1px solid #e5e7eb",
-                boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                boxShadow:
+                  "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
                 fontSize: "14px",
                 fontWeight: "500",
               },
@@ -99,37 +101,44 @@ function Prodavnica() {
             }}
           />
           <Navbar />
-          <Routes>
-            <Route path="/prodavnica" element={<HeroSection />} />
-            <Route path="/prodavnica/proizvodi" element={<ProductGrid />} />
-            <Route
-              path="/prodavnica/proizvod/:id"
-              element={<ProductDetails />}
-            />
-            <Route path="/prodavnica/korpa" element={<Cart />} />
-            <Route path="/prodavnica/placanje" element={<CheckoutForm />} />
-            <Route path="/prodavnica/prijava" element={<AuthForm />} />
-            <Route path="/prodavnica/admin" element={<AdminPanel />} />
-            <Route path="/prodavnica/nalog" element={<Profile />} />
-            <Route
-              path="/prodavnica/email-verifikovan"
-              element={<VerifyEmailPage />}
-            />
-            <Route path="/prodavnica/porudzbine" element={<AdminOrders />} />
-            <Route
-              path="/prodavnica/reset-password"
-              element={<PasswordResetForm />}
-            />
-            {/* Admin Licensing Routes */}
-            <Route
-              path="/prodavnica/admin/licenses"
-              element={<LicensesPage />}
-            />
-            <Route
-              path="/prodavnica/admin/licenses/orders"
-              element={<OrdersPage />}
-            />
-          </Routes>
+          <main className="pt-24 sm:pt-28">
+            <RenderBoundary>
+              <Routes>
+                <Route path="/prodavnica" element={<HeroSectionModern />} />
+                <Route path="/prodavnica/proizvodi" element={<ProductGrid />} />
+                <Route
+                  path="/prodavnica/proizvod/:id"
+                  element={<ProductDetails />}
+                />
+                <Route path="/prodavnica/korpa" element={<Cart />} />
+                <Route path="/prodavnica/placanje" element={<CheckoutForm />} />
+                <Route path="/prodavnica/prijava" element={<AuthForm />} />
+                <Route path="/prodavnica/admin" element={<AdminPanel />} />
+                <Route path="/prodavnica/nalog" element={<Profile />} />
+                <Route
+                  path="/prodavnica/email-verifikovan"
+                  element={<VerifyEmailPage />}
+                />
+                <Route
+                  path="/prodavnica/porudzbine"
+                  element={<AdminOrders />}
+                />
+                <Route
+                  path="/prodavnica/reset-password"
+                  element={<PasswordResetForm />}
+                />
+                {/* Admin Licensing Routes */}
+                <Route
+                  path="/prodavnica/admin/licenses"
+                  element={<LicensesPage />}
+                />
+                <Route
+                  path="/prodavnica/admin/licenses/orders"
+                  element={<OrdersPage />}
+                />
+              </Routes>
+            </RenderBoundary>
+          </main>
           <Footer />
         </CartProvider>
       </AuthProvider>

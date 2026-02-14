@@ -11,7 +11,7 @@ export default function LepModal({ open, src, text, onClose }) {
         <motion.div
           className="
             fixed inset-0 z-50 flex items-center justify-center p-4
-            bg-gradient-to-br from-outerspace/80 via-midnight/30 to-outerspace/90
+            bg-gradient-to-br from-brand-primary/70 via-brand-secondary/30 to-brand-primary/80
             backdrop-blur-xl
           "
           onClick={onClose}
@@ -23,8 +23,8 @@ export default function LepModal({ open, src, text, onClose }) {
           <motion.div
             className="
               relative w-full h-full max-w-6xl max-h-8/12 sm:max-h-10/12
-              bg-white/10 backdrop-blur-2xl
-              border border-white/20 rounded-3xl
+              bg-neutral-surface/10 backdrop-blur-2xl
+              border border-neutral-surface/20 rounded-3xl
               shadow-2xl shadow-black/50 overflow-hidden
               mt-7
             "
@@ -59,8 +59,8 @@ export default function LepModal({ open, src, text, onClose }) {
             <motion.button
               className="
                 absolute top-6 right-6 z-30
-                bg-white/20 backdrop-blur-md hover:bg-rust/80
-                border border-white/30 rounded-full p-3
+                bg-neutral-surface/20 backdrop-blur-md hover:bg-error/80
+                border border-neutral-surface/30 rounded-full p-3
                 text-white transition-all duration-300
                 focus:outline-none focus:ring-2 focus:ring-white/50
               "
@@ -160,7 +160,7 @@ export default function LepModal({ open, src, text, onClose }) {
                 {text}
               </motion.h2>
               <motion.div
-                className="w-24 h-1 bg-gradient-to-r from-bluegreen to-midnight mx-auto mt-3 rounded-full"
+                className="w-24 h-1 bg-gradient-to-r from-brand-secondary to-brand-primary mx-auto mt-3 rounded-full"
                 initial={{ scaleX: 0 }}
                 animate={{ scaleX: 1 }}
                 exit={{ scaleX: 0 }}
@@ -174,7 +174,7 @@ export default function LepModal({ open, src, text, onClose }) {
 
             {/* Decorative Elements with Staggered Animation */}
             <motion.div
-              className="absolute top-8 left-8 w-4 h-4 bg-rust/30 rounded-full"
+              className="absolute top-8 left-8 w-4 h-4 bg-brand-accent/30 rounded-full"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
@@ -187,7 +187,7 @@ export default function LepModal({ open, src, text, onClose }) {
               }}
             />
             <motion.div
-              className="absolute top-16 left-16 w-2 h-2 bg-bluegreen/70 rounded-full"
+              className="absolute top-16 left-16 w-2 h-2 bg-brand-secondary/70 rounded-full"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}
@@ -200,7 +200,7 @@ export default function LepModal({ open, src, text, onClose }) {
               }}
             />
             <motion.div
-              className="absolute bottom-20 right-12 w-3 h-3 bg-bone/40 rounded-full"
+              className="absolute bottom-20 right-12 w-3 h-3 bg-neutral-200/40 rounded-full"
               initial={{ scale: 0, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0, opacity: 0 }}

@@ -59,14 +59,14 @@ export default function Snackbar({
           duration-300
           ${
             type === "success"
-              ? "from-bluegreen to-sheen border-bluegreen/40"
+              ? "from-brand-secondary to-brand-accent border-brand-secondary/40"
               : ""
           }
-          ${type === "error" ? "from-rust to-sheen border-rust/40" : ""}
-          ${type === "info" ? "from-sheen to-bluegreen border-sheen/40" : ""}
+          ${type === "error" ? "from-error to-brand-accent border-error/40" : ""}
+          ${type === "info" ? "from-brand-accent to-brand-secondary border-brand-accent/40" : ""}
           ${
             type === "custom"
-              ? "from-yellow-300 to-bluegreen border-yellow-300/30"
+              ? "from-yellow-300 to-brand-secondary border-yellow-300/30"
               : ""
           }
           ${exiting ? "animate-snackbar-exit" : "animate-slidein-left"}

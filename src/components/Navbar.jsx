@@ -6,8 +6,8 @@
 // Koristi useState za upravljanje stanjem menija
 // Koristi osnovne Tailwind CSS klase za stilizaciju
 // BOJE su definisane u objektu BOJE i mogu se prilagoditi
-import { Link } from "react-router-dom";
-import { useState } from "react";
+import { Link, useLocation } from "react-router-dom";
+import { useEffect, useState } from "react";
 import {
   FaHome,
   FaBoxes,
@@ -16,227 +16,158 @@ import {
   FaInfoCircle,
   FaShoppingBag,
   FaMobileAlt,
-  FaKey,
+  FaClipboardList,
+  FaPalette,
+  FaChevronRight,
 } from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
 
-const BOJE = {
-  bone: "#CBCFBB",
-  midnight: "#1E3E49",
-  sheen: "#6EAEA2",
-  chestnut: "#8A4D34",
-  outerspace: "#1A343D",
-  rust: "#AD5637",
-  bluegreen: "#91CEC1",
-  charcoal: "#2F5363",
-};
+const navItems = [
+  { to: "/", label: "Početna", icon: FaHome },
+  { to: "/prodavnica", label: "Prodavnica", icon: FaShoppingBag },
+  { to: "/usluge", label: "Usluge", icon: FaCogs },
+  { to: "/evaga-desktop", label: "Program", icon: FaBoxes },
+  { to: "/aplikacija", label: "Aplikacija", icon: FaMobileAlt },
+  { to: "/kontakt", label: "Kontakt", icon: FaEnvelope },
+  { to: "/onama", label: "O nama", icon: FaInfoCircle },
+  { to: "/booking", label: "Zahtev", icon: FaClipboardList },
+  { to: "/design-system-demo", label: "Design", icon: FaPalette },
+];
 
 export default function Navbar() {
+  const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [isHidden, setIsHidden] = useState(false);
+  const [isCompact, setIsCompact] = useState(false);
+
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    let lastY = window.scrollY;
+
+    const onScroll = () => {
+      const currentY = window.scrollY;
+      setIsCompact(currentY > 24);
+
+      if (currentY <= 8) {
+        setIsHidden(false);
+      } else if (currentY > lastY + 8) {
+        setIsHidden(true);
+      } else if (currentY < lastY - 8) {
+        setIsHidden(false);
+      }
+
+      lastY = currentY;
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
 
   return (
-    <nav
-      className="fixed top-0 left-0 w-screen z-[9999] backdrop-blur-md bg-[#1E3E49]/80 shadow-md"
-      style={{
-        borderBottom: `2px solid ${BOJE.sheen}`,
-        color: BOJE.bone,
-        width: "100vw",
-        left: 0,
-        top: 0,
-        zIndex: 9999,
-      }}
+    <header
+      className={`fixed top-0 left-0 right-0 z-[9999] transition-transform duration-300 ${
+        isHidden ? "-translate-y-full" : "translate-y-0"
+      }`}
     >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-4 py-3">
+      <nav
+        className={`mx-2 mt-2 sm:mx-4 rounded-2xl border border-brand-primary/20 bg-white/90 backdrop-blur-md shadow-lg transition-all duration-300 ${
+          isCompact ? "py-2" : "py-3"
+        }`}
+      >
+      <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
         {/* Logo/Brand */}
         <Link to="/" className="flex items-center gap-2">
           <ProgressiveImage
             src="/imgs/vaga-logo.png"
             alt="Logo"
-            className="h-9 w-9 rounded-lg shadow"
-            style={{ background: BOJE.bone }}
+            className="h-10 w-10 rounded-xl border border-brand-primary/20 bg-white shadow"
           />
-          <span
-            className="font-extrabold text-lg tracking-wide"
-            style={{ color: BOJE.bluegreen }}
-          >
+          <span className="font-heading font-extrabold text-lg tracking-wide text-brand-primary">
             Vaga Beta
           </span>
         </Link>
 
         {/* Hamburger Icon */}
         <button
-          className="sm:hidden flex flex-col items-center justify-center h-9 w-9 rounded hover:bg-[#6EAEA2]/50 transition"
+          className="sm:hidden flex flex-col items-center justify-center h-10 w-10 rounded-xl hover:bg-brand-primary/10 transition"
           aria-label="Menu"
           onClick={() => setOpen(!open)}
-          style={{
-            background: open ? BOJE.sheen : "transparent",
-            position: "relative", // Garantuje da je iznad svih
-            zIndex: 10000, // Visoki z-index, hamburger je uvek na vrhu!
-          }}
         >
           <span
-            className={`block h-1 w-7 bg-[#CBCFBB] rounded mb-1 transition-all ${
+            className={`block h-0.5 w-6 bg-brand-primary rounded mb-1 transition-all ${
               open ? "rotate-45 translate-y-2" : ""
             }`}
           ></span>
           <span
-            className={`block h-1 w-7 bg-[#CBCFBB] rounded mb-1 transition-all ${
+            className={`block h-0.5 w-6 bg-brand-primary rounded mb-1 transition-all ${
               open ? "opacity-0" : ""
             }`}
           ></span>
           <span
-            className={`block h-1 w-7 bg-[#CBCFBB] rounded transition-all ${
+            className={`block h-0.5 w-6 bg-brand-primary rounded transition-all ${
               open ? "-rotate-45 -translate-y-2" : ""
             }`}
           ></span>
         </button>
 
         {/* Links desktop */}
-        <ul className="hidden sm:flex gap-6 font-semibold text-base">
-          <li>
-            <Link
-              to="/"
-              className="flex items-center gap-2 hover:text-[#AD5637] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaHome /> Početna
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/prodavnica"
-              className="flex items-center gap-2 hover:text-[#6EAEA2] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaShoppingBag /> Prodavnica
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/usluge"
-              className="flex items-center gap-2 hover:text-[#91CEC1] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaCogs /> Usluge
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/evaga-desktop"
-              className="flex items-center gap-2 hover:text-[#AD5637] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaBoxes /> Program
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/aplikacija"
-              className="flex items-center gap-2 hover:text-[#6EAEA2] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaMobileAlt /> Aplikacija
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/kontakt"
-              className="flex items-center gap-2 hover:text-[#8A4D34] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaEnvelope /> Kontakt
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/onama"
-              className="flex items-center gap-2 hover:text-[#CBCFBB] transition"
-              style={{ color: BOJE.bone }}
-            >
-              <FaInfoCircle /> O nama
-            </Link>
-          </li>
+        <ul className="hidden sm:flex gap-1 font-semibold text-sm lg:text-[15px]">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.to;
+            return (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
+                    isActive
+                      ? "bg-brand-primary text-white"
+                      : "text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
+                  }`}
+                >
+                  <Icon /> {item.label}
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
+      </nav>
 
       {/* Mobile Menu */}
       {open && (
         <ul
-          className="sm:hidden flex flex-col items-end gap-4 px-6 pb-6 bg-[#1E3E49]/80 backdrop-blur-md absolute right-0 left-0 top-full shadow-lg rounded-b-xl border-b-2 border-[#6EAEA2] animate-slidein-right"
-          style={{ zIndex: 9999 }} // Obezbeđuje da je ispred sadržaja!
+          className="sm:hidden flex flex-col gap-2 mx-2 mt-2 rounded-2xl border border-neutral-border bg-white p-3 shadow-xl"
+          style={{ zIndex: 9999 }}
         >
-          <li>
-            <Link
-              to="/"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#AD5637]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaHome /> Početna
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/prodavnica"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaShoppingBag /> Prodavnica
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/usluge"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#91CEC1]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaCogs /> Usluge
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/evaga-desktop"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#AD5637]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaBoxes /> Program
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/aplikacija"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#6EAEA2]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaMobileAlt /> Aplikacija
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/kontakt"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#8A4D34]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaEnvelope /> Kontakt
-            </Link>
-          </li>
-          <li>
-            <Link
-              to="/onama"
-              className="flex items-center gap-2 py-2 px-6 rounded hover:bg-[#CBCFBB]/20 w-full text-right"
-              style={{ color: BOJE.bone }}
-              onClick={() => setOpen(false)}
-            >
-              <FaInfoCircle /> O nama
-            </Link>
-          </li>
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = location.pathname === item.to;
+            return (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  className={`flex items-center justify-between gap-2 py-2.5 px-3 rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-brand-primary text-white"
+                      : "text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
+                  }`}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="flex items-center gap-2">
+                    <Icon /> {item.label}
+                  </span>
+                  <FaChevronRight className="text-xs" />
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       )}
-    </nav>
+    </header>
   );
 }

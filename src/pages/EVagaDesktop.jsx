@@ -26,8 +26,6 @@ const EVagaDesktop = () => {
     formatPrice,
   } = useEVagaDesktop();
 
-
-
   // Tehnički detalji
   const technicalSpecs = [
     {
@@ -133,9 +131,9 @@ const EVagaDesktop = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-50 to-white rounded-t-2xl mt-14">
+    <div className="min-h-screen bg-neutral-bg rounded-t-2xl mt-14">
       {/* Hero sekcija */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-midnight via-outer-space to-midnight py-20 px-4 rounded-t-2xl">
+      <section className="relative overflow-hidden bg-gradient-to-br from-brand-primary via-brand-secondary to-brand-primary py-20 px-4 rounded-t-2xl">
         <div className="absolute inset-0 bg-grid-pattern opacity-10"></div>
 
         <div className="container mx-auto max-w-7xl relative z-10">
@@ -176,7 +174,7 @@ const EVagaDesktop = () => {
             <h1 className="text-5xl md:text-6xl font-bold text-white mb-6">
               eVaga Desktop
             </h1>
-            <p className="text-xl md:text-2xl text-bone max-w-3xl mx-auto">
+            <p className="text-xl md:text-2xl text-neutral-bg max-w-3xl mx-auto">
               Profesionalni desktop sistem za automatizovano merenje, evidenciju
               i štampanje podataka o vaganju
             </p>
@@ -190,24 +188,24 @@ const EVagaDesktop = () => {
           >
             <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
               <div className="text-center">
-                <Server className="w-12 h-12 text-sheen mx-auto mb-3" />
+                <Server className="w-12 h-12 text-brand-accent mx-auto mb-3" />
                 <div className="text-3xl font-bold text-white">100+</div>
-                <div className="text-bone text-sm">Instalacija</div>
+                <div className="text-neutral-bg text-sm">Instalacija</div>
               </div>
               <div className="text-center">
-                <Users className="w-12 h-12 text-sheen mx-auto mb-3" />
+                <Users className="w-12 h-12 text-brand-accent mx-auto mb-3" />
                 <div className="text-3xl font-bold text-white">500+</div>
-                <div className="text-bone text-sm">Korisnika</div>
+                <div className="text-neutral-bg text-sm">Korisnika</div>
               </div>
               <div className="text-center">
-                <Database className="w-12 h-12 text-sheen mx-auto mb-3" />
+                <Database className="w-12 h-12 text-brand-accent mx-auto mb-3" />
                 <div className="text-3xl font-bold text-white">1M+</div>
-                <div className="text-bone text-sm">Merenja</div>
+                <div className="text-neutral-bg text-sm">Merenja</div>
               </div>
               <div className="text-center">
-                <Zap className="w-12 h-12 text-sheen mx-auto mb-3" />
+                <Zap className="w-12 h-12 text-brand-accent mx-auto mb-3" />
                 <div className="text-3xl font-bold text-white">99.9%</div>
-                <div className="text-bone text-sm">Uptime</div>
+                <div className="text-neutral-bg text-sm">Uptime</div>
               </div>
             </div>
           </motion.div>
@@ -221,7 +219,7 @@ const EVagaDesktop = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl font-bold text-midnight text-center mb-12"
+            className="text-4xl font-bold text-text-primary text-center mb-12"
           >
             Zašto izabrati eVaga Desktop?
           </motion.h2>
@@ -229,37 +227,37 @@ const EVagaDesktop = () => {
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
-                icon: <Zap className="w-12 h-12 text-rust" />,
+                icon: <Zap className="w-12 h-12 text-brand-accent" />,
                 title: "Real-time komunikacija",
                 description:
                   "Automatsko očitavanje težine sa indikatora u realnom vremenu sa WebSocket protokolom",
               },
               {
-                icon: <Database className="w-12 h-12 text-rust" />,
+                icon: <Database className="w-12 h-12 text-brand-accent" />,
                 title: "Robusna baza podataka",
                 description:
                   "SQL Server baza sa automatskom inicijalizacijom, skalabilna za preko 1 milion merenja",
               },
               {
-                icon: <Shield className="w-12 h-12 text-rust" />,
+                icon: <Shield className="w-12 h-12 text-brand-accent" />,
                 title: "Bezbednost na prvom mestu",
                 description:
                   "BCrypt hashing, RBAC kontrola pristupa, logovanje aktivnosti i validacija unosa",
               },
               {
-                icon: <Users className="w-12 h-12 text-rust" />,
+                icon: <Users className="w-12 h-12 text-brand-accent" />,
                 title: "Multi-user podrška",
                 description:
                   "Neograničen broj korisnika sa 2 nivoa pristupa: Admin, Radnik",
               },
               {
-                icon: <Server className="w-12 h-12 text-rust" />,
+                icon: <Server className="w-12 h-12 text-brand-accent" />,
                 title: "Client-Server arhitektura",
                 description:
                   "Centralizovana baza na serveru sa hibridnim pristupom na klijentima (offline podrška)",
               },
               {
-                icon: <FileText className="w-12 h-12 text-rust" />,
+                icon: <FileText className="w-12 h-12 text-brand-accent" />,
                 title: "Profesionalni izveštaji",
                 description:
                   "Generisanje i štampanje izveštaja sa podacima firme i logom",
@@ -274,7 +272,7 @@ const EVagaDesktop = () => {
                 className="bg-white p-6 rounded-xl shadow-lg hover:shadow-xl transition-shadow"
               >
                 <div className="mb-4">{feature.icon}</div>
-                <h3 className="text-xl font-bold text-midnight mb-3">
+                <h3 className="text-xl font-bold text-text-primary mb-3">
                   {feature.title}
                 </h3>
                 <p className="text-gray-600">{feature.description}</p>
@@ -291,7 +289,7 @@ const EVagaDesktop = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl font-bold text-midnight text-center mb-12"
+            className="text-4xl font-bold text-text-primary text-center mb-12"
           >
             Tehnički detalji
           </motion.h2>
@@ -306,15 +304,15 @@ const EVagaDesktop = () => {
                 className="bg-white p-6 rounded-xl shadow-lg"
               >
                 <div className="flex items-center gap-3 mb-4">
-                  <div className="text-rust">{spec.icon}</div>
-                  <h3 className="text-xl font-bold text-midnight">
+                  <div className="text-brand-accent">{spec.icon}</div>
+                  <h3 className="text-xl font-bold text-text-primary">
                     {spec.category}
                   </h3>
                 </div>
                 <ul className="space-y-2">
                   {spec.specs.map((item, i) => (
                     <li key={i} className="flex items-start gap-2">
-                      <CheckCircle className="w-5 h-5 text-sheen flex-shrink-0 mt-0.5" />
+                      <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                       <span className="text-gray-600">{item}</span>
                     </li>
                   ))}
@@ -332,7 +330,7 @@ const EVagaDesktop = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl font-bold text-midnight text-center mb-4"
+            className="text-4xl font-bold text-text-primary text-center mb-4"
           >
             Odaberite paket koji vam odgovara
           </motion.h2>
@@ -350,17 +348,17 @@ const EVagaDesktop = () => {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 className={`relative bg-white rounded-2xl shadow-lg overflow-hidden ${
-                  pkg.recommended ? "ring-4 ring-rust scale-105" : ""
+                  pkg.recommended ? "ring-4 ring-brand-accent scale-105" : ""
                 }`}
               >
                 {pkg.recommended && (
-                  <div className="absolute top-0 right-0 bg-rust text-white px-4 py-1 text-sm font-bold">
+                  <div className="absolute top-0 right-0 bg-brand-accent text-white px-4 py-1 text-sm font-bold">
                     PREPORUČENO
                   </div>
                 )}
 
                 <div className="p-6">
-                  <h3 className="text-2xl font-bold text-midnight mb-2">
+                  <h3 className="text-2xl font-bold text-text-primary mb-2">
                     {pkg.name}
                   </h3>
                   <p className="text-gray-600 text-sm mb-4">
@@ -368,7 +366,7 @@ const EVagaDesktop = () => {
                   </p>
 
                   <div className="mb-6">
-                    <div className="text-4xl font-bold text-rust">
+                    <div className="text-4xl font-bold text-brand-accent">
                       {formatPrice(pkg.price)}
                     </div>
                     <div className="text-sm text-gray-500">jednokratno</div>
@@ -377,7 +375,7 @@ const EVagaDesktop = () => {
                   <ul className="space-y-3 mb-6">
                     {pkg.features.map((feature, i) => (
                       <li key={i} className="flex items-start gap-2">
-                        <CheckCircle className="w-5 h-5 text-sheen flex-shrink-0 mt-0.5" />
+                        <CheckCircle className="w-5 h-5 text-success flex-shrink-0 mt-0.5" />
                         <span className="text-gray-700 text-sm">{feature}</span>
                       </li>
                     ))}
@@ -387,8 +385,8 @@ const EVagaDesktop = () => {
                     <button
                       className={`w-full py-3 rounded-lg font-bold transition-colors ${
                         pkg.recommended
-                          ? "bg-rust text-white hover:bg-chestnut"
-                          : "bg-midnight text-white hover:bg-outer-space"
+                          ? "bg-brand-accent text-white hover:bg-error"
+                          : "bg-text-primary text-white hover:bg-neutral-900"
                       }`}
                     >
                       Kontaktirajte nas
@@ -406,7 +404,7 @@ const EVagaDesktop = () => {
             viewport={{ once: true }}
             className="bg-white rounded-xl shadow-lg p-8"
           >
-            <h3 className="text-2xl font-bold text-midnight mb-6">
+            <h3 className="text-2xl font-bold text-text-primary mb-6">
               Dodatne usluge
             </h3>
             <div className="grid md:grid-cols-2 gap-4">
@@ -416,12 +414,12 @@ const EVagaDesktop = () => {
                   className="flex justify-between items-center p-4 bg-gray-50 rounded-lg"
                 >
                   <div>
-                    <div className="font-semibold text-midnight">
+                    <div className="font-semibold text-text-primary">
                       {service.name}
                     </div>
                     <div className="text-sm text-gray-500">{service.unit}</div>
                   </div>
-                  <div className="text-lg font-bold text-rust">
+                  <div className="text-lg font-bold text-brand-accent">
                     {formatPrice(service.price)}
                   </div>
                 </div>
@@ -438,7 +436,7 @@ const EVagaDesktop = () => {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-4xl font-bold text-midnight text-center mb-12"
+            className="text-4xl font-bold text-text-primary text-center mb-12"
           >
             Često postavljana pitanja
           </motion.h2>
@@ -457,13 +455,13 @@ const EVagaDesktop = () => {
                   onClick={() => setOpenFaq(openFaq === index ? null : index)}
                   className="w-full p-6 text-left flex justify-between items-center hover:bg-gray-50 transition-colors"
                 >
-                  <span className="font-semibold text-midnight pr-4">
+                  <span className="font-semibold text-text-primary pr-4">
                     {faq.question}
                   </span>
                   {openFaq === index ? (
-                    <ChevronUp className="w-5 h-5 text-rust flex-shrink-0" />
+                    <ChevronUp className="w-5 h-5 text-brand-accent flex-shrink-0" />
                   ) : (
-                    <ChevronDown className="w-5 h-5 text-rust flex-shrink-0" />
+                    <ChevronDown className="w-5 h-5 text-brand-accent flex-shrink-0" />
                   )}
                 </button>
                 {openFaq === index && (
@@ -484,7 +482,7 @@ const EVagaDesktop = () => {
       </section>
 
       {/* CTA sekcija */}
-      <section className="py-16 px-4 bg-gradient-to-br from-midnight to-outer-space">
+      <section className="py-16 px-4 bg-gradient-to-br from-text-primary to-neutral-900">
         <div className="container mx-auto max-w-4xl text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -494,19 +492,19 @@ const EVagaDesktop = () => {
             <h2 className="text-4xl font-bold text-white mb-6">
               Spremni da optimizujete vaš proces vaganja?
             </h2>
-            <p className="text-bone text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-neutral-200 text-lg mb-8 max-w-2xl mx-auto">
               Kontaktirajte nas danas i saznajte kako eVaga Desktop može da
               transformiše vaše poslovanje
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link to="/kontakt">
-                <button className="bg-rust text-white px-8 py-4 rounded-lg font-bold hover:bg-chestnut transition-colors inline-flex items-center gap-2">
+                <button className="bg-brand-accent text-white px-8 py-4 rounded-lg font-bold hover:bg-error transition-colors inline-flex items-center gap-2">
                   <Download className="w-5 h-5" />
                   Zatražite demo
                 </button>
               </Link>
               <Link to="/kontakt">
-                <button className="bg-white text-midnight px-8 py-4 rounded-lg font-bold hover:bg-bone transition-colors">
+                <button className="bg-white text-text-primary px-8 py-4 rounded-lg font-bold hover:bg-neutral-200 transition-colors">
                   Kontaktirajte nas
                 </button>
               </Link>

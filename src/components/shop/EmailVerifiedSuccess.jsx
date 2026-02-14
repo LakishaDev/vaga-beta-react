@@ -16,7 +16,7 @@ export default function EmailVerifiedSuccess({ email }) {
       animate={{ scale: 1, opacity: 1, y: 0 }}
       exit={{ scale: 0.95, opacity: 0, y: -30 }}
       transition={{ duration: 0.6, ease: "easeOut" }}
-      className="relative rounded-3xl bg-gradient-to-tr from-green-100 via-white to-blue-50 shadow-2xl border-bluegreen border-2 p-8 sm:p-10 flex flex-col items-center justify-center gap-4 mb-10 overflow-hidden"
+      className="relative rounded-3xl bg-gradient-to-tr from-success/20 via-white to-brand-accent/20 shadow-2xl border-brand-secondary border-2 p-8 sm:p-10 flex flex-col items-center justify-center gap-4 mb-10 overflow-hidden"
     >
       {/* Sparkle animation layer */}
       <motion.div
@@ -41,7 +41,7 @@ export default function EmailVerifiedSuccess({ email }) {
         initial={{ scale: 0.8, rotate: -8, opacity: 0 }}
         animate={{ scale: 1, rotate: 0, opacity: 1 }}
         transition={{ duration: 0.7, delay: 0.2 }}
-        className="bg-gradient-to-tr from-green-500 to-bluegreen rounded-full p-5 shadow-xl mb-3 animate-bounce"
+        className="bg-gradient-to-tr from-success to-brand-secondary rounded-full p-5 shadow-xl mb-3 animate-bounce"
       >
         <ShieldCheck size={54} className="text-white drop-shadow-2xl" />
       </motion.div>
@@ -49,9 +49,9 @@ export default function EmailVerifiedSuccess({ email }) {
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.4, delay: 0.32 }}
-        className="text-bluegreen text-2xl sm:text-3xl font-extrabold text-center mb-1 flex items-center gap-2"
+        className="text-brand-secondary text-2xl sm:text-3xl font-extrabold text-center mb-1 flex items-center gap-2"
       >
-        <Mail size={28} className="text-bluegreen" />
+        <Mail size={28} className="text-brand-secondary" />
         Email uspešno verifikovan!
       </motion.h2>
       <p className="text-gray-700 mb-1 text-center text-base sm:text-lg font-medium">

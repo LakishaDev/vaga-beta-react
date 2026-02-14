@@ -9,7 +9,7 @@
 // - fit: "cover" (default) ili "contain" za object-fit stil
 // Koristi useState za praćenje stanja učitavanja slike
 // Koristi Tailwind CSS za stilizaciju i animacije
-import { useState } from "react";
+import React, { useState } from "react";
 
 // Modern, aspect-safe ProgressiveImage
 export default function ProgressiveImage({
@@ -42,15 +42,15 @@ export default function ProgressiveImage({
               ? "blur-2xl grayscale scale-105 opacity-30"
               : "blur-0 scale-100 opacity-100 shadow-lg animate-imgfadein"
           }
-          group-focus:ring-2 group-focus:ring-bluegreen
+          group-focus:ring-2 group-focus:ring-brand-secondary
         `}
         style={{ width: "100%", height: "100%", backfaceVisibility: "hidden" }}
         onLoad={() => setLoading(false)}
       />
       {loading && (
-        <div className="absolute inset-0 flex items-center justify-center z-10 bg-gradient-to-br from-white/30 via-bluegreen/10 to-blue-100/20">
+        <div className="absolute inset-0 flex items-center justify-center z-10 bg-gradient-to-br from-white/30 via-brand-secondary/10 to-blue-100/20">
           <div
-            className="w-12 h-12 sm:w-16 sm:h-16 border-[4px] border-t-bluegreen border-l-bluegreen/70 border-b-blue-300 border-r-transparent rounded-full
+            className="w-12 h-12 sm:w-16 sm:h-16 border-[4px] border-t-brand-secondary border-l-brand-secondary/70 border-b-blue-300 border-r-transparent rounded-full
             animate-spin bg-white/30 shadow-2xl"
           />
         </div>

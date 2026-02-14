@@ -82,7 +82,7 @@ export default function AdminOrders() {
 
     const q = query(
       collection(db, "orders"),
-      firestoreOrderBy("createdAt", sort === "desc" ? "desc" : "asc")
+      firestoreOrderBy("createdAt", sort === "desc" ? "desc" : "asc"),
     );
     const unsubscribe = onSnapshot(
       q,
@@ -117,7 +117,7 @@ export default function AdminOrders() {
       (error) => {
         showSnackbar("Greška pri učitavanju narudžbina.", "error");
         setOrdersLoading(false);
-      }
+      },
     );
 
     return () => unsubscribe();
@@ -155,7 +155,7 @@ export default function AdminOrders() {
   const pagesTotal = Math.ceil(orders.length / ORDERS_PER_PAGE);
   const pagedOrders = orders.slice(
     (page - 1) * ORDERS_PER_PAGE,
-    page * ORDERS_PER_PAGE
+    page * ORDERS_PER_PAGE,
   );
 
   // Animacija paging-a
@@ -168,8 +168,8 @@ export default function AdminOrders() {
     try {
       setOrders((prevOrders) =>
         prevOrders.map((order) =>
-          order.id === orderId ? { ...order, status } : order
-        )
+          order.id === orderId ? { ...order, status } : order,
+        ),
       );
       if (selectedOrder && selectedOrder.id === orderId) {
         setSelectedOrder((prev) => ({ ...prev, status }));
@@ -239,15 +239,15 @@ export default function AdminOrders() {
 
   const Loader = (
     <div className="flex justify-center items-center py-20">
-      <div className="w-16 h-16 border-4 border-bluegreen border-t-transparent rounded-full animate-spin"></div>
+      <div className="w-16 h-16 border-4 border-brand-primary border-t-transparent rounded-full animate-spin"></div>
     </div>
   );
 
   if (allowed === null) return Loader;
   if (allowed === false)
     return (
-      <div className="min-h-screen flex items-center justify-center bg-red-50">
-        <div className="text-red-700 font-extrabold text-2xl p-7 rounded-xl shadow bg-white">
+      <div className="min-h-screen flex items-center justify-center bg-error/5">
+        <div className="text-error font-extrabold text-2xl p-7 rounded-xl shadow bg-neutral-surface border border-error/20">
           Pristup odbijen
         </div>
       </div>
@@ -256,20 +256,20 @@ export default function AdminOrders() {
   return (
     <>
       <div className="max-w-7xl mx-auto w-full p-3 sm:p-8 pt-12">
-        <h2 className="text-4xl font-black text-center text-charcoal mb-6 tracking-tight">
-          <FaTruck className="inline-block mr-2 mb-1 text-bluegreen" />
+        <h2 className="text-4xl font-black text-center text-text-primary mb-6 tracking-tight">
+          <FaTruck className="inline-block mr-2 mb-1 text-brand-primary" />
           Administracija narudžbina
         </h2>
 
         {/* Sort/paginacija */}
         <div className="flex items-center justify-between mb-5 flex-wrap gap-3">
           <div className="flex gap-2 items-center">
-            <span className="font-semibold text-charcoal">Sortiraj:</span>
+            <span className="font-semibold text-text-primary">Sortiraj:</span>
             <button
               className={`px-3 py-1 rounded-lg text-sm font-semibold transition ${
                 sort === "desc"
-                  ? "bg-bluegreen text-white"
-                  : "bg-gray-100 text-gray-700"
+                  ? "bg-brand-primary text-white"
+                  : "bg-neutral-bg text-text-secondary"
               }`}
               onClick={() => {
                 setSort("desc");
@@ -281,8 +281,8 @@ export default function AdminOrders() {
             <button
               className={`px-3 py-1 rounded-lg text-sm font-semibold transition ${
                 sort === "asc"
-                  ? "bg-bluegreen text-white"
-                  : "bg-gray-100 text-gray-700"
+                  ? "bg-brand-primary text-white"
+                  : "bg-neutral-bg text-text-secondary"
               }`}
               onClick={() => {
                 setSort("asc");
@@ -300,8 +300,8 @@ export default function AdminOrders() {
                 onClick={() => setPage(pg)}
                 className={`rounded px-2 py-1 font-bold transition ${
                   page === pg
-                    ? "bg-bluegreen text-white"
-                    : "bg-gray-100 text-charcoal hover:bg-bluegreen/20"
+                    ? "bg-brand-primary text-white"
+                    : "bg-neutral-bg text-text-primary hover:bg-brand-secondary/20"
                 }`}
               >
                 {pg}
@@ -311,32 +311,32 @@ export default function AdminOrders() {
         </div>
 
         {/* --- Desktop tabela --- */}
-        <div className="hidden md:block overflow-hidden rounded-xl shadow-2xl border border-gray-200 bg-white animate-fade-up">
+        <div className="hidden md:block overflow-hidden rounded-xl shadow-2xl border border-neutral-border bg-neutral-surface animate-fade-up">
           {ordersLoading ? (
             Loader
           ) : (
             <table className="min-w-full divide-y divide-gray-200">
-              <thead className="bg-bluegreen/10">
+              <thead className="bg-brand-secondary/10">
                 <tr>
-                  <th className="py-3 px-4 text-left text-sm font-bold text-charcoal">
+                  <th className="py-3 px-4 text-left text-sm font-bold text-text-primary">
                     <FaUserCircle className="inline mb-1 mr-1" />
                     Kupac
                   </th>
-                  <th className="py-3 px-4 text-left text-sm font-bold text-charcoal">
+                  <th className="py-3 px-4 text-left text-sm font-bold text-text-primary">
                     <FaEnvelope className="inline mb-1 mr-1" />
                     Email
                   </th>
-                  <th className="py-3 px-4 text-left text-sm font-bold text-charcoal">
+                  <th className="py-3 px-4 text-left text-sm font-bold text-text-primary">
                     <FaHome className="inline mb-1 mr-1" />
                     Adresa
                   </th>
-                  <th className="py-3 px-4 text-left text-sm font-bold text-charcoal">
+                  <th className="py-3 px-4 text-left text-sm font-bold text-text-primary">
                     Tip
                   </th>
-                  <th className="py-3 px-4 text-left text-sm font-bold text-charcoal">
+                  <th className="py-3 px-4 text-left text-sm font-bold text-text-primary">
                     Status
                   </th>
-                  <th className="py-3 px-4 text-center text-sm font-bold text-charcoal">
+                  <th className="py-3 px-4 text-center text-sm font-bold text-text-primary">
                     Akcija
                   </th>
                 </tr>
@@ -391,7 +391,7 @@ export default function AdminOrders() {
                             duration: 0.7,
                             stiffness: 120,
                           }}
-                          className="hover:bg-bluegreen/10 transition cursor-pointer relative"
+                          className="hover:bg-brand-secondary/10 transition cursor-pointer relative"
                           onClick={() => setSelectedOrder(order)}
                         >
                           <td className="px-4 py-3 font-semibold relative">
@@ -527,8 +527,8 @@ export default function AdminOrders() {
                     style={{ willChange: "opacity, transform" }}
                     className={`bg-white rounded-2xl shadow-xl p-4 flex flex-col gap-3 ring-1 hover:scale-[1.03] hover:shadow-2xl cursor-pointer transition-all relative ${
                       isNew
-                        ? "ring-2 ring-bluegreen bg-gradient-to-br from-cyan-50 to-white"
-                        : "ring-bluegreen/10"
+                        ? "ring-2 ring-brand-secondary bg-gradient-to-br from-brand-accent/15 to-white"
+                        : "ring-brand-secondary/10"
                     }`}
                     onClick={() => setSelectedOrder(order)}
                   >
@@ -543,7 +543,7 @@ export default function AdminOrders() {
                     )}
 
                     <div className="flex gap-2 items-center">
-                      <FaUserCircle className="text-bluegreen" />
+                      <FaUserCircle className="text-brand-secondary" />
                       <span className="font-bold">
                         {order.ime} {order.prezime}
                       </span>
@@ -557,7 +557,7 @@ export default function AdminOrders() {
                     <StatusBadge status={order.status} />
                     <div className="flex items-center gap-2 justify-end mt-2">
                       {order.cart?.length && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-bluegreen/10 text-bluegreen text-xs rounded font-bold">
+                        <span className="inline-flex items-center gap-1 px-2 py-1 bg-brand-accent/20 text-brand-secondary text-xs rounded font-bold">
                           <FaBoxes /> Proizvoda: {order.cart.length}
                         </span>
                       )}
@@ -627,11 +627,11 @@ export default function AdminOrders() {
                 animate={{ scale: 1, opacity: 1, y: 0 }}
                 exit={{ scale: 0.9, opacity: 0, y: 20 }}
                 transition={{ type: "spring", damping: 25, stiffness: 300 }}
-                className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-4xl p-7 mx-auto overflow-y-auto max-h-[90vh] border border-bluegreen/30"
+                className="relative bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl w-full max-w-4xl p-7 mx-auto overflow-y-auto max-h-[90vh] border border-brand-secondary/30"
                 onClick={(e) => e.stopPropagation()}
               >
                 <button
-                  className="absolute right-3 top-3 text-bluegreen bg-white/50 rounded-full p-2 hover:bg-bluegreen/20 transition shadow z-10"
+                  className="absolute right-3 top-3 text-brand-secondary bg-white/50 rounded-full p-2 hover:bg-brand-accent/20 transition shadow z-10"
                   onClick={() => setSelectedOrder(null)}
                 >
                   <FaTimes size={20} />
@@ -639,7 +639,7 @@ export default function AdminOrders() {
                 <motion.h3
                   initial={{ x: -20, opacity: 0 }}
                   animate={{ x: 0, opacity: 1 }}
-                  className="text-2xl font-bold text-bluegreen mb-4 flex items-center gap-2"
+                  className="text-2xl font-bold text-brand-secondary mb-4 flex items-center gap-2"
                 >
                   <FaTruck /> Detalji porudžbine - Admin Pregled
                 </motion.h3>
@@ -652,7 +652,7 @@ export default function AdminOrders() {
                     transition={{ delay: 0.1 }}
                     className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-2xl p-5 border border-blue-200/50 backdrop-blur-sm"
                   >
-                    <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-bluegreen">
+                    <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-brand-secondary">
                       <FaUserCircle /> Informacije o kupcu
                     </h4>
                     <div className="space-y-2 text-sm">
@@ -751,7 +751,7 @@ export default function AdminOrders() {
                   transition={{ delay: 0.3 }}
                   className="mt-6"
                 >
-                  <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-charcoal">
+                  <h4 className="font-bold text-lg mb-3 flex items-center gap-2 text-text-primary">
                     <FaBoxes /> Poručeni proizvodi
                   </h4>
                   <div className="space-y-3 max-h-[40vh] overflow-y-auto pr-2">
@@ -777,7 +777,7 @@ export default function AdminOrders() {
                             />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <div className="font-bold text-bluegreen flex items-center gap-2 flex-wrap">
+                            <div className="font-bold text-brand-secondary flex items-center gap-2 flex-wrap">
                               {prod.name}
                               {isHidden && (
                                 <span className="text-xs bg-orange-200 text-orange-800 px-2 py-1 rounded-full font-semibold flex items-center gap-1">

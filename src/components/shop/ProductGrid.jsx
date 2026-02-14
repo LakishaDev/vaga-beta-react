@@ -37,7 +37,7 @@ import {
 const MemoizedProductItem = memo(({ product, isNew, priceChanged }) => {
   const [showNewBadge, setShowNewBadge] = useState(isNew);
   const [animatePrice, setAnimatePrice] = useState(false);
-  
+
   useEffect(() => {
     if (isNew) {
       setShowNewBadge(true);
@@ -45,7 +45,7 @@ const MemoizedProductItem = memo(({ product, isNew, priceChanged }) => {
       return () => clearTimeout(timer);
     }
   }, [isNew]);
-  
+
   useEffect(() => {
     if (priceChanged) {
       setAnimatePrice(true);
@@ -58,11 +58,11 @@ const MemoizedProductItem = memo(({ product, isNew, priceChanged }) => {
     <motion.div
       initial={isNew ? { opacity: 0, scale: 0.8, y: 20 } : false}
       animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ 
-        duration: 0.5, 
+      transition={{
+        duration: 0.5,
         ease: [0.34, 1.56, 0.64, 1],
         type: "spring",
-        stiffness: 100
+        stiffness: 100,
       }}
       layout
       className="relative"
@@ -146,82 +146,87 @@ export default function ProductGrid() {
   // Real-time listener with onSnapshot for products
   useEffect(() => {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const newIds = new Set();
-      const priceChangedIds = new Set();
-      
-      // Detect new products and price changes (only for non-initial loads)
-      if (!initialLoadRef.current) {
-        snapshot.docChanges().forEach((change) => {
-          if (change.type === "added") {
-            newIds.add(change.doc.id);
-          } else if (change.type === "modified") {
-            const docId = change.doc.id;
-            const newData = change.doc.data();
-            const newPrice = newData.price || newData.hiddenPrice || 0;
-            const oldPrice = previousPricesRef.current[docId];
-            
-            if (oldPrice !== undefined && oldPrice !== newPrice) {
-              priceChangedIds.add(docId);
-            }
-          }
-        });
-      }
-      
-      let arr = snapshot.docs
-        .map((doc) => ({
-          id: doc.id,
-          ...doc.data(),
-        }))
-        .map(addDiscountInfo);
-      
-      // Store current prices for next comparison
-      arr.forEach((product) => {
-        previousPricesRef.current[product.id] = product.price || product.hiddenPrice || 0;
-      });
-      
-      setProducts(arr);
-      
-      // Mark new products for animation
-      if (newIds.size > 0) {
-        setNewProductIds(newIds);
-        // Clear the new product markers after animation completes
-        setTimeout(() => setNewProductIds(new Set()), 3000);
-      }
-      
-      // Mark products with changed prices for animation
-      if (priceChangedIds.size > 0) {
-        setChangedPriceIds(priceChangedIds);
-        setTimeout(() => setChangedPriceIds(new Set()), 500);
-      }
-      
-      const kats = Array.from(
-        new Set(arr.map((p) => p.category).filter(Boolean))
-      ).sort((a, b) => a.localeCompare(b, "sr", { numeric: true }));
-      setCategories(kats);
 
-      const prices = arr
-        .map((p) =>
-          p.price !== null && p.price !== undefined
-            ? p.price
-            : p.hiddenPrice !== null && p.hiddenPrice !== undefined
-            ? p.hiddenPrice
-            : null
-        )
-        .filter(Number);
-      
-      if (prices.length > 0) {
-        setMinPrice(Math.min(...prices));
-        setMaxPrice(Math.max(...prices));
-        setPriceRange([Math.min(...prices), Math.max(...prices)]);
-      }
-      
-      // Mark initial load as complete
-      initialLoadRef.current = false;
-    }, (error) => {
-      console.error("Error fetching products:", error);
-    });
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const newIds = new Set();
+        const priceChangedIds = new Set();
+
+        // Detect new products and price changes (only for non-initial loads)
+        if (!initialLoadRef.current) {
+          snapshot.docChanges().forEach((change) => {
+            if (change.type === "added") {
+              newIds.add(change.doc.id);
+            } else if (change.type === "modified") {
+              const docId = change.doc.id;
+              const newData = change.doc.data();
+              const newPrice = newData.price || newData.hiddenPrice || 0;
+              const oldPrice = previousPricesRef.current[docId];
+
+              if (oldPrice !== undefined && oldPrice !== newPrice) {
+                priceChangedIds.add(docId);
+              }
+            }
+          });
+        }
+
+        let arr = snapshot.docs
+          .map((doc) => ({
+            id: doc.id,
+            ...doc.data(),
+          }))
+          .map(addDiscountInfo);
+
+        // Store current prices for next comparison
+        arr.forEach((product) => {
+          previousPricesRef.current[product.id] =
+            product.price || product.hiddenPrice || 0;
+        });
+
+        setProducts(arr);
+
+        // Mark new products for animation
+        if (newIds.size > 0) {
+          setNewProductIds(newIds);
+          // Clear the new product markers after animation completes
+          setTimeout(() => setNewProductIds(new Set()), 3000);
+        }
+
+        // Mark products with changed prices for animation
+        if (priceChangedIds.size > 0) {
+          setChangedPriceIds(priceChangedIds);
+          setTimeout(() => setChangedPriceIds(new Set()), 500);
+        }
+
+        const kats = Array.from(
+          new Set(arr.map((p) => p.category).filter(Boolean)),
+        ).sort((a, b) => a.localeCompare(b, "sr", { numeric: true }));
+        setCategories(kats);
+
+        const prices = arr
+          .map((p) =>
+            p.price !== null && p.price !== undefined
+              ? p.price
+              : p.hiddenPrice !== null && p.hiddenPrice !== undefined
+                ? p.hiddenPrice
+                : null,
+          )
+          .filter(Number);
+
+        if (prices.length > 0) {
+          setMinPrice(Math.min(...prices));
+          setMaxPrice(Math.max(...prices));
+          setPriceRange([Math.min(...prices), Math.max(...prices)]);
+        }
+
+        // Mark initial load as complete
+        initialLoadRef.current = false;
+      },
+      (error) => {
+        console.error("Error fetching products:", error);
+      },
+    );
 
     // Cleanup listener on unmount
     return () => unsubscribe();
@@ -232,8 +237,8 @@ export default function ProductGrid() {
     return product.price !== null && product.price !== undefined
       ? product.price
       : product.hiddenPrice !== null && product.hiddenPrice !== undefined
-      ? product.hiddenPrice
-      : 0;
+        ? product.hiddenPrice
+        : 0;
   }, []);
 
   const filteredProducts = useMemo(() => {
@@ -243,7 +248,7 @@ export default function ProductGrid() {
           selectedCategories.includes(p.category)) &&
         getEffectivePrice(p) >= priceRange[0] &&
         getEffectivePrice(p) <= priceRange[1] &&
-        p.name.toLowerCase().includes(search.toLowerCase())
+        p.name.toLowerCase().includes(search.toLowerCase()),
     );
   }, [products, selectedCategories, priceRange, search, getEffectivePrice]);
 
@@ -280,7 +285,7 @@ export default function ProductGrid() {
     setSelectedCategories((prev) =>
       prev.includes(category)
         ? prev.filter((cat) => cat !== category)
-        : [...prev, category]
+        : [...prev, category],
     );
   }, []);
 
@@ -297,21 +302,20 @@ export default function ProductGrid() {
 
   return (
     <div
-      className="max-w-7xl mx-auto px-2 sm:px-4 py-4 sm:py-8 font-sans"
+      className="w-full px-4 sm:px-8 md:px-16 py-6 sm:py-8 font-sans bg-neutral-bg"
       style={{ fontFamily: "'Geist','Inter',sans-serif" }}
     >
       {/* Collapsible dizajn header */}
       <div
-        className="mb-6 sm:mb-8 bg-white/95 backdrop-blur rounded-2xl shadow-xl w-full"
+        className="mb-6 sm:mb-8 bg-white/95 backdrop-blur rounded-2xl border border-neutral-border shadow-xl w-full"
         style={{ overflow: "visible" }}
       >
         <button
-          className={`flex justify-between items-center w-full bg-gradient-to-r from-bluegreen to-midnight text-white px-4 sm:px-7 py-4 sm:py-5 ${
+          className={`flex justify-between items-center w-full bg-gradient-to-r from-brand-primary to-brand-secondary text-white px-4 sm:px-7 py-4 sm:py-5 ${
             filtersOpen ? "rounded-t-2xl" : "rounded-2xl"
           } shadow font-bold text-xl sm:text-2xl tracking-wide uppercase`}
           onClick={() => setFiltersOpen((open) => !open)}
           style={{
-            borderBottom: "1px solid #e5e7eb",
             fontFamily: "'Geist','Inter',sans-serif",
           }}
         >
@@ -337,7 +341,7 @@ export default function ProductGrid() {
             <form className="flex flex-col gap-5 w-full sm:grid sm:grid-cols-2 sm:grid-rows-2 sm:gap-7 items-start animate-fadein">
               {/* Pretraga */}
               <div className="flex flex-col gap-2 w-full order-1">
-                <label className="text-charcoal font-semibold text-sm flex items-center gap-2">
+                <label className="text-text-primary font-semibold text-sm flex items-center gap-2">
                   <Search size={18} /> Pretraži
                 </label>
                 <input
@@ -345,7 +349,7 @@ export default function ProductGrid() {
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
                   placeholder="Pretraga po imenu proizvoda..."
-                  className="border-bone border rounded-xl py-2 px-4 bg-bone/40 shadow focus:ring focus:ring-bluegreen text-base w-full font-medium transition-all"
+                  className="border-neutral-border border rounded-xl py-2 px-4 bg-neutral-100/70 shadow focus:ring focus:ring-brand-secondary text-base w-full font-medium transition-all"
                 />
               </div>
               {/* Kategorije */}
@@ -353,12 +357,12 @@ export default function ProductGrid() {
                 className="relative flex flex-col gap-2 w-full order-2"
                 ref={dropdownRef}
               >
-                <label className="text-charcoal font-semibold text-sm flex gap-2 items-center">
+                <label className="text-text-primary font-semibold text-sm flex gap-2 items-center">
                   <BadgePercent size={18} /> Kategorije
                 </label>
                 <button
                   type="button"
-                  className="border rounded-xl px-5 py-2 bg-bone text-charcoal w-full text-left shadow hover:bg-bluegreen/10 transition flex justify-between items-center text-base font-semibold"
+                  className="border border-neutral-border rounded-xl px-5 py-2 bg-neutral-100 text-text-primary w-full text-left shadow hover:bg-brand-accent/10 transition flex justify-between items-center text-base font-semibold"
                   onClick={() => setDropdownOpen((open) => !open)}
                 >
                   <span className="truncate mr-2">
@@ -389,13 +393,13 @@ export default function ProductGrid() {
                     {categories.map((cat) => (
                       <label
                         key={cat}
-                        className="flex items-center px-2 py-2 rounded cursor-pointer hover:bg-bluegreen/10 font-semibold text-base transition"
+                        className="flex items-center px-2 py-2 rounded cursor-pointer hover:bg-brand-accent/10 font-semibold text-base transition"
                       >
                         <input
                           type="checkbox"
                           checked={selectedCategories.includes(cat)}
                           onChange={() => handleCategoryChange(cat)}
-                          className="mr-2 accent-bluegreen h-4 w-4 transition"
+                          className="mr-2 accent-brand-secondary h-4 w-4 transition"
                         />
                         <span className="text-gray-700 truncate">{cat}</span>
                       </label>
@@ -417,7 +421,7 @@ export default function ProductGrid() {
               </div>
               {/* Cena */}
               <div className="flex flex-col gap-2 w-full order-3">
-                <label className="text-charcoal font-semibold text-sm flex items-center gap-2">
+                <label className="text-text-primary font-semibold text-sm flex items-center gap-2">
                   <DollarSign size={18} /> Cena ({priceRange[0]} -{" "}
                   {priceRange[1]} RSD)
                 </label>
@@ -431,7 +435,7 @@ export default function ProductGrid() {
                       onChange={(e) =>
                         setPriceRange([Number(e.target.value), priceRange[1]])
                       }
-                      className="accent-bluegreen flex-1 min-w-0"
+                      className="accent-brand-secondary flex-1 min-w-0"
                     />
                     <span className="font-semibold text-xs whitespace-nowrap">
                       {priceRange[0]}
@@ -446,7 +450,7 @@ export default function ProductGrid() {
                       onChange={(e) =>
                         setPriceRange([priceRange[0], Number(e.target.value)])
                       }
-                      className="accent-bluegreen flex-1 min-w-0"
+                      className="accent-brand-secondary flex-1 min-w-0"
                     />
                     <span className="font-semibold text-xs whitespace-nowrap">
                       {priceRange[1]}
@@ -456,12 +460,12 @@ export default function ProductGrid() {
               </div>
               {/* Sortiranje i reset */}
               <div className="flex flex-col gap-2 w-full order-4">
-                <label className="text-charcoal font-semibold text-sm flex items-center gap-2">
+                <label className="text-text-primary font-semibold text-sm flex items-center gap-2">
                   <Package2 size={18} /> Sortiraj
                 </label>
                 <div>
                   <select
-                    className="appearance-none border rounded-xl px-5 py-2 font-semibold shadow focus:ring outline-none bg-bone text-charcoal transition w-full text-base"
+                    className="appearance-none border border-neutral-border rounded-xl px-5 py-2 font-semibold shadow focus:ring outline-none bg-neutral-100 text-text-primary transition w-full text-base"
                     value={sort}
                     onChange={(e) => setSort(e.target.value)}
                   >
@@ -472,7 +476,7 @@ export default function ProductGrid() {
                 </div>
                 <button
                   type="button"
-                  className="px-5 py-2 rounded-xl bg-rust text-white font-bold shadow-md hover:bg-bluegreen w-full transition-colors text-base mt-2 flex items-center justify-center gap-2"
+                  className="px-5 py-2 rounded-xl bg-error text-white font-bold shadow-md hover:bg-brand-primary w-full transition-colors text-base mt-2 flex items-center justify-center gap-2"
                   onClick={handleResetFilters}
                 >
                   <Trash size={18} /> Resetuj sve filtere
@@ -485,25 +489,25 @@ export default function ProductGrid() {
 
       {/* Proizvodi - grid dizajn (responsive, razmak) */}
       <AnimatePresence mode="popLayout">
-        <motion.div 
+        <motion.div
           className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 xl:gap-10"
           layout
         >
           {sortedProducts.length === 0 ? (
-            <motion.div 
+            <motion.div
               key="no-results"
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
-              className="col-span-full text-center text-lg sm:text-xl text-rust mt-8 sm:mt-12 px-4 font-bold"
+              className="col-span-full text-center text-lg sm:text-xl text-error mt-8 sm:mt-12 px-4 font-bold"
             >
               Nema rezultata za zadate filtere.
             </motion.div>
           ) : (
             sortedProducts.map((product) => (
-              <MemoizedProductItem 
-                key={product.id} 
-                product={product} 
+              <MemoizedProductItem
+                key={product.id}
+                product={product}
                 isNew={newProductIds.has(product.id)}
                 priceChanged={changedPriceIds.has(product.id)}
               />

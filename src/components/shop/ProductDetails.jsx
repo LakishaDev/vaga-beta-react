@@ -1,6 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import { Helmet } from "react-helmet-async";
+import * as HelmetAsync from "react-helmet-async";
+const Helmet = HelmetAsync.Helmet || HelmetAsync.default?.Helmet;
 import { db, auth } from "../../utils/firebase";
 import {
   doc,
@@ -268,7 +269,7 @@ export default function ProductDetails() {
 
   if (!product)
     return (
-      <div className="min-h-screen flex items-center justify-center px-3 py-10 bg-gradient-to-br from-sheen/40 to-bluegreen/20">
+      <div className="min-h-screen flex items-center justify-center px-3 py-10 bg-gradient-to-br from-brand-secondary/30 to-brand-accent/20">
         <div
           className="
           flex flex-col md:flex-row items-center w-full max-w-5xl rounded-[2rem] shadow-xl
@@ -286,16 +287,16 @@ export default function ProductDetails() {
             "
             >
               <svg
-                className="mx-auto my-auto block mt-12 opacity-25"
+                className="mx-auto my-auto block mt-12 opacity-25 text-neutral-300"
                 width="64"
                 height="64"
                 fill="none"
                 viewBox="0 0 48 48"
               >
-                <rect width="48" height="48" rx="12" fill="#B3BED4" />
+                <rect width="48" height="48" rx="12" fill="currentColor" />
                 <path
                   d="M15 33h18M24 15v18"
-                  stroke="#253869"
+                  stroke="rgba(30, 62, 73, 0.75)"
                   strokeWidth="2"
                   strokeLinecap="round"
                 />
@@ -366,6 +367,11 @@ export default function ProductDetails() {
       }
     : null;
 
+  const currentUrl =
+    typeof window !== "undefined"
+      ? window.location.href
+      : `https://vagabeta.rs/prodavnica/proizvod/${id}`;
+
   if (productSchema?.aggregateRating === undefined) {
     delete productSchema?.aggregateRating;
   }
@@ -394,7 +400,7 @@ export default function ProductDetails() {
               content={product.images?.[0] || product.imgUrl}
             />
             <meta property="og:type" content="product" />
-            <meta property="og:url" content={window.location.href} />
+            <meta property="og:url" content={currentUrl} />
             <meta name="twitter:card" content="product" />
             <meta name="twitter:title" content={product.name} />
             <meta
@@ -405,7 +411,7 @@ export default function ProductDetails() {
               name="twitter:image"
               content={product.images?.[0] || product.imgUrl}
             />
-            <link rel="canonical" href={window.location.href} />
+            <link rel="canonical" href={currentUrl} />
             <script type="application/ld+json">
               {JSON.stringify(productSchema)}
             </script>
@@ -413,7 +419,7 @@ export default function ProductDetails() {
         )}
       </Helmet>
       <ScrollToTopOnMount offset={0} duration={1.2} delay={100} />
-      <div className="min-h-screen flex flex-col items-center justify-center py-4 px-1 sm:py-8 sm:px-2 animate-pop">
+      <div className="min-h-screen flex flex-col items-center justify-center py-4 px-1 sm:py-8 sm:px-2 animate-pop bg-neutral-bg">
         {/* Image Modal with Zoom */}
         <ImageModal
           isOpen={showImageModal}
@@ -436,11 +442,11 @@ export default function ProductDetails() {
               <Motion.div
                 className={`
             group flex items-center
-            rounded-full bg-white/80 backdrop-blur-md border border-[#bed7ec]/70 shadow
+            rounded-full bg-white/80 backdrop-blur-md border border-brand-accent/70 shadow
             px-1 py-1
             transition-colors
             cursor-pointer
-            hover:bg-blue-50/80 focus:outline-none
+            hover:bg-brand-accent/15 focus:outline-none
             relative overflow-hidden whitespace-nowrap
             min-w-[48px]
             max-h-fit
@@ -465,7 +471,7 @@ export default function ProductDetails() {
                 >
                   {/* Fiksni kružić za ikonu */}
                   <span
-                    className="flex items-center justify-center bg-white/80 border border-[#bed7ec]/60 rounded-full shadow w-10 h-10 transition"
+                    className="flex items-center justify-center bg-white/80 border border-brand-accent/60 rounded-full shadow w-10 h-10 transition"
                     style={{
                       minWidth: 40,
                       minHeight: 40,
@@ -476,12 +482,12 @@ export default function ProductDetails() {
                   >
                     <ArrowLeft
                       size={24}
-                      className="text-blue-700 drop-shadow transition-all"
+                      className="text-brand-primary drop-shadow transition-all"
                     />
                   </span>
                   {/* Animirani tekst na hover */}
                   <Motion.span
-                    className="pl-2 select-none font-semibold text-blue-900 text-lg hidden sm:inline-block"
+                    className="pl-2 select-none font-semibold text-text-primary text-lg hidden sm:inline-block"
                     style={{
                       whiteSpace: "nowrap",
                       display: "inline-block",
@@ -545,7 +551,7 @@ export default function ProductDetails() {
                           prev === 0 ? totalImages - 1 : prev - 1,
                         );
                       }}
-                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
+                      className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-text-primary p-2 rounded-full shadow-lg hover:bg-brand-secondary hover:text-white transition-all border border-brand-secondary/30"
                       style={{ backdropFilter: "blur(10px)" }}
                     >
                       <ChevronLeft size={20} />
@@ -559,7 +565,7 @@ export default function ProductDetails() {
                           prev === totalImages - 1 ? 0 : prev + 1,
                         );
                       }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-[#1E3E49] p-2 rounded-full shadow-lg hover:bg-[#6EAEA2] hover:text-white transition-all border border-[#6EAEA2]/30"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/90 backdrop-blur-md text-text-primary p-2 rounded-full shadow-lg hover:bg-brand-secondary hover:text-white transition-all border border-brand-secondary/30"
                       style={{ backdropFilter: "blur(10px)" }}
                     >
                       <ChevronRight size={20} />
@@ -574,8 +580,8 @@ export default function ProductDetails() {
                             onClick={() => setCurrentImageIndex(idx)}
                             className={`w-2 h-2 rounded-full transition-all ${
                               idx === currentImageIndex
-                                ? "bg-[#6EAEA2] w-6"
-                                : "bg-gray-300 hover:bg-[#6EAEA2]/50"
+                                ? "bg-brand-secondary w-6"
+                                : "bg-gray-300 hover:bg-brand-secondary/50"
                             }`}
                           />
                         ),
@@ -586,22 +592,22 @@ export default function ProductDetails() {
               </div>
 
               <div className="flex gap-2 mt-2">
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#edeef3] text-[#2d334d]">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-text-primary">
                   <Package size={20} />
                 </span>
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#edeef3] text-[#2d334d]">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-text-primary">
                   <Download size={20} />
                 </span>
-                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-[#edeef3] text-[#2d334d]">
+                <span className="inline-flex items-center justify-center w-8 h-8 rounded-full bg-neutral-100 text-text-primary">
                   <Star size={20} />
                 </span>
               </div>
             </div>
             <div className="md:w-1/2 w-full flex flex-col items-center md:items-start justify-center px-2 pt-4 sm:px-6 sm:py-10 gap-2 relative min-h-[340px] pb-5 animate-slidein-right">
-              <h1 className="font-bold text-[1.6rem] sm:text-3xl md:text-4xl text-[#253869] mb-2 leading-tight flex items-center gap-2">
+              <h1 className="font-bold text-[1.6rem] sm:text-3xl md:text-4xl text-text-primary mb-2 leading-tight flex items-center gap-2">
                 {product.name}
               </h1>
-              <div className="text-base sm:text-lg text-[#7c8493] mb-1">
+              <div className="text-base sm:text-lg text-text-muted mb-1">
                 {product.category}
               </div>
               <div className="text-sm sm:text-base text-gray-500 mb-2">
@@ -612,24 +618,24 @@ export default function ProductDetails() {
                 <div className="flex flex-col">
                   {/* Precrtana cena samo ako JE JAVNA cena i popust */}
                   {!hasHiddenPrice && showDiscount && (
-                    <span className="line-through text-rust font-semibold text-base sm:text-lg opacity-60 mb-[2px]">
+                    <span className="line-through text-error font-semibold text-base sm:text-lg opacity-60 mb-[2px]">
                       {formatRSD(product.originalPrice)} RSD
                     </span>
                   )}
                   {/* Prikaz badge-a kada je cena skrivena */}
                   {hasHiddenPrice ? (
-                    <span className="font-bold text-base sm:text-lg md:text-xl text-rust/90 bg-orange-100 px-3 py-1 rounded-xl">
+                    <span className="font-bold text-base sm:text-lg md:text-xl text-error/90 bg-orange-100 px-3 py-1 rounded-xl">
                       Cena na upit
                     </span>
                   ) : (
-                    <span className="font-bold text-lg sm:text-xl md:text-2xl text-[#253869]">
+                    <span className="font-bold text-lg sm:text-xl md:text-2xl text-text-primary">
                       {formatRSD(getDisplayPrice())} RSD
                     </span>
                   )}
                 </div>
               </div>
               <button
-                className="bg-[#253869] text-white font-semibold rounded-xl px-4 sm:px-8 py-2 shadow hover:bg-[#162040] transition flex items-center gap-2 relative overflow-visible"
+                className="bg-text-primary text-white font-semibold rounded-xl px-4 sm:px-8 py-2 shadow hover:bg-brand-primary transition flex items-center gap-2 relative overflow-visible"
                 onClick={handleAddToCart}
                 style={{ position: "relative", zIndex: 10 }}
               >
@@ -638,21 +644,21 @@ export default function ProductDetails() {
                     <span className="cart-anim absolute right-[-32px] sm:right-[-60px] top-[-12px] sm:top-[-18px] z-30">
                       <ShoppingCart
                         size={28}
-                        className="sm:hidden text-[#355aac] drop-shadow-lg"
+                        className="sm:hidden text-brand-primary drop-shadow-lg"
                       />
                       <ShoppingCart
                         size={38}
-                        className="hidden sm:inline text-[#355aac] drop-shadow-lg"
+                        className="hidden sm:inline text-brand-primary drop-shadow-lg"
                       />
                     </span>
                     <span className="add-to-cart-anim absolute left-1/2 -translate-x-1/2 -top-6 sm:-top-7 z-20 pointer-events-none">
                       <Package
                         size={24}
-                        className="sm:hidden text-[#44bb99] drop-shadow-lg"
+                        className="sm:hidden text-brand-secondary drop-shadow-lg"
                       />
                       <Package
                         size={32}
-                        className="hidden sm:inline text-[#44bb99] drop-shadow-lg"
+                        className="hidden sm:inline text-brand-secondary drop-shadow-lg"
                       />
                     </span>
                   </>
@@ -661,8 +667,8 @@ export default function ProductDetails() {
               </button>
               <div className="flex items-center gap-3 mb-1 mt-1">
                 <span className="text-sm text-gray-600 font-medium">Boja:</span>
-                <span className="inline-block w-5 h-5 bg-[#232221] rounded-full border border-gray-300"></span>
-                <span className="inline-block w-5 h-5 bg-[#ededed] rounded-full border border-gray-300"></span>
+                <span className="inline-block w-5 h-5 bg-text-primary rounded-full border border-gray-300"></span>
+                <span className="inline-block w-5 h-5 bg-neutral-100 rounded-full border border-gray-300"></span>
               </div>
               {/* Features & Downloads with glassmorphism */}
               <div className="w-full space-y-3 mt-4">
@@ -674,13 +680,13 @@ export default function ProductDetails() {
                     transition={{ delay: 0.2 }}
                     className="p-4 rounded-xl backdrop-blur-md border shadow-lg"
                     style={{
-                      background: "rgba(110, 174, 162, 0.1)",
+                      background: "rgba(145, 206, 193, 0.12)",
                       backdropFilter: "blur(10px)",
-                      border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                      border: "1.5px solid rgba(145, 206, 193, 0.3)",
                     }}
                   >
-                    <h3 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2 text-base">
-                      <FiPackage className="text-[#6EAEA2]" size={20} />
+                    <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2 text-base">
+                      <FiPackage className="text-brand-secondary" size={20} />
                       Karakteristike
                     </h3>
                     <div className="space-y-2">
@@ -690,12 +696,12 @@ export default function ProductDetails() {
                           initial={{ opacity: 0, x: -20 }}
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.3 + idx * 0.1 }}
-                          className="flex justify-between items-center p-2 rounded-lg bg-white/40 backdrop-blur-sm border border-[#6EAEA2]/20"
+                          className="flex justify-between items-center p-2 rounded-lg bg-white/40 backdrop-blur-sm border border-brand-secondary/20"
                         >
-                          <span className="text-sm font-semibold text-[#1E3E49]">
+                          <span className="text-sm font-semibold text-text-primary">
                             {feature.label}:
                           </span>
-                          <span className="text-sm text-[#2F5363]">
+                          <span className="text-sm text-text-muted">
                             {feature.value}
                           </span>
                         </Motion.div>
@@ -712,13 +718,13 @@ export default function ProductDetails() {
                     transition={{ delay: 0.3 }}
                     className="p-4 rounded-xl backdrop-blur-md border shadow-lg"
                     style={{
-                      background: "rgba(30, 62, 73, 0.08)",
+                      background: "rgba(30, 62, 73, 0.06)",
                       backdropFilter: "blur(10px)",
-                      border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                      border: "1.5px solid rgba(145, 206, 193, 0.3)",
                     }}
                   >
-                    <h3 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2 text-base">
-                      <FiDownload className="text-[#6EAEA2]" size={20} />
+                    <h3 className="font-bold text-text-primary mb-3 flex items-center gap-2 text-base">
+                      <FiDownload className="text-brand-secondary" size={20} />
                       Preuzimanja
                     </h3>
                     <div className="space-y-2">
@@ -733,21 +739,21 @@ export default function ProductDetails() {
                           animate={{ opacity: 1, x: 0 }}
                           transition={{ delay: 0.4 + idx * 0.1 }}
                           whileHover={{ scale: 1.02, x: 5 }}
-                          className="flex items-center gap-3 p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-[#6EAEA2]/30 hover:bg-[#91CEC1]/20 hover:border-[#6EAEA2] transition-all cursor-pointer group"
+                          className="flex items-center gap-3 p-3 rounded-lg bg-white/50 backdrop-blur-sm border border-brand-secondary/30 hover:bg-brand-accent/20 hover:border-brand-secondary transition-all cursor-pointer group"
                         >
-                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-[#6EAEA2]/20 group-hover:bg-[#6EAEA2] transition-all">
+                          <div className="flex items-center justify-center w-10 h-10 rounded-full bg-brand-secondary/20 group-hover:bg-brand-secondary transition-all">
                             <FiDownload
-                              className="text-[#1E3E49] group-hover:text-white transition-all"
+                              className="text-text-primary group-hover:text-white transition-all"
                               size={18}
                             />
                           </div>
                           <div className="flex-1">
-                            <span className="text-sm font-medium text-[#1E3E49] group-hover:text-[#6EAEA2] transition-all">
+                            <span className="text-sm font-medium text-text-primary group-hover:text-brand-secondary transition-all">
                               {datasheet.name}
                             </span>
                           </div>
                           <ChevronRight
-                            className="text-[#6EAEA2] group-hover:translate-x-1 transition-transform"
+                            className="text-brand-secondary group-hover:translate-x-1 transition-transform"
                             size={18}
                           />
                         </Motion.a>
@@ -769,11 +775,11 @@ export default function ProductDetails() {
               style={{
                 background: "rgba(37, 56, 105, 0.06)",
                 backdropFilter: "blur(10px)",
-                border: "1.5px solid rgba(110, 174, 162, 0.3)",
+                border: "1.5px solid rgba(145, 206, 193, 0.3)",
               }}
             >
-              <h3 className="font-bold text-[#1E3E49] mb-4 flex items-center gap-2 text-base">
-                <FileCode className="text-[#6EAEA2]" size={20} />
+              <h3 className="font-bold text-text-primary mb-4 flex items-center gap-2 text-base">
+                <FileCode className="text-brand-secondary" size={20} />
                 Dokumentacija
               </h3>
               <div className="space-y-6">
@@ -806,15 +812,15 @@ export default function ProductDetails() {
                 exit={{ scale: 0.9, y: 20 }}
                 transition={{ type: "spring", damping: 25 }}
                 onClick={(e) => e.stopPropagation()}
-                className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border-2 border-[#6EAEA2]/30"
+                className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl p-6 sm:p-8 max-w-lg w-full border-2 border-brand-secondary/30"
                 style={{
                   background: "rgba(255, 255, 255, 0.95)",
                   backdropFilter: "blur(20px)",
                 }}
               >
                 <div className="flex items-center justify-between mb-6">
-                  <h3 className="text-2xl font-bold text-[#253869] flex items-center gap-2">
-                    <MessageCircle size={28} className="text-[#6EAEA2]" />
+                  <h3 className="text-2xl font-bold text-text-primary flex items-center gap-2">
+                    <MessageCircle size={28} className="text-brand-secondary" />
                     Nova recenzija
                   </h3>
                   <Motion.button
@@ -829,7 +835,7 @@ export default function ProductDetails() {
 
                 <form onSubmit={handleReview} className="space-y-5">
                   <div>
-                    <label className="block text-sm font-semibold text-[#253869] mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Ocena
                     </label>
                     <div className="flex gap-2 items-center">
@@ -849,14 +855,14 @@ export default function ProductDetails() {
                           )}
                         </Motion.button>
                       ))}
-                      <span className="ml-2 text-lg font-semibold text-[#253869]">
+                      <span className="ml-2 text-lg font-semibold text-text-primary">
                         {rating}/5
                       </span>
                     </div>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-semibold text-[#253869] mb-2">
+                    <label className="block text-sm font-semibold text-text-primary mb-2">
                       Vaša recenzija
                     </label>
                     <textarea
@@ -864,7 +870,7 @@ export default function ProductDetails() {
                       onChange={(e) => setReview(e.target.value)}
                       placeholder="Podelite vaše iskustvo sa ovim proizvodom..."
                       rows={4}
-                      className="w-full border-2 border-[#6EAEA2]/30 bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 text-gray-800 transition-all focus:border-[#6EAEA2] focus:shadow-lg focus:outline-none resize-none"
+                      className="w-full border-2 border-brand-secondary/30 bg-white/80 backdrop-blur-sm rounded-xl px-4 py-3 text-gray-800 transition-all focus:border-brand-secondary focus:shadow-lg focus:outline-none resize-none"
                     />
                   </div>
 
@@ -882,7 +888,7 @@ export default function ProductDetails() {
                       type="submit"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
-                      className="flex-1 bg-gradient-to-r from-[#6EAEA2] to-[#5A9D92] text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
+                      className="flex-1 bg-gradient-to-r from-brand-secondary to-brand-primary text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all"
                     >
                       Objavi
                     </Motion.button>
@@ -902,13 +908,13 @@ export default function ProductDetails() {
           style={{
             background: "rgba(255, 255, 255, 0.7)",
             backdropFilter: "blur(20px)",
-            border: "2px solid rgba(110, 174, 162, 0.3)",
-            boxShadow: "0 8px 32px rgba(110, 174, 162, 0.15)",
+            border: "2px solid rgba(145, 206, 193, 0.3)",
+            boxShadow: "0 8px 32px rgba(145, 206, 193, 0.15)",
           }}
         >
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-bold text-2xl sm:text-3xl text-[#253869] flex items-center gap-2">
-              <MessageCircle size={28} className="text-[#6EAEA2]" />
+            <h3 className="font-bold text-2xl sm:text-3xl text-text-primary flex items-center gap-2">
+              <MessageCircle size={28} className="text-brand-secondary" />
               Recenzije
               {reviews.length > 0 && (
                 <span className="text-lg text-gray-500">
@@ -920,7 +926,7 @@ export default function ProductDetails() {
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={openReviewModal}
-              className="bg-gradient-to-r from-[#6EAEA2] to-[#5A9D92] text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
+              className="bg-gradient-to-r from-brand-secondary to-brand-primary text-white px-4 sm:px-6 py-2 sm:py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all flex items-center gap-2"
             >
               <MessageCircle size={18} />
               <span className="hidden sm:inline">Dodaj recenziju</span>
@@ -953,7 +959,7 @@ export default function ProductDetails() {
                     style={{
                       background: "rgba(255, 255, 255, 0.6)",
                       backdropFilter: "blur(15px)",
-                      border: "2px solid rgba(110, 174, 162, 0.2)",
+                      border: "2px solid rgba(145, 206, 193, 0.2)",
                     }}
                   >
                     <div className="flex items-start gap-4">
@@ -963,10 +969,10 @@ export default function ProductDetails() {
                           <img
                             src={r.userPhoto}
                             alt={r.userName}
-                            className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-[#6EAEA2]/50 object-cover shadow-md"
+                            className="w-12 h-12 sm:w-14 sm:h-14 rounded-full border-2 border-brand-secondary/50 object-cover shadow-md"
                           />
                         ) : (
-                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-[#6EAEA2] to-[#5A9D92] flex items-center justify-center border-2 border-[#6EAEA2]/50 shadow-md">
+                          <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-full bg-gradient-to-br from-brand-secondary to-brand-primary flex items-center justify-center border-2 border-brand-secondary/50 shadow-md">
                             <FaUserCircle size={28} className="text-white" />
                           </div>
                         )}
@@ -976,7 +982,7 @@ export default function ProductDetails() {
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <div className="flex-1">
-                            <h4 className="font-bold text-[#253869] text-base sm:text-lg flex items-center gap-2 flex-wrap">
+                            <h4 className="font-bold text-text-primary text-base sm:text-lg flex items-center gap-2 flex-wrap">
                               {r.userName}
                               {r.userEmail && (
                                 <span className="text-xs text-gray-500 font-normal flex items-center gap-1">

@@ -57,7 +57,7 @@ const FilterBadge = ({
   // Boje za različite tipove filtera
   const colorStyles = {
     default: isActive
-      ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+      ? "bg-gradient-to-r from-brand-secondary to-brand-accent text-white shadow-lg shadow-brand-secondary/25"
       : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
     active: isActive
       ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200"
@@ -226,8 +226,8 @@ export default function LicensesPage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
         <div className="relative">
-          <div className="w-20 h-20 border-4 border-bluegreen/30 rounded-full" />
-          <div className="w-20 h-20 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
+          <div className="w-20 h-20 border-4 border-brand-secondary/30 rounded-full" />
+          <div className="w-20 h-20 border-4 border-brand-secondary border-t-transparent rounded-full animate-spin absolute inset-0" />
         </div>
         <p className="mt-6 text-gray-500 font-medium">Provera pristupa...</p>
       </div>
@@ -257,7 +257,7 @@ export default function LicensesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-bluegreen/5">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-brand-secondary/5">
       <div className="max-w-7xl mx-auto w-full p-4 sm:p-8 pt-8">
         {/* Header */}
         <motion.div
@@ -266,11 +266,11 @@ export default function LicensesPage() {
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
         >
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg shadow-bluegreen/25">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-brand-secondary to-brand-accent shadow-lg shadow-brand-secondary/25">
               <Key className="text-white" size={28} />
             </div>
             <div>
-              <h1 className="text-3xl font-black text-charcoal">
+              <h1 className="text-3xl font-black text-text-primary">
                 Upravljanje licencama
               </h1>
               <p className="text-gray-500 text-sm mt-0.5">
@@ -287,8 +287,8 @@ export default function LicensesPage() {
                   onClick={() => setShowAnalytics(!showAnalytics)}
                   className={`px-5 py-2.5 rounded-xl font-semibold flex items-center gap-2 transition-all shadow-sm ${
                     showAnalytics
-                      ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
-                      : "bg-white text-charcoal hover:bg-gray-50 border border-gray-200"
+                      ? "bg-gradient-to-r from-brand-secondary to-brand-accent text-white shadow-lg shadow-brand-secondary/25"
+                      : "bg-white text-text-primary hover:bg-gray-50 border border-gray-200"
                   }`}
                 >
                   {showAnalytics ? <List size={18} /> : <BarChart3 size={18} />}
@@ -302,7 +302,7 @@ export default function LicensesPage() {
                   }}
                   whileTap={{ scale: 0.95 }}
                   onClick={() => setShowCreateModal(true)}
-                  className="px-5 py-2.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-bluegreen/25 transition-all"
+                  className="px-5 py-2.5 bg-gradient-to-r from-brand-secondary via-brand-accent to-brand-secondary text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-brand-secondary/25 transition-all"
                   style={{ backgroundSize: "200% 100%" }}
                 >
                   <Plus size={18} />
@@ -327,7 +327,7 @@ export default function LicensesPage() {
               onClick={() => setActiveTab("licenses")}
               className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                 activeTab === "licenses"
-                  ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+                  ? "bg-gradient-to-r from-brand-secondary to-brand-accent text-white shadow-lg shadow-brand-secondary/25"
                   : "text-gray-600 hover:bg-gray-50"
               }`}
             >
@@ -340,7 +340,7 @@ export default function LicensesPage() {
               onClick={() => setActiveTab("users")}
               className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
                 activeTab === "users"
-                  ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+                  ? "bg-gradient-to-r from-brand-secondary to-brand-accent text-white shadow-lg shadow-brand-secondary/25"
                   : "text-gray-600 hover:bg-gray-50"
               }`}
             >
@@ -393,7 +393,7 @@ export default function LicensesPage() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Pretraži po ključu, imenu ili emailu..."
-                      className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+                      className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-brand-secondary focus:ring-4 focus:ring-brand-secondary/10 transition-all placeholder:text-gray-400"
                     />
                     {searchQuery && (
                       <motion.button
@@ -455,10 +455,10 @@ export default function LicensesPage() {
 
                 {/* Results count */}
                 <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
-                  <Sparkles size={14} className="text-bluegreen" />
+                  <Sparkles size={14} className="text-brand-secondary" />
                   <span>
                     Pronađeno{" "}
-                    <strong className="text-charcoal">
+                    <strong className="text-text-primary">
                       {filteredLicenses.length}
                     </strong>{" "}
                     licenci
@@ -466,7 +466,9 @@ export default function LicensesPage() {
                       <span>
                         {" "}
                         za "
-                        <strong className="text-bluegreen">{searchQuery}</strong>
+                        <strong className="text-brand-secondary">
+                          {searchQuery}
+                        </strong>
                         "
                       </span>
                     )}

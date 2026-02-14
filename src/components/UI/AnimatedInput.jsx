@@ -74,10 +74,10 @@ const AnimatedInput = ({
             error
               ? "text-red-500"
               : success
-              ? "text-green-500"
-              : focused
-              ? "text-bluegreen"
-              : "text-gray-400"
+                ? "text-green-500"
+                : focused
+                  ? "text-brand-secondary"
+                  : "text-gray-400"
           }`}
         animate={{
           y: focused || hasValue ? -20 : 0,
@@ -103,10 +103,10 @@ const AnimatedInput = ({
                 error
                   ? "text-red-400"
                   : success
-                  ? "text-green-400"
-                  : focused
-                  ? "text-bluegreen"
-                  : "text-gray-400"
+                    ? "text-green-400"
+                    : focused
+                      ? "text-brand-secondary"
+                      : "text-gray-400"
               }`}
             />
           </div>
@@ -130,8 +130,8 @@ const AnimatedInput = ({
               error
                 ? "border-red-300 focus:border-red-500 focus:ring-2 focus:ring-red-200"
                 : success
-                ? "border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
-                : "border-gray-200 focus:border-bluegreen focus:ring-2 focus:ring-bluegreen/20"
+                  ? "border-green-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+                  : "border-gray-200 focus:border-brand-secondary focus:ring-2 focus:ring-brand-secondary/20"
             }`}
           placeholder={focused ? placeholder : ""}
           {...props}
@@ -199,8 +199,8 @@ const AnimatedInput = ({
             ? error
               ? "0 0 0 3px rgba(239, 68, 68, 0.1)"
               : success
-              ? "0 0 0 3px rgba(34, 197, 94, 0.1)"
-              : "0 0 0 3px rgba(34, 211, 238, 0.1)"
+                ? "0 0 0 3px rgba(34, 197, 94, 0.1)"
+                : "0 0 0 3px rgba(34, 211, 238, 0.1)"
             : "0 0 0 0px transparent",
         }}
         transition={{ duration: 0.2 }}

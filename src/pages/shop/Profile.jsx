@@ -69,7 +69,7 @@ const FloatingLabelInput = ({ label, value, onChange, className = "" }) => {
         className={`absolute left-3 transition-all duration-300 pointer-events-none 
         ${
           focused || hasValue
-            ? "top-[-6px] text-xs px-1 bg-white text-bluegreen font-semibold z-20"
+            ? "top-[-6px] text-xs px-1 bg-neutral-surface text-brand-secondary font-semibold z-20"
             : "top-1/2 -translate-y-1/2 text-gray-400 text-base"
         }`}
         animate={{
@@ -88,7 +88,7 @@ const FloatingLabelInput = ({ label, value, onChange, className = "" }) => {
         onFocus={() => setFocused(true)}
         onBlur={() => setFocused(false)}
         className={`w-full px-4 py-3 border-2 border-gray-200 rounded-xl bg-white/90 backdrop-blur-sm
-        focus:border-bluegreen focus:ring-2 focus:ring-bluegreen/20 focus:outline-none
+        focus:border-brand-secondary focus:ring-2 focus:ring-brand-secondary/20 focus:outline-none
         transition-all duration-200 text-gray-800 font-medium shadow-sm hover:shadow-md
         ${focused || hasValue ? "pt-3" : ""}`}
         placeholder={focused || hasValue ? "" : label}
@@ -175,7 +175,7 @@ export default function Profile() {
   // Real-time listener for user orders with onSnapshot
   useEffect(() => {
     if (!user) return;
-    
+
     const conditions = [];
     if (user?.email) conditions.push(where("email", "==", user.email));
     if (user?.phoneNumber)
@@ -185,63 +185,75 @@ export default function Profile() {
 
     // Postavi Firestore upit sa OR logikom i real-time listener
     const q = query(collection(db, "orders"), or(...conditions));
-    
-    const unsubscribe = onSnapshot(q, (snapshot) => {
-      const updatedIds = new Set();
-      const priceChangedIds = new Set();
-      
-      // Detect modified orders and price changes for animation
-      snapshot.docChanges().forEach((change) => {
-        if (change.type === "modified") {
-          updatedIds.add(change.doc.id);
-          
-          // Check if prices changed
-          const orderId = change.doc.id;
-          const newData = change.doc.data();
-          const oldData = previousOrderPricesRef.current[orderId];
-          
-          if (oldData) {
-            const newTotal = newData.cart?.reduce((acc, p) => acc + (p.suggestedPrice || p.price || 0) * p.qty, 0) || 0;
-            const oldTotal = oldData.total || 0;
-            
-            if (newTotal !== oldTotal) {
-              priceChangedIds.add(orderId);
+
+    const unsubscribe = onSnapshot(
+      q,
+      (snapshot) => {
+        const updatedIds = new Set();
+        const priceChangedIds = new Set();
+
+        // Detect modified orders and price changes for animation
+        snapshot.docChanges().forEach((change) => {
+          if (change.type === "modified") {
+            updatedIds.add(change.doc.id);
+
+            // Check if prices changed
+            const orderId = change.doc.id;
+            const newData = change.doc.data();
+            const oldData = previousOrderPricesRef.current[orderId];
+
+            if (oldData) {
+              const newTotal =
+                newData.cart?.reduce(
+                  (acc, p) => acc + (p.suggestedPrice || p.price || 0) * p.qty,
+                  0,
+                ) || 0;
+              const oldTotal = oldData.total || 0;
+
+              if (newTotal !== oldTotal) {
+                priceChangedIds.add(orderId);
+              }
             }
           }
-        }
-      });
-      
-      const sorted = snapshot.docs
-        .map((d) => ({ id: d.id, ...d.data() }))
-        .sort((a, b) => {
-          const ta = a.createdAt?.seconds || 0;
-          const tb = b.createdAt?.seconds || 0;
-          return tb - ta;
         });
-      
-      // Store current order prices for next comparison
-      sorted.forEach((order) => {
-        const total = order.cart?.reduce((acc, p) => acc + (p.suggestedPrice || p.price || 0) * p.qty, 0) || 0;
-        previousOrderPricesRef.current[order.id] = { total };
-      });
-      
-      setOrders(sorted);
-      
-      // Mark updated orders for animation
-      if (updatedIds.size > 0) {
-        setUpdatedOrderIds(updatedIds);
-        // Clear the markers after animation
-        setTimeout(() => setUpdatedOrderIds(new Set()), 1500);
-      }
-      
-      // Mark price-updated orders for animation
-      if (priceChangedIds.size > 0) {
-        setPriceUpdatedOrderIds(priceChangedIds);
-        setTimeout(() => setPriceUpdatedOrderIds(new Set()), 800);
-      }
-    }, (error) => {
-      console.error("Error fetching orders:", error);
-    });
+
+        const sorted = snapshot.docs
+          .map((d) => ({ id: d.id, ...d.data() }))
+          .sort((a, b) => {
+            const ta = a.createdAt?.seconds || 0;
+            const tb = b.createdAt?.seconds || 0;
+            return tb - ta;
+          });
+
+        // Store current order prices for next comparison
+        sorted.forEach((order) => {
+          const total =
+            order.cart?.reduce(
+              (acc, p) => acc + (p.suggestedPrice || p.price || 0) * p.qty,
+              0,
+            ) || 0;
+          previousOrderPricesRef.current[order.id] = { total };
+        });
+
+        setOrders(sorted);
+
+        // Mark updated orders for animation
+        if (updatedIds.size > 0) {
+          setUpdatedOrderIds(updatedIds);
+          // Clear the markers after animation
+          setTimeout(() => setUpdatedOrderIds(new Set()), 1500);
+        }
+
+        // Mark price-updated orders for animation
+        if (priceChangedIds.size > 0) {
+          setPriceUpdatedOrderIds(priceChangedIds);
+          setTimeout(() => setPriceUpdatedOrderIds(new Set()), 800);
+        }
+      },
+      (error) => {
+        console.error("Error fetching orders:", error);
+      },
+    );
 
     // Cleanup listener on unmount
     return () => unsubscribe();
@@ -275,7 +287,11 @@ export default function Profile() {
   // PROMENJENA LOGIKA: Zahteva email ILI telefon verifikaciju (ne oba)
   if (loading) return <Loader />;
   if (!user)
-    return <div className="text-center mt-10">Morate biti prijavljeni.</div>;
+    return (
+      <div className="w-full px-4 sm:px-8 md:px-16 py-10 text-center text-text-secondary">
+        Morate biti prijavljeni.
+      </div>
+    );
 
   // Ako korisnik nema ni email ni telefon verifikovan
   if (!isUserVerified) {
@@ -283,7 +299,7 @@ export default function Profile() {
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-xl mx-auto mt-24 bg-white/90 backdrop-blur-2xl text-center shadow-2xl border border-red-300 rounded-3xl p-8"
+        className="max-w-xl mx-auto mt-24 bg-neutral-surface backdrop-blur-2xl text-center shadow-2xl border border-error/30 rounded-3xl p-8"
       >
         <div className="flex justify-center gap-4 mb-5">
           <Mail size={42} className="text-red-500 animate-pulse" />
@@ -312,9 +328,9 @@ export default function Profile() {
                 await sendEmailVerification(user);
                 setEmailSent(true);
               }}
-              whileHover={{ scale: 1.05, backgroundColor: "#0891b2" }}
+              whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              className="px-6 py-2 bg-bluegreen text-white font-bold rounded-lg shadow-lg mb-4 transition-all"
+              className="px-6 py-2 bg-brand-primary text-white font-bold rounded-lg shadow-lg mb-4 transition-all"
             >
               Pošalji verifikacioni email
             </motion.button>
@@ -328,9 +344,9 @@ export default function Profile() {
           </h3>
           <motion.button
             onClick={() => setPhoneModalOpen(true)}
-            whileHover={{ scale: 1.05, backgroundColor: "#d97706" }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-6 py-2 bg-yellow-600 text-white font-bold rounded-lg shadow-lg transition-all"
+            className="px-6 py-2 bg-warning text-white font-bold rounded-lg shadow-lg transition-all"
           >
             Verifikuj broj telefona
           </motion.button>
@@ -362,7 +378,7 @@ export default function Profile() {
         initial={{ opacity: 0, y: 60 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
-        className="max-w-7xl mx-2 sm:mx-auto bg-white/70 backdrop-blur-xl shadow-2xl rounded-3xl p-4 sm:p-6 lg:p-14 my-6 sm:my-10 font-sans relative overflow-hidden"
+        className="max-w-7xl mx-2 sm:mx-auto bg-neutral-surface/90 backdrop-blur-xl shadow-2xl rounded-3xl p-4 sm:p-6 lg:p-14 my-6 sm:my-10 font-sans relative overflow-hidden border border-neutral-border"
       >
         {/* Profile header */}
         <div className="flex flex-col lg:flex-row items-center gap-6 sm:gap-8 lg:gap-12">
@@ -372,7 +388,7 @@ export default function Profile() {
               <motion.img
                 src={userData?.photoURL || "/default-avatar.png"}
                 alt="Profilna"
-                className="w-full h-full object-cover rounded-full border-4 border-bluegreen shadow-xl bg-white/90"
+                className="w-full h-full object-cover rounded-full border-4 border-brand-primary shadow-xl bg-neutral-surface/90"
               />
               {uploadingImage && (
                 <motion.div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center z-10">
@@ -381,7 +397,7 @@ export default function Profile() {
                   </div>
                 </motion.div>
               )}
-              <motion.label className="absolute bottom-2 right-2 bg-bluegreen text-white p-2.5 sm:p-3 rounded-full cursor-pointer border-4 border-white shadow-lg z-20">
+              <motion.label className="absolute bottom-2 right-2 bg-brand-primary text-white p-2.5 sm:p-3 rounded-full cursor-pointer border-4 border-neutral-surface shadow-lg z-20">
                 <Upload size={18} className="sm:w-5 sm:h-5" />
                 <input
                   type="file"
@@ -400,16 +416,16 @@ export default function Profile() {
               <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 justify-center lg:justify-start">
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-800 break-words">
                   {userData?.ime} {userData?.prezime}
-                  <span className="block sm:inline ml-0 sm:ml-2 text-bluegreen text-lg sm:text-xl font-mono">
+                  <span className="block sm:inline ml-0 sm:ml-2 text-brand-primary text-lg sm:text-xl font-mono">
                     @{userData?.username}
                   </span>
                 </h2>
                 <div className="flex items-center gap-3">
                   <motion.button
                     onClick={() => setEditMode((v) => !v)}
-                    className="p-2 rounded-full bg-blue-50 hover:bg-blue-100 transition-colors"
+                    className="p-2 rounded-full bg-neutral-bg hover:bg-neutral-surface-tint transition-colors"
                   >
-                    <Pen size={20} className="text-bluegreen" />
+                    <Pen size={20} className="text-brand-primary" />
                   </motion.button>
                   <motion.button
                     onClick={() => setSettingsOpen((v) => !v)}
@@ -423,19 +439,25 @@ export default function Profile() {
               {/* Mail, telefon, adresa */}
               <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 sm:gap-6 text-base sm:text-lg text-gray-700 justify-center lg:justify-start">
                 <div className="flex items-center gap-2">
-                  <Mail className="w-6 h-6 text-bluegreen flex-shrink-0" />
+                  <Mail className="w-6 h-6 text-brand-primary flex-shrink-0" />
                   <span className="break-all">{userData?.email}</span>
                 </div>
               </div>
               <div className="flex flex-col sm:flex-row flex-wrap items-center gap-4 sm:gap-8 text-gray-600 justify-center lg:justify-start">
                 <div className="flex items-center gap-2">
-                  <Phone size={20} className="text-bluegreen flex-shrink-0" />
+                  <Phone
+                    size={20}
+                    className="text-brand-primary flex-shrink-0"
+                  />
                   <span>
                     {userData?.telefon || user?.phoneNumber || "Nije unet"}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Home size={20} className="text-bluegreen flex-shrink-0" />
+                  <Home
+                    size={20}
+                    className="text-brand-primary flex-shrink-0"
+                  />
                   <span>{userData?.adresa || "Nije uneta"}</span>
                 </div>
               </div>
@@ -504,10 +526,10 @@ export default function Profile() {
               initial={{ opacity: 0, y: 30, scale: 0.95 }}
               animate={{ opacity: 1, y: 0, scale: 1 }}
               exit={{ opacity: 0, y: -20, scale: 0.95 }}
-              className="bg-white/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-8 my-8"
+              className="bg-neutral-surface/90 backdrop-blur-sm rounded-2xl shadow-2xl p-6 sm:p-8 my-8 border border-neutral-border"
             >
               <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                <Pen size={20} className="text-bluegreen" />
+                <Pen size={20} className="text-brand-primary" />
                 Izmeni profil
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -551,7 +573,7 @@ export default function Profile() {
               <div className="flex flex-col sm:flex-row gap-4 mt-8">
                 <motion.button
                   onClick={handleSave}
-                  className="px-8 py-3 bg-bluegreen text-white font-bold rounded-xl shadow-lg hover:shadow-xl transition-all"
+                  className="px-8 py-3 bg-brand-primary text-white font-bold rounded-xl shadow-lg hover:bg-brand-primary-hover hover:shadow-xl transition-all"
                 >
                   Sačuvaj promene
                 </motion.button>
@@ -574,7 +596,7 @@ export default function Profile() {
           transition={{ duration: 0.6, delay: 0.4 }}
         >
           <h3 className="font-bold text-2xl sm:text-3xl mb-6 flex items-center gap-3">
-            <ReceiptText size={28} className="text-bluegreen" />
+            <ReceiptText size={28} className="text-brand-primary" />
             Vaše narudžbine
           </h3>
 
@@ -587,7 +609,7 @@ export default function Profile() {
             >
               <AlertTriangle
                 size={48}
-                className="mx-auto mb-4 text-bluegreen/60"
+                className="mx-auto mb-4 text-brand-primary/60"
               />
               <p className="text-lg font-medium">Nema narudžbina.</p>
             </motion.div>
@@ -608,22 +630,22 @@ export default function Profile() {
                     <motion.div
                       key={order.id || order.createdAt?.seconds || idx}
                       className={`bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border cursor-pointer flex flex-col h-full ${
-                        isUpdated 
-                          ? "border-green-400 ring-2 ring-green-200" 
+                        isUpdated
+                          ? "border-green-400 ring-2 ring-green-200"
                           : "border-gray-100"
                       }`}
                       initial={{ opacity: 0, y: 40 }}
-                      animate={{ 
-                        opacity: 1, 
+                      animate={{
+                        opacity: 1,
                         y: 0,
-                        scale: isUpdated ? [1, 1.03, 1] : 1
+                        scale: isUpdated ? [1, 1.03, 1] : 1,
                       }}
                       exit={{ opacity: 0, scale: 0.8 }}
-                      transition={{ 
-                        duration: isUpdated ? 0.6 : 0.5, 
+                      transition={{
+                        duration: isUpdated ? 0.6 : 0.5,
                         delay: idx * 0.1,
                         type: "spring",
-                        stiffness: isUpdated ? 150 : 100
+                        stiffness: isUpdated ? 150 : 100,
                       }}
                       onClick={() => {
                         setSelectedOrder(order);
@@ -633,155 +655,160 @@ export default function Profile() {
                         scale: 1.02,
                         y: -8,
                         boxShadow: "0 20px 40px rgba(34, 211, 238, 0.15)",
-                        borderColor: "#22d3ee",
                       }}
                       layout
                     >
-                    <div className="flex justify-between items-center mb-4">
-                      <span className="text-sm text-gray-500 font-medium">
-                        {srDate(order.createdAt)}
-                      </span>
-                      <StatusBadge status={order.status} />
-                    </div>
-
-                    {hasHiddenItems && (
-                      <div className="mb-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
-                        <span className="text-xs text-orange-700 font-semibold">
-                          Sadrži proizvode sa skrivenom cenom
+                      <div className="flex justify-between items-center mb-4">
+                        <span className="text-sm text-gray-500 font-medium">
+                          {srDate(order.createdAt)}
                         </span>
+                        <StatusBadge status={order.status} />
                       </div>
-                    )}
 
-                    <div className="space-y-3 mb-4 md:max-h-56 md:overflow-y-auto custom-scrollbar">
-                      {order.cart.map((product) => (
+                      {hasHiddenItems && (
+                        <div className="mb-3 p-2 bg-orange-50 border border-orange-200 rounded-lg">
+                          <span className="text-xs text-orange-700 font-semibold">
+                            Sadrži proizvode sa skrivenom cenom
+                          </span>
+                        </div>
+                      )}
+
+                      <div className="space-y-3 mb-4 md:max-h-56 md:overflow-y-auto custom-scrollbar">
+                        {order.cart.map((product) => (
+                          <div
+                            key={product.id}
+                            className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                          >
+                            <ProgressiveImage
+                              src={product.imgUrl}
+                              alt={product.name}
+                              className="w-14 h-14 rounded-xl object-cover shadow-sm"
+                            />
+                            <div className="flex-1 min-w-0">
+                              <div className="font-semibold text-gray-800 truncate">
+                                {product.name}
+                                {hasHiddenPrice(product) && (
+                                  <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
+                                    Skrivena cena
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-sm text-gray-500">
+                                {hasHiddenPrice(product) ? (
+                                  <div className="space-y-1">
+                                    <span className="italic text-orange-600">
+                                      Cena na upit × {product.qty}
+                                    </span>
+                                    {product.suggestedPrice && (
+                                      <div
+                                        className={`flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit ${isPriceUpdated ? "animate-flipPrice" : ""}`}
+                                      >
+                                        <Handshake size={12} />
+                                        <span className="font-semibold">
+                                          Predloženo:{" "}
+                                          {product.suggestedPrice.toLocaleString(
+                                            "sr-RS",
+                                          )}{" "}
+                                          RSD × {product.qty}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                ) : (
+                                  `${srRsd(getProductPrice(product))} × ${
+                                    product.qty
+                                  }`
+                                )}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+
+                      {/* Delivery Info */}
+                      {(order.deliveryPrice || order.deliveryCompany) && (
+                        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200 mb-3">
+                          <div className="text-xs font-semibold text-blue-700 mb-1 flex items-center gap-1">
+                            <FaShippingFast size={12} /> Dostava
+                          </div>
+                          {order.deliveryCompany && (
+                            <div className="text-xs text-gray-600">
+                              {order.deliveryCompany}
+                            </div>
+                          )}
+                          {order.deliveryPrice && (
+                            <div className="text-xs font-semibold text-blue-600">
+                              {order.deliveryPrice.toLocaleString("sr-RS")} RSD
+                            </div>
+                          )}
+                        </div>
+                      )}
+
+                      <div className="border-t pt-4 flex justify-between items-center mt-auto">
+                        <span className="font-semibold text-gray-700">
+                          Ukupno:
+                        </span>
                         <div
-                          key={product.id}
-                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-gray-50 transition-colors"
+                          className={`text-right ${isPriceUpdated ? "animate-flipPrice" : ""}`}
                         >
-                          <ProgressiveImage
-                            src={product.imgUrl}
-                            alt={product.name}
-                            className="w-14 h-14 rounded-xl object-cover shadow-sm"
-                          />
-                          <div className="flex-1 min-w-0">
-                            <div className="font-semibold text-gray-800 truncate">
-                              {product.name}
-                              {hasHiddenPrice(product) && (
-                                <span className="ml-2 text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded-full">
-                                  Skrivena cena
+                          {hasHiddenItems ? (
+                            <div className="flex flex-col">
+                              <span className="font-bold text-brand-secondary text-lg">
+                                {srRsd(
+                                  order.cart.reduce(
+                                    (acc, p) =>
+                                      acc + (p.price ? p.price * p.qty : 0),
+                                    0,
+                                  ),
+                                )}
+                              </span>
+                              {order.cart
+                                .filter(hasHiddenPrice)
+                                .some((p) => p.suggestedPrice) ? (
+                                <span className="text-xs text-green-600 font-semibold">
+                                  +{" "}
+                                  {order.cart
+                                    .filter(hasHiddenPrice)
+                                    .reduce(
+                                      (acc, p) =>
+                                        acc + (p.suggestedPrice || 0) * p.qty,
+                                      0,
+                                    )
+                                    .toLocaleString("sr-RS")}{" "}
+                                  RSD (predloženo)
+                                </span>
+                              ) : (
+                                <span className="text-xs text-orange-600 italic">
+                                  + artikli na upit
+                                </span>
+                              )}
+                              {order.deliveryPrice && (
+                                <span className="text-xs text-blue-600">
+                                  +{" "}
+                                  {order.deliveryPrice.toLocaleString("sr-RS")}{" "}
+                                  RSD dostava
                                 </span>
                               )}
                             </div>
-                            <div className="text-sm text-gray-500">
-                              {hasHiddenPrice(product) ? (
-                                <div className="space-y-1">
-                                  <span className="italic text-orange-600">
-                                    Cena na upit × {product.qty}
-                                  </span>
-                                  {product.suggestedPrice && (
-                                    <div className={`flex items-center gap-1 text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full mt-1 w-fit ${isPriceUpdated ? "animate-flipPrice" : ""}`}>
-                                      <Handshake size={12} />
-                                      <span className="font-semibold">
-                                        Predloženo:{" "}
-                                        {product.suggestedPrice.toLocaleString(
-                                          "sr-RS"
-                                        )}{" "}
-                                        RSD × {product.qty}
-                                      </span>
-                                    </div>
-                                  )}
-                                </div>
-                              ) : (
-                                `${srRsd(getProductPrice(product))} × ${
-                                  product.qty
-                                }`
+                          ) : (
+                            <div className="flex flex-col">
+                              <span className="font-bold text-brand-secondary text-lg">
+                                {srRsd(orderTotal)}
+                              </span>
+                              {order.deliveryPrice && (
+                                <span className="text-xs text-blue-600">
+                                  +{" "}
+                                  {order.deliveryPrice.toLocaleString("sr-RS")}{" "}
+                                  RSD dostava
+                                </span>
                               )}
                             </div>
-                          </div>
+                          )}
                         </div>
-                      ))}
-                    </div>
-
-                    {/* Delivery Info */}
-                    {(order.deliveryPrice || order.deliveryCompany) && (
-                      <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-3 border border-blue-200 mb-3">
-                        <div className="text-xs font-semibold text-blue-700 mb-1 flex items-center gap-1">
-                          <FaShippingFast size={12} /> Dostava
-                        </div>
-                        {order.deliveryCompany && (
-                          <div className="text-xs text-gray-600">
-                            {order.deliveryCompany}
-                          </div>
-                        )}
-                        {order.deliveryPrice && (
-                          <div className="text-xs font-semibold text-blue-600">
-                            {order.deliveryPrice.toLocaleString("sr-RS")} RSD
-                          </div>
-                        )}
                       </div>
-                    )}
-
-                    <div className="border-t pt-4 flex justify-between items-center mt-auto">
-                      <span className="font-semibold text-gray-700">
-                        Ukupno:
-                      </span>
-                      <div className={`text-right ${isPriceUpdated ? "animate-flipPrice" : ""}`}>
-                        {hasHiddenItems ? (
-                          <div className="flex flex-col">
-                            <span className="font-bold text-bluegreen text-lg">
-                              {srRsd(
-                                order.cart.reduce(
-                                  (acc, p) =>
-                                    acc + (p.price ? p.price * p.qty : 0),
-                                  0
-                                )
-                              )}
-                            </span>
-                            {order.cart
-                              .filter(hasHiddenPrice)
-                              .some((p) => p.suggestedPrice) ? (
-                              <span className="text-xs text-green-600 font-semibold">
-                                +{" "}
-                                {order.cart
-                                  .filter(hasHiddenPrice)
-                                  .reduce(
-                                    (acc, p) =>
-                                      acc + (p.suggestedPrice || 0) * p.qty,
-                                    0
-                                  )
-                                  .toLocaleString("sr-RS")}{" "}
-                                RSD (predloženo)
-                              </span>
-                            ) : (
-                              <span className="text-xs text-orange-600 italic">
-                                + artikli na upit
-                              </span>
-                            )}
-                            {order.deliveryPrice && (
-                              <span className="text-xs text-blue-600">
-                                + {order.deliveryPrice.toLocaleString("sr-RS")}{" "}
-                                RSD dostava
-                              </span>
-                            )}
-                          </div>
-                        ) : (
-                          <div className="flex flex-col">
-                            <span className="font-bold text-bluegreen text-lg">
-                              {srRsd(orderTotal)}
-                            </span>
-                            {order.deliveryPrice && (
-                              <span className="text-xs text-blue-600">
-                                + {order.deliveryPrice.toLocaleString("sr-RS")}{" "}
-                                RSD dostava
-                              </span>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
+                    </motion.div>
+                  );
+                })}
               </AnimatePresence>
             </div>
           )}
@@ -807,7 +834,7 @@ export default function Profile() {
               onClick={(e) => e.stopPropagation()}
             >
               <h3 className="text-xl font-bold mb-6 flex items-center gap-3">
-                <Settings size={22} className="text-bluegreen" />
+                <Settings size={22} className="text-brand-secondary" />
                 Podešavanja profila
               </h3>
               <div className="space-y-3">
@@ -817,7 +844,7 @@ export default function Profile() {
                     setPasswordResetModalOpen(true);
                   }}
                   className="flex gap-3 items-center w-full px-5 py-3 bg-blue-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02, backgroundColor: "#3b82f6" }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <ShieldCheck size={18} />
@@ -829,7 +856,7 @@ export default function Profile() {
                     setDeleteModalOpen(true);
                   }}
                   className="flex gap-3 items-center w-full px-5 py-3 bg-red-500 text-white font-bold rounded-xl shadow-md hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02, backgroundColor: "#dc2626" }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <Trash2 size={18} />
@@ -842,7 +869,7 @@ export default function Profile() {
                     navigate("/prodavnica/prijava");
                   }}
                   className="flex gap-3 items-center w-full px-5 py-3 bg-gray-500 text-white font-semibold rounded-xl shadow-md hover:shadow-lg transition-all"
-                  whileHover={{ scale: 1.02, backgroundColor: "#6b7280" }}
+                  whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
                   <LogOut size={18} />

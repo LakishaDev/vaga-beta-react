@@ -85,7 +85,7 @@ export default function AuthForm() {
         const userCredential = await createUserWithEmailAndPassword(
           auth,
           email,
-          pass
+          pass,
         );
         setVerificationSent(false);
         await handleEmailVerification(userCredential.user);
@@ -96,7 +96,7 @@ export default function AuthForm() {
         err.code === "auth/wrong-password" || err.code === "auth/user-not-found"
           ? "Pogrešan email ili lozinka."
           : err.message || "Greška.",
-        "error"
+        "error",
       );
     }
     setLoading(false);
@@ -118,7 +118,7 @@ export default function AuthForm() {
     } catch (error) {
       showSnackbar(
         "Neuspešno slanje verifikacionog emaila. " + (error?.message || ""),
-        "error"
+        "error",
       );
     }
     setVerifying(false);
@@ -139,7 +139,7 @@ export default function AuthForm() {
     } catch (err) {
       showSnackbar(
         "Greška pri proveri verifikacije. " + (err?.message || ""),
-        "error"
+        "error",
       );
     }
     setVerifying(false);
@@ -156,7 +156,7 @@ export default function AuthForm() {
     } catch (err) {
       showSnackbar(
         "Greška pri Google prijavi: " + (err.message || err.code),
-        "error"
+        "error",
       );
     }
     setLoading(false);
@@ -171,7 +171,7 @@ export default function AuthForm() {
         {
           size: "invisible",
           callback: () => {},
-        }
+        },
       );
     }
     return phoneRecaptcha.current;
@@ -218,29 +218,22 @@ export default function AuthForm() {
 
   // ----- UI -----
   return (
-    <div className="relative py-12 px-3 sm:px-8 flex items-center justify-center min-h-[420px] outline-none">
+    <div className="relative py-8 sm:py-12 px-4 sm:px-8 md:px-16 flex items-center justify-center min-h-[420px] outline-none w-full bg-neutral-bg">
       {/* Back gradient sparkle/blur */}
       <div className="absolute inset-0 z-0 pointer-events-none">
-        <div className="absolute top-8 left-8 w-28 h-28 bg-bluegreen/20 rounded-full blur-2xl"></div>
-        <div className="absolute top-20 right-0 w-24 h-24 bg-sheen/30 rounded-full blur-2xl"></div>
-        <div className="absolute bottom-0 left-10 w-24 h-24 bg-rust/20 rounded-full blur-2xl"></div>
+        <div className="absolute top-8 left-8 w-28 h-28 bg-brand-accent/20 rounded-full blur-2xl"></div>
+        <div className="absolute top-20 right-0 w-24 h-24 bg-brand-secondary/30 rounded-full blur-2xl"></div>
+        <div className="absolute bottom-0 left-10 w-24 h-24 bg-brand-primary/20 rounded-full blur-2xl"></div>
       </div>
 
-      <div
-        className="relative z-10 w-full max-w-xl mx-auto bg-white/80 backdrop-blur rounded-3xl shadow-2xl py-10 px-5 flex flex-col items-center"
-        style={{
-          boxShadow: "0px 12px 36px 4px #6EAEA244",
-          borderImage:
-            "linear-gradient(90deg, #91CEC1 0%, #6EAEA2 52%, #CBCFBB 100%) 1",
-        }}
-      >
+      <div className="relative z-10 w-full bg-neutral-surface/95 backdrop-blur rounded-3xl border border-neutral-border shadow-xl py-10 px-5 sm:px-8 flex flex-col items-center">
         {/* SELECT AUTH TAB */}
         <div className="w-full flex gap-3 mb-7 px-2">
           <button
             onClick={() => setAuthTab("email")}
             className={`w-full py-2 rounded-xl font-semibold transition ${
               authTab === "email"
-                ? "bg-bluegreen text-white shadow"
+                ? "bg-brand-primary text-white shadow"
                 : "bg-gray-100 text-gray-600"
             }`}
           >
@@ -250,7 +243,7 @@ export default function AuthForm() {
             onClick={() => setAuthTab("phone")}
             className={`w-full py-2 rounded-xl font-semibold transition ${
               authTab === "phone"
-                ? "bg-bluegreen text-white shadow"
+                ? "bg-brand-primary text-white shadow"
                 : "bg-gray-100 text-gray-600"
             }`}
           >
@@ -262,15 +255,15 @@ export default function AuthForm() {
           {isLogin ? (
             <LogIn
               size={54}
-              className="text-bluegreen drop-shadow-xl animate-bounce"
+              className="text-brand-primary drop-shadow-xl animate-bounce"
             />
           ) : (
             <UserRound
               size={54}
-              className="text-sheen drop-shadow-xl animate-pulse"
+              className="text-brand-secondary drop-shadow-xl animate-pulse"
             />
           )}
-          <h2 className="text-3xl sm:text-4xl text-midnight tracking-tight font-extrabold text-center drop-shadow-lg bg-gradient-to-tr from-bluegreen via-sheen to-midnight bg-clip-text uppercase">
+          <h2 className="text-3xl sm:text-4xl tracking-tight font-heading font-extrabold text-center drop-shadow-lg bg-gradient-to-tr from-brand-primary via-brand-secondary to-brand-accent bg-clip-text text-transparent uppercase">
             {isLogin ? "PRIJAVA" : "REGISTRACIJA"}
           </h2>
         </div>
@@ -281,32 +274,32 @@ export default function AuthForm() {
             onSubmit={handleSubmit}
             className="flex flex-col gap-6 w-full max-w-md mx-auto animate-fadein"
           >
-            <div className="flex items-center gap-2 rounded-2xl border-2 border-bone/60 p-2 bg-bone/25">
-              <UserRound size={20} className="text-bluegreen" />
+            <div className="flex items-center gap-2 rounded-2xl border-2 border-neutral-border p-2 bg-neutral-100/70">
+              <UserRound size={20} className="text-brand-secondary" />
               <input
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Email adresa"
                 autoComplete="email"
-                className="bg-transparent flex-1 border-none outline-none text-midnight font-medium px-2 text-base"
+                className="bg-transparent flex-1 border-none outline-none text-text-primary font-medium px-2 text-base"
               />
             </div>
-            <div className="flex items-center gap-2 rounded-2xl border-2 border-bone/60 p-2 bg-bone/25">
-              <Lock size={20} className="text-sheen" />
+            <div className="flex items-center gap-2 rounded-2xl border-2 border-neutral-border p-2 bg-neutral-100/70">
+              <Lock size={20} className="text-brand-secondary" />
               <input
                 type="password"
                 value={pass}
                 onChange={(e) => setPass(e.target.value)}
                 placeholder="Lozinka"
                 autoComplete="current-password"
-                className="bg-transparent flex-1 border-none outline-none text-midnight font-medium px-2 text-base"
+                className="bg-transparent flex-1 border-none outline-none text-text-primary font-medium px-2 text-base"
               />
             </div>
             <button
               type="submit"
               disabled={loading}
-              className="bg-gradient-to-tr from-bluegreen via-sheen to-midnight text-white font-bold py-2 px-5 rounded-xl flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all hover:shadow-xl uppercase tracking-wide text-lg"
+              className="bg-gradient-to-tr from-brand-secondary via-brand-primary to-text-primary text-white font-bold py-2 px-5 rounded-xl flex items-center gap-2 shadow-lg hover:scale-105 active:scale-95 transition-all hover:shadow-xl uppercase tracking-wide text-lg"
             >
               {isLogin ? <ArrowRight size={22} /> : <CheckCircle2 size={22} />}
               {loading ? (
@@ -320,7 +313,7 @@ export default function AuthForm() {
             <button
               type="button"
               disabled={loading}
-              className="bg-sheen text-white font-bold py-2 px-5 rounded-xl flex items-center gap-2 shadow-lg hover:bg-bluegreen active:scale-95 transition-all text-lg"
+              className="bg-brand-secondary text-white font-bold py-2 px-5 rounded-xl flex items-center gap-2 shadow-lg hover:bg-brand-accent active:scale-95 transition-all text-lg"
               onClick={googleLogin}
             >
               <LogIn size={22} />
@@ -336,21 +329,21 @@ export default function AuthForm() {
             {/* BROJ TELEFONA */}
             {phoneStep === "input" && (
               <>
-                <div className="flex items-center gap-2 rounded-2xl border-2 border-bone/60 p-2 bg-bone/25">
-                  <Phone size={20} className="text-bluegreen" />
+                <div className="flex items-center gap-2 rounded-2xl border-2 border-neutral-border p-2 bg-neutral-100/70">
+                  <Phone size={20} className="text-brand-secondary" />
                   <input
                     type="tel"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     placeholder="+3816xxxxxxx"
                     disabled={phoneLoading}
-                    className="bg-transparent flex-1 border-none outline-none text-midnight font-medium px-2 text-base"
+                    className="bg-transparent flex-1 border-none outline-none text-text-primary font-medium px-2 text-base"
                   />
                 </div>
                 <button
                   onClick={sendPhoneCode}
                   disabled={phoneLoading || !/^(\+3816)[0-9]{6,9}$/.test(phone)}
-                  className="bg-bluegreen text-white w-full rounded-xl py-3 font-bold shadow hover:brightness-110 transition"
+                  className="bg-brand-secondary text-white w-full rounded-xl py-3 font-bold shadow hover:bg-brand-accent transition"
                 >
                   {phoneLoading ? (
                     <Loader2 className="animate-spin mx-auto" />
@@ -364,8 +357,8 @@ export default function AuthForm() {
             {/* KOD */}
             {phoneStep === "code" && (
               <>
-                <div className="flex items-center gap-2 rounded-2xl border-2 border-bone/60 p-2 bg-bone/25">
-                  <MessageSquare size={20} className="text-bluegreen" />
+                <div className="flex items-center gap-2 rounded-2xl border-2 border-neutral-border p-2 bg-neutral-100/70">
+                  <MessageSquare size={20} className="text-brand-secondary" />
                   <input
                     type="text"
                     value={phoneCode}
@@ -373,13 +366,13 @@ export default function AuthForm() {
                     placeholder="Kod iz SMS"
                     maxLength={6}
                     disabled={phoneLoading}
-                    className="bg-transparent flex-1 border-none outline-none text-midnight font-medium px-2 text-base"
+                    className="bg-transparent flex-1 border-none outline-none text-text-primary font-medium px-2 text-base"
                   />
                 </div>
                 <button
                   onClick={verifyPhoneCode}
                   disabled={phoneLoading || phoneCode.length !== 6}
-                  className="bg-bluegreen text-white w-full rounded-xl py-3 font-bold shadow hover:brightness-110 transition"
+                  className="bg-brand-secondary text-white w-full rounded-xl py-3 font-bold shadow hover:bg-brand-accent transition"
                 >
                   {phoneLoading ? (
                     <Loader2 className="animate-spin mx-auto" />
@@ -419,15 +412,15 @@ export default function AuthForm() {
               size={34}
               className="text-green-700 drop-shadow animate-bounce"
             />
-            <p className="text-midnight mt-2 text-lg font-medium">
+            <p className="text-text-primary mt-2 text-lg font-medium">
               Na adresu{" "}
-              <span className="font-bold text-bluegreen">{email}</span> poslat
-              je verifikacioni email.
+              <span className="font-bold text-brand-secondary">{email}</span>{" "}
+              poslat je verifikacioni email.
             </p>
             <button
               disabled={verifying}
               onClick={() => handleEmailVerification()}
-              className="mt-3 px-5 py-2 bg-gradient-to-r from-bluegreen to-sheen text-white rounded-xl font-semibold shadow hover:scale-105 transition-all"
+              className="mt-3 px-5 py-2 bg-gradient-to-r from-brand-secondary to-brand-primary text-white rounded-xl font-semibold shadow hover:scale-105 transition-all"
             >
               {verifying ? (
                 <Loader2 size={20} className="animate-spin" />
@@ -438,7 +431,7 @@ export default function AuthForm() {
             <button
               disabled={verifying}
               onClick={checkEmailVerified}
-              className="mt-2 px-5 py-2 border-2 border-bluegreen text-bluegreen rounded-xl font-semibold hover:bg-bluegreen hover:text-white transition-all"
+              className="mt-2 px-5 py-2 border-2 border-brand-secondary text-brand-secondary rounded-xl font-semibold hover:bg-brand-secondary hover:text-white transition-all"
             >
               Proveri verifikaciju
             </button>
@@ -447,7 +440,7 @@ export default function AuthForm() {
 
         <div className="mt-8 text-center flex flex-col items-center gap-2">
           <span
-            className="cursor-pointer text-sheen font-bold hover:underline underline-offset-2 transition"
+            className="cursor-pointer text-brand-secondary font-bold hover:underline underline-offset-2 transition"
             onClick={() => {
               setIsLogin((l) => !l);
               setVerificationSent(false);
@@ -455,19 +448,19 @@ export default function AuthForm() {
                 isLogin
                   ? "Prebacujete se na registraciju."
                   : "Prebacujete se na prijavu.",
-                "info"
+                "info",
               );
             }}
           >
             {isLogin ? "Nemate nalog? " : "Već imate nalog? "}
-            <span className="text-midnight font-extrabold underline">
+            <span className="text-text-primary font-extrabold underline">
               {isLogin ? "Registrujte se!" : "Prijavite se!"}
             </span>
           </span>
           {isLogin && authTab === "email" && (
             <button
               type="button"
-              className="text-sheen font-semibold text-base hover:underline text-left mt-1 ml-1"
+              className="text-brand-secondary font-semibold text-base hover:underline text-left mt-1 ml-1"
               onClick={() => {
                 setPasswordResetModalOpen(true);
               }}

@@ -134,18 +134,18 @@ export default function CheckoutForm() {
   ];
 
   const AutoFillInfo = ({ text }) => (
-    <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600 bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 mb-5">
-      <Info size={16} className="text-bluegreen shrink-0" />
+    <div className="flex items-center gap-2 text-xs sm:text-sm text-text-secondary bg-neutral-bg border border-neutral-border rounded-lg px-3 py-2 mb-5">
+      <Info size={16} className="text-brand-secondary shrink-0" />
       <span className="leading-tight">{text}</span>
     </div>
   );
 
   const DisabledReason = ({ reason }) => (
     <div
-      className="text-xs text-gray-500 mt-1 flex items-center gap-1"
+      className="text-xs text-text-tertiary mt-1 flex items-center gap-1"
       title={reason}
     >
-      <Info size={14} className="text-gray-400" />
+      <Info size={14} className="text-text-tertiary" />
       <span>{reason}</span>
     </div>
   );
@@ -225,14 +225,14 @@ export default function CheckoutForm() {
 
   return (
     <motion.div
-      className="relative max-w-5xl sm:w-full mx-3 sm:mx-auto bg-gradient-to-br from-slate-50 to-white rounded-3xl shadow-2xl border border-slate-200 overflow-hidden py-8 px-4 sm:px-8 mt-8 mb-16"
+      className="relative w-full mx-0 bg-gradient-to-br from-neutral-bg to-neutral-surface rounded-3xl shadow-2xl border border-neutral-border overflow-hidden py-8 px-4 sm:px-8 md:px-16 mt-8 mb-16"
       variants={containerVariant}
       initial="hidden"
       animate="visible"
     >
-      <h2 className="text-3xl md:text-4xl font-extrabold text-bluegreen mb-5 text-center drop-shadow-sm tracking-tight">
+      <h2 className="text-3xl md:text-4xl font-extrabold text-brand-primary mb-5 text-center drop-shadow-sm tracking-tight">
         <span className="inline-flex items-center gap-2">
-          <Building2 className="w-7 h-7 text-bluegreen drop-shadow" />
+          <Building2 className="w-7 h-7 text-brand-primary drop-shadow" />
           Placanje
         </span>
       </h2>
@@ -444,7 +444,7 @@ export default function CheckoutForm() {
                 boxShadow: "0px 6px 32px -8px rgba(36,180,190,0.18)",
               }}
               disabled={loading}
-              className="relative my-2 mx-auto w-full md:w-7/12 text-lg py-3 rounded-xl font-bold tracking-tight bg-gradient-to-r from-bluegreen to-sheen text-white shadow-md hover:shadow-lg transition duration-200 focus:outline-none disabled:opacity-70"
+              className="relative my-2 mx-auto w-full md:w-7/12 text-lg py-3 rounded-xl font-bold tracking-tight bg-gradient-to-r from-brand-primary to-brand-secondary text-white shadow-md hover:shadow-lg transition duration-200 focus:outline-none disabled:opacity-70"
             >
               {loading ? (
                 <span>Slanje...</span>
@@ -460,13 +460,13 @@ export default function CheckoutForm() {
         initial={{ scale: 1 }}
         animate={{ scale: [1, 1.08, 1], y: [0, 8, 0] }}
         transition={{ duration: 7, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute left-[-80px] top-[-60px] w-52 h-52 rounded-full bg-sheen/10 blur-2xl"
+        className="absolute left-[-80px] top-[-60px] w-52 h-52 rounded-full bg-brand-secondary/10 blur-2xl"
       />
       <motion.span
         initial={{ scale: 1 }}
         animate={{ scale: [1, 1.18, 1], x: [0, 20, 0] }}
         transition={{ duration: 8.5, repeat: Infinity, ease: "easeInOut" }}
-        className="absolute right-[-60px] bottom-[-80px] w-40 h-40 rounded-full bg-bluegreen/10 blur-2xl"
+        className="absolute right-[-60px] bottom-[-80px] w-40 h-40 rounded-full bg-brand-primary/10 blur-2xl"
       />
     </motion.div>
   );

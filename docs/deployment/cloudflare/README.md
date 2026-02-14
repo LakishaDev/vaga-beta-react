@@ -4,9 +4,15 @@
 
 ## 📚 Navigacija
 
-### Brzi Linkovi
+### 🌟 NOVO: SSR Deployment
 
-- **[Quick Start](./QUICK_START.md)** - 5 min setup
+- **[SSR Decision Guide](./SSR_DECISION_GUIDE.md)** - ⭐ Da li ti treba SSR? (START HERE)
+- **[SSR Quick Start](./SSR_QUICK_START.md)** - ⚡ Copy-paste ready kod (30-45 min)
+- **[SSR Deployment Guide](./CLOUDFLARE_SSR_DEPLOYMENT_GUIDE.md)** - 📖 Kompletna dokumentacija
+
+### Brzi Linkovi (Standard Deployment)
+
+- **[Quick Start](./QUICK_START.md)** - 5 min setup (bez SSR)
 - **[Complete Setup](./COMPLETE_SETUP.md)** - Detaljan vodič
 - **[Environment Setup](./ENV_SETUP.md)** - Firebase & environment variables
 - **[GitHub Integration](./GITHUB_SETUP.md)** - Automatski deployment

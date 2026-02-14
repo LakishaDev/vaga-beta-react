@@ -65,19 +65,22 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-export const analytics = getAnalytics(app);
+// Analytics se inicijalizuje samo u browser okruženju (client-side)
+export const analytics =
+  typeof window !== "undefined" ? getAnalytics(app) : null;
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app, "europe-west1");
 
 // Initialize App Check (optional - only if reCAPTCHA key is set)
+// App Check se inicijalizuje samo u browser okruženju
 let appCheck = null;
 
 const recaptchaKey = getEnvVar("VITE_FIREBASE_RECAPTCHA_SITE_KEY");
 const appCheckDebugToken = getEnvVar("VITE_FIREBASE_APPCHECK_DEBUG_TOKEN");
 
-if (recaptchaKey) {
+if (typeof window !== "undefined" && recaptchaKey) {
   if (import.meta.env.DEV && appCheckDebugToken) {
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken;
   }
@@ -92,9 +95,11 @@ if (recaptchaKey) {
     console.warn("⚠️ App Check initialization error:", error.message);
   }
 } else {
-  console.warn(
-    "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY not set - App Check disabled",
-  );
+  if (typeof window !== "undefined") {
+    console.warn(
+      "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY not set - App Check disabled",
+    );
+  }
 }
 
 export { appCheck };

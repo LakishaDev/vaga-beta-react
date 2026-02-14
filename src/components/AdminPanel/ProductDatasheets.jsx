@@ -2,19 +2,19 @@
 // ===============================================================================
 // PRODUCT DATASHEETS COMPONENT
 // ===============================================================================
-// 
+//
 // @component ProductDatasheets
 // @description Komponenta za upravljanje datasheets fajlovima (PDF, DOC)
 // @version 2.0
 // @lastmodified 2025-11-02
-// 
+//
 // FUNKCIONALNOSTI:
 // ================
 // ✅ Upload datasheet fajlova (.pdf, .doc, .docx)
 // ✅ Prikazivanje liste fajlova
 // ✅ Uklanjanje fajlova
 // ✅ Glassmorphism dizajn sa animacijama
-// 
+//
 // ===============================================================================
 
 import { motion as Motion, AnimatePresence } from "framer-motion";
@@ -37,19 +37,19 @@ export default function ProductDatasheets({
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="p-4 rounded-xl bg-white/90 backdrop-blur-md border border-[#6EAEA2]/30 shadow-lg"
+      className="p-4 rounded-xl bg-neutral-surface/90 backdrop-blur-md border border-neutral-border shadow-lg"
       style={{
-        background: "rgba(30, 62, 73, 0.05)",
+        background: "rgba(255, 255, 255, 0.9)",
         backdropFilter: "blur(10px)",
       }}
     >
-      <h4 className="font-bold text-[#1E3E49] mb-3 flex items-center gap-2">
-        <FiFile className="text-[#6EAEA2]" /> Datasheets / Preuzimanja
+      <h4 className="font-bold text-text-primary mb-3 flex items-center gap-2">
+        <FiFile className="text-brand-secondary" /> Datasheets / Preuzimanja
       </h4>
       <Motion.label
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-[#6EAEA2] text-white rounded-lg hover:bg-[#91CEC1] transition-all shadow-md hover:shadow-lg"
+        className="cursor-pointer inline-flex items-center gap-2 px-4 py-2 bg-brand-secondary text-white rounded-lg hover:bg-brand-accent transition-all shadow-md hover:shadow-lg"
       >
         <FiPlus /> Dodaj datoteke
         <input
@@ -70,7 +70,7 @@ export default function ProductDatasheets({
               exit={{ opacity: 0, x: -20, scale: 0.9 }}
               transition={{ duration: 0.3, ease: "easeOut" }}
               whileHover={{ scale: 1.02, x: 5 }}
-              className="flex items-center gap-2 p-3 bg-white/80 backdrop-blur-sm rounded-lg border border-[#6EAEA2]/30 shadow-sm hover:shadow-md transition-shadow group"
+              className="flex items-center gap-2 p-3 bg-white/80 backdrop-blur-sm rounded-lg border border-neutral-border shadow-sm hover:shadow-md transition-shadow group"
             >
               <Motion.div
                 animate={{ rotate: [0, 10, -10, 0] }}
@@ -80,9 +80,9 @@ export default function ProductDatasheets({
                   ease: "easeInOut",
                 }}
               >
-                <FiFile className="text-[#6EAEA2]" size={20} />
+                <FiFile className="text-brand-secondary" size={20} />
               </Motion.div>
-              <span className="flex-1 text-sm text-[#1E3E49] truncate font-medium">
+              <span className="flex-1 text-sm text-text-primary truncate font-medium">
                 {ds.name}
               </span>
               <Motion.button
@@ -90,7 +90,7 @@ export default function ProductDatasheets({
                 onClick={() => onRemoveDatasheet(idx)}
                 whileHover={{ scale: 1.2 }}
                 whileTap={{ scale: 0.9 }}
-                className="p-1 bg-[#AD5637] text-white rounded hover:bg-[#8A4D34] transition-all shadow-sm hover:shadow-md"
+                className="p-1 bg-error text-white rounded hover:brightness-95 transition-all shadow-sm hover:shadow-md"
               >
                 <FiX size={16} />
               </Motion.button>

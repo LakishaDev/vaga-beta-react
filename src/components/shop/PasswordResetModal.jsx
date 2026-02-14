@@ -78,7 +78,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Header */}
-            <div className="bg-gradient-to-r from-blue-500 to-bluegreen px-6 py-4 text-white">
+            <div className="bg-gradient-to-r from-brand-primary to-brand-secondary px-6 py-4 text-white">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
                   <div className="p-2 bg-white/20 rounded-xl">
@@ -86,7 +86,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                   </div>
                   <div>
                     <h3 className="text-xl font-bold">Reset lozinke</h3>
-                    <p className="text-blue-100 text-sm">
+                    <p className="text-brand-accent/90 text-sm">
                       Resetujte vašu lozinku
                     </p>
                   </div>
@@ -109,8 +109,8 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                   className="space-y-6"
                 >
                   <div className="text-center mb-6">
-                    <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Mail size={32} className="text-blue-500" />
+                    <div className="w-16 h-16 bg-brand-accent/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <Mail size={32} className="text-brand-primary" />
                     </div>
                     <h4 className="text-lg font-semibold text-gray-800 mb-2">
                       Zaboravili ste lozinku?
@@ -137,14 +137,14 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                     <button
                       type="button"
                       onClick={handleClose}
-                      className="flex-1 px-4 py-3 bg-gray-100 text-gray-700 font-semibold rounded-xl hover:bg-gray-200 transition-colors"
+                      className="flex-1 px-4 py-3 bg-neutral-100 text-text-primary font-semibold rounded-xl hover:bg-neutral-200 transition-colors"
                     >
                       Otkaži
                     </button>
                     <motion.button
                       type="submit"
                       disabled={loading || !email}
-                      className="flex-1 px-4 py-3 bg-bluegreen text-white font-semibold rounded-xl hover:bg-bluegreen/90 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+                      className="flex-1 px-4 py-3 bg-brand-secondary text-white font-semibold rounded-xl hover:bg-brand-secondary/90 disabled:bg-neutral-300 disabled:cursor-not-allowed transition-colors"
                       whileHover={{ scale: 1.02 }}
                       whileTap={{ scale: 0.98 }}
                     >
@@ -176,7 +176,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
                     <p className="text-gray-600 text-sm">
                       Proverite svoj inbox na adresi:
                       <br />
-                      <strong className="text-bluegreen">{email}</strong>
+                      <strong className="text-brand-secondary">{email}</strong>
                     </p>
                   </div>
 
@@ -189,7 +189,7 @@ const PasswordResetModal = ({ isOpen, onClose }) => {
 
                   <button
                     onClick={handleClose}
-                    className="w-full px-4 py-3 bg-bluegreen text-white font-semibold rounded-xl hover:bg-bluegreen/90 transition-colors"
+                    className="w-full px-4 py-3 bg-brand-secondary text-white font-semibold rounded-xl hover:bg-brand-secondary/90 transition-colors"
                   >
                     U redu
                   </button>

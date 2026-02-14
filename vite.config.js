@@ -98,10 +98,15 @@ export default defineConfig({
   // Server konfiguracija za development
   server: {
     port: 3000,
-    open: true, // Automatski otvori browser
+    open: false,
     cors: true,
-    // Kompresija u dev mode
     compress: true,
+    // Za SSR, isključi HMR - koristi page refresh umesto
+    hmr: false,
+    watch: {
+      // Ignoriraj određene fajlove iz watch-a
+      ignored: ["**/node_modules/**", "**/.git/**", "**/dist/**"],
+    },
   },
 
   // Preview server konfiguracija

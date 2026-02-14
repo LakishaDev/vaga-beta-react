@@ -16,19 +16,19 @@ export default function Modal({
   confirmText = "Potvrdi",
 }) {
   return (
-    <div className="fixed inset-0 flex items-center justify-center z-50 bg-gray-900/60 backdrop-blur-md animate-modalFade">
-      <div className="bg-white p-8 rounded-2xl w-full max-w-md shadow-2xl">
-        <h4 className="text-xl font-bold mb-4">{title}</h4>
+    <div className="fixed inset-0 flex items-center justify-center z-50 bg-black/50 backdrop-blur-md animate-modalFade p-4">
+      <div className="bg-neutral-surface border border-neutral-border p-8 rounded-2xl w-full max-w-md shadow-2xl">
+        <h4 className="text-xl font-bold mb-4 text-text-primary">{title}</h4>
         <div className="mb-8">{children}</div>
         <div className="flex justify-end gap-4">
           <button
-            className="text-gray-500 hover:text-gray-900"
+            className="text-text-secondary hover:text-text-primary"
             onClick={onClose}
           >
             Odustani
           </button>
           <button
-            className="bg-bluegreen text-white px-5 py-2 rounded-lg shadow hover:bg-sheen transition"
+            className="bg-brand-primary text-white px-5 py-2 rounded-lg shadow hover:bg-brand-primary-hover transition"
             onClick={onConfirm}
           >
             {confirmText}

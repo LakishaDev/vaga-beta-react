@@ -103,7 +103,7 @@ export default function AdminPanel() {
   const fetchProducts = async () => {
     const querySnapshot = await getDocs(collection(db, "products"));
     setProducts(
-      querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }))
+      querySnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() })),
     );
   };
 
@@ -302,7 +302,7 @@ export default function AdminPanel() {
         simulateUpload(setUploadProgress);
         const storageRef = ref(
           storage,
-          `products/${Date.now()}_${newProduct.imgFile.name}`
+          `products/${Date.now()}_${newProduct.imgFile.name}`,
         );
         await uploadBytes(storageRef, newProduct.imgFile);
         imgUrl = await getDownloadURL(storageRef);
@@ -312,7 +312,7 @@ export default function AdminPanel() {
       for (const img of newProduct.images) {
         const storageRef = ref(
           storage,
-          `products/${Date.now()}_${img.file.name}`
+          `products/${Date.now()}_${img.file.name}`,
         );
         await uploadBytes(storageRef, img.file);
         const url = await getDownloadURL(storageRef);
@@ -323,7 +323,7 @@ export default function AdminPanel() {
       for (const ds of newProduct.datasheets) {
         const storageRef = ref(
           storage,
-          `datasheets/${Date.now()}_${ds.file.name}`
+          `datasheets/${Date.now()}_${ds.file.name}`,
         );
         await uploadBytes(storageRef, ds.file);
         const url = await getDownloadURL(storageRef);
@@ -338,7 +338,7 @@ export default function AdminPanel() {
       for (const md of newProduct.markdownFiles) {
         const storageRef = ref(
           storage,
-          `markdown/${Date.now()}_${md.file.name}`
+          `markdown/${Date.now()}_${md.file.name}`,
         );
         await uploadBytes(storageRef, md.file);
         const url = await getDownloadURL(storageRef);
@@ -581,7 +581,7 @@ export default function AdminPanel() {
         simulateUpload(setEditUploadProgress);
         const storageRef = ref(
           storage,
-          `products/${Date.now()}_${editProduct.imgFile.name}`
+          `products/${Date.now()}_${editProduct.imgFile.name}`,
         );
         await uploadBytes(storageRef, editProduct.imgFile);
         imgUrl = await getDownloadURL(storageRef);
@@ -593,7 +593,7 @@ export default function AdminPanel() {
         for (const img of editProduct.newImages) {
           const storageRef = ref(
             storage,
-            `products/${Date.now()}_${img.file.name}`
+            `products/${Date.now()}_${img.file.name}`,
           );
           await uploadBytes(storageRef, img.file);
           const url = await getDownloadURL(storageRef);
@@ -607,7 +607,7 @@ export default function AdminPanel() {
         for (const ds of editProduct.newDatasheets) {
           const storageRef = ref(
             storage,
-            `datasheets/${Date.now()}_${ds.file.name}`
+            `datasheets/${Date.now()}_${ds.file.name}`,
           );
           await uploadBytes(storageRef, ds.file);
           const url = await getDownloadURL(storageRef);
@@ -627,7 +627,7 @@ export default function AdminPanel() {
         for (const md of editProduct.newMarkdownFiles) {
           const storageRef = ref(
             storage,
-            `markdown/${Date.now()}_${md.file.name}`
+            `markdown/${Date.now()}_${md.file.name}`,
           );
           await uploadBytes(storageRef, md.file);
           const url = await getDownloadURL(storageRef);
@@ -676,17 +676,21 @@ export default function AdminPanel() {
   // ===============================================================================
 
   if (allowed === null)
-    return <div className="text-center mt-10 text-xl">Učitavanje...</div>;
+    return (
+      <div className="text-center mt-10 text-xl text-text-secondary">
+        Učitavanje...
+      </div>
+    );
   if (allowed === false)
     return (
-      <div className="text-red-600 font-bold text-xl mt-10 text-center">
+      <div className="text-error font-bold text-xl mt-10 text-center">
         Pristup odbijen
       </div>
     );
 
   return (
-    <div className="max-w-7xl w-full mx-auto bg-white rounded-2xl shadow-2xl p-4 sm:p-8 lg:p-10 mt-6 animate-fade-up flex flex-col gap-8 sm:gap-16">
-      <h2 className="text-2xl sm:text-4xl font-black text-center text-charcoal mb-6 tracking-tight">
+    <div className="max-w-7xl w-full mx-auto bg-neutral-surface border border-neutral-border rounded-2xl shadow-2xl p-4 sm:p-8 lg:p-10 mt-6 animate-fade-up flex flex-col gap-8 sm:gap-16">
+      <h2 className="text-2xl sm:text-4xl font-black text-center text-text-primary mb-6 tracking-tight">
         Admin panel
       </h2>
 

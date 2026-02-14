@@ -60,7 +60,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
     <AnimatePresence>
       {open && (
         <motion.div
-          className="fixed inset-0 z-[1010] bg-black/40 backdrop-blur-sm flex items-center justify-center p-4"
+          className="fixed inset-0 z-[1010] bg-black/50 backdrop-blur-sm flex items-center justify-center p-4"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
@@ -68,7 +68,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
           data-lenis-prevent
         >
           <motion.div
-            className="bg-white/90 backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-11/12 relative flex flex-col overflow-y-auto my-20"
+            className="bg-neutral-surface/95 border border-neutral-border backdrop-blur-sm rounded-3xl shadow-2xl w-full max-w-2xl max-h-11/12 relative flex flex-col overflow-y-auto my-20"
             initial={{ scale: 0.88, y: 40, opacity: 0 }}
             animate={{ scale: 1, y: 0, opacity: 1 }}
             exit={{ scale: 0.95, y: 40, opacity: 0 }}
@@ -76,7 +76,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
             onClick={(e) => e.stopPropagation()}
           >
             <button
-              className="absolute top-5 right-5 bg-gray-50 rounded-full p-2 text-gray-600 hover:bg-gray-200 shadow transition-colors z-10"
+              className="absolute top-5 right-5 bg-neutral-bg rounded-full p-2 text-text-secondary hover:bg-neutral-surface-tint shadow transition-colors z-10"
               onClick={onClose}
               aria-label="Zatvori"
             >
@@ -93,7 +93,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                 <span>{order.paymentType || "Plaćanje pouzećem"}</span>
               </div>
               <div className="flex-1" />
-              <span className="text-base mr-11 px-2 py-1 rounded bg-blue-50 text-bluegreen font-bold whitespace-nowrap">
+              <span className="text-base mr-11 px-2 py-1 rounded bg-brand-secondary/10 text-brand-primary font-bold whitespace-nowrap">
                 #{order.id || order.createdAt?.seconds}
               </span>
             </div>
@@ -127,7 +127,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
               {/* Sekcija proizvodi */}
               <div className="overflow-y-auto max-h-[30vh] sm:max-h-[50vh]">
                 <h4 className="text-lg font-semibold flex items-center gap-3 mb-4">
-                  <PackageSearch size={20} className="text-bluegreen" />{" "}
+                  <PackageSearch size={20} className="text-brand-primary" />{" "}
                   Proizvodi
                 </h4>
                 <ul className="space-y-3">
@@ -169,7 +169,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                                   <span className="font-semibold">
                                     Predložena cena:{" "}
                                     {prod.suggestedPrice.toLocaleString(
-                                      "sr-RS"
+                                      "sr-RS",
                                     )}{" "}
                                     RSD × {prod.qty}
                                   </span>
@@ -188,7 +188,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
               {/* Sekcija detalji */}
               <div className="flex flex-col gap-4">
                 <h4 className="text-lg font-semibold flex items-center gap-3 mb-4">
-                  <Store size={20} className="text-bluegreen" /> Podaci o
+                  <Store size={20} className="text-brand-primary" /> Podaci o
                   naručiocu
                 </h4>
                 <div className="flex items-center gap-3 text-gray-700">
@@ -214,7 +214,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                 {/* Dostava */}
                 {(order.deliveryPrice || order.deliveryCompany) && (
                   <div className="bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl p-4 border border-blue-200 mt-4">
-                    <div className="flex items-center gap-2 text-bluegreen font-bold mb-2">
+                    <div className="flex items-center gap-2 text-brand-primary font-bold mb-2">
                       <FaShippingFast size={18} />
                       <span>Dostava</span>
                     </div>
@@ -238,7 +238,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                 )}
 
                 {/* Ukupna cena - prilagođeno za skrivene cene */}
-                <div className="flex flex-col gap-2 text-base text-bluegreen font-bold border-t pt-3 mt-6">
+                <div className="flex flex-col gap-2 text-base text-brand-secondary font-bold border-t pt-3 mt-6">
                   <div className="flex items-center gap-2">
                     <CreditCard size={20} />
                     <span>Ukupno:</span>
@@ -246,10 +246,10 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                   {hasHiddenItems ? (
                     <div className="flex flex-col gap-1 ml-7">
                       <div className="flex justify-between">
-                        <span className="text-sm font-medium text-sheen">
+                        <span className="text-sm font-medium text-brand-primary">
                           Vidljive cene:
                         </span>
-                        <span className="text-midnight/70">
+                        <span className="text-text-primary/70">
                           {srRsd(visibleTotal)}
                         </span>
                       </div>
@@ -266,7 +266,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                                 .reduce(
                                   (acc, p) =>
                                     acc + (p.suggestedPrice || 0) * p.qty,
-                                  0
+                                  0,
                                 )
                                 .toLocaleString("sr-RS")} RSD`
                             : "Dogovor"}
@@ -284,7 +284,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                       )}
                       <div className="border-t pt-1 mt-1 flex justify-between">
                         <span className="font-bold">Finalna cena:</span>
-                        <span className="text-rust italic">
+                        <span className="text-error italic">
                           {order.cart
                             .filter(hasHiddenPrice)
                             .every((p) => p.suggestedPrice)
@@ -295,7 +295,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                                   .reduce(
                                     (acc, p) =>
                                       acc + (p.suggestedPrice || 0) * p.qty,
-                                    0
+                                    0,
                                   ) +
                                 (order.deliveryPrice || 0)
                               ).toLocaleString("sr-RS")} RSD`
@@ -326,7 +326,7 @@ export default function OrderDetailsModal({ open, onClose, order }) {
                           <span className="font-bold">Ukupno sa dostavom:</span>
                           <span>
                             {(fullTotal + order.deliveryPrice).toLocaleString(
-                              "sr-RS"
+                              "sr-RS",
                             )}{" "}
                             RSD
                           </span>

@@ -21,7 +21,7 @@ export default function TypingText({
       if (displayed.length < text.length) {
         timeout = setTimeout(
           () => setDisplayed(text.slice(0, displayed.length + 1)),
-          speed
+          speed,
         );
       } else if (displayed.length === text.length) {
         timeout = setTimeout(() => setDir("bwd"), pause);
@@ -30,7 +30,7 @@ export default function TypingText({
       if (displayed.length > 0) {
         timeout = setTimeout(
           () => setDisplayed(text.slice(0, displayed.length - 1)),
-          speed / 2
+          speed / 2,
         );
       } else if (displayed.length === 0) {
         timeout = setTimeout(() => setDir("fwd"), pause);
@@ -42,7 +42,7 @@ export default function TypingText({
   return (
     <span className={`${className} whitespace-nowrap relative`}>
       {displayed}
-      <span className="animate-blink border-l-2 border-bluegreen ml-1 absolute"></span>
+      <span className="animate-blink border-l-2 border-brand-secondary ml-1 absolute"></span>
     </span>
   );
 }

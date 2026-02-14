@@ -41,7 +41,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
           callback: () => {
             /* reCAPTCHA solved */
           },
-        }
+        },
       );
     }
     return recaptchaRef.current;
@@ -61,14 +61,14 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
         confirmationResult = await linkWithPhoneNumber(
           auth.currentUser,
           phone,
-          appVerifier
+          appVerifier,
         );
       } else {
         // Ako nije prijavljen, koristi klasičan login telefonom
         confirmationResult = await signInWithPhoneNumber(
           auth,
           phone,
-          appVerifier
+          appVerifier,
         );
       }
 
@@ -155,7 +155,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
                 className="border-2 rounded-lg px-4 py-3 w-full mb-3"
               />
               <motion.button
-                className="w-full bg-bluegreen/90 text-white rounded-lg py-3 font-bold shadow mt-1 hover:bg-bluegreen"
+                className="w-full bg-brand-secondary/90 text-white rounded-lg py-3 font-bold shadow mt-1 hover:bg-brand-secondary"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 disabled={loading || !/^(\+3816)[0-9]{6,9}$/.test(phone)}
@@ -184,7 +184,7 @@ export default function PhoneVerifyModal({ open, onClose, user, onSuccess }) {
                 className="border-2 rounded-lg px-4 py-3 w-full mb-3 font-mono text-lg text-center tracking-widest"
               />
               <motion.button
-                className="w-full bg-bluegreen text-white rounded-lg py-3 font-bold shadow mt-1 hover:bg-bluegreen/90"
+                className="w-full bg-brand-secondary text-white rounded-lg py-3 font-bold shadow mt-1 hover:bg-brand-secondary/90"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
                 disabled={loading || code.length !== 6}

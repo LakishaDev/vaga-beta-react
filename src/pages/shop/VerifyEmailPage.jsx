@@ -50,10 +50,12 @@ export default function VerifyEmailPage() {
   if (status === "loading") return <Loader />;
   if (status === "fail")
     return (
-      <div className="flex flex-col items-center my-16">
-        <span className="text-red-600 font-bold text-2xl">
-          Neuspešna verifikacija.
-        </span>
+      <div className="w-full px-4 sm:px-8 md:px-16 py-16">
+        <div className="mx-auto max-w-2xl rounded-2xl border border-error/30 bg-neutral-surface p-8 shadow-md text-center">
+          <span className="text-error font-bold text-2xl">
+            Neuspešna verifikacija.
+          </span>
+        </div>
       </div>
     );
   return (
