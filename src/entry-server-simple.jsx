@@ -12,9 +12,9 @@ import React from "react";
 export async function render(url) {
   try {
     // Jednostavna React komponenta za testiranje
-    const TestComponent = () => (
-      React.createElement('div', {
-        dangerouslySetInnerHTML: { 
+    const TestComponent = () =>
+      React.createElement("div", {
+        dangerouslySetInnerHTML: {
           __html: `
             <!DOCTYPE html>
             <html>
@@ -31,10 +31,9 @@ export async function render(url) {
                 <script>console.log('SSR HTML loaded')</script>
               </body>
             </html>
-          `
-        }
-      })
-    );
+          `,
+        },
+      });
 
     // Renderuj React app u HTML string
     const html = renderToString(React.createElement(TestComponent));
