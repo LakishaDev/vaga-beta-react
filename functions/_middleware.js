@@ -1,7 +1,7 @@
 // functions/_middleware.js
 // Cloudflare Pages SSR Middleware - Hybrid Approach
 // SSR samo za marketing stranice, CSR za ostale
-
+//
 export const config = {
   compatibility_flags: ["nodejs_compat"],
 };
