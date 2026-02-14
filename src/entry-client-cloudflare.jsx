@@ -3,17 +3,20 @@
 // Hydratuje server-renderovani HTML i aktivira client-side routing
 // Koristi hydrateRoot umesto createRoot za brže inicijalizacije
 
-import { hydrateRoot } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 
-// Hydratuj sa BrowserRouter - router će automatski čitati window.location
-// NAPOMENA: StrictMode je onemogućen jer SSR ne koristi StrictMode
-// što bi uzrokovalo hydration mismatch
-hydrateRoot(
-  document.getElementById("root"),
+// Renderuj klijentski bez hydrate-a da izbegnemo SSR/CSR mismatch
+const container = document.getElementById("root");
+
+if (!container) {
+  throw new Error("Root element not found");
+}
+
+createRoot(container).render(
   <HelmetProvider>
     <BrowserRouter>
       <App />
