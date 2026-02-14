@@ -33,25 +33,36 @@ export default defineConfig({
     // Optimizuj chunk strategiju
     rollupOptions: {
       output: {
-        // Manual chunking za bolje cache-iranje
-        manualChunks: {
-          // Vendor chunks
-          "react-vendor": ["react", "react-dom", "react-router-dom"],
-          "ui-vendor": [
-            "framer-motion",
-            "@headlessui/react",
-            "@heroicons/react",
-            "lucide-react",
-            "react-icons",
-          ],
-          "three-vendor": ["@react-three/fiber", "@react-three/drei"],
-          // Utils chunks
-          "markdown-vendor": ["react-markdown", "remark-gfm", "rehype-raw"],
-        },
+        // Manual chunking SAMO za client build, ne za SSR
+        ...(process.env.SSR_BUILD !== "true" && {
+          manualChunks: {
+            // Vendor chunks
+            "react-vendor": ["react", "react-dom", "react-router-dom"],
+            "ui-vendor": [
+              "framer-motion",
+              "@headlessui/react",
+              "@heroicons/react",
+              "lucide-react",
+              "react-icons",
+            ],
+            "three-vendor": ["@react-three/fiber", "@react-three/drei"],
+            // Utils chunks
+            "markdown-vendor": ["react-markdown", "remark-gfm", "rehype-raw"],
+          },
+        }),
 
         // Optimizuj imena fajlova za production
-        chunkFileNames: "assets/js/[name]-[hash].js",
-        entryFileNames: "assets/js/[name]-[hash].js",
+        // Za SSR: bez hash-eva, za client: sa hash-evima
+        chunkFileNames:
+          process.env.SSR_BUILD === "true"
+            ? "assets/js/[name].js"
+            : "assets/js/[name]-[hash].js",
+
+        entryFileNames:
+          process.env.SSR_BUILD === "true"
+            ? "entry-server-cloudflare.js"
+            : "assets/js/[name]-[hash].js",
+
         assetFileNames: ({ name }) => {
           if (/\.(gif|jpe?g|png|svg|webp|avif)$/.test(name ?? "")) {
             return "assets/images/[name]-[hash][extname]";
@@ -125,6 +136,40 @@ export default defineConfig({
       "framer-motion",
     ],
     exclude: ["@react-three/fiber", "@react-three/drei"], // Exclude large 3D libs from pre-bundling
+  },
+
+  // SSR build konfiguracija
+  ssr: {
+    // Bundleuj sve dependencies za SSR (jer Workers Runtime nema npm)
+    noExternal: [
+      "react",
+      "react-dom",
+      "react-router-dom",
+      "framer-motion",
+      "motion",
+      "lucide-react",
+      "@headlessui/react",
+      "@react-three/fiber",
+      "@react-three/drei",
+      "three",
+      "react-markdown",
+      "remark-gfm",
+      "rehype-raw",
+      "react-icons",
+      "@heroicons/react",
+      "lenis",
+    ],
+    // Packages which cannot be used in Workers Runtime
+    external: [
+      "firebase-admin",
+      "express",
+      "compression",
+      "node:fs",
+      "node:path",
+      "node:stream",
+      "node:http",
+      "react-helmet-async", // Exclude helmet-async za sada
+    ],
   },
 
   // CSS preprocessor opcije
