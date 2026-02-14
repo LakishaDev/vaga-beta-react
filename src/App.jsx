@@ -48,7 +48,7 @@ function AppContent() {
       <Navbar />
       <main className="pt-24 sm:pt-28" suppressHydrationWarning>
         <RenderBoundary>
-          <Suspense fallback={<Loader />}>
+          <Suspense fallback={<Loader />} key={location.pathname}>
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/usluge" element={<Usluge />} />
