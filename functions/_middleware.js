@@ -2,6 +2,10 @@
 // Cloudflare Pages SSR Middleware - Hybrid Approach
 // SSR samo za marketing stranice, CSR za ostale
 
+export const config = {
+  compatibility_flags: ["nodejs_compat"],
+};
+
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
