@@ -1,0 +1,43 @@
+# Cloudflare Pages Functions Ignore File
+# Sprečava upload nepotrebnih fajlova u functions folder
+
+# Dependencies
+node_modules/
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Build artifacts
+*.log
+*.tsbuildinfo
+
+# Development files
+*.test.js
+*.spec.js
+__tests__/
+__mocks__/
+
+# Documentation
+README.md
+*.md
+
+# Source maps (opciono - možeš ih uključiti za debugging)
+*.map
+
+# TypeScript source files (ako koristiš TS)
+*.ts
+!*.d.ts
+
+# Config fajlovi koji nisu potrebni
+tsconfig.json
+tsconfig.dev.json
+.eslintrc*
+.prettierrc*
+
+# Certificates (već bundled)
+certs/
+
+# Service account keys (nikad ne šalji kredencijale!)
+serviceAccountKey.json
+*.pem
+*.key

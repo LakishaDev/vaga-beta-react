@@ -67,9 +67,8 @@ export async function onRequest(context) {
   }
 
   try {
-    // Dinamički import SSR render funkcije
-    const { render } =
-      await import("../dist/server/entry-server-cloudflare.js");
+    // Dinamički import SSR render funkcije iz functions foldera
+    const { render } = await import("./ssr-render.js");
 
     if (!render) {
       console.error("SSR render function not found");

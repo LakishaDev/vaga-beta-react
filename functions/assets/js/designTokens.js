@@ -1,0 +1,1 @@
+const r={colors:{brand:{primary:"#0B3A8D",primaryHover:"#072B6E",secondary:"#1D4ED8",accent:"#0E7490"},neutral:{bg:"#F8FAFC",surfaceTint:"#EFF6FF",borderLight:"#E2E8F0"},text:{secondary:"#475569"}}};export{r as d};

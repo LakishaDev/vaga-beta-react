@@ -34,14 +34,14 @@ echo "✅ Build uspešan!"
 echo ""
 
 # Proveri da li postoje oba build-a
-if [ ! -d "dist/client" ] || [ ! -d "dist/server" ]; then
-    echo "❌ Greška: dist/client ili dist/server folder ne postoji!"
+if [ ! -d "dist" ] || [ ! -f "functions/ssr-render.js" ]; then
+    echo "❌ Greška: dist folder ili functions/ssr-render.js ne postoji!"
     echo "   Build nije uspeo da generiše sve potrebne fajlove."
     exit 1
 fi
 
-echo "✅ Client build: dist/client"
-echo "✅ Server build: dist/server"
+echo "✅ Client build: dist/"
+echo "✅ Server build: functions/ssr-render.js"
 echo ""
 
 # Korak 3: Proverite Wrangler instalaciju
@@ -54,11 +54,11 @@ fi
 echo "🌐 Uploadujem na Cloudflare Pages..."
 echo ""
 
-read -p "Unesi Cloudflare project name (vaga-beta): " project_name
-project_name=${project_name:-vaga-beta}
+read -p "Unesi Cloudflare project name (vaga-beta-nesto): " project_name
+project_name=${project_name:-vaga-beta-nesto}
 
-# Upload dist folder (koji sadrži client i server)
-wrangler pages deploy dist/client --project-name=$project_name
+# Upload dist folder (koji sadrži client build)
+wrangler pages deploy dist --project-name=$project_name --commit-dirty=true
 
 echo ""
 echo "✅ Deploy završen!"

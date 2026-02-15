@@ -32,6 +32,9 @@ export default defineConfig({
 
     // Optimizuj chunk strategiju
     rollupOptions: {
+      input: {
+        main: new URL("./index.html", import.meta.url).pathname,
+      },
       output: {
         // Manual chunking SAMO za client build, ne za SSR
         ...(process.env.SSR_BUILD !== "true" && {
