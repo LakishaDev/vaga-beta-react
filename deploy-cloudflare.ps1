@@ -24,8 +24,8 @@ if ($LASTEXITCODE -ne 0) {
 
 # Korak 2: Build
 Write-Host ""
-Write-Host "🔨 Pravim production build..." -ForegroundColor Cyan
-npm run build:prod
+Write-Host "🔨 Pravim hybrid build (CSR + SSR)..." -ForegroundColor Cyan
+npm run build:cloudflare
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Build neuspešan!" -ForegroundColor Red
@@ -33,6 +33,17 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 Write-Host "✅ Build uspešan!" -ForegroundColor Green
+Write-Host ""
+
+# Proveri da li postoje oba build-a
+if (!(Test-Path "dist/client") -or !(Test-Path "dist/server")) {
+    Write-Host "❌ Greška: dist/client ili dist/server folder ne postoji!" -ForegroundColor Red
+    Write-Host "   Build nije uspeo da generiše sve potrebne fajlove." -ForegroundColor Yellow
+    exit 1
+}
+
+Write-Host "✅ Client build: dist/client" -ForegroundColor Green
+Write-Host "✅ Server build: dist/server" -ForegroundColor Green
 Write-Host ""
 
 # Korak 3: Proverite Wrangler instalaciju
@@ -51,7 +62,8 @@ if ([string]::IsNullOrWhiteSpace($projectName)) {
     $projectName = "vaga-beta"
 }
 
-wrangler pages deploy dist --project-name=$projectName
+# Upload dist/client folder (koji sadrži client build)
+wrangler pages deploy dist/client --project-name=$projectName
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Deploy neuspešan!" -ForegroundColor Red

@@ -22,8 +22,8 @@ npm install --legacy-peer-deps
 
 # Korak 2: Build
 echo ""
-echo "🔨 Pravim production build..."
-npm run build:prod
+echo "🔨 Pravim hybrid build (CSR + SSR)..."
+npm run build:cloudflare
 
 if [ $? -ne 0 ]; then
     echo "❌ Build neuspešan!"
@@ -31,6 +31,17 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "✅ Build uspešan!"
+echo ""
+
+# Proveri da li postoje oba build-a
+if [ ! -d "dist/client" ] || [ ! -d "dist/server" ]; then
+    echo "❌ Greška: dist/client ili dist/server folder ne postoji!"
+    echo "   Build nije uspeo da generiše sve potrebne fajlove."
+    exit 1
+fi
+
+echo "✅ Client build: dist/client"
+echo "✅ Server build: dist/server"
 echo ""
 
 # Korak 3: Proverite Wrangler instalaciju
@@ -46,7 +57,8 @@ echo ""
 read -p "Unesi Cloudflare project name (vaga-beta): " project_name
 project_name=${project_name:-vaga-beta}
 
-wrangler pages deploy dist --project-name=$project_name
+# Upload dist folder (koji sadrži client i server)
+wrangler pages deploy dist/client --project-name=$project_name
 
 echo ""
 echo "✅ Deploy završen!"

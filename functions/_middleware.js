@@ -32,6 +32,7 @@ export async function onRequest(context) {
   // SKIP SSR ZA ADMIN & AUTHENTICATED (CSR only)
   // ====================
   const CSR_ROUTES = [
+    "/prodavnica", // Shop routes - Firebase dependent
     "/admin",
     "/dashboard",
     "/profil",
