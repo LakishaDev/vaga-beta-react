@@ -12,7 +12,7 @@
 import { CartContext } from "./CartContext";
 
 // src/contexts/shop/CartContext.jsx
-import { useReducer, useEffect } from "react";
+import { useReducer, useEffect, useState } from "react";
 import { CartService } from "../../../services/CartService"; // putanja do CartService
 import { useAuth } from "../../../hooks/useAuth";
 
@@ -26,7 +26,7 @@ const cartReducer = (state, action) => {
       const exist = state.find((i) => i.id === action.payload.id);
       if (exist) {
         return state.map((i) =>
-          i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i
+          i.id === action.payload.id ? { ...i, qty: i.qty + 1 } : i,
         );
       }
       return [...state, { ...action.payload, qty: 1 }];
@@ -37,7 +37,7 @@ const cartReducer = (state, action) => {
       return [];
     case "UPDATE_QUANTITY":
       return state.map((i) =>
-        i.id === action.payload.id ? { ...i, qty: action.payload.qty } : i
+        i.id === action.payload.id ? { ...i, qty: action.payload.qty } : i,
       );
     default:
       return state;
@@ -47,22 +47,32 @@ const cartReducer = (state, action) => {
 export function CartProvider({ children }) {
   const [cart, dispatch] = useReducer(cartReducer, []);
   const { user } = useAuth();
+  const [isClient, setIsClient] = useState(false);
+
+  // Client-side guard
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   // Učitaj korpu kad korisnik dođe na sajt/loguje se
   useEffect(() => {
+    if (!isClient) return; // Wait for client-side
+
     async function loadCart() {
       if (user?.uid) {
         const cartItems = await CartService.loadCartFromFirebase(user.uid); // asynch
         dispatch({ type: "SET_CART", payload: cartItems });
       } else {
-        const localCart = localStorage.getItem("cart");
-        if (localCart)
-          dispatch({ type: "SET_CART", payload: JSON.parse(localCart) });
-        else dispatch({ type: "CLEAR_CART" });
+        if (typeof window !== "undefined" && window.localStorage) {
+          const localCart = localStorage.getItem("cart");
+          if (localCart)
+            dispatch({ type: "SET_CART", payload: JSON.parse(localCart) });
+          else dispatch({ type: "CLEAR_CART" });
+        }
       }
     }
     loadCart();
-  }, [user]);
+  }, [user, isClient]);
 
   // Funkcije koje eksplicitno šalju podatke u Firebase kad se nešto desi
   const addToCart = async (product) => {
@@ -71,7 +81,7 @@ export function CartProvider({ children }) {
       // čekaj novi state
       const nextCart = getNextCart("ADD_TO_CART", cart, product); // vidi dole!
       await CartService.saveCartToFirebase(user.uid, nextCart);
-    } else {
+    } else if (typeof window !== "undefined" && window.localStorage) {
       const nextCart = getNextCart("ADD_TO_CART", cart, product);
       localStorage.setItem("cart", JSON.stringify(nextCart));
     }
@@ -82,7 +92,7 @@ export function CartProvider({ children }) {
     if (user?.uid) {
       const nextCart = getNextCart("REMOVE_FROM_CART", cart, id);
       await CartService.saveCartToFirebase(user.uid, nextCart);
-    } else {
+    } else if (typeof window !== "undefined" && window.localStorage) {
       const nextCart = getNextCart("REMOVE_FROM_CART", cart, id);
       localStorage.setItem("cart", JSON.stringify(nextCart));
     }
@@ -93,7 +103,7 @@ export function CartProvider({ children }) {
     if (user?.uid) {
       const nextCart = getNextCart("UPDATE_QUANTITY", cart, { id, qty });
       await CartService.saveCartToFirebase(user.uid, nextCart);
-    } else {
+    } else if (typeof window !== "undefined" && window.localStorage) {
       const nextCart = getNextCart("UPDATE_QUANTITY", cart, { id, qty });
       localStorage.setItem("cart", JSON.stringify(nextCart));
     }
@@ -104,7 +114,9 @@ export function CartProvider({ children }) {
     if (user?.uid) {
       await CartService.saveCartToFirebase(user.uid, []);
     }
-    localStorage.removeItem("cart");
+    if (typeof window !== "undefined" && window.localStorage) {
+      localStorage.removeItem("cart");
+    }
   };
 
   // Helper za sledeći state (jer dispatch je asinhron)
@@ -114,7 +126,7 @@ export function CartProvider({ children }) {
         const exist = currentCart.find((i) => i.id === payload.id);
         if (exist) {
           return currentCart.map((i) =>
-            i.id === payload.id ? { ...i, qty: i.qty + 1 } : i
+            i.id === payload.id ? { ...i, qty: i.qty + 1 } : i,
           );
         }
         return [...currentCart, { ...payload, qty: 1 }];
@@ -123,7 +135,7 @@ export function CartProvider({ children }) {
         return currentCart.filter((i) => i.id !== payload);
       case "UPDATE_QUANTITY":
         return currentCart.map((i) =>
-          i.id === payload.id ? { ...i, qty: payload.qty } : i
+          i.id === payload.id ? { ...i, qty: payload.qty } : i,
         );
       default:
         return currentCart;

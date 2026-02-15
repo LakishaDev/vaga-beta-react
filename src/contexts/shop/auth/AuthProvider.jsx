@@ -20,14 +20,22 @@ import { auth } from "../../../utils/firebase"; // tvoja firebase instanca
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isClient, setIsClient] = useState(false);
+
+  // Client-side guard
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   useEffect(() => {
+    if (!isClient) return; // Wait for client-side
+
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       setUser(currentUser);
       setLoading(false);
     });
     return () => unsubscribe();
-  }, []);
+  }, [isClient]);
 
   const login = async (email, password) => {
     await signInWithEmailAndPassword(auth, email, password);
