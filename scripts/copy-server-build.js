@@ -9,7 +9,8 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = dirname(__dirname);
 
 const sourceFile = `${projectRoot}/dist/.server/entry-server-cloudflare.js`;
-const destFile = `${projectRoot}/functions/ssr-render.js`;
+const destEntryFile = `${projectRoot}/functions/entry-server-cloudflare.js`;
+const destCompatFile = `${projectRoot}/functions/ssr-render.js`;
 const sourceAssets = `${projectRoot}/dist/.server/assets`;
 const destAssets = `${projectRoot}/functions/assets`;
 
@@ -21,15 +22,18 @@ if (!existsSync(sourceFile)) {
 }
 
 // Kreiraj functions folder ako ne postoji
-const functionsDir = dirname(destFile);
+const functionsDir = dirname(destEntryFile);
 if (!existsSync(functionsDir)) {
   mkdirSync(functionsDir, { recursive: true });
 }
 
 // Kopiraj fajl
 try {
-  copyFileSync(sourceFile, destFile);
-  console.log(`✅ Copied server build to functions/ssr-render.js`);
+  copyFileSync(sourceFile, destEntryFile);
+  copyFileSync(sourceFile, destCompatFile);
+  console.log(
+    "✅ Copied server build to functions/entry-server-cloudflare.js and functions/ssr-render.js",
+  );
 } catch (error) {
   console.error(`❌ Failed to copy file: ${error.message}`);
   process.exit(1);
