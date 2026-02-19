@@ -18,6 +18,15 @@ const envLocalPath = path.join(__dirname, "..", ".env.local");
 console.log("🔨 Cloudflare Pages Build Script");
 console.log("================================\n");
 
+const requiredViteVars = [
+  "VITE_FIREBASE_API_KEY",
+  "VITE_FIREBASE_AUTH_DOMAIN",
+  "VITE_FIREBASE_PROJECT_ID",
+  "VITE_FIREBASE_STORAGE_BUCKET",
+  "VITE_FIREBASE_MESSAGING_SENDER_ID",
+  "VITE_FIREBASE_APP_ID",
+];
+
 // Prikupi sve VITE_* varijable
 const viteVars = {};
 let foundCount = 0;
@@ -59,6 +68,20 @@ if (foundCount === 0) {
 }
 
 console.log(`\n📋 Pronađeno ${foundCount} VITE_* varijable iz ${source}\n`);
+
+const missingRequiredVars = requiredViteVars.filter((key) => !viteVars[key]);
+
+if (missingRequiredVars.length > 0) {
+  console.error("❌ Nedostaju obavezne Firebase varijable za build:");
+  missingRequiredVars.forEach((key) => {
+    console.error(`   - ${key}`);
+  });
+  console.error(
+    "\n➡️ Dodaj ih u Cloudflare Pages > Settings > Environment variables",
+  );
+  console.error("   (kao Plaintext, ne Secret), pa pokreni novi deploy.\n");
+  process.exit(1);
+}
 
 if (foundCount === 0) {
   console.warn("⚠️  Upozorenje: Nema pronađenih VITE_* varijabli!");
