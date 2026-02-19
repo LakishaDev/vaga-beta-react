@@ -10,59 +10,55 @@ import ProgressiveImage from "./UI/ProgressiveImage";
 export default function Loader() {
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.67 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.27 }}
-      className="w-full flex flex-col items-center justify-center h-[350px] bg-gradient-to-br from-brand-secondary/25 via-white/80 to-neutral-200/30 rounded-3xl shadow-2xl"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.25 }}
+      className="w-full min-h-[45vh] flex items-center justify-center px-6"
     >
-      {/* 3D animirana bubble + glowing shadow + orbit dots */}
       <motion.div
-        initial={{ scale: 0.94, opacity: 0.92 }}
-        animate={{
-          scale: [0.95, 1.14, 0.95],
-          boxShadow: [
-            "0 0 0 #67e8f9c6",
-            "0 0 44px #22d3ee44",
-            "0 0 0 #67e8f9c6",
-          ],
-          rotate: [0, 12, -14, 0],
-        }}
+        initial={{ y: 8, scale: 0.98 }}
+        animate={{ y: 0, scale: 1 }}
         transition={{
-          duration: 1.9,
-          repeat: Infinity,
-          repeatType: "mirror",
-          ease: "easeInOut",
+          duration: 0.3,
+          ease: "easeOut",
         }}
-        className="relative w-[68px] h-[68px] rounded-full bg-gradient-to-tr from-brand-secondary/60 via-white/40 to-blue-100/20 shadow-2xl flex items-center justify-center"
+        className="relative w-full max-w-sm rounded-3xl border border-border bg-card-bg/90 p-8 backdrop-blur-sm"
       >
-        {/* 3d ikon */}
-        <ProgressiveImage
-          src="/3d/fix-3d.png"
-          alt=""
-          className="w-10 h-10 blur-[1.5px]"
-        />
-        {/* orbiting dots */}
-        {[...Array(6)].map((_, i) => (
-          <motion.span
-            key={i}
-            className="absolute w-2 h-2 rounded-full bg-brand-secondary/80"
-            style={{
-              top: `${30 + 26 * Math.sin((i * Math.PI) / 3)}px`,
-              left: `${30 + 26 * Math.cos((i * Math.PI) / 3)}px`,
-            }}
-            animate={{ scale: [1, 1.18, 1], opacity: [0.7, 1, 0.7] }}
-            transition={{
-              duration: 1.5,
-              delay: i * 0.18,
-              repeat: Infinity,
-              repeatType: "loop",
-            }}
-          />
-        ))}
+        <div className="flex flex-col items-center gap-5">
+          <div className="relative h-16 w-16">
+            <motion.div
+              className="absolute inset-0 rounded-full border-2 border-brand-secondary/30"
+              animate={{ scale: [1, 1.18, 1], opacity: [0.35, 0.7, 0.35] }}
+              transition={{
+                duration: 1.8,
+                repeat: Infinity,
+                ease: "easeInOut",
+              }}
+            />
+            <motion.div
+              className="absolute inset-1 rounded-full border-2 border-brand-secondary"
+              animate={{ rotate: 360 }}
+              transition={{ duration: 1.1, repeat: Infinity, ease: "linear" }}
+            />
+            <div className="absolute inset-0 flex items-center justify-center">
+              <ProgressiveImage
+                src="/3d/fix-3d.png"
+                alt="Vaga Beta"
+                className="h-8 w-8 rounded-full"
+              />
+            </div>
+          </div>
+
+          <div className="text-center">
+            <p className="text-base font-semibold text-text-primary">
+              Učitavanje...
+            </p>
+            <p className="mt-1 text-sm text-text-secondary">
+              Pripremamo sadržaj za vas
+            </p>
+          </div>
+        </div>
       </motion.div>
-      <span className="mt-7 text-brand-secondary text-lg font-semibold tracking-wide drop-shadow-xl">
-        Učitavam profil
-      </span>
     </motion.div>
   );
 }

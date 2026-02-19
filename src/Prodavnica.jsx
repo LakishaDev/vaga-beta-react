@@ -18,7 +18,7 @@
 import { Routes, Route } from "react-router-dom";
 import { CartProvider } from "./contexts/shop/cart/CartProvider";
 import { SnackbarProvider } from "./contexts/snackbar/SnackbarProvider";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import HeroSectionModern from "./pages/shop/HeroSectionModern";
 import ProductGrid from "./components/shop/ProductGrid";
 import Cart from "./pages/shop/Cart";
@@ -41,15 +41,7 @@ import { LicensesPage, OrdersPage } from "./pages/admin/licensing";
 import { Toaster } from "react-hot-toast";
 
 function Prodavnica() {
-  // Client-side only guard - prevent SSR errors
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
-
-  // Only initialize auth after client-side hydration
-  const [user] = useAuthState(isClient ? auth : null);
+  const [user] = useAuthState(auth);
 
   // Kreiraj ili ažuriraj korisnički nalog pri svakom loginu
   useEffect(() => {
@@ -58,11 +50,6 @@ function Prodavnica() {
       createOrUpdateUserAccount(user);
     }
   }, [user]);
-
-  // Prevent rendering until client-side to avoid SSR/hydration issues
-  if (!isClient) {
-    return null; // Or a loading spinner if preferred
-  }
 
   return (
     <SnackbarProvider>

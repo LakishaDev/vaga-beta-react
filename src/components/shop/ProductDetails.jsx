@@ -1,7 +1,6 @@
 import { Link, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
-import * as HelmetAsync from "react-helmet-async";
-const Helmet = HelmetAsync.Helmet || HelmetAsync.default?.Helmet;
+import { Helmet } from "react-helmet-async";
 import { db, auth } from "../../utils/firebase";
 import {
   doc,
