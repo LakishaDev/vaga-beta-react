@@ -150,7 +150,7 @@ if (missingRequiredVars.length > 0) {
   console.error(
     "   Podržani nazivi: VITE_FIREBASE_* ili FIREBASE_* alias varijante.\n",
   );
-  // process.exit(1);
+  process.exit(1);
 }
 
 if (foundCount === 0) {
