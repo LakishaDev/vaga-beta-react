@@ -135,16 +135,16 @@ if (missingRequiredVars.length > 0) {
   if (isCloudflarePagesBuild) {
     console.error("\n➡️ Detektovan je Cloudflare Pages build.");
     console.error(
-      "   Ako projekat koristi wrangler.toml, dashboard Plaintext varijable mogu biti zaključane.",
+      "   Projekat sada koristi ISKLJUČIVO Cloudflare Pages Variables/Secrets iz dashboard-a.",
     );
     console.error(
-      "   Koristi jednu od opcija: (1) Cloudflare Secrets u Dashboard-u ili (2) [vars] u wrangler.toml.",
+      "   Dodaj varijable u Pages > Settings > Environment variables (Production i Preview).",
     );
   } else {
     console.error(
       "\n➡️ Dodaj ih u Cloudflare Pages > Settings > Environment variables",
     );
-    console.error("   (ili u wrangler.toml [vars]), pa pokreni novi deploy.");
+    console.error("   pa pokreni novi deploy.");
   }
 
   console.error(
@@ -159,16 +159,14 @@ if (foundCount === 0) {
   console.warn("   1. .env.local fajl (za lokalne teste)");
   if (isCloudflarePagesBuild) {
     console.warn(
-      "   2. Cloudflare Pages Secrets (dashboard) ili [vars] u wrangler.toml",
+      "   2. Cloudflare Pages Environment Variables/Secrets (dashboard)",
     );
-    console.warn(
-      "   Plaintext vars mogu biti onemogućene kad je wrangler.toml aktivan.\n",
-    );
+    console.warn("   Proveri i Production i Preview scope.\n");
   } else {
     console.warn(
       "   2. Cloudflare Pages Environment Variables u Dashboard-u (za production)",
     );
-    console.warn("   Ili postavi [vars] u wrangler.toml.\n");
+    console.warn("   (wrangler.toml vars fallback je uklonjen).\n");
   }
 }
 
