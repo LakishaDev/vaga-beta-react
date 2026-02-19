@@ -147,6 +147,8 @@ export default defineConfig({
     noExternal: [
       "react",
       "react-dom",
+      "react-router",
+      "react-router-dom",
       "framer-motion",
       "motion",
       "lucide-react",

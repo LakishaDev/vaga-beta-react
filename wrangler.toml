@@ -1,0 +1,16 @@
+name = "vaga-beta-react"
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat"]
+pages_build_output_dir = "dist"
+
+[vars]
+VITE_FIREBASE_API_KEY = "AIzaSyCi4Dv4xX0uLr5texK-UoQMgAx6LYyLRGk"
+VITE_FIREBASE_AUTH_DOMAIN = "vaga-beta-sajt.firebaseapp.com"
+VITE_FIREBASE_PROJECT_ID = "vaga-beta-sajt"
+VITE_FIREBASE_STORAGE_BUCKET = "vaga-beta-sajt.firebasestorage.app"
+VITE_FIREBASE_MESSAGING_SENDER_ID = "128255475317"
+VITE_FIREBASE_APP_ID = "1:128255475317:web:940cd944e6f1f762b9423c"
+VITE_FIREBASE_MEASUREMENT_ID = "G-WQFDTPZEXB"
+VITE_FIREBASE_APPCHECK_DEBUG_TOKEN = "C0D542DB-96AE-4886-A47F-6A6B7FD27D30"
+VITE_FIREBASE_RECAPTCHA_SITE_KEY = "6LdhT-ArAAAAAA93PlM7Ua3eE3TttZAjFcSpwySS"
+VITE_ADMIN_EMAILS = "lazar.cve@gmail.com"

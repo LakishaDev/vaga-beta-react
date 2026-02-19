@@ -7,7 +7,7 @@ import { renderToPipeableStream } from "react-dom/server";
 import { Writable } from "stream";
 import pkg from "react-helmet-async";
 const { HelmetProvider } = pkg;
-import { StaticRouter } from "react-router-dom";
+import { StaticRouter } from "react-router";
 import App from "./App";
 
 export async function render(url, helmetContext = {}) {

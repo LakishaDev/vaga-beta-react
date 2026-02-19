@@ -17,6 +17,8 @@ const envLocalPath = path.join(__dirname, "..", ".env.local");
 
 console.log("🔨 Cloudflare Pages Build Script");
 console.log("================================\n");
+const isCloudflarePagesBuild =
+  process.env.CF_PAGES === "1" || !!process.env.CF_PAGES_COMMIT_SHA;
 
 const requiredViteVars = [
   "VITE_FIREBASE_API_KEY",
@@ -26,6 +28,47 @@ const requiredViteVars = [
   "VITE_FIREBASE_MESSAGING_SENDER_ID",
   "VITE_FIREBASE_APP_ID",
 ];
+
+const envAliases = {
+  VITE_FIREBASE_API_KEY: ["VITE_FIREBASE_API_KEY", "FIREBASE_API_KEY"],
+  VITE_FIREBASE_AUTH_DOMAIN: [
+    "VITE_FIREBASE_AUTH_DOMAIN",
+    "FIREBASE_AUTH_DOMAIN",
+  ],
+  VITE_FIREBASE_PROJECT_ID: ["VITE_FIREBASE_PROJECT_ID", "FIREBASE_PROJECT_ID"],
+  VITE_FIREBASE_STORAGE_BUCKET: [
+    "VITE_FIREBASE_STORAGE_BUCKET",
+    "FIREBASE_STORAGE_BUCKET",
+  ],
+  VITE_FIREBASE_MESSAGING_SENDER_ID: [
+    "VITE_FIREBASE_MESSAGING_SENDER_ID",
+    "FIREBASE_MESSAGING_SENDER_ID",
+  ],
+  VITE_FIREBASE_APP_ID: ["VITE_FIREBASE_APP_ID", "FIREBASE_APP_ID"],
+  VITE_FIREBASE_MEASUREMENT_ID: [
+    "VITE_FIREBASE_MEASUREMENT_ID",
+    "FIREBASE_MEASUREMENT_ID",
+  ],
+  VITE_FIREBASE_RECAPTCHA_SITE_KEY: [
+    "VITE_FIREBASE_RECAPTCHA_SITE_KEY",
+    "FIREBASE_RECAPTCHA_SITE_KEY",
+  ],
+  VITE_FIREBASE_APPCHECK_DEBUG_TOKEN: [
+    "VITE_FIREBASE_APPCHECK_DEBUG_TOKEN",
+    "FIREBASE_APPCHECK_DEBUG_TOKEN",
+  ],
+  VITE_ADMIN_EMAILS: ["VITE_ADMIN_EMAILS", "ADMIN_EMAILS"],
+};
+
+const getAliasedValue = (source, viteKey) => {
+  const candidates = envAliases[viteKey] || [viteKey];
+  for (const key of candidates) {
+    if (source[key]) {
+      return source[key];
+    }
+  }
+  return undefined;
+};
 
 // Prikupi sve VITE_* varijable
 const viteVars = {};
@@ -58,8 +101,20 @@ if (foundCount === 0) {
   console.log(`📖 Čitam iz process.env (Cloudflare Pages okruženje)...\n`);
   source = "process.env";
 
+  for (const viteKey of Object.keys(envAliases)) {
+    const resolvedValue = getAliasedValue(process.env, viteKey);
+    if (resolvedValue) {
+      viteVars[viteKey] = resolvedValue;
+      foundCount++;
+      console.log(`✓ ${viteKey}`);
+    }
+  }
+
   for (const [key, value] of Object.entries(process.env)) {
-    if (key.startsWith("VITE_")) {
+    if (!key.startsWith("VITE_")) {
+      continue;
+    }
+    if (!viteVars[key] && value) {
       viteVars[key] = value;
       foundCount++;
       console.log(`✓ ${key}`);
@@ -76,10 +131,25 @@ if (missingRequiredVars.length > 0) {
   missingRequiredVars.forEach((key) => {
     console.error(`   - ${key}`);
   });
+
+  if (isCloudflarePagesBuild) {
+    console.error("\n➡️ Detektovan je Cloudflare Pages build.");
+    console.error(
+      "   Ako projekat koristi wrangler.toml, dashboard Plaintext varijable mogu biti zaključane.",
+    );
+    console.error(
+      "   Koristi jednu od opcija: (1) Cloudflare Secrets u Dashboard-u ili (2) [vars] u wrangler.toml.",
+    );
+  } else {
+    console.error(
+      "\n➡️ Dodaj ih u Cloudflare Pages > Settings > Environment variables",
+    );
+    console.error("   (ili u wrangler.toml [vars]), pa pokreni novi deploy.");
+  }
+
   console.error(
-    "\n➡️ Dodaj ih u Cloudflare Pages > Settings > Environment variables",
+    "   Podržani nazivi: VITE_FIREBASE_* ili FIREBASE_* alias varijante.\n",
   );
-  console.error("   (kao Plaintext, ne Secret), pa pokreni novi deploy.\n");
   process.exit(1);
 }
 
@@ -87,10 +157,19 @@ if (foundCount === 0) {
   console.warn("⚠️  Upozorenje: Nema pronađenih VITE_* varijabli!");
   console.warn("   Proveri:");
   console.warn("   1. .env.local fajl (za lokalne teste)");
-  console.warn(
-    "   2. Cloudflare Pages Environment Variables u Dashboard-u (za production)",
-  );
-  console.warn("   Varijable moraju biti Plaintext, ne Secret!\n");
+  if (isCloudflarePagesBuild) {
+    console.warn(
+      "   2. Cloudflare Pages Secrets (dashboard) ili [vars] u wrangler.toml",
+    );
+    console.warn(
+      "   Plaintext vars mogu biti onemogućene kad je wrangler.toml aktivan.\n",
+    );
+  } else {
+    console.warn(
+      "   2. Cloudflare Pages Environment Variables u Dashboard-u (za production)",
+    );
+    console.warn("   Ili postavi [vars] u wrangler.toml.\n");
+  }
 }
 
 // Kreiraj .env.production fajl
