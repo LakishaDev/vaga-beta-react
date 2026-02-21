@@ -9,12 +9,12 @@
 import { Link } from "react-router-dom";
 import {
   FaLinkedin,
-  FaGithub,
   FaPhoneAlt,
   FaEnvelope,
   FaInstagram,
 } from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
+import NewsletterSignup from "./NewsletterSignup";
 
 export default function Footer() {
   return (
@@ -124,6 +124,10 @@ export default function Footer() {
               </a>
             </div>
           </div>
+        </div>
+
+        <div className="mt-8 md:mt-10">
+          <NewsletterSignup />
         </div>
 
         <div className="mt-10 pt-4 border-t border-neutral-border text-sm text-text-tertiary flex flex-col sm:flex-row gap-2 sm:items-center sm:justify-between">
