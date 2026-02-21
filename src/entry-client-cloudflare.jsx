@@ -1,9 +1,8 @@
 // src/entry-client-cloudflare.jsx
 // Klijentska ulazna tačka za Cloudflare Pages SSR + CSR hybrid
-// Hydratuje server-renderovani HTML i aktivira client-side routing
-// Koristi hydrateRoot umesto createRoot za brže inicijalizacije
+// Ako postoji server-renderovani HTML koristi hydrateRoot, inače createRoot
 
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
@@ -16,10 +15,16 @@ if (!container) {
   throw new Error("Root element not found");
 }
 
-createRoot(container).render(
+const app = (
   <HelmetProvider>
     <BrowserRouter>
       <App />
     </BrowserRouter>
-  </HelmetProvider>,
+  </HelmetProvider>
 );
+
+if (container.hasChildNodes()) {
+  hydrateRoot(container, app);
+} else {
+  createRoot(container).render(app);
+}

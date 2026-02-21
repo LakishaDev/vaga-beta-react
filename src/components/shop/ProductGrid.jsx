@@ -18,6 +18,7 @@ import { db } from "../../utils/firebase";
 import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import ProductCard from "./ProductCard";
 import Lenis from "lenis";
+import { Helmet } from "react-helmet-async";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -274,6 +275,25 @@ export default function ProductGrid() {
     return sorted;
   }, [filteredProducts, sort, getEffectivePrice]);
 
+  const siteUrl = "https://vagabeta.rs";
+  const shopUrl = `${siteUrl}/prodavnica/proizvodi`;
+
+  const productListSchema = useMemo(() => {
+    const listItems = sortedProducts.slice(0, 100).map((product, index) => ({
+      "@type": "ListItem",
+      position: index + 1,
+      url: `${siteUrl}/prodavnica/proizvod/${product.id}`,
+      name: product.name,
+    }));
+
+    return {
+      "@context": "https://schema.org",
+      "@type": "ItemList",
+      name: "Vaga Beta proizvodi",
+      itemListElement: listItems,
+    };
+  }, [sortedProducts]);
+
   const handleResetFilters = useCallback(() => {
     setSelectedCategories([]);
     setSearch("");
@@ -305,6 +325,25 @@ export default function ProductGrid() {
       className="w-full px-4 sm:px-8 md:px-16 py-6 sm:py-8 font-sans bg-neutral-bg"
       style={{ fontFamily: "'Geist','Inter',sans-serif" }}
     >
+      <Helmet>
+        <title>Proizvodi | Vaga Beta Shop</title>
+        <meta
+          name="description"
+          content="Pregled svih proizvoda u Vaga Beta prodavnici: industrijske, precizne i softverske vage sa detaljnim specifikacijama."
+        />
+        <meta property="og:title" content="Proizvodi | Vaga Beta Shop" />
+        <meta
+          property="og:description"
+          content="Pregled proizvoda i opreme dostupne u Vaga Beta prodavnici."
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content={shopUrl} />
+        <link rel="canonical" href={shopUrl} />
+        <script type="application/ld+json">
+          {JSON.stringify(productListSchema)}
+        </script>
+      </Helmet>
+
       {/* Collapsible dizajn header */}
       <div
         className="mb-6 sm:mb-8 bg-white/95 backdrop-blur rounded-2xl border border-neutral-border shadow-xl w-full"

@@ -12,6 +12,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const BASE_URL = "https://vagabeta.rs";
+const DEFAULT_LASTMOD = new Date().toISOString().split("T")[0];
 
 // Definiši sve stranice na sajtu
 const staticPages = [
@@ -19,60 +20,116 @@ const staticPages = [
     url: "",
     changefreq: "daily",
     priority: "1.0",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/usluge",
     changefreq: "weekly",
     priority: "0.9",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/kontakt",
     changefreq: "monthly",
     priority: "0.8",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/onama",
     changefreq: "monthly",
     priority: "0.7",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/aplikacija",
     changefreq: "weekly",
     priority: "0.8",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/evaga-desktop",
     changefreq: "weekly",
     priority: "0.8",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/prodavnica",
     changefreq: "daily",
     priority: "0.9",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
+  },
+  {
+    url: "/prodavnica/proizvodi",
+    changefreq: "daily",
+    priority: "0.9",
+    lastmod: DEFAULT_LASTMOD,
   },
   {
     url: "/privacy-policy",
     changefreq: "yearly",
     priority: "0.3",
-    lastmod: new Date().toISOString().split("T")[0],
+    lastmod: DEFAULT_LASTMOD,
   },
 ];
 
+function extractDocId(documentName = "") {
+  const parts = documentName.split("/");
+  return parts[parts.length - 1] || null;
+}
+
+async function fetchProductPages() {
+  const projectId =
+    process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
+  const apiKey =
+    process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
+
+  if (!projectId || !apiKey) {
+    console.warn(
+      "⚠️  FIREBASE env nije dostupan, preskačem dinamičke product URL-ove u sitemap-u.",
+    );
+    return [];
+  }
+
+  const endpoint = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/products?pageSize=500&key=${apiKey}`;
+
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) {
+      console.warn(
+        `⚠️  Firestore fetch nije uspeo (${response.status}), preskačem product URL-ove.`,
+      );
+      return [];
+    }
+
+    const payload = await response.json();
+    const documents = payload.documents || [];
+
+    return documents
+      .map((doc) => extractDocId(doc.name))
+      .filter(Boolean)
+      .map((id) => ({
+        url: `/prodavnica/proizvod/${id}`,
+        changefreq: "daily",
+        priority: "0.8",
+        lastmod: DEFAULT_LASTMOD,
+      }));
+  } catch (error) {
+    console.warn(
+      "⚠️  Greška pri čitanju proizvoda za sitemap, nastavljam bez product URL-ova:",
+      error.message,
+    );
+    return [];
+  }
+}
+
 // Generiši XML sitemap
-function generateSitemap() {
+function generateSitemap(pages) {
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
-${staticPages
+${pages
   .map(
     (page) => `  <url>
     <loc>${BASE_URL}${page.url}</loc>
@@ -88,8 +145,10 @@ ${staticPages
 }
 
 // Sačuvaj sitemap u public folderu
-function saveSitemap() {
-  const sitemap = generateSitemap();
+async function saveSitemap() {
+  const productPages = await fetchProductPages();
+  const pages = [...staticPages, ...productPages];
+  const sitemap = generateSitemap(pages);
   const publicDir = path.join(__dirname, "..", "public");
   const sitemapPath = path.join(publicDir, "sitemap.xml");
 
@@ -102,6 +161,9 @@ function saveSitemap() {
   console.log("✅ Sitemap.xml uspešno generisan!");
   console.log(`📍 Lokacija: ${sitemapPath}`);
   console.log(`🔗 URL: ${BASE_URL}/sitemap.xml`);
+  console.log(`🛍️  Dodato product URL-ova: ${productPages.length}`);
+
+  return pages.length;
 }
 
 // Generiši robots.txt reference (opciono)
@@ -122,9 +184,9 @@ Sitemap: ${BASE_URL}/sitemap.xml
 
 // Pokreni generisanje
 try {
-  saveSitemap();
+  const totalPages = await saveSitemap();
   console.log("\n📊 Sitemap statistika:");
-  console.log(`   - Ukupno stranica: ${staticPages.length}`);
+  console.log(`   - Ukupno stranica: ${totalPages}`);
   console.log(
     `   - Poslednja izmena: ${new Date().toLocaleDateString("sr-RS")}`,
   );
