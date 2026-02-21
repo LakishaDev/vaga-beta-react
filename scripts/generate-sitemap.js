@@ -77,6 +77,40 @@ function extractDocId(documentName = "") {
   return parts[parts.length - 1] || null;
 }
 
+function toAbsoluteUrl(url) {
+  if (!url) return null;
+  if (url.startsWith("http://") || url.startsWith("https://")) return url;
+  return `${BASE_URL}${url.startsWith("/") ? "" : "/"}${url}`;
+}
+
+function extractProductImages(fields = {}) {
+  const imageSet = new Set();
+
+  const imgUrl = fields.imgUrl?.stringValue;
+  if (imgUrl) {
+    imageSet.add(toAbsoluteUrl(imgUrl));
+  }
+
+  const imageValues = fields.images?.arrayValue?.values || [];
+  imageValues.forEach((value) => {
+    const imageUrl = value?.stringValue;
+    if (imageUrl) {
+      imageSet.add(toAbsoluteUrl(imageUrl));
+    }
+  });
+
+  return Array.from(imageSet).filter(Boolean);
+}
+
+function escapeXml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
 async function fetchProductPages() {
   const projectId =
     process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
@@ -105,14 +139,19 @@ async function fetchProductPages() {
     const documents = payload.documents || [];
 
     return documents
-      .map((doc) => extractDocId(doc.name))
-      .filter(Boolean)
-      .map((id) => ({
-        url: `/prodavnica/proizvod/${id}`,
-        changefreq: "daily",
-        priority: "0.8",
-        lastmod: DEFAULT_LASTMOD,
-      }));
+      .map((doc) => {
+        const id = extractDocId(doc.name);
+        if (!id) return null;
+
+        return {
+          url: `/prodavnica/proizvod/${id}`,
+          changefreq: "daily",
+          priority: "0.8",
+          lastmod: DEFAULT_LASTMOD,
+          images: extractProductImages(doc.fields),
+        };
+      })
+      .filter(Boolean);
   } catch (error) {
     console.warn(
       "⚠️  Greška pri čitanju proizvoda za sitemap, nastavljam bez product URL-ova:",
@@ -126,16 +165,23 @@ async function fetchProductPages() {
 function generateSitemap(pages) {
   const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1"
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
 ${pages
   .map(
     (page) => `  <url>
-    <loc>${BASE_URL}${page.url}</loc>
+    <loc>${escapeXml(`${BASE_URL}${page.url}`)}</loc>
     <lastmod>${page.lastmod}</lastmod>
     <changefreq>${page.changefreq}</changefreq>
     <priority>${page.priority}</priority>
+${(page.images || [])
+  .map(
+    (imageUrl) =>
+      `    <image:image>\n      <image:loc>${escapeXml(imageUrl)}</image:loc>\n    </image:image>`,
+  )
+  .join("\n")}
   </url>`,
   )
   .join("\n")}
