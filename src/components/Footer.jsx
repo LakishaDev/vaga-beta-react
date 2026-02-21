@@ -7,7 +7,13 @@
 // Možeš prilagoditi boje i tekst po želji
 
 import { Link } from "react-router-dom";
-import { FaLinkedin, FaGithub, FaPhoneAlt, FaEnvelope } from "react-icons/fa";
+import {
+  FaLinkedin,
+  FaGithub,
+  FaPhoneAlt,
+  FaEnvelope,
+  FaInstagram,
+} from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
 
 export default function Footer() {
@@ -79,7 +85,11 @@ export default function Footer() {
             <ul className="space-y-2 text-sm text-text-secondary">
               <li className="flex items-center gap-2">
                 <FaPhoneAlt className="text-brand-primary" />
-                <span>018 4545 782</span>
+                <span>063 833 9686</span>
+              </li>
+              <li className="flex items-center gap-2">
+                <FaPhoneAlt className="text-brand-primary" />
+                <span>066 887 8889</span>
               </li>
               <li className="flex items-center gap-2">
                 <FaEnvelope className="text-brand-primary" />
@@ -95,7 +105,7 @@ export default function Footer() {
             </h3>
             <div className="flex items-center gap-3">
               <a
-                href="https://www.linkedin.com/in/lakishadev/"
+                href="https://www.linkedin.com/company/vaga-beta/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-lg border border-neutral-border flex items-center justify-center text-brand-primary hover:bg-brand-primary hover:text-white transition-colors"
@@ -104,13 +114,13 @@ export default function Footer() {
                 <FaLinkedin className="text-xl" />
               </a>
               <a
-                href="https://github.com/lakishadev"
+                href="https://www.instagram.com/vagabeta/"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-10 h-10 rounded-lg border border-neutral-border flex items-center justify-center text-brand-primary hover:bg-brand-primary hover:text-white transition-colors"
-                aria-label="GitHub"
+                aria-label="Instagram"
               >
-                <FaGithub className="text-xl" />
+                <FaInstagram className="text-xl" />
               </a>
             </div>
           </div>

@@ -115,8 +115,8 @@ export default defineConfig({
     open: false,
     cors: true,
     compress: true,
-    // Za SSR, isključi HMR - koristi page refresh umesto
-    hmr: false,
+    // U development-u uključi HMR/Fast Refresh
+    hmr: true,
     watch: {
       // Ignoriraj određene fajlove iz watch-a
       ignored: ["**/node_modules/**", "**/.git/**", "**/dist/**"],
