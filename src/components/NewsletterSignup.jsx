@@ -6,7 +6,13 @@ function isValidEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i.test(email);
 }
 
-export default function NewsletterSignup() {
+export default function NewsletterSignup({
+  title = "Newsletter prijava",
+  description = "Primajte novosti o uslugama, akcijama i novim proizvodima.",
+  submitLabel = "Prijavi se",
+  className = "rounded-2xl border border-neutral-border bg-white/70 p-4 sm:p-5 shadow-sm",
+  onSuccessfulSubscribe,
+}) {
   const [searchParams] = useSearchParams();
   const source = searchParams.get("source") || "";
 
@@ -38,22 +44,24 @@ export default function NewsletterSignup() {
       return;
     }
 
-    await submitNewsletter({
+    const result = await submitNewsletter({
       email,
       consent,
       source,
       honeypot,
     });
+
+    if (result?.ok) {
+      onSuccessfulSubscribe?.(email.trim().toLowerCase());
+    }
   };
 
   return (
-    <section className="rounded-2xl border border-neutral-border bg-white/70 p-4 sm:p-5 shadow-sm">
+    <section className={className}>
       <h3 className="font-heading text-base font-bold text-text-primary">
-        Newsletter prijava
+        {title}
       </h3>
-      <p className="mt-1 text-sm text-text-secondary">
-        Primajte novosti o uslugama, akcijama i novim proizvodima.
-      </p>
+      <p className="mt-1 text-sm text-text-secondary">{description}</p>
 
       <form onSubmit={handleSubmit} className="mt-4 space-y-3">
         <label className="block">
@@ -120,7 +128,7 @@ export default function NewsletterSignup() {
           {isSubmitting && (
             <span className="h-4 w-4 animate-spin rounded-full border-2 border-white/60 border-t-white" />
           )}
-          {isSubmitting ? "Sending..." : "Prijavi se"}
+          {isSubmitting ? "Sending..." : submitLabel}
         </button>
       </form>
     </section>

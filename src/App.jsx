@@ -10,6 +10,7 @@ import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import RenderBoundary from "./components/RenderBoundary";
 import CloudflareDeploymentDebug from "./components/CloudflareDeploymentDebug";
+import NewsletterModal from "./components/NewsletterModal";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import Lenis from "lenis";
 import { lazy, Suspense, useEffect } from "react";
@@ -101,6 +102,7 @@ function App() {
         suppressHydrationWarning
       >
         <AppContent />
+        <NewsletterModal />
         <CloudflareDeploymentDebug />
       </div>
     </EVagaDesktopProvider>

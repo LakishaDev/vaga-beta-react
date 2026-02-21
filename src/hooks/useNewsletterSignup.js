@@ -70,6 +70,16 @@ export function useNewsletterSignup() {
         }
 
         const message = data?.message || DEFAULT_SUCCESS_MESSAGE;
+        if (typeof window !== "undefined") {
+          window.localStorage.setItem(
+            "newsletter_subscribed_email",
+            normalizedEmail,
+          );
+          window.localStorage.setItem(
+            "newsletter_subscribed_at",
+            new Date().toISOString(),
+          );
+        }
         setSuccessMessage(message);
         return { ok: true, message };
       } catch {
