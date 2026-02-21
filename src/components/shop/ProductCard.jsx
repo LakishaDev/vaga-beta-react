@@ -32,7 +32,7 @@ export default function ProductCard({ product }) {
       to={`/prodavnica/proizvod/${product.id}`}
       className="group bg-white/80 backdrop-blur rounded-2xl border shadow-xl
         transition-transform hover:scale-105 hover:shadow-2xl hover:border-brand-secondary
-        flex flex-col items-center py-6 px-3 sm:px-5 relative overflow-hidden min-h-[340px] sm:min-h-[410px] w-full"
+        flex flex-col items-center py-4 px-3 sm:px-4 relative overflow-hidden min-h-[300px] sm:min-h-[350px] w-full"
       style={{
         borderColor: "rgba(203, 207, 187, 0.8)",
       }}

@@ -93,6 +93,23 @@ function replaceOrInsertHeadTag(template, pattern, replacement) {
   return template.replace("</head>", `${replacement}\n</head>`);
 }
 
+function normalizeHelmetFragment(fragment, kind) {
+  if (!fragment) return "";
+
+  const value = String(fragment).trim();
+  if (!value) return "";
+
+  if (value.startsWith("<")) {
+    return value;
+  }
+
+  if (kind === "title") {
+    return `<title>${escapeHtml(value)}</title>`;
+  }
+
+  return "";
+}
+
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
@@ -176,9 +193,18 @@ export async function onRequest(context) {
 
     if (helmet) {
       let headContent = "";
-      if (helmet.title) headContent += helmet.title.toString();
-      if (helmet.meta) headContent += helmet.meta.toString();
-      if (helmet.link) headContent += helmet.link.toString();
+      if (helmet.title) {
+        headContent += normalizeHelmetFragment(
+          helmet.title.toString(),
+          "title",
+        );
+      }
+      if (helmet.meta) {
+        headContent += normalizeHelmetFragment(helmet.meta.toString(), "meta");
+      }
+      if (helmet.link) {
+        headContent += normalizeHelmetFragment(helmet.link.toString(), "link");
+      }
       template = template.replace("</head>", `${headContent}\n</head>`);
     }
 

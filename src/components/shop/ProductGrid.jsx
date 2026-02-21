@@ -322,7 +322,7 @@ export default function ProductGrid() {
 
   return (
     <div
-      className="w-full px-4 sm:px-8 md:px-16 py-6 sm:py-8 font-sans bg-neutral-bg"
+      className="w-full px-3 sm:px-5 md:px-8 py-5 sm:py-6 font-sans bg-neutral-bg"
       style={{ fontFamily: "'Geist','Inter',sans-serif" }}
     >
       <Helmet>
@@ -529,7 +529,7 @@ export default function ProductGrid() {
       {/* Proizvodi - grid dizajn (responsive, razmak) */}
       <AnimatePresence mode="popLayout">
         <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8 xl:gap-10"
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-4 lg:gap-5"
           layout
         >
           {sortedProducts.length === 0 ? (
