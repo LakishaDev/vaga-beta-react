@@ -47,6 +47,12 @@ const staticPages = [
     lastmod: DEFAULT_LASTMOD,
   },
   {
+    url: "/newsletter",
+    changefreq: "weekly",
+    priority: "0.8",
+    lastmod: DEFAULT_LASTMOD,
+  },
+  {
     url: "/evaga-desktop",
     changefreq: "weekly",
     priority: "0.8",

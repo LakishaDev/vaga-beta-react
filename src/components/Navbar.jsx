@@ -29,6 +29,7 @@ const navItems = [
   { to: "/evaga-desktop", label: "Program", icon: FaBoxes },
   { to: "/aplikacija", label: "Aplikacija", icon: FaMobileAlt },
   { to: "/kontakt", label: "Kontakt", icon: FaEnvelope },
+  { to: "/newsletter?source=navbar", label: "Popusti", icon: FaEnvelope },
   { to: "/onama", label: "O nama", icon: FaInfoCircle },
   { to: "/booking", label: "Zahtev", icon: FaClipboardList },
   { to: "/design-system-demo", label: "Design", icon: FaPalette },
@@ -78,64 +79,64 @@ export default function Navbar() {
           isCompact ? "py-2" : "py-3"
         }`}
       >
-      <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
-        {/* Logo/Brand */}
-        <Link to="/" className="flex items-center gap-2">
-          <ProgressiveImage
-            src="/imgs/vaga-logo.png"
-            alt="Logo"
-            className="h-10 w-10 rounded-xl border border-brand-primary/20 bg-white shadow"
-          />
-          <span className="font-heading font-extrabold text-lg tracking-wide text-brand-primary">
-            Vaga Beta
-          </span>
-        </Link>
+        <div className="max-w-7xl mx-auto flex items-center justify-between px-4">
+          {/* Logo/Brand */}
+          <Link to="/" className="flex items-center gap-2">
+            <ProgressiveImage
+              src="/imgs/vaga-logo.png"
+              alt="Logo"
+              className="h-10 w-10 rounded-xl border border-brand-primary/20 bg-white shadow"
+            />
+            <span className="font-heading font-extrabold text-lg tracking-wide text-brand-primary">
+              Vaga Beta
+            </span>
+          </Link>
 
-        {/* Hamburger Icon */}
-        <button
-          className="sm:hidden flex flex-col items-center justify-center h-10 w-10 rounded-xl hover:bg-brand-primary/10 transition"
-          aria-label="Menu"
-          onClick={() => setOpen(!open)}
-        >
-          <span
-            className={`block h-0.5 w-6 bg-brand-primary rounded mb-1 transition-all ${
-              open ? "rotate-45 translate-y-2" : ""
-            }`}
-          ></span>
-          <span
-            className={`block h-0.5 w-6 bg-brand-primary rounded mb-1 transition-all ${
-              open ? "opacity-0" : ""
-            }`}
-          ></span>
-          <span
-            className={`block h-0.5 w-6 bg-brand-primary rounded transition-all ${
-              open ? "-rotate-45 -translate-y-2" : ""
-            }`}
-          ></span>
-        </button>
+          {/* Hamburger Icon */}
+          <button
+            className="sm:hidden flex flex-col items-center justify-center h-10 w-10 rounded-xl hover:bg-brand-primary/10 transition"
+            aria-label="Menu"
+            onClick={() => setOpen(!open)}
+          >
+            <span
+              className={`block h-0.5 w-6 bg-brand-primary rounded mb-1 transition-all ${
+                open ? "rotate-45 translate-y-2" : ""
+              }`}
+            ></span>
+            <span
+              className={`block h-0.5 w-6 bg-brand-primary rounded mb-1 transition-all ${
+                open ? "opacity-0" : ""
+              }`}
+            ></span>
+            <span
+              className={`block h-0.5 w-6 bg-brand-primary rounded transition-all ${
+                open ? "-rotate-45 -translate-y-2" : ""
+              }`}
+            ></span>
+          </button>
 
-        {/* Links desktop */}
-        <ul className="hidden sm:flex gap-1 font-semibold text-sm lg:text-[15px]">
-          {navItems.map((item) => {
-            const Icon = item.icon;
-            const isActive = location.pathname === item.to;
-            return (
-              <li key={item.to}>
-                <Link
-                  to={item.to}
-                  className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
-                    isActive
-                      ? "bg-brand-primary text-white"
-                      : "text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
-                  }`}
-                >
-                  <Icon /> {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      </div>
+          {/* Links desktop */}
+          <ul className="hidden sm:flex gap-1 font-semibold text-sm lg:text-[15px]">
+            {navItems.map((item) => {
+              const Icon = item.icon;
+              const isActive = location.pathname === item.to;
+              return (
+                <li key={item.to}>
+                  <Link
+                    to={item.to}
+                    className={`flex items-center gap-2 rounded-lg px-3 py-2 transition-colors ${
+                      isActive
+                        ? "bg-brand-primary text-white"
+                        : "text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
+                    }`}
+                  >
+                    <Icon /> {item.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
       </nav>
 
       {/* Mobile Menu */}

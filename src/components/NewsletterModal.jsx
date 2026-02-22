@@ -9,7 +9,7 @@ const COOLDOWN_UNTIL_KEY = "newsletter_modal_cooldown_until";
 const COOLDOWN_MS = 24 * 60 * 60 * 1000;
 
 function shouldNeverShow(pathname) {
-  return pathname === "/privacy";
+  return pathname === "/privacy" || pathname === "/newsletter";
 }
 
 function isInCooldown() {

@@ -22,6 +22,7 @@ const Onama = lazy(() => import("./pages/about/OnamaModern"));
 const Aplikacija = lazy(() => import("./pages/Aplikacija"));
 const Booking = lazy(() => import("./pages/Booking"));
 const PrivacyPolicy = lazy(() => import("./pages/PrivacyPolicy"));
+const NewsletterPage = lazy(() => import("./pages/Newsletter"));
 const EVagaDesktop = lazy(() => import("./pages/EVagaDesktop"));
 const DesignSystemDemo = lazy(() => import("./pages/DesignSystemDemo"));
 const Prodavnica = lazy(() => import("./Prodavnica"));
@@ -59,6 +60,7 @@ function AppContent() {
               <Route path="/booking" element={<Booking />} />
               <Route path="/evaga-desktop" element={<EVagaDesktop />} />
               <Route path="/privacy" element={<PrivacyPolicy />} />
+              <Route path="/newsletter" element={<NewsletterPage />} />
               <Route
                 path="/design-system-demo"
                 element={<DesignSystemDemo />}

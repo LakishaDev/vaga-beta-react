@@ -75,6 +75,14 @@ export default function Footer() {
                   Kontakt
                 </Link>
               </li>
+              <li>
+                <Link
+                  className="text-text-secondary hover:text-brand-primary"
+                  to="/newsletter?source=footer"
+                >
+                  Newsletter popusti
+                </Link>
+              </li>
             </ul>
           </div>
 
