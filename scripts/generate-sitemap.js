@@ -121,6 +121,21 @@ function escapeXml(value = "") {
     .replaceAll("'", "&apos;");
 }
 
+function slugifyName(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[đ]/g, "dj")
+    .replace(/[ž]/g, "z")
+    .replace(/[š]/g, "s")
+    .replace(/[č]/g, "c")
+    .replace(/[ć]/g, "c")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 async function fetchProductPages() {
   const projectId =
     process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
@@ -151,8 +166,13 @@ async function fetchProductPages() {
         const id = extractDocId(doc.name);
         if (!id) return null;
 
+        const slug =
+          doc.fields?.slug?.stringValue ||
+          slugifyName(doc.fields?.name?.stringValue || "");
+        if (!slug) return null;
+
         return {
-          url: `/prodavnica/proizvod/${encodeURIComponent(id)}`,
+          url: `/p/${encodeURIComponent(slug)}`,
           changefreq: "daily",
           priority: "0.8",
           lastmod: DEFAULT_LASTMOD,

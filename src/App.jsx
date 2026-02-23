@@ -31,7 +31,9 @@ function AppContent() {
   // useLocation hook - dobija se iz router context-a
   // Sigurno je koristiti jer je App uvek unutar BrowserRouter ili StaticRouter
   const location = useLocation();
-  const isShop = location.pathname.startsWith("/prodavnica");
+  const isShop =
+    location.pathname.startsWith("/prodavnica") ||
+    location.pathname.startsWith("/p/");
 
   // Ako je ruta za prodavnicu, renderuj samo Prodavnica komponentu
   if (isShop) {

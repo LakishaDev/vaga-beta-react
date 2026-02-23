@@ -54,6 +54,7 @@ export default function EditProductModal({
   formatPriceInput,
   loading = false,
   uploadProgress = 0,
+  slugStatus,
 }) {
   if (!isOpen || !product) return null;
 
@@ -61,10 +62,10 @@ export default function EditProductModal({
     uploadProgress === 0
       ? "idle"
       : uploadProgress === 100
-      ? "success"
-      : uploadProgress > 0
-      ? "uploading"
-      : "idle";
+        ? "success"
+        : uploadProgress > 0
+          ? "uploading"
+          : "idle";
 
   return (
     <AnimatePresence>
@@ -171,6 +172,32 @@ export default function EditProductModal({
               onChange={onChange}
               required
             />
+            <FloatingLabelInput
+              name="slug"
+              label="Slug (URL putanja)"
+              value={product.slug || ""}
+              onChange={onChange}
+              required
+              disabled={!!product.originalSlug}
+            />
+            {product.originalSlug ? (
+              <p className="text-xs text-amber-600 font-semibold">
+                Slug je zaključan nakon objave proizvoda.
+              </p>
+            ) : null}
+            {slugStatus?.message ? (
+              <p
+                className={`text-sm font-medium ${
+                  slugStatus.status === "valid"
+                    ? "text-emerald-600"
+                    : slugStatus.status === "checking"
+                      ? "text-blue-600"
+                      : "text-red-600"
+                }`}
+              >
+                {slugStatus.message}
+              </p>
+            ) : null}
             <FloatingLabelInput
               name="category"
               label="Kategorija"

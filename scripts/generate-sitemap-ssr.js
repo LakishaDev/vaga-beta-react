@@ -21,6 +21,21 @@ const STATIC_ROUTES = [
   { url: "/evaga-desktop", priority: 0.6, changefreq: "monthly" },
 ];
 
+function slugifyName(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[đ]/g, "dj")
+    .replace(/[ž]/g, "z")
+    .replace(/[š]/g, "s")
+    .replace(/[č]/g, "c")
+    .replace(/[ć]/g, "c")
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 const generateSitemap = async () => {
   try {
     // Inicijalizuj Firebase Admin
@@ -49,11 +64,19 @@ const generateSitemap = async () => {
 
     // Učitaj proizvode iz Firestore
     const productsSnapshot = await db.collection("products").get();
-    const productRoutes = productsSnapshot.docs.map((doc) => ({
-      url: `/prodavnica/${doc.id}`,
-      priority: 0.8,
-      changefreq: "weekly",
-    }));
+    const productRoutes = productsSnapshot.docs
+      .map((doc) => {
+        const data = doc.data() || {};
+        const slug = data.slug || slugifyName(data.name || "");
+        if (!slug) return null;
+
+        return {
+          url: `/p/${slug}`,
+          priority: 0.8,
+          changefreq: "weekly",
+        };
+      })
+      .filter(Boolean);
 
     // Kreira sitemap XML
     const allRoutes = [...STATIC_ROUTES, ...productRoutes];

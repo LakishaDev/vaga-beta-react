@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import { Terminal } from "lucide-react";
 import { motion as Motion } from "framer-motion";
+import { getProductPath } from "../../utils/slugUtils";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
@@ -29,7 +30,7 @@ export default function ProductCard({ product }) {
 
   return (
     <Link
-      to={`/prodavnica/proizvod/${product.id}`}
+      to={getProductPath(product.slug, product.id)}
       className="group bg-white/80 backdrop-blur rounded-2xl border shadow-xl
         transition-transform hover:scale-105 hover:shadow-2xl hover:border-brand-secondary
         flex flex-col items-center py-4 px-3 sm:px-4 relative overflow-hidden min-h-[300px] sm:min-h-[350px] w-full"

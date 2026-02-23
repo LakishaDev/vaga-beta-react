@@ -70,6 +70,7 @@ export default function ProductForm({
   // Markdown handlers
   onMarkdownFilesChange,
   onRemoveMarkdownFile,
+  slugStatus,
 }) {
   return (
     <form
@@ -85,6 +86,26 @@ export default function ProductForm({
             onChange={onChange}
             required
           />
+          <FloatingLabelInput
+            name="slug"
+            label="Slug (URL putanja)"
+            value={product.slug || ""}
+            onChange={onChange}
+            required
+          />
+          {slugStatus?.message ? (
+            <p
+              className={`text-sm font-medium ${
+                slugStatus.status === "valid"
+                  ? "text-emerald-600"
+                  : slugStatus.status === "checking"
+                    ? "text-blue-600"
+                    : "text-red-600"
+              }`}
+            >
+              {slugStatus.message}
+            </p>
+          ) : null}
           <FloatingLabelInput
             name="category"
             label="Kategorija"

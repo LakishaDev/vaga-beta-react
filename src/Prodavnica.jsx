@@ -106,6 +106,7 @@ function Prodavnica() {
               <Routes>
                 <Route path="/prodavnica" element={<HeroSectionModern />} />
                 <Route path="/prodavnica/proizvodi" element={<ProductGrid />} />
+                <Route path="/p/:slug" element={<ProductDetails />} />
                 <Route
                   path="/prodavnica/proizvod/:id"
                   element={<ProductDetails />}

@@ -35,11 +35,12 @@
 import { useState, useContext, useEffect } from "react";
 import { db, storage, auth } from "../../utils/firebase.js";
 import {
-  addDoc,
   collection,
   deleteDoc,
   doc,
   getDocs,
+  getDoc,
+  runTransaction,
   updateDoc,
 } from "firebase/firestore";
 import { ref, uploadBytes, getDownloadURL } from "firebase/storage";
@@ -50,6 +51,12 @@ import ProductForm from "../../components/AdminPanel/ProductForm.jsx";
 import ProductList from "../../components/AdminPanel/ProductList.jsx";
 import ProductModal from "../../components/AdminPanel/ProductModal.jsx";
 import DeleteConfirmModal from "../../components/AdminPanel/DeleteConfirmModal.jsx";
+import {
+  normalizeSlug,
+  slugifyProductName,
+  validateSlug,
+} from "../../utils/slugUtils.js";
+import { checkProductSlugAvailability } from "../../services/productSlugService.js";
 
 export default function AdminPanel() {
   const { showSnackbar } = useContext(SnackbarContext);
@@ -68,6 +75,7 @@ export default function AdminPanel() {
 
   const [newProduct, setNewProduct] = useState({
     name: "",
+    slug: "",
     category: "",
     price: "",
     hasHiddenPrice: false,
@@ -78,6 +86,16 @@ export default function AdminPanel() {
     datasheets: [], // Array of datasheet files
     isSoftware: false, // Software toggle
     markdownFiles: [], // Markdown documentation files
+  });
+
+  const [newSlugTouched, setNewSlugTouched] = useState(false);
+  const [newSlugStatus, setNewSlugStatus] = useState({
+    status: "idle",
+    message: "",
+  });
+  const [editSlugStatus, setEditSlugStatus] = useState({
+    status: "idle",
+    message: "",
   });
 
   const [products, setProducts] = useState([]);
@@ -161,8 +179,80 @@ export default function AdminPanel() {
   // FORM HANDLERS - NEW PRODUCT
   // ===============================================================================
 
-  const handleChange = (e) =>
-    setNewProduct({ ...newProduct, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    if (name === "slug") {
+      setNewSlugTouched(true);
+      setNewProduct({
+        ...newProduct,
+        slug: normalizeSlug(value),
+      });
+      return;
+    }
+
+    if (name === "name") {
+      const updatedName = value;
+      const autoSlug = slugifyProductName(updatedName);
+      setNewProduct((prev) => ({
+        ...prev,
+        name: updatedName,
+        slug: newSlugTouched ? prev.slug : autoSlug,
+      }));
+      return;
+    }
+
+    setNewProduct({ ...newProduct, [name]: value });
+  };
+
+  useEffect(() => {
+    const runValidation = async () => {
+      const localValidation = validateSlug(newProduct.slug || "");
+      if (!localValidation.valid) {
+        setNewSlugStatus({
+          status: "invalid",
+          message: localValidation.reason,
+        });
+        return;
+      }
+
+      setNewSlugStatus({ status: "checking", message: "Provera slug-a..." });
+      const availability = await checkProductSlugAvailability(
+        localValidation.normalizedSlug,
+      );
+
+      if (availability.normalizedSlug !== newProduct.slug) {
+        setNewProduct((prev) => ({
+          ...prev,
+          slug: availability.normalizedSlug,
+        }));
+      }
+
+      setNewSlugStatus({
+        status: availability.available ? "valid" : "invalid",
+        message: availability.available
+          ? "Slug je dostupan."
+          : availability.reason || "Slug je zauzet.",
+      });
+    };
+
+    if (!newProduct.slug) {
+      setNewSlugStatus({ status: "invalid", message: "Slug je obavezan." });
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      runValidation().catch((error) => {
+        console.error("Slug validation error:", error);
+        setNewSlugStatus({
+          status: "invalid",
+          message: "Greška pri proveri slug-a.",
+        });
+      });
+    }, 350);
+
+    return () => clearTimeout(timer);
+  }, [newProduct.slug]);
 
   const handleFile = (e) => {
     const file = e.target.files[0];
@@ -297,6 +387,17 @@ export default function AdminPanel() {
     const datasheetUrls = [];
 
     try {
+      const slugValidation = await checkProductSlugAvailability(
+        newProduct.slug,
+      );
+      if (!slugValidation.available) {
+        showSnackbar(slugValidation.reason || "Slug je zauzet.", "error");
+        setLoading(false);
+        return;
+      }
+
+      const finalSlug = slugValidation.normalizedSlug;
+
       // Upload main image
       if (newProduct.imgFile) {
         simulateUpload(setUploadProgress);
@@ -348,8 +449,13 @@ export default function AdminPanel() {
         });
       }
 
-      await addDoc(collection(db, "products"), {
+      const productRef = doc(collection(db, "products"));
+      const slugRef = doc(db, "productSlugs", finalSlug);
+      const createdAt = new Date();
+
+      const productPayload = {
         name: newProduct.name,
+        slug: finalSlug,
         category: newProduct.category,
         price: newProduct.hasHiddenPrice ? null : Number(newProduct.price),
         hiddenPrice: newProduct.hasHiddenPrice
@@ -361,12 +467,27 @@ export default function AdminPanel() {
         datasheets: datasheetUrls,
         isSoftware: newProduct.isSoftware,
         markdownFiles: markdownUrls,
-        createdAt: new Date(),
+        createdAt,
+      };
+
+      await runTransaction(db, async (transaction) => {
+        const slugSnapshot = await transaction.get(slugRef);
+        if (slugSnapshot.exists()) {
+          throw new Error("Slug je već zauzet.");
+        }
+
+        transaction.set(productRef, productPayload);
+        transaction.set(slugRef, {
+          slug: finalSlug,
+          productId: productRef.id,
+          createdAt,
+        });
       });
 
       showSnackbar("Proizvod uspešno dodat!", "success");
       setNewProduct({
         name: "",
+        slug: "",
         category: "",
         price: "",
         hasHiddenPrice: false,
@@ -378,6 +499,8 @@ export default function AdminPanel() {
         isSoftware: false,
         markdownFiles: [],
       });
+      setNewSlugTouched(false);
+      setNewSlugStatus({ status: "idle", message: "" });
       setUploadProgress(0);
       fetchProducts();
     } catch (error) {
@@ -424,6 +547,8 @@ export default function AdminPanel() {
   const handleEditOpen = (product) =>
     setEditProduct({
       ...product,
+      slug: product.slug || slugifyProductName(product.name || ""),
+      originalSlug: product.slug || "",
       hasHiddenPrice: !!product.hiddenPrice,
       price: product.hiddenPrice || product.price,
       imgPreview: product.imgUrl,
@@ -444,7 +569,13 @@ export default function AdminPanel() {
   };
 
   const handleEditChange = (e) =>
-    setEditProduct({ ...editProduct, [e.target.name]: e.target.value });
+    setEditProduct({
+      ...editProduct,
+      [e.target.name]:
+        e.target.name === "slug"
+          ? normalizeSlug(e.target.value)
+          : e.target.value,
+    });
 
   const handleEditFile = (e) => {
     const file = e.target.files[0];
@@ -576,6 +707,36 @@ export default function AdminPanel() {
     setLoading(true);
 
     try {
+      if (
+        editProduct.originalSlug &&
+        editProduct.slug !== editProduct.originalSlug
+      ) {
+        showSnackbar("Slug je zaključan i ne može se menjati.", "error");
+        setLoading(false);
+        return;
+      }
+
+      const editSlugValidation = await checkProductSlugAvailability(
+        editProduct.slug,
+        {
+          excludeProductId: editProduct.id,
+        },
+      );
+
+      if (!editSlugValidation.available) {
+        setEditSlugStatus({
+          status: "invalid",
+          message: editSlugValidation.reason || "Slug je zauzet.",
+        });
+        showSnackbar(editSlugValidation.reason || "Slug je zauzet.", "error");
+        setLoading(false);
+        return;
+      }
+
+      setEditSlugStatus({ status: "valid", message: "Slug je validan." });
+
+      const finalSlug = editSlugValidation.normalizedSlug;
+
       let imgUrl = editProduct.imgUrl;
       if (editProduct.imgFile) {
         simulateUpload(setEditUploadProgress);
@@ -645,8 +806,11 @@ export default function AdminPanel() {
         ...newMarkdownUrls,
       ];
 
-      await updateDoc(doc(db, "products", editProduct.id), {
+      const productRef = doc(db, "products", editProduct.id);
+      const slugRef = doc(db, "productSlugs", finalSlug);
+      const updatedPayload = {
         name: editProduct.name,
+        slug: finalSlug,
         category: editProduct.category,
         price: editProduct.hasHiddenPrice ? null : Number(editProduct.price),
         hiddenPrice: editProduct.hasHiddenPrice
@@ -658,6 +822,41 @@ export default function AdminPanel() {
         datasheets: allDatasheets,
         isSoftware: editProduct.isSoftware,
         markdownFiles: allMarkdownFiles,
+      };
+
+      await runTransaction(db, async (transaction) => {
+        const productSnapshot = await transaction.get(productRef);
+        if (!productSnapshot.exists()) {
+          throw new Error("Proizvod ne postoji.");
+        }
+
+        const existingProduct = productSnapshot.data() || {};
+        const existingSlug = existingProduct.slug || "";
+
+        if (existingSlug && existingSlug !== finalSlug) {
+          throw new Error("Slug je zaključan i ne može se menjati.");
+        }
+
+        const slugSnapshot = await transaction.get(slugRef);
+        if (slugSnapshot.exists()) {
+          const slugOwnerId = slugSnapshot.data()?.productId;
+          if (slugOwnerId && slugOwnerId !== editProduct.id) {
+            throw new Error("Slug je već zauzet.");
+          }
+        }
+
+        transaction.update(productRef, updatedPayload);
+        transaction.set(
+          slugRef,
+          {
+            slug: finalSlug,
+            productId: editProduct.id,
+            createdAt: slugSnapshot.exists()
+              ? slugSnapshot.data()?.createdAt || new Date()
+              : new Date(),
+          },
+          { merge: true },
+        );
       });
 
       showSnackbar("Proizvod izmenjen!", "success");
@@ -716,6 +915,7 @@ export default function AdminPanel() {
         onRemoveDatasheet={removeDatasheet}
         onMarkdownFilesChange={handleMarkdownFiles}
         onRemoveMarkdownFile={removeMarkdownFile}
+        slugStatus={newSlugStatus}
       />
 
       {/* Lista proizvoda - koristi ProductList komponentu */}
@@ -759,6 +959,14 @@ export default function AdminPanel() {
           if (e.target.name === "price") {
             const numericValue = parsePriceInput(e.target.value);
             setEditProduct({ ...editProduct, price: numericValue });
+          } else if (e.target.name === "slug") {
+            if (editProduct.originalSlug) {
+              return;
+            }
+            setEditProduct({
+              ...editProduct,
+              slug: normalizeSlug(e.target.value),
+            });
           } else {
             handleEditChange(e);
           }
@@ -786,6 +994,7 @@ export default function AdminPanel() {
         formatPriceInput={formatPriceInput}
         loading={loading}
         uploadProgress={editUploadProgress}
+        slugStatus={editSlugStatus}
       />
 
       {/* Modal za prikaz slika */}

@@ -49,6 +49,16 @@ function normalizeCanonicalPath(pathname = "/") {
   return normalized || "/";
 }
 
+function normalizeSlug(value = "") {
+  return String(value)
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9\s-]/g, "")
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-")
+    .replace(/^-|-$/g, "");
+}
+
 function parseFirestoreValue(value) {
   if (!value || typeof value !== "object") return null;
 
@@ -136,6 +146,55 @@ async function fetchProductSeoData(productId, env, origin) {
   };
 }
 
+async function fetchProductSeoDataBySlug(slug, env, origin) {
+  const projectId = getEnvVar(
+    env,
+    "VITE_FIREBASE_PROJECT_ID",
+    "FIREBASE_PROJECT_ID",
+  );
+  const apiKey = getEnvVar(env, "VITE_FIREBASE_API_KEY", "FIREBASE_API_KEY");
+
+  if (!projectId || !apiKey || !slug) return null;
+
+  const endpoint = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/products?pageSize=1&key=${apiKey}&mask.fieldPaths=name&mask.fieldPaths=description&mask.fieldPaths=imgUrl&mask.fieldPaths=images&mask.fieldPaths=price&mask.fieldPaths=hiddenPrice&mask.fieldPaths=stock&mask.fieldPaths=category&mask.fieldPaths=slug`;
+
+  const wherePayload = {
+    structuredQuery: {
+      from: [{ collectionId: "products" }],
+      where: {
+        fieldFilter: {
+          field: { fieldPath: "slug" },
+          op: "EQUAL",
+          value: { stringValue: slug },
+        },
+      },
+      limit: 1,
+    },
+  };
+
+  const runQueryEndpoint = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents:runQuery?key=${apiKey}`;
+  const response = await fetch(runQueryEndpoint, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(wherePayload),
+  });
+
+  if (!response.ok) return null;
+  const payload = await response.json();
+  const firstMatch = Array.isArray(payload)
+    ? payload.find((item) => item?.document)
+    : null;
+
+  if (!firstMatch?.document) return null;
+
+  const productId = extractDocId(firstMatch.document.name);
+  if (!productId) return null;
+
+  return fetchProductSeoData(productId, env, origin);
+}
+
 function replaceOrInsertHeadTag(template, pattern, replacement) {
   if (pattern.test(template)) {
     return template.replace(pattern, replacement);
@@ -193,10 +252,16 @@ export async function onRequest(context) {
     "/shop",
   ];
 
-  const isProductDetailsRoute = pathname.startsWith("/prodavnica/proizvod/");
-  const productId = isProductDetailsRoute
+  const isShortProductRoute = pathname.startsWith("/p/");
+  const isLegacyProductRoute = pathname.startsWith("/prodavnica/proizvod/");
+  const isProductDetailsRoute = isShortProductRoute || isLegacyProductRoute;
+  const productRouteParam = isProductDetailsRoute
     ? decodeURIComponent(pathname.split("/").pop() || "")
     : null;
+  const productSlug = isShortProductRoute
+    ? normalizeSlug(productRouteParam || "")
+    : null;
+  const productId = isLegacyProductRoute ? productRouteParam : null;
   const canonicalPath = normalizeCanonicalPath(pathname);
 
   const isCSRRoute = CSR_ROUTES.some((route) => pathname.startsWith(route));
@@ -221,9 +286,26 @@ export async function onRequest(context) {
 
     let productSeoData = null;
     let productSSRData = null;
-    if (isProductDetailsRoute && productId) {
-      productSeoData = await fetchProductSeoData(productId, env, url.origin);
+    if (isProductDetailsRoute) {
+      if (isShortProductRoute && productSlug) {
+        productSeoData = await fetchProductSeoDataBySlug(
+          productSlug,
+          env,
+          url.origin,
+        );
+      }
+
+      if (!productSeoData && isLegacyProductRoute && productId) {
+        productSeoData = await fetchProductSeoData(productId, env, url.origin);
+      }
+
       productSSRData = productSeoData?.product || null;
+    }
+
+    if (isLegacyProductRoute && productSSRData?.slug) {
+      const targetPath = `/p/${normalizeSlug(productSSRData.slug)}`;
+      const redirectUrl = `${url.origin}${targetPath}`;
+      return Response.redirect(redirectUrl, 301);
     }
 
     if (!render) {
@@ -284,7 +366,11 @@ export async function onRequest(context) {
     }
 
     if (isProductDetailsRoute) {
-      const currentUrl = `${url.origin}${canonicalPath}`;
+      const canonicalProductPath =
+        productSSRData?.slug && normalizeSlug(productSSRData.slug)
+          ? `/p/${normalizeSlug(productSSRData.slug)}`
+          : canonicalPath;
+      const currentUrl = `${url.origin}${canonicalProductPath}`;
       const canonicalTag = `<link rel="canonical" href="${escapeHtml(currentUrl)}" />`;
 
       template = replaceOrInsertHeadTag(
@@ -308,7 +394,12 @@ export async function onRequest(context) {
     }
 
     if (isProductDetailsRoute && productSeoData) {
-      const currentUrl = `${url.origin}${canonicalPath}`;
+      const canonicalProductPath =
+        productSeoData?.product?.slug &&
+        normalizeSlug(productSeoData.product.slug)
+          ? `/p/${normalizeSlug(productSeoData.product.slug)}`
+          : canonicalPath;
+      const currentUrl = `${url.origin}${canonicalProductPath}`;
       const pageTitle = `${productSeoData.name} | Vaga Beta Shop`;
       const pageDescription = productSeoData.description;
 

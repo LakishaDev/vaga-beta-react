@@ -38,3 +38,6 @@ export { adminCreateUser } from "./users/adminCreateUser";
 export { adminUpdateUser } from "./users/adminUpdateUser";
 export { adminDeleteUser } from "./users/adminDeleteUser";
 export { adminChangePassword } from "./users/adminChangePassword";
+
+// Product slug validation
+export { validateProductSlug } from "./products/validateProductSlug";

@@ -1,10 +1,11 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useEffect, useState, useContext } from "react";
 import { Helmet } from "react-helmet-async";
 import { db, auth } from "../../utils/firebase";
 import {
   doc,
   getDoc,
+  getDocs,
   collection,
   addDoc,
   query,
@@ -13,6 +14,7 @@ import {
   deleteDoc,
   orderBy,
   serverTimestamp,
+  limit,
 } from "firebase/firestore";
 import ProgressiveImage from "../UI/ProgressiveImage";
 import ImageModal from "../UI/ImageModal";
@@ -39,6 +41,7 @@ import { FiDownload, FiPackage } from "react-icons/fi";
 import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 import ScrollToTopOnMount from "../UI/ScrollToTopOnMount";
 import { fetchMarkdownFiles } from "../../utils/markdownUtils";
+import { getProductPath, slugifyProductName } from "../../utils/slugUtils";
 
 const SSR_PRODUCT_DATA_KEY = "__VAGA_SSR_PRODUCT__";
 
@@ -74,7 +77,7 @@ function addDiscountInfo(product) {
   };
 }
 
-function getInitialSSRProduct(productId) {
+function getInitialSSRProduct(routeValue) {
   const globalScope = typeof window !== "undefined" ? window : globalThis;
   const ssrProduct = globalScope?.[SSR_PRODUCT_DATA_KEY];
 
@@ -82,16 +85,30 @@ function getInitialSSRProduct(productId) {
     return null;
   }
 
-  if (productId && ssrProduct.id && ssrProduct.id !== productId) {
-    return null;
+  if (routeValue) {
+    const routeSlug = String(routeValue).toLowerCase();
+    const productSlug = String(
+      ssrProduct.slug || slugifyProductName(ssrProduct.name || ""),
+    ).toLowerCase();
+    const productId = String(ssrProduct.id || "").toLowerCase();
+
+    if (routeSlug !== productSlug && routeSlug !== productId) {
+      return null;
+    }
   }
 
   return addDiscountInfo(ssrProduct);
 }
 
 export default function ProductDetails() {
-  const { id } = useParams();
-  const [product, setProduct] = useState(() => getInitialSSRProduct(id));
+  const { slug, id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const routeValue = slug || id || "";
+  const [product, setProduct] = useState(() =>
+    getInitialSSRProduct(routeValue),
+  );
+  const [relatedProducts, setRelatedProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
   const [review, setReview] = useState("");
   const [rating, setRating] = useState(5);
@@ -150,13 +167,48 @@ export default function ProductDetails() {
 
   useEffect(() => {
     const fetchProduct = async () => {
-      const snap = await getDoc(doc(db, "products", id));
-      if (!snap.exists()) {
+      let resolvedDoc = null;
+
+      if (slug) {
+        const slugQuery = query(
+          collection(db, "products"),
+          where("slug", "==", slug),
+          limit(1),
+        );
+        const slugSnapshot = await getDocs(slugQuery);
+        if (!slugSnapshot.empty) {
+          resolvedDoc = slugSnapshot.docs[0];
+        }
+      }
+
+      if (!resolvedDoc && id) {
+        const byIdSnapshot = await getDoc(doc(db, "products", id));
+        if (byIdSnapshot.exists()) {
+          resolvedDoc = byIdSnapshot;
+        }
+      }
+
+      if (!resolvedDoc) {
         setProduct(null);
+        setRelatedProducts([]);
         return;
       }
-      const productData = addDiscountInfo({ id: snap.id, ...snap.data() });
+
+      const productData = addDiscountInfo({
+        id: resolvedDoc.id,
+        ...resolvedDoc.data(),
+      });
+
+      if (!productData.slug) {
+        productData.slug = slugifyProductName(productData.name || "");
+      }
+
       setProduct(productData);
+
+      const canonicalPath = getProductPath(productData.slug, productData.id);
+      if (location.pathname !== canonicalPath) {
+        navigate(canonicalPath, { replace: true });
+      }
 
       // Fetch markdown content if product has markdown files
       if (
@@ -171,8 +223,39 @@ export default function ProductDetails() {
       }
     };
     fetchProduct();
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [id]);
+    if (typeof window !== "undefined") {
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  }, [slug, id, navigate, location.pathname]);
+
+  useEffect(() => {
+    const fetchRelated = async () => {
+      if (!product?.category) {
+        setRelatedProducts([]);
+        return;
+      }
+
+      const relatedQuery = query(
+        collection(db, "products"),
+        where("category", "==", product.category),
+        limit(8),
+      );
+      const relatedSnapshot = await getDocs(relatedQuery);
+      const related = relatedSnapshot.docs
+        .map((item) => ({ id: item.id, ...item.data() }))
+        .filter((item) => item.id !== product.id)
+        .map((item) => ({
+          ...item,
+          slug: item.slug || slugifyProductName(item.name || ""),
+        }))
+        .filter((item) => item.slug)
+        .slice(0, 4);
+
+      setRelatedProducts(related);
+    };
+
+    fetchRelated();
+  }, [product?.id, product?.category]);
 
   // SEO Meta Tags and Schema
   useEffect(() => {
@@ -193,7 +276,7 @@ export default function ProductDetails() {
         "@type": "Offer",
         url:
           getCleanCurrentUrl() ||
-          `https://vagabeta.rs/prodavnica/proizvod/${id}`,
+          `https://vagabeta.rs${getProductPath(product.slug, product.id)}`,
         priceCurrency: "RSD",
         price:
           product.price?.toString() || product.hiddenPrice?.toString() || "0",
@@ -234,9 +317,11 @@ export default function ProductDetails() {
 
   // Real-time reviews with onSnapshot
   useEffect(() => {
+    if (!product?.id) return;
+
     const q = query(
       collection(db, "reviews"),
-      where("productId", "==", id),
+      where("productId", "==", product.id),
       orderBy("createdAt", "desc"),
     );
 
@@ -249,7 +334,7 @@ export default function ProductDetails() {
     });
 
     return () => unsubscribe();
-  }, [id]);
+  }, [product?.id]);
 
   const handleReview = async (e) => {
     e.preventDefault();
@@ -263,7 +348,7 @@ export default function ProductDetails() {
     if (review.length > 2) {
       try {
         await addDoc(collection(db, "reviews"), {
-          productId: id,
+          productId: product.id,
           text: review,
           rating: rating,
           userName: currentUser.displayName || "Korisnik",
@@ -375,7 +460,8 @@ export default function ProductDetails() {
 
   // Pripremi Product schema za rendering
   const currentUrl =
-    getCleanCurrentUrl() || `https://vagabeta.rs/prodavnica/proizvod/${id}`;
+    getCleanCurrentUrl() ||
+    `https://vagabeta.rs${getProductPath(product?.slug, product?.id)}`;
 
   const productSchema = product
     ? {
@@ -831,6 +917,37 @@ export default function ProductDetails() {
                     animationDelay={0.5 + idx * 0.15}
                     showIcon={true}
                   />
+                ))}
+              </div>
+            </Motion.div>
+          )}
+
+          {relatedProducts.length > 0 && (
+            <Motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.35 }}
+              className="p-4 sm:p-6 border-t border-brand-secondary/20"
+            >
+              <h3 className="font-bold text-xl sm:text-2xl text-text-primary mb-4">
+                Slični proizvodi
+              </h3>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {relatedProducts.map((item) => (
+                  <Link
+                    key={item.id}
+                    to={getProductPath(item.slug, item.id)}
+                    className="group rounded-xl border border-brand-secondary/20 bg-white/80 hover:border-brand-secondary hover:shadow-lg transition-all p-3"
+                  >
+                    <ProgressiveImage
+                      src={item.imgUrl}
+                      alt={item.name}
+                      className="w-full h-32 object-cover rounded-lg mb-3"
+                    />
+                    <p className="font-semibold text-text-primary group-hover:text-brand-secondary transition-colors line-clamp-2">
+                      {item.name}
+                    </p>
+                  </Link>
                 ))}
               </div>
             </Motion.div>

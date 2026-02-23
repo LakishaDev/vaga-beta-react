@@ -19,6 +19,7 @@ import { collection, query, orderBy, onSnapshot } from "firebase/firestore";
 import ProductCard from "./ProductCard";
 import Lenis from "lenis";
 import { Helmet } from "react-helmet-async";
+import { getProductPath, slugifyProductName } from "../../utils/slugUtils";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -176,6 +177,7 @@ export default function ProductGrid() {
           .map((doc) => ({
             id: doc.id,
             ...doc.data(),
+            slug: doc.data().slug || slugifyProductName(doc.data().name || ""),
           }))
           .map(addDiscountInfo);
 
@@ -282,7 +284,7 @@ export default function ProductGrid() {
     const listItems = sortedProducts.slice(0, 100).map((product, index) => ({
       "@type": "ListItem",
       position: index + 1,
-      url: `${siteUrl}/prodavnica/proizvod/${product.id}`,
+      url: `${siteUrl}${getProductPath(product.slug, product.id)}`,
       name: product.name,
     }));
 
