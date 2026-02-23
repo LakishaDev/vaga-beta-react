@@ -2,34 +2,12 @@
 # Bezbedni security headers + Performance optimizacije
 
 /*
-  # ===== PERMISIVNI SECURITY HEADERS =====
-  
-  # Frame embedding - dozvoli više sources
-  X-Frame-Options: ALLOW-FROM *
-  
-  # Content Type
+  # ===== STABILNI SECURITY HEADERS =====
+  X-Frame-Options: SAMEORIGIN
   X-Content-Type-Options: nosniff
-  X-XSS-Protection: 0
-  
-  # Referrer Policy - fleksibilna
-  Referrer-Policy: no-referrer-when-downgrade
-  
-  # HSTS - omekšana
+  Referrer-Policy: strict-origin-when-cross-origin
   Strict-Transport-Security: max-age=31536000; includeSubDomains
-  
-  # === PERMISIVNI CORS - Dozvoli sve ===
-  Access-Control-Allow-Origin: *
-  Access-Control-Allow-Methods: GET, HEAD, POST, PUT, DELETE, PATCH, OPTIONS
-  Access-Control-Allow-Headers: *
-  Access-Control-Allow-Credentials: true
-  Access-Control-Max-Age: 86400
-  Access-Control-Expose-Headers: *
-  
-  # === PERMISIVNA CSP - Praktično bez ograničenja ===
-  Content-Security-Policy: default-src *; script-src * 'unsafe-inline' 'unsafe-eval' data:; style-src * 'unsafe-inline'; img-src * data: blob:; media-src * data: blob:; font-src * data:; connect-src * data: blob: ws: wss:; frame-src *; object-src *; base-uri *; form-action *; frame-ancestors *;
-  
-  # Permissions Policy - omogući sve
-  Permissions-Policy: geolocation=*, microphone=*, camera=*, payment=*, usb=*, magnetometer=*, gyroscope=*, accelerometer=*, vr=(), xr-spatial-tracking=*
+  Permissions-Policy: camera=(), microphone=(), geolocation=(self)
 
 # Cache control za statičke resurse - optimizovano za Cloudflare
 /assets/*
