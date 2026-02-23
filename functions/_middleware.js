@@ -39,6 +39,49 @@ function getFirestoreStringArray(fields, key) {
   return values.map((v) => v?.stringValue).filter(Boolean);
 }
 
+function extractDocId(documentName = "") {
+  const parts = documentName.split("/");
+  return parts[parts.length - 1] || null;
+}
+
+function normalizeCanonicalPath(pathname = "/") {
+  const normalized = String(pathname).replace(/\/+$/, "");
+  return normalized || "/";
+}
+
+function parseFirestoreValue(value) {
+  if (!value || typeof value !== "object") return null;
+
+  if ("stringValue" in value) return value.stringValue;
+  if ("integerValue" in value) return Number(value.integerValue);
+  if ("doubleValue" in value) return Number(value.doubleValue);
+  if ("booleanValue" in value) return Boolean(value.booleanValue);
+  if ("timestampValue" in value) return value.timestampValue;
+  if ("nullValue" in value) return null;
+
+  if ("arrayValue" in value) {
+    const values = value.arrayValue?.values || [];
+    return values.map(parseFirestoreValue);
+  }
+
+  if ("mapValue" in value) {
+    const fields = value.mapValue?.fields || {};
+    return Object.entries(fields).reduce((acc, [key, fieldValue]) => {
+      acc[key] = parseFirestoreValue(fieldValue);
+      return acc;
+    }, {});
+  }
+
+  return null;
+}
+
+function parseFirestoreFields(fields = {}) {
+  return Object.entries(fields).reduce((acc, [key, value]) => {
+    acc[key] = parseFirestoreValue(value);
+    return acc;
+  }, {});
+}
+
 function toAbsoluteAssetUrl(url, origin) {
   if (!url) return "";
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -61,22 +104,29 @@ async function fetchProductSeoData(productId, env, origin) {
   if (!response.ok) return null;
 
   const payload = await response.json();
+  const product = {
+    id: extractDocId(payload?.name) || productId,
+    ...parseFirestoreFields(payload?.fields || {}),
+  };
   const fields = payload?.fields || {};
 
-  const name = getFirestoreString(fields, "name") || "Proizvod";
+  const name = product.name || getFirestoreString(fields, "name") || "Proizvod";
   const description =
-    getFirestoreString(fields, "description") || `${name} | Vaga Beta Shop`;
-  const imgUrl = getFirestoreString(fields, "imgUrl");
-  const images = getFirestoreStringArray(fields, "images");
+    product.description ||
+    getFirestoreString(fields, "description") ||
+    `${name} | Vaga Beta Shop`;
+  const imgUrl = product.imgUrl || getFirestoreString(fields, "imgUrl");
+  const images =
+    (Array.isArray(product.images)
+      ? product.images.filter((image) => typeof image === "string")
+      : null) || getFirestoreStringArray(fields, "images");
   const primaryImage = toAbsoluteAssetUrl(imgUrl || images[0] || "", origin);
-  const price =
-    getFirestoreNumber(fields, "price") ||
-    getFirestoreNumber(fields, "hiddenPrice") ||
-    0;
-  const stock = getFirestoreNumber(fields, "stock");
-  const category = getFirestoreString(fields, "category");
+  const price = Number(product.price) || Number(product.hiddenPrice) || 0;
+  const stock = Number(product.stock) || 0;
+  const category = product.category || getFirestoreString(fields, "category");
 
   return {
+    product,
     name,
     description,
     image: primaryImage,
@@ -147,6 +197,7 @@ export async function onRequest(context) {
   const productId = isProductDetailsRoute
     ? decodeURIComponent(pathname.split("/").pop() || "")
     : null;
+  const canonicalPath = normalizeCanonicalPath(pathname);
 
   const isCSRRoute = CSR_ROUTES.some((route) => pathname.startsWith(route));
   if (isCSRRoute && !isProductDetailsRoute) {
@@ -169,8 +220,10 @@ export async function onRequest(context) {
     const { render } = await import("./ssr-render.js");
 
     let productSeoData = null;
+    let productSSRData = null;
     if (isProductDetailsRoute && productId) {
       productSeoData = await fetchProductSeoData(productId, env, url.origin);
+      productSSRData = productSeoData?.product || null;
     }
 
     if (!render) {
@@ -178,7 +231,29 @@ export async function onRequest(context) {
       return next();
     }
 
-    const { html, helmet } = await render(pathname);
+    const ssrProductDataKey = "__VAGA_SSR_PRODUCT__";
+    const previousSSRData = globalThis[ssrProductDataKey];
+
+    if (isProductDetailsRoute && productSSRData) {
+      globalThis[ssrProductDataKey] = productSSRData;
+    } else {
+      delete globalThis[ssrProductDataKey];
+    }
+
+    let html;
+    let helmet;
+    try {
+      const renderResult = await render(pathname);
+      html = renderResult.html;
+      helmet = renderResult.helmet;
+    } finally {
+      if (previousSSRData === undefined) {
+        delete globalThis[ssrProductDataKey];
+      } else {
+        globalThis[ssrProductDataKey] = previousSSRData;
+      }
+    }
+
     const templateResponse = await env.ASSETS.fetch(
       new URL("/index.html", request.url),
     );
@@ -208,11 +283,34 @@ export async function onRequest(context) {
       template = template.replace("</head>", `${headContent}\n</head>`);
     }
 
+    if (isProductDetailsRoute) {
+      const currentUrl = `${url.origin}${canonicalPath}`;
+      const canonicalTag = `<link rel="canonical" href="${escapeHtml(currentUrl)}" />`;
+
+      template = replaceOrInsertHeadTag(
+        template,
+        /<link\s+rel=["']canonical["'][^>]*>/i,
+        canonicalTag,
+      );
+
+      if (productSSRData) {
+        const serializedProductData = JSON.stringify(productSSRData).replaceAll(
+          "<",
+          "\\u003c",
+        );
+        const preloadScript = `<script id="product-ssr-data">window.__VAGA_SSR_PRODUCT__=${serializedProductData};</script>`;
+        template = replaceOrInsertHeadTag(
+          template,
+          /<script\s+id=["']product-ssr-data["'][\s\S]*?<\/script>/i,
+          preloadScript,
+        );
+      }
+    }
+
     if (isProductDetailsRoute && productSeoData) {
-      const currentUrl = `${url.origin}${pathname}`;
+      const currentUrl = `${url.origin}${canonicalPath}`;
       const pageTitle = `${productSeoData.name} | Vaga Beta Shop`;
       const pageDescription = productSeoData.description;
-      const canonicalTag = `<link rel="canonical" href="${escapeHtml(currentUrl)}" />`;
 
       template = replaceOrInsertHeadTag(
         template,
@@ -248,11 +346,6 @@ export async function onRequest(context) {
         template,
         /<meta\s+name=["']twitter:description["'][^>]*>/i,
         `<meta name="twitter:description" content="${escapeHtml(pageDescription)}" />`,
-      );
-      template = replaceOrInsertHeadTag(
-        template,
-        /<link\s+rel=["']canonical["'][^>]*>/i,
-        canonicalTag,
       );
 
       if (productSeoData.image) {

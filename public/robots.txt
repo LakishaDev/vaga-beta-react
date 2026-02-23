@@ -17,7 +17,6 @@ Disallow: /_next/
 
 # Blokiraj pristup resource fajlovima
 Disallow: /*.json$
-Disallow: /*.xml$
 Disallow: /manifest.json
 
 # Google bot specifične direktive
@@ -56,4 +55,3 @@ Disallow: /
 
 # Sitemap lokacija
 Sitemap: https://vagabeta.rs/sitemap.xml
-Sitemap: https://vagabeta.rs/sitemap-index.xml

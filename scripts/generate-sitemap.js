@@ -13,6 +13,10 @@ const __dirname = path.dirname(__filename);
 
 const BASE_URL = "https://vagabeta.rs";
 const DEFAULT_LASTMOD = new Date().toISOString().split("T")[0];
+const MIN_PRODUCT_URLS = Number.parseInt(
+  process.env.SITEMAP_MIN_PRODUCTS || "1",
+  10,
+);
 
 // Definiši sve stranice na sajtu
 const staticPages = [
@@ -71,7 +75,7 @@ const staticPages = [
     lastmod: DEFAULT_LASTMOD,
   },
   {
-    url: "/privacy-policy",
+    url: "/privacy",
     changefreq: "yearly",
     priority: "0.3",
     lastmod: DEFAULT_LASTMOD,
@@ -124,10 +128,9 @@ async function fetchProductPages() {
     process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
 
   if (!projectId || !apiKey) {
-    console.warn(
-      "⚠️  FIREBASE env nije dostupan, preskačem dinamičke product URL-ove u sitemap-u.",
+    throw new Error(
+      "FIREBASE env nije dostupan. Sitemap mora sadržati product URL-ove (strict mode).",
     );
-    return [];
   }
 
   const endpoint = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/products?pageSize=500&key=${apiKey}`;
@@ -135,22 +138,21 @@ async function fetchProductPages() {
   try {
     const response = await fetch(endpoint);
     if (!response.ok) {
-      console.warn(
-        `⚠️  Firestore fetch nije uspeo (${response.status}), preskačem product URL-ove.`,
+      throw new Error(
+        `Firestore fetch nije uspeo (${response.status}). Ne mogu da generišem product URL-ove.`,
       );
-      return [];
     }
 
     const payload = await response.json();
     const documents = payload.documents || [];
 
-    return documents
+    const productPages = documents
       .map((doc) => {
         const id = extractDocId(doc.name);
         if (!id) return null;
 
         return {
-          url: `/prodavnica/proizvod/${id}`,
+          url: `/prodavnica/proizvod/${encodeURIComponent(id)}`,
           changefreq: "daily",
           priority: "0.8",
           lastmod: DEFAULT_LASTMOD,
@@ -158,12 +160,18 @@ async function fetchProductPages() {
         };
       })
       .filter(Boolean);
+
+    if (productPages.length < MIN_PRODUCT_URLS) {
+      throw new Error(
+        `Pronađeno je samo ${productPages.length} proizvoda (minimum: ${MIN_PRODUCT_URLS}). Build se prekida da bi se izbegao neispravan sitemap.`,
+      );
+    }
+
+    return productPages;
   } catch (error) {
-    console.warn(
-      "⚠️  Greška pri čitanju proizvoda za sitemap, nastavljam bez product URL-ova:",
-      error.message,
+    throw new Error(
+      `Greška pri čitanju proizvoda za sitemap: ${error.message}`,
     );
-    return [];
   }
 }
 

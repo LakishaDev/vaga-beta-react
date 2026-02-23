@@ -40,9 +40,58 @@ import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 import ScrollToTopOnMount from "../UI/ScrollToTopOnMount";
 import { fetchMarkdownFiles } from "../../utils/markdownUtils";
 
+const SSR_PRODUCT_DATA_KEY = "__VAGA_SSR_PRODUCT__";
+
+function normalizeCanonicalPath(pathname = "/") {
+  const normalized = String(pathname).replace(/\/+$/, "");
+  return normalized || "/";
+}
+
+function getCleanCurrentUrl() {
+  if (typeof window === "undefined") {
+    return null;
+  }
+
+  return `${window.location.origin}${normalizeCanonicalPath(window.location.pathname)}`;
+}
+
+function addDiscountInfo(product) {
+  if (!product) return null;
+
+  let percent = 0.1;
+  if (product.price > 40000 && product.price < 500000) percent = 0.25;
+  else if (product.price < 14000) percent = 0.1;
+  else if (product.price > 500000) percent = 0.3;
+
+  const originalPrice = Math.round(
+    (product.price || product.hiddenPrice || 0) / (1 - percent),
+  );
+
+  return {
+    ...product,
+    originalPrice,
+    discountPercent: Math.round(percent * 100),
+  };
+}
+
+function getInitialSSRProduct(productId) {
+  const globalScope = typeof window !== "undefined" ? window : globalThis;
+  const ssrProduct = globalScope?.[SSR_PRODUCT_DATA_KEY];
+
+  if (!ssrProduct || typeof ssrProduct !== "object") {
+    return null;
+  }
+
+  if (productId && ssrProduct.id && ssrProduct.id !== productId) {
+    return null;
+  }
+
+  return addDiscountInfo(ssrProduct);
+}
+
 export default function ProductDetails() {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
+  const [product, setProduct] = useState(() => getInitialSSRProduct(id));
   const [reviews, setReviews] = useState([]);
   const [review, setReview] = useState("");
   const [rating, setRating] = useState(5);
@@ -83,21 +132,6 @@ export default function ProductDetails() {
     setRating(5);
   };
 
-  function addDiscountInfo(product) {
-    let percent = 0.1;
-    if (product.price > 40000 && product.price < 500000) percent = 0.25;
-    else if (product.price < 14000) percent = 0.1;
-    else if (product.price > 500000) percent = 0.3;
-    let originalPrice = Math.round(
-      (product.price || product.hiddenPrice || 0) / (1 - percent),
-    );
-    return {
-      ...product,
-      originalPrice,
-      discountPercent: Math.round(percent * 100),
-    };
-  }
-
   // Check admin status
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -117,6 +151,10 @@ export default function ProductDetails() {
   useEffect(() => {
     const fetchProduct = async () => {
       const snap = await getDoc(doc(db, "products", id));
+      if (!snap.exists()) {
+        setProduct(null);
+        return;
+      }
       const productData = addDiscountInfo({ id: snap.id, ...snap.data() });
       setProduct(productData);
 
@@ -153,7 +191,9 @@ export default function ProductDetails() {
       },
       offers: {
         "@type": "Offer",
-        url: window.location.href,
+        url:
+          getCleanCurrentUrl() ||
+          `https://vagabeta.rs/prodavnica/proizvod/${id}`,
         priceCurrency: "RSD",
         price:
           product.price?.toString() || product.hiddenPrice?.toString() || "0",
@@ -186,7 +226,10 @@ export default function ProductDetails() {
       canonical.rel = "canonical";
       document.head.appendChild(canonical);
     }
-    canonical.href = window.location.href;
+    const cleanUrl = getCleanCurrentUrl();
+    if (cleanUrl) {
+      canonical.href = cleanUrl;
+    }
   }, [product, reviews]);
 
   // Real-time reviews with onSnapshot
@@ -331,6 +374,9 @@ export default function ProductDetails() {
     product.originalPrice > product.price;
 
   // Pripremi Product schema za rendering
+  const currentUrl =
+    getCleanCurrentUrl() || `https://vagabeta.rs/prodavnica/proizvod/${id}`;
+
   const productSchema = product
     ? {
         "@context": "https://schema.org/",
@@ -344,7 +390,7 @@ export default function ProductDetails() {
         },
         offers: {
           "@type": "Offer",
-          url: window.location.href,
+          url: currentUrl,
           priceCurrency: "RSD",
           price:
             product.price?.toString() || product.hiddenPrice?.toString() || "0",
@@ -365,11 +411,6 @@ export default function ProductDetails() {
             : undefined,
       }
     : null;
-
-  const currentUrl =
-    typeof window !== "undefined"
-      ? window.location.href
-      : `https://vagabeta.rs/prodavnica/proizvod/${id}`;
 
   if (productSchema?.aggregateRating === undefined) {
     delete productSchema?.aggregateRating;
