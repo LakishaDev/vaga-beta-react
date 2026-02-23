@@ -45,12 +45,16 @@ export default function ProgressiveImage({
 }) {
   const [loading, setLoading] = useState(true);
   const [imageSrc, setImageSrc] = useState(normalizeImageUrl(src));
-  const [retryCount, setRetryCount] = useState(0);
+  const [primaryRetried, setPrimaryRetried] = useState(false);
+  const [usingFallback, setUsingFallback] = useState(false);
+  const [fallbackRetried, setFallbackRetried] = useState(false);
 
   useEffect(() => {
     setImageSrc(normalizeImageUrl(src));
     setLoading(true);
-    setRetryCount(0);
+    setPrimaryRetried(false);
+    setUsingFallback(false);
+    setFallbackRetried(false);
   }, [src]);
 
   // Dozvoli izbor fit moda: "cover" (za kartice/grid), "contain" (za modale/lightbox)
@@ -81,21 +85,33 @@ export default function ProgressiveImage({
         onError={(e) => {
           const normalizedFallback = normalizeImageUrl(fallbackSrc);
 
-          if (retryCount < 1 && shouldRetryWithBuster(imageSrc)) {
-            setRetryCount((count) => count + 1);
-            setImageSrc(addRetryParam(imageSrc, retryCount + 1));
+          if (
+            !usingFallback &&
+            !primaryRetried &&
+            shouldRetryWithBuster(imageSrc)
+          ) {
+            setPrimaryRetried(true);
+            setImageSrc(addRetryParam(imageSrc, 1));
             return;
           }
 
-          if (normalizedFallback && imageSrc !== normalizedFallback) {
+          if (
+            !usingFallback &&
+            normalizedFallback &&
+            imageSrc !== normalizedFallback
+          ) {
+            setUsingFallback(true);
             setImageSrc(normalizedFallback);
-            setRetryCount(0);
             return;
           }
 
-          if (retryCount < 2 && shouldRetryWithBuster(imageSrc)) {
-            setRetryCount((count) => count + 1);
-            setImageSrc(addRetryParam(imageSrc, retryCount + 1));
+          if (
+            usingFallback &&
+            !fallbackRetried &&
+            shouldRetryWithBuster(imageSrc)
+          ) {
+            setFallbackRetried(true);
+            setImageSrc(addRetryParam(imageSrc, 1));
             return;
           }
 
