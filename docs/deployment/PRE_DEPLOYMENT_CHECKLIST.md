@@ -21,7 +21,7 @@ npm run build:prod
 
 ### Step 2: Environment Variables ✓
 
-Proverite da su sve varijable definisane u `.env.local`:
+Proverite da su obavezne varijable definisane u `.env.local`:
 
 ```env
 ✓ VITE_FIREBASE_API_KEY
@@ -30,11 +30,14 @@ Proverite da su sve varijable definisane u `.env.local`:
 ✓ VITE_FIREBASE_STORAGE_BUCKET
 ✓ VITE_FIREBASE_MESSAGING_SENDER_ID
 ✓ VITE_FIREBASE_APP_ID
-✓ VITE_FIREBASE_MEASUREMENT_ID
-✓ VITE_GOOGLE_MAPS_API_KEY
-✓ VITE_GA_TRACKING_ID (opciono)
 ✓ VITE_APP_URL=https://vagabeta.rs
-✓ VITE_ENABLE_ANALYTICS=true
+✓ VITE_R2_PUBLIC_URL (ako koristiš R2 slike)
+
+# Opciono
+○ VITE_FIREBASE_MEASUREMENT_ID
+○ VITE_GOOGLE_MAPS_API_KEY
+○ VITE_GA_TRACKING_ID
+○ VITE_ENABLE_ANALYTICS=true
 ```
 
 ### Step 3: Critical Files Check ✓
@@ -67,7 +70,7 @@ Settings > Build, deployments and functions
 
 U Cloudflare Pages > Settings > Environment variables > Production:
 
-Dodaj sve VITE\_\* varijable:
+Dodaj obavezne VITE\_\* varijable:
 
 ```env
 VITE_FIREBASE_API_KEY=...              ✓
@@ -76,12 +79,19 @@ VITE_FIREBASE_PROJECT_ID=...           ✓
 VITE_FIREBASE_STORAGE_BUCKET=...       ✓
 VITE_FIREBASE_MESSAGING_SENDER_ID=...  ✓
 VITE_FIREBASE_APP_ID=...               ✓
-VITE_FIREBASE_MEASUREMENT_ID=...       ✓
-VITE_GOOGLE_MAPS_API_KEY=...           ✓
-VITE_GA_TRACKING_ID=...                ✓
 VITE_APP_URL=https://vagabeta.rs       ✓
-VITE_ENABLE_ANALYTICS=true             ✓
+VITE_R2_PUBLIC_URL=...                 ✓
+
+# Opcione:
+VITE_FIREBASE_MEASUREMENT_ID=...
+VITE_GOOGLE_MAPS_API_KEY=...
+VITE_GA_TRACKING_ID=...
+VITE_ENABLE_ANALYTICS=true
 ```
+
+### Step 5.1: SEO Smoke Mode u CI ✓
+
+Cloudflare build treba da koristi lokalni smoke test mode (`SEO_SMOKE_MODE=local`) kako deployment ne bi zavisio od trenutnog stanja live sajta.
 
 ### Step 6: DNS Setup ✓
 

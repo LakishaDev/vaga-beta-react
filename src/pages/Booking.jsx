@@ -9,7 +9,7 @@ import { auth } from "@/services/firebase";
 import Stepper from "@/components/DesignSystem/Stepper";
 import Button from "@/components/DesignSystem/Button";
 import Input from "@/components/DesignSystem/Input";
-import Card, { CardBody, CardHeader } from "@/components/DesignSystem/Card";
+import Card, { CardBody } from "@/components/DesignSystem/Card";
 import Badge from "@/components/DesignSystem/Badge";
 import toast from "react-hot-toast";
 import { createBooking } from "@/services/bookingService";
@@ -17,6 +17,7 @@ import { FaCheckCircle } from "react-icons/fa";
 import SEO from "@/components/SEO";
 import { designTokens } from "@/configs/designTokens";
 import { motion as Motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 
 const SERVICES = [
   {
@@ -44,6 +45,7 @@ const SCALE_TYPES = [
 ];
 
 export default function Booking() {
+  const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -101,6 +103,16 @@ export default function Booking() {
         toast.error("Molim odaberite željeni datum");
         return;
       }
+
+      const selectedDate = new Date(formData.preferredDate);
+      selectedDate.setHours(0, 0, 0, 0);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+
+      if (selectedDate < today) {
+        toast.error("Željeni datum ne može biti u prošlosti");
+        return;
+      }
     }
 
     setCurrentStep((prev) => prev + 1);
@@ -125,17 +137,17 @@ export default function Booking() {
         userPhone: user.phoneNumber || "",
 
         service: formData.service,
-        serviceDetails: formData.serviceDetails,
+        serviceDetails: (formData.serviceDetails || "").trim(),
 
         scaleType: formData.scaleType,
-        scaleModel: formData.scaleModel,
-        scaleSerialNumber: formData.scaleSerialNumber || "",
+        scaleModel: formData.scaleModel.trim(),
+        scaleSerialNumber: (formData.scaleSerialNumber || "").trim(),
 
-        location: formData.location,
+        location: formData.location.trim(),
         deliveryRequired: formData.deliveryRequired,
 
         preferredDate: new Date(formData.preferredDate),
-        notes: formData.notes || "",
+        notes: (formData.notes || "").trim(),
       };
 
       const newBookingId = await createBooking(bookingData);
@@ -468,6 +480,7 @@ export default function Booking() {
                   variant="primary"
                   onClick={currentStep === 3 ? handleSubmit : handleNextStep}
                   loading={isSubmitting}
+                  disabled={currentStep === 3 && !user}
                 >
                   {currentStep === 3 ? "Pošalji zahtev" : "Dalje →"}
                 </Button>
@@ -502,6 +515,16 @@ export default function Booking() {
                   ⚠️ Molim <strong>prijavite se</strong> pre nego što pošaljete
                   zahtev.
                 </p>
+                <div className="mt-3">
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      navigate("/prodavnica/prijava?redirect=/booking")
+                    }
+                  >
+                    Prijavi se
+                  </Button>
+                </div>
               </div>
             )}
           </div>

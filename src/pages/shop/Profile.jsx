@@ -38,7 +38,7 @@ import DeleteAccountModal from "../../components/shop/DeleteAccountModal";
 import PasswordResetModal from "../../components/shop/PasswordResetModal";
 import OrderDetailsModal from "../../components/shop/OrderDetailsModal";
 import PhoneVerifyModal from "../../components/shop/PhoneVerifyModal";
-import { FaShippingFast } from "react-icons/fa";
+import { FaClipboardList, FaShippingFast } from "react-icons/fa";
 
 // Helperi
 function srRsd(n) {
@@ -154,6 +154,7 @@ const VerificationBadge = ({ verified, type, value, onClick }) => {
 export default function Profile() {
   const { user, userData, loading, refreshUserData } = useUserData();
   const [orders, setOrders] = useState([]);
+  const [bookings, setBookings] = useState([]);
   const [updatedOrderIds, setUpdatedOrderIds] = useState(new Set());
   const [priceUpdatedOrderIds, setPriceUpdatedOrderIds] = useState(new Set());
   const [editMode, setEditMode] = useState(false);
@@ -262,6 +263,35 @@ export default function Profile() {
   useEffect(() => {
     if (userData) setEditData(userData);
   }, [userData]);
+
+  useEffect(() => {
+    if (!user?.uid) return;
+
+    const bookingsQuery = query(
+      collection(db, "bookings"),
+      where("userId", "==", user.uid),
+    );
+
+    const unsubscribe = onSnapshot(
+      bookingsQuery,
+      (snapshot) => {
+        const items = snapshot.docs
+          .map((doc) => ({ id: doc.id, ...doc.data() }))
+          .sort((a, b) => {
+            const ta = a.createdAt?.seconds || 0;
+            const tb = b.createdAt?.seconds || 0;
+            return tb - ta;
+          });
+
+        setBookings(items);
+      },
+      (error) => {
+        console.error("Error fetching bookings:", error);
+      },
+    );
+
+    return () => unsubscribe();
+  }, [user?.uid]);
 
   // Save edit profile
   const handleSave = async () => {
@@ -810,6 +840,113 @@ export default function Profile() {
                   );
                 })}
               </AnimatePresence>
+            </div>
+          )}
+        </motion.div>
+
+        {/* Service Requests Section */}
+        <motion.div
+          className="mt-8 sm:mt-12"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.45 }}
+        >
+          <h3 className="font-bold text-2xl sm:text-3xl mb-6 flex items-center gap-3">
+            <FaClipboardList size={24} className="text-brand-primary" />
+            Vaši servisni zahtevi
+          </h3>
+
+          {bookings.length === 0 ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5 }}
+              className="text-center text-gray-500 py-10 bg-white/80 rounded-xl shadow-lg"
+            >
+              <AlertTriangle
+                size={42}
+                className="mx-auto mb-3 text-brand-primary/60"
+              />
+              <p className="text-lg font-medium">Nema servisnih zahteva.</p>
+            </motion.div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 lg:gap-8 md:auto-rows-fr">
+              {bookings.map((booking, idx) => {
+                const status = booking.status || "primljeno";
+                const statusClass =
+                  status === "zavrseno"
+                    ? "bg-green-100 text-green-700 border-green-200"
+                    : status === "zakazano"
+                      ? "bg-purple-100 text-purple-700 border-purple-200"
+                      : status === "u_obradi"
+                        ? "bg-yellow-100 text-yellow-700 border-yellow-200"
+                        : "bg-blue-100 text-blue-700 border-blue-200";
+                const statusLabel =
+                  status === "zavrseno"
+                    ? "Završeno"
+                    : status === "zakazano"
+                      ? "Zakazano"
+                      : status === "u_obradi"
+                        ? "U obradi"
+                        : "Primljeno";
+
+                return (
+                  <motion.div
+                    key={booking.id || idx}
+                    className="bg-white/80 backdrop-blur-sm shadow-lg rounded-2xl p-6 border border-gray-100 flex flex-col"
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.45, delay: idx * 0.06 }}
+                    whileHover={{ scale: 1.02, y: -6 }}
+                  >
+                    <div className="flex justify-between items-center mb-4">
+                      <span className="text-sm text-gray-500 font-medium">
+                        {srDate(booking.createdAt || booking.preferredDate)}
+                      </span>
+                      <span
+                        className={`text-xs px-2.5 py-1 rounded-full border font-semibold ${statusClass}`}
+                      >
+                        {statusLabel}
+                      </span>
+                    </div>
+
+                    <div className="space-y-2 text-sm mb-4">
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-500">Usluga:</span>
+                        <span className="font-semibold text-gray-800 text-right">
+                          {booking.service || "-"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-500">Tip vage:</span>
+                        <span className="font-semibold text-gray-800 text-right">
+                          {booking.scaleType || "-"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-500">Model:</span>
+                        <span className="font-semibold text-gray-800 text-right">
+                          {booking.scaleModel || "-"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between gap-2">
+                        <span className="text-gray-500">Željeni datum:</span>
+                        <span className="font-semibold text-gray-800 text-right">
+                          {booking.preferredDate
+                            ? srDate(booking.preferredDate)
+                            : "-"}
+                        </span>
+                      </div>
+                    </div>
+
+                    {booking.notes && (
+                      <div className="mt-auto bg-gray-50 border border-gray-100 rounded-lg p-3 text-sm text-gray-600">
+                        {booking.notes}
+                      </div>
+                    )}
+                  </motion.div>
+                );
+              })}
             </div>
           )}
         </motion.div>

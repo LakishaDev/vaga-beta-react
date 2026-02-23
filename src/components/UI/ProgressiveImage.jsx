@@ -9,7 +9,7 @@
 // - fit: "cover" (default) ili "contain" za object-fit stil
 // Koristi useState za praćenje stanja učitavanja slike
 // Koristi Tailwind CSS za stilizaciju i animacije
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 // Modern, aspect-safe ProgressiveImage
 export default function ProgressiveImage({
@@ -18,8 +18,15 @@ export default function ProgressiveImage({
   className = "",
   style = {},
   fit = "cover",
+  fallbackSrc = "/imgs/vaga-logo.png",
 }) {
   const [loading, setLoading] = useState(true);
+  const [imageSrc, setImageSrc] = useState(src);
+
+  useEffect(() => {
+    setImageSrc(src);
+    setLoading(true);
+  }, [src]);
 
   // Dozvoli izbor fit moda: "cover" (za kartice/grid), "contain" (za modale/lightbox)
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
@@ -33,7 +40,7 @@ export default function ProgressiveImage({
       aria-busy={loading}
     >
       <img
-        src={src}
+        src={imageSrc}
         alt={alt}
         draggable={false}
         className={`${fitClass} transition-all duration-500 ease-out
@@ -46,6 +53,15 @@ export default function ProgressiveImage({
         `}
         style={{ width: "100%", height: "100%", backfaceVisibility: "hidden" }}
         onLoad={() => setLoading(false)}
+        onError={(e) => {
+          if (fallbackSrc && imageSrc !== fallbackSrc) {
+            setImageSrc(fallbackSrc);
+            return;
+          }
+
+          e.currentTarget.style.opacity = "0.35";
+          setLoading(false);
+        }}
       />
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center z-10 bg-gradient-to-br from-white/30 via-brand-secondary/10 to-blue-100/20">

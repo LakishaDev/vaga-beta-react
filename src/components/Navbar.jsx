@@ -17,7 +17,6 @@ import {
   FaShoppingBag,
   FaMobileAlt,
   FaClipboardList,
-  FaPalette,
   FaChevronRight,
 } from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
@@ -32,7 +31,6 @@ const navItems = [
   { to: "/newsletter?source=navbar", label: "Popusti", icon: FaEnvelope },
   { to: "/onama", label: "O nama", icon: FaInfoCircle },
   { to: "/booking", label: "Zahtev", icon: FaClipboardList },
-  { to: "/design-system-demo", label: "Design", icon: FaPalette },
 ];
 
 export default function Navbar() {
