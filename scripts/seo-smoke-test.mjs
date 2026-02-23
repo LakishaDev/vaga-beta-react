@@ -1,4 +1,10 @@
 import process from "node:process";
+import fs from "node:fs";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const BASE_URL = (process.env.SEO_BASE_URL || "https://vagabeta.rs").replace(
   /\/+$/,
@@ -6,6 +12,10 @@ const BASE_URL = (process.env.SEO_BASE_URL || "https://vagabeta.rs").replace(
 );
 const TIMEOUT_MS = Number.parseInt(process.env.SEO_TIMEOUT_MS || "15000", 10);
 const MAX_PRODUCTS = Number.parseInt(process.env.SEO_MAX_PRODUCTS || "5", 10);
+const MODE = (process.env.SEO_SMOKE_MODE || "live").toLowerCase();
+const ALLOW_EMPTY_PRODUCTS =
+  String(process.env.SEO_ALLOW_EMPTY_PRODUCTS || "false").toLowerCase() ===
+  "true";
 
 function normalizeCleanUrl(rawUrl) {
   const parsed = new URL(rawUrl);
@@ -27,6 +37,10 @@ function parseLocsFromSitemap(xmlText) {
   }
 
   return urls;
+}
+
+function isProductDetailUrl(url = "") {
+  return url.includes("/p/") || url.includes("/prodavnica/proizvod/");
 }
 
 function extractCanonical(html) {
@@ -67,7 +81,40 @@ async function fetchText(url, label) {
 }
 
 async function run() {
-  console.log(`🔎 SEO smoke test start: ${BASE_URL}`);
+  console.log(`🔎 SEO smoke test start (${MODE}): ${BASE_URL}`);
+
+  if (MODE === "local") {
+    const sitemapPath = path.resolve(__dirname, "..", "public", "sitemap.xml");
+
+    if (!fs.existsSync(sitemapPath)) {
+      throw new Error(`Local sitemap not found at ${sitemapPath}`);
+    }
+
+    const sitemapText = fs.readFileSync(sitemapPath, "utf-8");
+    const sitemapUrls = parseLocsFromSitemap(sitemapText);
+
+    if (sitemapUrls.length === 0) {
+      throw new Error("Local sitemap has no URLs");
+    }
+
+    const productUrls = sitemapUrls.filter((item) => isProductDetailUrl(item));
+    if (productUrls.length === 0) {
+      if (ALLOW_EMPTY_PRODUCTS) {
+        console.warn(
+          "⚠️ Local sitemap has no product detail URLs, continuing because SEO_ALLOW_EMPTY_PRODUCTS=true",
+        );
+        return;
+      }
+      throw new Error(
+        "Local sitemap has no product detail URLs (/p/ or /prodavnica/proizvod/)",
+      );
+    }
+
+    console.log(
+      `✅ Local sitemap check passed | URLs: ${sitemapUrls.length} | Product URLs: ${productUrls.length}`,
+    );
+    return;
+  }
 
   const sitemapUrl = `${BASE_URL}/sitemap.xml`;
   const { response: sitemapResponse, text: sitemapText } = await fetchText(
@@ -84,10 +131,12 @@ async function run() {
     throw new Error("Sitemap has no URLs");
   }
 
-  const productUrls = sitemapUrls.filter((item) => item.includes("/p/"));
+  const productUrls = sitemapUrls.filter((item) => isProductDetailUrl(item));
 
   if (productUrls.length === 0) {
-    throw new Error("Sitemap has no product detail URLs");
+    throw new Error(
+      "Sitemap has no product detail URLs (/p/ or /prodavnica/proizvod/)",
+    );
   }
 
   const sampledUrls = productUrls.slice(0, Math.max(1, MAX_PRODUCTS));

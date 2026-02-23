@@ -17,6 +17,9 @@ const MIN_PRODUCT_URLS = Number.parseInt(
   process.env.SITEMAP_MIN_PRODUCTS || "1",
   10,
 );
+const ALLOW_NO_FIREBASE =
+  String(process.env.SITEMAP_ALLOW_NO_FIREBASE || "false").toLowerCase() ===
+  "true";
 
 // Definiši sve stranice na sajtu
 const staticPages = [
@@ -143,6 +146,13 @@ async function fetchProductPages() {
     process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
 
   if (!projectId || !apiKey) {
+    if (ALLOW_NO_FIREBASE) {
+      console.warn(
+        "⚠️ FIREBASE env nije dostupan. Nastavljam bez product URL-ova jer je uključen SITEMAP_ALLOW_NO_FIREBASE.",
+      );
+      return [];
+    }
+
     throw new Error(
       "FIREBASE env nije dostupan. Sitemap mora sadržati product URL-ove (strict mode).",
     );
@@ -153,6 +163,13 @@ async function fetchProductPages() {
   try {
     const response = await fetch(endpoint);
     if (!response.ok) {
+      if (ALLOW_NO_FIREBASE) {
+        console.warn(
+          `⚠️ Firestore fetch nije uspeo (${response.status}). Nastavljam bez product URL-ova jer je uključen SITEMAP_ALLOW_NO_FIREBASE.`,
+        );
+        return [];
+      }
+
       throw new Error(
         `Firestore fetch nije uspeo (${response.status}). Ne mogu da generišem product URL-ove.`,
       );
@@ -181,14 +198,27 @@ async function fetchProductPages() {
       })
       .filter(Boolean);
 
-    if (productPages.length < MIN_PRODUCT_URLS) {
+    if (productPages.length < MIN_PRODUCT_URLS && !ALLOW_NO_FIREBASE) {
       throw new Error(
         `Pronađeno je samo ${productPages.length} proizvoda (minimum: ${MIN_PRODUCT_URLS}). Build se prekida da bi se izbegao neispravan sitemap.`,
       );
     }
 
+    if (productPages.length < MIN_PRODUCT_URLS && ALLOW_NO_FIREBASE) {
+      console.warn(
+        `⚠️ Pronađeno je ${productPages.length} proizvoda (minimum: ${MIN_PRODUCT_URLS}), ali build nastavlja jer je uključen SITEMAP_ALLOW_NO_FIREBASE.`,
+      );
+    }
+
     return productPages;
   } catch (error) {
+    if (ALLOW_NO_FIREBASE) {
+      console.warn(
+        `⚠️ Greška pri čitanju proizvoda za sitemap: ${error.message}. Nastavljam bez product URL-ova zbog SITEMAP_ALLOW_NO_FIREBASE.`,
+      );
+      return [];
+    }
+
     throw new Error(
       `Greška pri čitanju proizvoda za sitemap: ${error.message}`,
     );

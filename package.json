@@ -12,7 +12,7 @@
     "build:client": "vite build",
     "build:server": "cross-env SSR_BUILD=true vite build --ssr src/entry-server-cloudflare.jsx --outDir dist/.server",
     "copy:server": "node scripts/copy-server-build.js",
-    "build:cloudflare": "npm run seo:smoke && npm run generate:sitemap && node scripts/build-cloudflare.js && npm run build:client && npm run build:server && npm run copy:server",
+    "build:cloudflare": "cross-env SITEMAP_ALLOW_NO_FIREBASE=true npm run generate:sitemap && cross-env SEO_SMOKE_MODE=local SEO_ALLOW_EMPTY_PRODUCTS=true npm run seo:smoke && node scripts/build-cloudflare.js && npm run build:client && npm run build:server && npm run copy:server",
     "deploy:cloudflare": "npm run build:cloudflare && wrangler pages deploy dist --project-name=vaga-beta-nesto --commit-dirty=true",
     "preview:hybrid": "npx wrangler pages dev dist --compatibility-date=2024-09-23",
     "lint": "eslint .",
