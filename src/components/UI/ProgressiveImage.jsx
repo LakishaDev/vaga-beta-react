@@ -11,6 +11,22 @@
 // Koristi Tailwind CSS za stilizaciju i animacije
 import React, { useEffect, useState } from "react";
 
+function withImageCacheBuster(url) {
+  if (!url || typeof url !== "string") return url;
+  if (url.startsWith("data:") || url.startsWith("blob:")) return url;
+
+  const shouldBust =
+    url.startsWith("/imgs/") ||
+    url.startsWith("imgs/") ||
+    url.includes("/imgs/");
+
+  if (!shouldBust) return url;
+  if (url.includes("imgv=")) return url;
+
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}imgv=20260223`;
+}
+
 // Modern, aspect-safe ProgressiveImage
 export default function ProgressiveImage({
   src,
@@ -21,10 +37,10 @@ export default function ProgressiveImage({
   fallbackSrc = "/imgs/vaga-logo.png",
 }) {
   const [loading, setLoading] = useState(true);
-  const [imageSrc, setImageSrc] = useState(src);
+  const [imageSrc, setImageSrc] = useState(withImageCacheBuster(src));
 
   useEffect(() => {
-    setImageSrc(src);
+    setImageSrc(withImageCacheBuster(src));
     setLoading(true);
   }, [src]);
 
@@ -54,8 +70,10 @@ export default function ProgressiveImage({
         style={{ width: "100%", height: "100%", backfaceVisibility: "hidden" }}
         onLoad={() => setLoading(false)}
         onError={(e) => {
-          if (fallbackSrc && imageSrc !== fallbackSrc) {
-            setImageSrc(fallbackSrc);
+          const fallbackWithBuster = withImageCacheBuster(fallbackSrc);
+
+          if (fallbackWithBuster && imageSrc !== fallbackWithBuster) {
+            setImageSrc(fallbackWithBuster);
             return;
           }
 
