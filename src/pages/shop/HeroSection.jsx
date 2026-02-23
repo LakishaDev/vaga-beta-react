@@ -24,7 +24,7 @@ export default function HeroSection() {
     >
       {/* Logo */}
       <ProgressiveImage
-        src="imgs/vaga-logo.png"
+        src="/imgs/vaga-logo.png"
         alt="Shop hero logo"
         className="w-36 h-36 rounded-full mb-5 shadow-2xl border-4 border-brand-accent bg-white/90 animate-pop"
       />

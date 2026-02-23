@@ -20,6 +20,7 @@
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "seo:smoke": "node scripts/seo-smoke-test.mjs",
     "seo:health": "node scripts/seo-smoke-test.mjs",
+    "image:smoke": "node scripts/image-smoke-test.mjs",
     "migrate:product-slugs": "node scripts/migrate-product-slugs.mjs",
     "analyze": "vite build --mode analyze",
     "build:prod": "npm run lint && npm run generate:sitemap && vite build",

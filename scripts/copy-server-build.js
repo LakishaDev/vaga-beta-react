@@ -1,9 +1,10 @@
 // scripts/copy-server-build.js
 // Kopira server build u functions folder za Cloudflare Pages deployment
 
-import { copyFileSync, existsSync, mkdirSync, cpSync } from "fs";
+import { copyFileSync, existsSync, mkdirSync, cpSync, rmSync } from "fs";
 import { dirname } from "path";
 import { fileURLToPath } from "url";
+import process from "node:process";
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 const projectRoot = dirname(__dirname);
@@ -42,6 +43,7 @@ try {
 // Kopiraj assets folder ako postoji
 if (existsSync(sourceAssets)) {
   try {
+    rmSync(destAssets, { recursive: true, force: true });
     cpSync(sourceAssets, destAssets, { recursive: true });
     console.log(`✅ Copied server assets to functions/assets/`);
   } catch (error) {

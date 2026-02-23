@@ -1,8 +1,8 @@
 // src/entry-server-cloudflare.jsx
 // Cloudflare Workers-kompatibilan SSR entry point
-// Koristi renderToString (ne renderToPipeableStream jer nije kompatibilan sa Workers)
+// Koristi renderToReadableStream za punu Suspense podršku na Workers okruženju
 
-import { renderToString } from "react-dom/server";
+import { renderToReadableStream } from "react-dom/server";
 import React from "react";
 import { StaticRouter } from "react-router";
 import App from "./App";
@@ -21,6 +21,11 @@ const HelmetProvider = ({ children, context }) => {
   return children;
 };
 
+async function readableStreamToString(stream) {
+  const response = new Response(stream);
+  return response.text();
+}
+
 /**
  * Renderuje React aplikaciju u HTML string za Cloudflare Workers
  * @param {string} url - Request URL path
@@ -30,14 +35,19 @@ export async function render(url) {
   const helmetContext = {};
 
   try {
-    // Renderuj React app u HTML string
-    const html = renderToString(
+    const stream = await renderToReadableStream(
       <HelmetProvider context={helmetContext}>
         <StaticRouter location={url}>
           <App />
         </StaticRouter>
       </HelmetProvider>,
     );
+
+    if (stream?.allReady) {
+      await stream.allReady;
+    }
+
+    const html = await readableStreamToString(stream);
 
     // Izvuci helmet podatke POSLE renderovanja
     const helmet = helmetContext.helmet || {

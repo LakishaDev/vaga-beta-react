@@ -11,20 +11,27 @@
 // Koristi Tailwind CSS za stilizaciju i animacije
 import React, { useEffect, useState } from "react";
 
-function withImageCacheBuster(url) {
+function normalizeImageUrl(url) {
   if (!url || typeof url !== "string") return url;
   if (url.startsWith("data:") || url.startsWith("blob:")) return url;
 
-  const shouldBust =
-    url.startsWith("/imgs/") ||
-    url.startsWith("imgs/") ||
-    url.includes("/imgs/");
+  if (url.startsWith("imgs/")) return `/${url}`;
+  return url;
+}
 
-  if (!shouldBust) return url;
-  if (url.includes("imgv=")) return url;
+function shouldRetryWithBuster(url) {
+  return (
+    typeof url === "string" &&
+    (url.startsWith("/imgs/") ||
+      url.startsWith("imgs/") ||
+      url.includes("/imgs/"))
+  );
+}
 
+function addRetryParam(url, attempt) {
+  if (!url || typeof url !== "string") return url;
   const separator = url.includes("?") ? "&" : "?";
-  return `${url}${separator}imgv=20260223`;
+  return `${url}${separator}retry=${attempt}-${Date.now()}`;
 }
 
 // Modern, aspect-safe ProgressiveImage
@@ -37,11 +44,13 @@ export default function ProgressiveImage({
   fallbackSrc = "/imgs/vaga-logo.png",
 }) {
   const [loading, setLoading] = useState(true);
-  const [imageSrc, setImageSrc] = useState(withImageCacheBuster(src));
+  const [imageSrc, setImageSrc] = useState(normalizeImageUrl(src));
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    setImageSrc(withImageCacheBuster(src));
+    setImageSrc(normalizeImageUrl(src));
     setLoading(true);
+    setRetryCount(0);
   }, [src]);
 
   // Dozvoli izbor fit moda: "cover" (za kartice/grid), "contain" (za modale/lightbox)
@@ -70,10 +79,23 @@ export default function ProgressiveImage({
         style={{ width: "100%", height: "100%", backfaceVisibility: "hidden" }}
         onLoad={() => setLoading(false)}
         onError={(e) => {
-          const fallbackWithBuster = withImageCacheBuster(fallbackSrc);
+          const normalizedFallback = normalizeImageUrl(fallbackSrc);
 
-          if (fallbackWithBuster && imageSrc !== fallbackWithBuster) {
-            setImageSrc(fallbackWithBuster);
+          if (retryCount < 1 && shouldRetryWithBuster(imageSrc)) {
+            setRetryCount((count) => count + 1);
+            setImageSrc(addRetryParam(imageSrc, retryCount + 1));
+            return;
+          }
+
+          if (normalizedFallback && imageSrc !== normalizedFallback) {
+            setImageSrc(normalizedFallback);
+            setRetryCount(0);
+            return;
+          }
+
+          if (retryCount < 2 && shouldRetryWithBuster(imageSrc)) {
+            setRetryCount((count) => count + 1);
+            setImageSrc(addRetryParam(imageSrc, retryCount + 1));
             return;
           }
 
