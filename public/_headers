@@ -2,12 +2,15 @@
 # Bezbedni security headers + Performance optimizacije
 
 /*
-  # ===== STABILNI SECURITY HEADERS =====
-  X-Frame-Options: SAMEORIGIN
-  X-Content-Type-Options: nosniff
-  Referrer-Policy: strict-origin-when-cross-origin
-  Strict-Transport-Security: max-age=31536000; includeSubDomains
-  Permissions-Policy: camera=(), microphone=(), geolocation=(self)
+  # ===== PERMISIVNI GLOBAL HEADERS =====
+  Access-Control-Allow-Origin: *
+  Access-Control-Allow-Methods: GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD
+  Access-Control-Allow-Headers: *
+  Access-Control-Expose-Headers: *
+  Access-Control-Max-Age: 86400
+  Cross-Origin-Resource-Policy: cross-origin
+  Cross-Origin-Opener-Policy: unsafe-none
+  Cross-Origin-Embedder-Policy: unsafe-none
 
 # Cache control za statičke resurse - optimizovano za Cloudflare
 /assets/*
