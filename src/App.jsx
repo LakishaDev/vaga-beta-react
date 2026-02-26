@@ -9,11 +9,8 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import RenderBoundary from "./components/RenderBoundary";
-import CloudflareDeploymentDebug from "./components/CloudflareDeploymentDebug";
-import NewsletterModal from "./components/NewsletterModal";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
-import Lenis from "lenis";
-import { lazy, Suspense, useEffect } from "react";
+import { lazy, Suspense, useEffect, useState } from "react";
 
 const Home = lazy(() => import("./pages/home/HomeModern"));
 const Usluge = lazy(() => import("./pages/services/UslugaModern"));
@@ -26,6 +23,7 @@ const NewsletterPage = lazy(() => import("./pages/Newsletter"));
 const EVagaDesktop = lazy(() => import("./pages/EVagaDesktop"));
 const DesignSystemDemo = lazy(() => import("./pages/DesignSystemDemo"));
 const Prodavnica = lazy(() => import("./Prodavnica"));
+const NewsletterModal = lazy(() => import("./components/NewsletterModal"));
 
 function AppContent() {
   // useLocation hook - dobija se iz router context-a
@@ -79,6 +77,8 @@ function AppContent() {
 // Glavna App komponenta - bez Router wrapper-a
 // Router se dodeljuje na entry-client.jsx i entry-server.jsx
 function App() {
+  const [showNewsletterModal, setShowNewsletterModal] = useState(false);
+
   // Inicijalizacija Lenis za glatko skrolovanje
   // Samo u browser okruženju (ne na serveru)
   useEffect(() => {
@@ -86,17 +86,52 @@ function App() {
       return;
     }
 
-    const lenis = new Lenis({
-      lerp: 0.08, // smoothness (0 - 1)
-      smoothWheel: true, // enables smooth for mouse/touchpad
-      autoRaf: true, // automatski animira
-      anchors: true, // omogućava glatko skrolovanje do anchor linkova
-      touchMultiplier: 0.5, // povećava brzinu skrolovanja na touch uređajima
-    });
+    let lenisInstance = null;
+    let isMounted = true;
 
-    window.lenis = lenis;
+    const startLenis = async () => {
+      try {
+        const { default: Lenis } = await import("lenis");
+        if (!isMounted) return;
 
-    return () => lenis.destroy();
+        lenisInstance = new Lenis({
+          lerp: 0.08,
+          smoothWheel: true,
+          autoRaf: true,
+          anchors: true,
+          touchMultiplier: 0.5,
+        });
+
+        window.lenis = lenisInstance;
+      } catch {
+        // noop
+      }
+    };
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(startLenis, { timeout: 2000 });
+    } else {
+      setTimeout(startLenis, 1200);
+    }
+
+    return () => {
+      isMounted = false;
+      if (lenisInstance) {
+        lenisInstance.destroy();
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const showModal = () => setShowNewsletterModal(true);
+
+    if ("requestIdleCallback" in window) {
+      window.requestIdleCallback(showModal, { timeout: 2500 });
+    } else {
+      setTimeout(showModal, 1400);
+    }
   }, []);
 
   return (
@@ -106,11 +141,23 @@ function App() {
         suppressHydrationWarning
       >
         <AppContent />
-        <NewsletterModal />
-        <CloudflareDeploymentDebug />
+        {showNewsletterModal && (
+          <Suspense fallback={null}>
+            <NewsletterModal />
+          </Suspense>
+        )}
+        {import.meta.env.DEV ? (
+          <Suspense fallback={null}>
+            <CloudflareDeploymentDebugLazy />
+          </Suspense>
+        ) : null}
       </div>
     </EVagaDesktopProvider>
   );
 }
+
+const CloudflareDeploymentDebugLazy = lazy(
+  () => import("./components/CloudflareDeploymentDebug"),
+);
 
 export default App;
