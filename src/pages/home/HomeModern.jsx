@@ -285,13 +285,13 @@ export default function HomeModern() {
           {isGalleryReady ? (
             <Suspense
               fallback={
-                <div className="w-full h-[clamp(18rem,28vw,26rem)] rounded-2xl bg-gray-100 animate-pulse" />
+                <div className="w-full mt-4 mb-6 h-[clamp(18rem,28vw,26rem)] rounded-2xl bg-gray-100 animate-pulse" />
               }
             >
               <Slider onImageClick={openModal} />
             </Suspense>
           ) : (
-            <div className="w-full h-[clamp(18rem,28vw,26rem)] rounded-2xl bg-gray-100 animate-pulse" />
+            <div className="w-full mt-4 mb-6 h-[clamp(18rem,28vw,26rem)] rounded-2xl bg-gray-100 animate-pulse" />
           )}
         </section>
 
