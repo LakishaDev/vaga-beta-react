@@ -14,6 +14,20 @@ import {
 import { MdPictureInPictureAlt } from "react-icons/md";
 import R2CacheService from "@/services/R2CacheService";
 
+const isDevMode = import.meta.env.DEV;
+
+function debugLog(...args) {
+  if (isDevMode) {
+    console.log(...args);
+  }
+}
+
+function debugError(...args) {
+  if (isDevMode) {
+    console.error(...args);
+  }
+}
+
 /**
  * EvagaVideoPlayer - Premium video player komponenta za e-Vaga program prezentaciju
  * Features:
@@ -67,7 +81,7 @@ export default function EvagaVideoPlayer({
         const url = R2CacheService.getFileUrl(filename, namespace);
         setVideoUrl(url);
       } catch (error) {
-        console.error("Greška pri učitavanju videa sa R2:", error);
+        debugError("Greška pri učitavanju videa sa R2:", error);
         setLoadError(true);
       }
     };
@@ -92,7 +106,7 @@ export default function EvagaVideoPlayer({
           const tolerance = viewportHeight * 0.3;
           if (Math.abs(videoCenter - viewportCenter) < tolerance) {
             videoRef.current.play().catch((err) => {
-              console.log("Auto-play nije dozvoljen:", err);
+              debugLog("Auto-play nije dozvoljen:", err);
             });
             setIsPlaying(true);
             setHasStartedAutoplay(true);
@@ -190,7 +204,7 @@ export default function EvagaVideoPlayer({
         emitAnalytics("fullscreen", { active: false });
       }
     } catch (error) {
-      console.error("Greška pri pokušaju fullscreen-a:", error);
+      debugError("Greška pri pokušaju fullscreen-a:", error);
     }
   };
 
@@ -207,7 +221,7 @@ export default function EvagaVideoPlayer({
       }
     } catch (error) {
       video.currentTime = clamped;
-      console.error("Seek error", error);
+      debugError("Seek error", error);
     }
     const delta =
       typeof analyticsDeltaOverride === "number"
@@ -244,7 +258,7 @@ export default function EvagaVideoPlayer({
       }
       emitAnalytics("share", {});
     } catch (error) {
-      console.error("Share error", error);
+      debugError("Share error", error);
     }
   };
 
@@ -261,7 +275,7 @@ export default function EvagaVideoPlayer({
       }
       emitAnalytics("pip_toggle", { active: !pipActive });
     } catch (error) {
-      console.error("PiP error", error);
+      debugError("PiP error", error);
     }
   };
 
@@ -392,7 +406,7 @@ export default function EvagaVideoPlayer({
             onPlaying={handlePlaying}
             onEnded={handleEnded}
             onError={(e) => {
-              console.error("Video load error:", e);
+              debugError("Video load error:", e);
               setLoadError(true);
               setIsLoading(false);
             }}
