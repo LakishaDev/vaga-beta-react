@@ -49,6 +49,14 @@ function normalizeCanonicalPath(pathname = "/") {
   return normalized || "/";
 }
 
+function getCanonicalProductPath(product = null, fallbackPath = "/") {
+  const productSlug = normalizeSlug(product?.slug || product?.name || "");
+  if (productSlug) {
+    return `/p/${productSlug}`;
+  }
+  return normalizeCanonicalPath(fallbackPath);
+}
+
 function normalizeSlug(value = "") {
   return String(value)
     .toLowerCase()
@@ -202,6 +210,18 @@ function replaceOrInsertHeadTag(template, pattern, replacement) {
   return template.replace("</head>", `${replacement}\n</head>`);
 }
 
+function replaceOrInsertJsonLd(template, id, payload) {
+  const script = `<script type="application/ld+json" id="${id}">${JSON.stringify(payload)}</script>`;
+  return replaceOrInsertHeadTag(
+    template,
+    new RegExp(
+      `<script\\s+type=["']application/ld\\+json["']\\s+id=["']${id}["'][\\s\\S]*?<\\/script>`,
+      "i",
+    ),
+    script,
+  );
+}
+
 function normalizeHelmetFragment(fragment, kind) {
   if (!fragment) return "";
 
@@ -254,6 +274,7 @@ export async function onRequest(context) {
 
   const isShortProductRoute = pathname.startsWith("/p/");
   const isLegacyProductRoute = pathname.startsWith("/prodavnica/proizvod/");
+  const isProductsListingRoute = pathname === "/prodavnica/proizvodi";
   const isProductDetailsRoute = isShortProductRoute || isLegacyProductRoute;
   const productRouteParam = isProductDetailsRoute
     ? decodeURIComponent(pathname.split("/").pop() || "")
@@ -266,10 +287,20 @@ export async function onRequest(context) {
 
   const isCSRRoute = CSR_ROUTES.some((route) => pathname.startsWith(route));
   if (isCSRRoute && !isProductDetailsRoute) {
-    return next();
+    if (isProductsListingRoute) {
+      // SSR enabled for listing route - do not early return.
+    } else {
+      return next();
+    }
   }
 
-  const SSR_ROUTES = ["/", "/pricing", "/evaga-desktop", "/usluge"];
+  const SSR_ROUTES = [
+    "/",
+    "/pricing",
+    "/evaga-desktop",
+    "/usluge",
+    "/prodavnica/proizvodi",
+  ];
   const shouldSSR =
     SSR_ROUTES.includes(pathname) ||
     pathname.startsWith("/usluge/") ||
@@ -302,10 +333,18 @@ export async function onRequest(context) {
       productSSRData = productSeoData?.product || null;
     }
 
-    if (isLegacyProductRoute && productSSRData?.slug) {
-      const targetPath = `/p/${normalizeSlug(productSSRData.slug)}`;
+    if (isLegacyProductRoute && productSSRData) {
+      const targetPath = getCanonicalProductPath(productSSRData, canonicalPath);
       const redirectUrl = `${url.origin}${targetPath}`;
       return Response.redirect(redirectUrl, 301);
+    }
+
+    if (isShortProductRoute && productSSRData) {
+      const targetPath = getCanonicalProductPath(productSSRData, canonicalPath);
+      if (targetPath !== canonicalPath) {
+        const redirectUrl = `${url.origin}${targetPath}`;
+        return Response.redirect(redirectUrl, 301);
+      }
     }
 
     if (!render) {
@@ -366,10 +405,10 @@ export async function onRequest(context) {
     }
 
     if (isProductDetailsRoute) {
-      const canonicalProductPath =
-        productSSRData?.slug && normalizeSlug(productSSRData.slug)
-          ? `/p/${normalizeSlug(productSSRData.slug)}`
-          : canonicalPath;
+      const canonicalProductPath = getCanonicalProductPath(
+        productSSRData,
+        canonicalPath,
+      );
       const currentUrl = `${url.origin}${canonicalProductPath}`;
       const canonicalTag = `<link rel="canonical" href="${escapeHtml(currentUrl)}" />`;
 
@@ -394,13 +433,12 @@ export async function onRequest(context) {
     }
 
     if (isProductDetailsRoute && productSeoData) {
-      const canonicalProductPath =
-        productSeoData?.product?.slug &&
-        normalizeSlug(productSeoData.product.slug)
-          ? `/p/${normalizeSlug(productSeoData.product.slug)}`
-          : canonicalPath;
+      const canonicalProductPath = getCanonicalProductPath(
+        productSeoData?.product,
+        canonicalPath,
+      );
       const currentUrl = `${url.origin}${canonicalProductPath}`;
-      const pageTitle = `${productSeoData.name} | Vaga Beta Shop`;
+      const pageTitle = `${productSeoData.name} | Vaga Beta`;
       const pageDescription = productSeoData.description;
 
       template = replaceOrInsertHeadTag(
@@ -478,9 +516,62 @@ export async function onRequest(context) {
       if (!productSchema.image) delete productSchema.image;
       if (!productSchema.category) delete productSchema.category;
 
-      template = template.replace(
-        "</head>",
-        `<script type="application/ld+json" id="product-jsonld-ssr">${JSON.stringify(productSchema)}</script>\n</head>`,
+      template = replaceOrInsertJsonLd(
+        template,
+        "product-jsonld-ssr",
+        productSchema,
+      );
+    }
+
+    if (isProductsListingRoute) {
+      const listingUrl = `${url.origin}/prodavnica/proizvodi`;
+      const listingTitle = "Proizvodi | Vaga Beta";
+      const listingDescription =
+        "Pregled svih proizvoda u Vaga Beta prodavnici: industrijske, precizne i softverske vage sa detaljnim specifikacijama.";
+
+      template = replaceOrInsertHeadTag(
+        template,
+        /<title>[\s\S]*?<\/title>/i,
+        `<title>${escapeHtml(listingTitle)}</title>`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+name=["']description["'][^>]*>/i,
+        `<meta name="description" content="${escapeHtml(listingDescription)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:title["'][^>]*>/i,
+        `<meta property="og:title" content="${escapeHtml(listingTitle)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:description["'][^>]*>/i,
+        `<meta property="og:description" content="${escapeHtml(listingDescription)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:url["'][^>]*>/i,
+        `<meta property="og:url" content="${escapeHtml(listingUrl)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<link\s+rel=["']canonical["'][^>]*>/i,
+        `<link rel="canonical" href="${escapeHtml(listingUrl)}" />`,
+      );
+
+      const listingSchema = {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        name: "Vaga Beta proizvodi",
+        url: listingUrl,
+        description: listingDescription,
+      };
+
+      template = replaceOrInsertJsonLd(
+        template,
+        "product-list-jsonld-ssr",
+        listingSchema,
       );
     }
 

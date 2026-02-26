@@ -2,13 +2,12 @@
 // Klijentska ulazna tačka za Cloudflare Pages SSR + CSR hybrid
 // Ako postoji server-renderovani HTML koristi hydrateRoot, inače createRoot
 
-import { createRoot } from "react-dom/client";
+import { createRoot, hydrateRoot } from "react-dom/client";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 
-// Renderuj klijentski bez hydrate-a da izbegnemo SSR/CSR mismatch
 const container = document.getElementById("root");
 
 if (!container) {
@@ -23,4 +22,10 @@ const app = (
   </HelmetProvider>
 );
 
-createRoot(container).render(app);
+const hasServerMarkup = container.hasChildNodes();
+
+if (hasServerMarkup) {
+  hydrateRoot(container, app);
+} else {
+  createRoot(container).render(app);
+}

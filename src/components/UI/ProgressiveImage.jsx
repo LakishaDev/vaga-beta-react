@@ -42,6 +42,12 @@ export default function ProgressiveImage({
   style = {},
   fit = "cover",
   fallbackSrc = "/imgs/vaga-logo.png",
+  width,
+  height,
+  sizes,
+  imageLoading = "lazy",
+  decoding = "async",
+  fetchPriority,
 }) {
   const [loading, setLoading] = useState(true);
   const [imageSrc, setImageSrc] = useState(normalizeImageUrl(src));
@@ -71,6 +77,12 @@ export default function ProgressiveImage({
       <img
         src={imageSrc}
         alt={alt}
+        width={width}
+        height={height}
+        sizes={sizes}
+        loading={imageLoading}
+        decoding={decoding}
+        fetchPriority={fetchPriority}
         draggable={false}
         className={`${fitClass} transition-all duration-500 ease-out
           ${
