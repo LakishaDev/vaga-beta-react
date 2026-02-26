@@ -328,12 +328,12 @@ export default function ProductGrid() {
       style={{ fontFamily: "'Geist','Inter',sans-serif" }}
     >
       <Helmet>
-        <title>Proizvodi | Vaga Beta Shop</title>
+        <title>Proizvodi | Vaga Beta</title>
         <meta
           name="description"
           content="Pregled svih proizvoda u Vaga Beta prodavnici: industrijske, precizne i softverske vage sa detaljnim specifikacijama."
         />
-        <meta property="og:title" content="Proizvodi | Vaga Beta Shop" />
+        <meta property="og:title" content="Proizvodi | Vaga Beta" />
         <meta
           property="og:description"
           content="Pregled proizvoda i opreme dostupne u Vaga Beta prodavnici."

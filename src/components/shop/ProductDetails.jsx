@@ -507,7 +507,7 @@ export default function ProductDetails() {
       <Helmet>
         {product && (
           <>
-            <title>{product.name} | Vaga Beta Shop</title>
+            <title>{product.name} | Vaga Beta</title>
             <meta
               name="description"
               content={product.description || product.name}
@@ -658,7 +658,17 @@ export default function ProductDetails() {
                             ? product.imgUrl
                             : product.images?.[currentImageIndex - 1]
                         }
-                        alt={`${product.name} - ${currentImageIndex + 1}`}
+                        alt={`${product.name} - Vaga Beta Beograd - ${currentImageIndex + 1}`}
+                        width={800}
+                        height={800}
+                        sizes="(max-width: 768px) 100vw, 50vw"
+                        imageLoading={
+                          currentImageIndex === 0 ? "eager" : "lazy"
+                        }
+                        decoding="async"
+                        fetchPriority={
+                          currentImageIndex === 0 ? "high" : "auto"
+                        }
                         className="w-full aspect-square object-contain"
                       />
                     </Motion.div>

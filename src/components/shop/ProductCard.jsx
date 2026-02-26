@@ -121,7 +121,12 @@ export default function ProductCard({ product }) {
 
       <ProgressiveImage
         src={product.imgUrl}
-        alt={product.name}
+        alt={`${product.name} - Vaga Beta Beograd`}
+        width={320}
+        height={320}
+        sizes="(max-width: 640px) 128px, 160px"
+        imageLoading="lazy"
+        decoding="async"
         className="h-32 w-32 sm:h-40 sm:w-40 object-cover rounded-xl shadow-lg mb-4 group-hover:scale-105 group-hover:shadow-2xl transition"
         style={{ aspectRatio: "1/1", background: "#E5E5E5" }}
       />
