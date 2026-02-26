@@ -5,7 +5,6 @@
 // App Check koristi reCAPTCHA v3
 // Eksportuje app, db, auth, storage, analytics, appCheck, functions
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
 import { getFirestore } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 import { getStorage } from "firebase/storage";
@@ -13,6 +12,7 @@ import { getFunctions } from "firebase/functions";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
 const isDev = Boolean(import.meta.env.DEV);
+const isBrowser = typeof window !== "undefined";
 
 const logInfo = (...args) => {
   if (isDev) console.log(...args);
@@ -75,13 +75,34 @@ const firebaseConfig = {
 
 // Initialize Firebase
 export const app = initializeApp(firebaseConfig);
-// Analytics se inicijalizuje samo u browser okruženju (client-side)
-export const analytics =
-  typeof window !== "undefined" ? getAnalytics(app) : null;
+// Firebase Analytics je opt-in da ne bi opterećivao initial load i Lighthouse.
+export const analytics = null;
 export const db = getFirestore(app);
 export const auth = getAuth(app);
 export const storage = getStorage(app);
 export const functions = getFunctions(app, "europe-west1");
+
+const firebaseAnalyticsEnabled =
+  getEnvVar("VITE_ENABLE_FIREBASE_ANALYTICS") === "true";
+
+if (isBrowser && firebaseAnalyticsEnabled) {
+  const initAnalytics = () => {
+    import("firebase/analytics")
+      .then(({ getAnalytics }) => {
+        getAnalytics(app);
+        logInfo("✅ Firebase Analytics initialized");
+      })
+      .catch((error) => {
+        logWarn("⚠️ Firebase Analytics initialization error:", error.message);
+      });
+  };
+
+  if ("requestIdleCallback" in window) {
+    window.requestIdleCallback(initAnalytics, { timeout: 4000 });
+  } else {
+    setTimeout(initAnalytics, 2500);
+  }
+}
 
 // Initialize App Check (optional - only if reCAPTCHA key is set)
 // App Check se inicijalizuje samo u browser okruženju
@@ -91,7 +112,7 @@ const recaptchaKey = getEnvVar("VITE_FIREBASE_RECAPTCHA_SITE_KEY");
 const appCheckDebugToken = getEnvVar("VITE_FIREBASE_APPCHECK_DEBUG_TOKEN");
 const appCheckEnabled = getEnvVar("VITE_ENABLE_APPCHECK") === "true";
 
-if (typeof window !== "undefined" && appCheckEnabled && recaptchaKey) {
+if (isBrowser && appCheckEnabled && recaptchaKey) {
   if (import.meta.env.DEV && appCheckDebugToken) {
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken;
   }
@@ -106,7 +127,7 @@ if (typeof window !== "undefined" && appCheckEnabled && recaptchaKey) {
     logWarn("⚠️ App Check initialization error:", error.message);
   }
 } else {
-  if (typeof window !== "undefined" && isDev) {
+  if (isBrowser && isDev) {
     if (!appCheckEnabled) {
       logInfo("ℹ️ Firebase App Check disabled (VITE_ENABLE_APPCHECK != true)");
     } else {
