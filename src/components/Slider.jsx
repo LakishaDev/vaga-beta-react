@@ -2,6 +2,26 @@
 import { useRef, useEffect, useState } from "react";
 import { IoExpand } from "react-icons/io5";
 
+function shouldUseCloudflareImageResize() {
+  if (typeof window === "undefined") return false;
+  const host = window.location.hostname;
+  return !(
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host.endsWith(".local")
+  );
+}
+
+function buildSliderSrcSet(path) {
+  const widths = [320, 480, 640, 768, 1024, 1280];
+  return widths
+    .map(
+      (width) =>
+        `/cdn-cgi/image/width=${width},quality=72,format=auto${path} ${width}w`,
+    )
+    .join(", ");
+}
+
 const sliderData = [
   { tekst: "Paletna vaga", slika: "home/paletarka1" },
   { tekst: "Paletna vaga", slika: "home/paletarka2" },
@@ -33,22 +53,59 @@ export default function Slider({ onImageClick }) {
   const containerRef = useRef();
   const [loaded, setLoaded] = useState(Array(trackImages.length).fill(false));
   const [hoveredIndex, setHoveredIndex] = useState(null);
+  const isVisibleRef = useRef(true);
+  const isInViewportRef = useRef(false);
+  const [useResponsiveImages, setUseResponsiveImages] = useState(false);
+
+  useEffect(() => {
+    setUseResponsiveImages(shouldUseCloudflareImageResize());
+  }, []);
 
   useEffect(() => {
     const container = containerRef.current;
+    if (!container) return;
+
     let frame;
-    let speed = 1.5; // Adjust scroll speed here
+    const prefersReducedMotion = window.matchMedia(
+      "(prefers-reduced-motion: reduce)",
+    ).matches;
+    const speed = prefersReducedMotion ? 0.6 : 1.5;
+
+    const visibilityHandler = () => {
+      isVisibleRef.current = document.visibilityState === "visible";
+    };
+
+    const viewportObserver = new IntersectionObserver(
+      ([entry]) => {
+        isInViewportRef.current = !!entry?.isIntersecting;
+      },
+      { threshold: 0.05 },
+    );
+
+    viewportObserver.observe(container);
+    document.addEventListener("visibilitychange", visibilityHandler);
+
     function animate() {
       if (!container) return;
-      if (container.scrollLeft >= container.scrollWidth / 2) {
-        container.scrollLeft = 0;
-      } else {
-        container.scrollLeft += speed;
+
+      if (isVisibleRef.current && isInViewportRef.current) {
+        if (container.scrollLeft >= container.scrollWidth / 2) {
+          container.scrollLeft = 0;
+        } else {
+          container.scrollLeft += speed;
+        }
       }
+
       frame = requestAnimationFrame(animate);
     }
+
     frame = requestAnimationFrame(animate);
-    return () => cancelAnimationFrame(frame);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      viewportObserver.disconnect();
+      document.removeEventListener("visibilitychange", visibilityHandler);
+    };
   }, []);
 
   const handleImgLoad = (idx) =>
@@ -67,38 +124,51 @@ export default function Slider({ onImageClick }) {
         className="flex items-center h-full"
         style={{ minWidth: "max-content" }}
       >
-        {trackImages.map((item, idx) => (
-          <div
-            key={idx}
-            className="
+        {trackImages.map((item, idx) =>
+          (() => {
+            const imagePath = `/imgs/${item.slika}.jpg`;
+            const imageSrcSet = useResponsiveImages
+              ? buildSliderSrcSet(imagePath)
+              : undefined;
+
+            return (
+              <div
+                key={idx}
+                className="
               relative flex-shrink-0 mx-3 group
               w-72 h-full
               sm:w-96 md:w-[28rem] lg:w-[32rem] xl:w-[36rem]
               rounded-2xl overflow-hidden shadow-lg bg-gray-100
               cursor-pointer transition-all duration-300
             "
-            onMouseEnter={() => setHoveredIndex(idx)}
-            onMouseLeave={() => setHoveredIndex(null)}
-            onClick={() =>
-              onImageClick({
-                src: `/imgs/${item.slika}.jpg`,
-                text: item.tekst,
-              })
-            }
-          >
-            {!loaded[idx] && (
-              <>
-                <Spinner />
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-white/70 to-blue-50 animate-pulse blur-lg z-0" />
-              </>
-            )}
-            <img
-              src={`/imgs/${item.slika}.jpg`}
-              alt={item.tekst}
-              draggable={false}
-              onLoad={() => handleImgLoad(idx)}
-              loading="lazy"
-              className={`
+                onMouseEnter={() => setHoveredIndex(idx)}
+                onMouseLeave={() => setHoveredIndex(null)}
+                onClick={() =>
+                  onImageClick({
+                    src: imagePath,
+                    text: item.tekst,
+                  })
+                }
+              >
+                {!loaded[idx] && (
+                  <>
+                    <Spinner />
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-100 via-white/70 to-blue-50 animate-pulse blur-lg z-0" />
+                  </>
+                )}
+                <img
+                  src={imagePath}
+                  srcSet={imageSrcSet}
+                  alt={item.tekst}
+                  width={1280}
+                  height={720}
+                  draggable={false}
+                  onLoad={() => handleImgLoad(idx)}
+                  loading="lazy"
+                  decoding="async"
+                  fetchPriority="low"
+                  sizes="(max-width: 640px) 288px, (max-width: 768px) 384px, (max-width: 1024px) 448px, 576px"
+                  className={`
                 w-full h-full object-cover transition-all duration-500
                 ${
                   hoveredIndex === idx
@@ -107,10 +177,10 @@ export default function Slider({ onImageClick }) {
                 }
                 ${!loaded[idx] ? "blur-md opacity-70" : "opacity-100"}
               `}
-            />
-            {/* Expand Icon */}
-            <div
-              className={`
+                />
+                {/* Expand Icon */}
+                <div
+                  className={`
                 absolute top-4 right-4 z-20
                 bg-white/90 backdrop-blur-md rounded-full p-2
                 shadow-lg transition-all duration-300
@@ -120,11 +190,11 @@ export default function Slider({ onImageClick }) {
                     : "opacity-0 scale-50 translate-y-2"
                 }
               `}
-            >
-              <IoExpand className="w-5 h-5 text-gray-700" />
-            </div>
-            <div
-              className={`
+                >
+                  <IoExpand className="w-5 h-5 text-gray-700" />
+                </div>
+                <div
+                  className={`
                 absolute left-1/2 -translate-x-1/2
                 backdrop-blur-md px-5 py-2 rounded-full shadow-lg
                 font-semibold text-center max-w-[95%] z-10
@@ -136,11 +206,11 @@ export default function Slider({ onImageClick }) {
                     : "bottom-5 bg-white/90 text-blue-600 scale-100 shadow-lg"
                 }
               `}
-            >
-              {item.tekst}
-            </div>
-            <div
-              className={`
+                >
+                  {item.tekst}
+                </div>
+                <div
+                  className={`
                 absolute inset-0 pointer-events-none transition-all duration-500
                 ${
                   hoveredIndex === idx
@@ -148,9 +218,9 @@ export default function Slider({ onImageClick }) {
                     : "bg-gradient-to-t from-black/20 via-transparent to-transparent"
                 }
               `}
-            />
-            <div
-              className={`
+                />
+                <div
+                  className={`
                 absolute inset-0 rounded-2xl pointer-events-none transition-all duration-500
                 ${
                   hoveredIndex === idx
@@ -158,9 +228,11 @@ export default function Slider({ onImageClick }) {
                     : ""
                 }
               `}
-            />
-          </div>
-        ))}
+                />
+              </div>
+            );
+          })(),
+        )}
       </div>
     </div>
   );

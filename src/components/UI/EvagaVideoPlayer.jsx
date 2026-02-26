@@ -31,6 +31,7 @@ export default function EvagaVideoPlayer({
   title = "e-Vaga Program Prezentacija",
   description = null,
   autoplay = true,
+  videoPreload = "metadata",
   className = "",
   captionsSrc = null,
   captionsLabel = "Subtitles",
@@ -379,7 +380,7 @@ export default function EvagaVideoPlayer({
             src={videoUrl}
             poster={posterImage}
             muted={isMuted}
-            preload="auto"
+            preload={videoPreload}
             playsInline
             controlsList="nodownload"
             className="w-full h-full object-contain"
