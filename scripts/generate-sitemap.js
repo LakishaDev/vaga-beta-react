@@ -10,6 +10,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const projectRoot = path.resolve(__dirname, "..");
 
 const BASE_URL = "https://vagabeta.rs";
 const DEFAULT_LASTMOD = new Date().toISOString().split("T")[0];
@@ -90,6 +91,39 @@ function extractDocId(documentName = "") {
   return parts[parts.length - 1] || null;
 }
 
+function parseEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return {};
+
+  const content = fs.readFileSync(filePath, "utf8");
+  const lines = content.split(/\r?\n/);
+  const env = {};
+
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+
+    const separatorIndex = trimmed.indexOf("=");
+    if (separatorIndex === -1) continue;
+
+    const key = trimmed.slice(0, separatorIndex).trim();
+    const value = trimmed.slice(separatorIndex + 1).trim();
+    if (!key) continue;
+
+    env[key] = value.replace(/^['\"]|['\"]$/g, "");
+  }
+
+  return env;
+}
+
+function getMergedEnv() {
+  const merged = { ...process.env };
+  const envLocal = parseEnvFile(path.join(projectRoot, ".env.local"));
+  const envProduction = parseEnvFile(path.join(projectRoot, ".env.production"));
+
+  Object.assign(merged, envLocal, envProduction);
+  return merged;
+}
+
 function toAbsoluteUrl(url) {
   if (!url) return null;
   if (url.startsWith("http://") || url.startsWith("https://")) return url;
@@ -140,10 +174,9 @@ function slugifyName(value = "") {
 }
 
 async function fetchProductPages() {
-  const projectId =
-    process.env.VITE_FIREBASE_PROJECT_ID || process.env.FIREBASE_PROJECT_ID;
-  const apiKey =
-    process.env.VITE_FIREBASE_API_KEY || process.env.FIREBASE_API_KEY;
+  const env = getMergedEnv();
+  const projectId = env.VITE_FIREBASE_PROJECT_ID || env.FIREBASE_PROJECT_ID;
+  const apiKey = env.VITE_FIREBASE_API_KEY || env.FIREBASE_API_KEY;
 
   if (!projectId || !apiKey) {
     if (ALLOW_NO_FIREBASE) {
