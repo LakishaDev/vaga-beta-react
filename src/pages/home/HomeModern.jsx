@@ -27,8 +27,6 @@ import {
 } from "react-icons/fa";
 import LepModal from "../../components/UI/LepModal";
 import { motion, AnimatePresence } from "framer-motion";
-import { onAuthStateChanged } from "firebase/auth";
-import { auth } from "../../utils/firebase";
 
 const Slider = lazy(() => import("../../components/Slider"));
 const EvagaVideoPlayer = lazy(
@@ -140,13 +138,42 @@ export default function HomeModern() {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const adminAnalyticsEnabled =
+      import.meta.env.VITE_ENABLE_HOME_ADMIN_ANALYTICS === "true";
+
+    if (!adminAnalyticsEnabled) {
+      setIsAdmin(false);
+      return;
+    }
+
     const adminEmails =
       import.meta.env.VITE_ADMIN_EMAILS?.split(",").map((e) => e.trim()) || [];
-    const unsub = onAuthStateChanged(auth, (user) => {
-      if (user && adminEmails.includes(user.email)) setIsAdmin(true);
-      else setIsAdmin(false);
-    });
-    return () => unsub();
+
+    let unsub = () => {};
+    let mounted = true;
+
+    (async () => {
+      try {
+        const [{ onAuthStateChanged }, { auth }] = await Promise.all([
+          import("firebase/auth"),
+          import("../../utils/firebase"),
+        ]);
+
+        if (!mounted) return;
+
+        unsub = onAuthStateChanged(auth, (user) => {
+          if (user && adminEmails.includes(user.email)) setIsAdmin(true);
+          else setIsAdmin(false);
+        });
+      } catch {
+        setIsAdmin(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+      unsub();
+    };
   }, []);
 
   useEffect(() => {
@@ -216,29 +243,14 @@ export default function HomeModern() {
           </div>
 
           <div className="relative z-10 w-full px-4 sm:px-8 md:px-16 text-white text-center">
-            <motion.h1
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight"
-            >
+            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
               Preciznost. Inovacija. Pouzdanost.
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.2 }}
-              className="text-xl sm:text-2xl opacity-90 mb-8 leading-relaxed"
-            >
+            </h1>
+            <p className="text-xl sm:text-2xl opacity-90 mb-8 leading-relaxed">
               Vaga Beta – lider u servisu elektronskih vaga, žigosanju i
               softverskim rešenjima za merenje
-            </motion.p>
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.4 }}
-              className="flex flex-col sm:flex-row gap-4"
-            >
+            </p>
+            <div className="flex flex-col sm:flex-row gap-4">
               <Link
                 to="/prodavnica"
                 onClick={() => handleCtaClick("test")}
@@ -258,7 +270,7 @@ export default function HomeModern() {
               >
                 Zakažite demo
               </Link>
-            </motion.div>
+            </div>
           </div>
         </section>
 

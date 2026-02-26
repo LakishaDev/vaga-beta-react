@@ -39,6 +39,11 @@ function isLocalImagesPath(url) {
   return url.startsWith("/imgs/") || url.startsWith("imgs/");
 }
 
+function isRemoteHttpImageUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  return url.startsWith("http://") || url.startsWith("https://");
+}
+
 function normalizeImagePath(url) {
   if (!url || typeof url !== "string") return "";
   const withLeadingSlash = url.startsWith("/") ? url : `/${url}`;
@@ -47,25 +52,47 @@ function normalizeImagePath(url) {
 }
 
 function shouldUseCloudflareImageResize(url) {
-  if (!isLocalImagesPath(url)) return false;
   if (typeof window === "undefined") return false;
 
   const host = window.location.hostname;
   const isLocalHost =
     host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
 
-  return !isLocalHost;
+  if (isLocalHost) return false;
+
+  return isLocalImagesPath(url) || isRemoteHttpImageUrl(url);
+}
+
+function getCloudflareImageSource(url) {
+  if (!url || typeof url !== "string") return "";
+
+  if (isLocalImagesPath(url)) {
+    return normalizeImagePath(url).replace(/^\/+/, "");
+  }
+
+  if (isRemoteHttpImageUrl(url)) {
+    return encodeURIComponent(url);
+  }
+
+  return "";
+}
+
+function buildCloudflareImageUrl(url, width = 1280) {
+  const source = getCloudflareImageSource(url);
+  if (!source) return "";
+
+  return `/cdn-cgi/image/width=${width},quality=75,format=auto/${source}`;
 }
 
 function buildCloudflareSrcSet(url) {
-  const path = normalizeImagePath(url);
-  if (!path) return "";
+  const source = getCloudflareImageSource(url);
+  if (!source) return "";
 
   const widths = [320, 480, 640, 768, 1024, 1280, 1600];
   return widths
     .map(
       (width) =>
-        `/cdn-cgi/image/width=${width},quality=75,format=auto${path} ${width}w`,
+        `/cdn-cgi/image/width=${width},quality=75,format=auto/${source} ${width}w`,
     )
     .join(", ");
 }
@@ -90,6 +117,8 @@ export default function ProgressiveImage({
   const [primaryRetried, setPrimaryRetried] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
   const [fallbackRetried, setFallbackRetried] = useState(false);
+  const [optimizationDisabled, setOptimizationDisabled] = useState(false);
+  const isPriorityImage = imageLoading === "eager" || fetchPriority === "high";
 
   useEffect(() => {
     setImageSrc(normalizeImageUrl(src));
@@ -97,14 +126,23 @@ export default function ProgressiveImage({
     setPrimaryRetried(false);
     setUsingFallback(false);
     setFallbackRetried(false);
+    setOptimizationDisabled(false);
   }, [src]);
 
   // Dozvoli izbor fit moda: "cover" (za kartice/grid), "contain" (za modale/lightbox)
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
-  const useCloudflareResize = shouldUseCloudflareImageResize(imageSrc);
-  const responsiveSrcSet = useCloudflareResize
-    ? buildCloudflareSrcSet(imageSrc)
-    : undefined;
+  const canUseCloudflareResize =
+    !optimizationDisabled && shouldUseCloudflareImageResize(imageSrc);
+  const priorityWidth =
+    Number.isFinite(Number(width)) && Number(width) > 0 ? Number(width) : 1280;
+  const resolvedSrc =
+    isPriorityImage && canUseCloudflareResize
+      ? buildCloudflareImageUrl(imageSrc, priorityWidth)
+      : imageSrc;
+  const responsiveSrcSet =
+    !isPriorityImage && canUseCloudflareResize
+      ? buildCloudflareSrcSet(imageSrc)
+      : undefined;
   const resolvedSizes = responsiveSrcSet ? sizes || "100vw" : sizes;
 
   return (
@@ -116,7 +154,7 @@ export default function ProgressiveImage({
       aria-busy={loading}
     >
       <img
-        src={imageSrc}
+        src={resolvedSrc}
         alt={alt}
         width={width}
         height={height}
@@ -129,7 +167,9 @@ export default function ProgressiveImage({
         className={`${fitClass} transition-all duration-500 ease-out
           ${
             loading
-              ? "blur-2xl grayscale scale-105 opacity-30"
+              ? isPriorityImage
+                ? "opacity-100"
+                : "blur-2xl grayscale scale-105 opacity-30"
               : "blur-0 scale-100 opacity-100 shadow-lg animate-imgfadein"
           }
           group-focus:ring-2 group-focus:ring-brand-secondary
@@ -138,6 +178,12 @@ export default function ProgressiveImage({
         onLoad={() => setLoading(false)}
         onError={(e) => {
           const normalizedFallback = normalizeImageUrl(fallbackSrc);
+
+          if (canUseCloudflareResize) {
+            setOptimizationDisabled(true);
+            setLoading(true);
+            return;
+          }
 
           if (
             !usingFallback &&
@@ -173,7 +219,7 @@ export default function ProgressiveImage({
           setLoading(false);
         }}
       />
-      {loading && (
+      {loading && !isPriorityImage && (
         <div className="absolute inset-0 flex items-center justify-center z-10 bg-gradient-to-br from-white/30 via-brand-secondary/10 to-blue-100/20">
           <div
             className="w-12 h-12 sm:w-16 sm:h-16 border-[4px] border-t-brand-secondary border-l-brand-secondary/70 border-b-blue-300 border-r-transparent rounded-full
