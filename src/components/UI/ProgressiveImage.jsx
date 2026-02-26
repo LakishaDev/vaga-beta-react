@@ -34,6 +34,42 @@ function addRetryParam(url, attempt) {
   return `${url}${separator}retry=${attempt}-${Date.now()}`;
 }
 
+function isLocalImagesPath(url) {
+  if (!url || typeof url !== "string") return false;
+  return url.startsWith("/imgs/") || url.startsWith("imgs/");
+}
+
+function normalizeImagePath(url) {
+  if (!url || typeof url !== "string") return "";
+  const withLeadingSlash = url.startsWith("/") ? url : `/${url}`;
+  const [basePath] = withLeadingSlash.split("?");
+  return basePath;
+}
+
+function shouldUseCloudflareImageResize(url) {
+  if (!isLocalImagesPath(url)) return false;
+  if (typeof window === "undefined") return false;
+
+  const host = window.location.hostname;
+  const isLocalHost =
+    host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
+
+  return !isLocalHost;
+}
+
+function buildCloudflareSrcSet(url) {
+  const path = normalizeImagePath(url);
+  if (!path) return "";
+
+  const widths = [320, 480, 640, 768, 1024, 1280, 1600];
+  return widths
+    .map(
+      (width) =>
+        `/cdn-cgi/image/width=${width},quality=75,format=auto${path} ${width}w`,
+    )
+    .join(", ");
+}
+
 // Modern, aspect-safe ProgressiveImage
 export default function ProgressiveImage({
   src,
@@ -65,6 +101,11 @@ export default function ProgressiveImage({
 
   // Dozvoli izbor fit moda: "cover" (za kartice/grid), "contain" (za modale/lightbox)
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
+  const useCloudflareResize = shouldUseCloudflareImageResize(imageSrc);
+  const responsiveSrcSet = useCloudflareResize
+    ? buildCloudflareSrcSet(imageSrc)
+    : undefined;
+  const resolvedSizes = responsiveSrcSet ? sizes || "100vw" : sizes;
 
   return (
     <div
@@ -79,7 +120,8 @@ export default function ProgressiveImage({
         alt={alt}
         width={width}
         height={height}
-        sizes={sizes}
+        srcSet={responsiveSrcSet}
+        sizes={resolvedSizes}
         loading={imageLoading}
         decoding={decoding}
         fetchPriority={fetchPriority}
@@ -139,16 +181,6 @@ export default function ProgressiveImage({
           />
         </div>
       )}
-      <style>{`
-        @keyframes imgfadein {
-          0% { opacity:.2; transform: scale(1.08);}
-          60% { opacity:.86; transform: scale(1.02);}
-          100% { opacity:1; transform: scale(1);}
-        }
-        .animate-imgfadein {
-          animation: imgfadein .7s cubic-bezier(.46,1.17,.73,.95);
-        }
-      `}</style>
     </div>
   );
 }

@@ -2,11 +2,16 @@
 // Modernizovana Home stranica sa Cobalt Navy paletom
 // Svi elementi redesigned za OPCIJU D
 
-import { useState, useEffect, useCallback } from "react";
+import {
+  useState,
+  useEffect,
+  useCallback,
+  useRef,
+  Suspense,
+  lazy,
+} from "react";
 import { Link, useNavigate } from "react-router-dom";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
-import Slider from "../../components/Slider";
-import EvagaVideoPlayer from "../../components/UI/EvagaVideoPlayer";
 import { designTokens } from "../../configs/designTokens";
 import {
   FaTools,
@@ -25,6 +30,11 @@ import { motion, AnimatePresence } from "framer-motion";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "../../utils/firebase";
 
+const Slider = lazy(() => import("../../components/Slider"));
+const EvagaVideoPlayer = lazy(
+  () => import("../../components/UI/EvagaVideoPlayer"),
+);
+
 export default function HomeModern() {
   const [modalData, setModalData] = useState({
     open: false,
@@ -42,6 +52,10 @@ export default function HomeModern() {
     seeks: 0,
   });
   const [ctaStats, setCtaStats] = useState({ test: 0, demo: 0 });
+  const gallerySectionRef = useRef(null);
+  const videoSectionRef = useRef(null);
+  const [isGalleryReady, setIsGalleryReady] = useState(false);
+  const [isVideoReady, setIsVideoReady] = useState(false);
 
   const faqItems = [
     {
@@ -135,6 +149,32 @@ export default function HomeModern() {
     return () => unsub();
   }, []);
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+
+          if (entry.target === gallerySectionRef.current) {
+            setIsGalleryReady(true);
+          }
+
+          if (entry.target === videoSectionRef.current) {
+            setIsVideoReady(true);
+          }
+        });
+      },
+      { rootMargin: "450px 0px" },
+    );
+
+    if (gallerySectionRef.current) observer.observe(gallerySectionRef.current);
+    if (videoSectionRef.current) observer.observe(videoSectionRef.current);
+
+    return () => observer.disconnect();
+  }, []);
+
   const handleVideoAnalytics = useCallback((event, payload) => {
     setVideoStats((prev) => {
       const next = { ...prev };
@@ -164,6 +204,12 @@ export default function HomeModern() {
             <ProgressiveImage
               src="/imgs/home/slika8.jpg"
               alt="Vaga Beta Hero"
+              width={1920}
+              height={1080}
+              sizes="100vw"
+              imageLoading="eager"
+              decoding="async"
+              fetchPriority="high"
               className="w-full h-full object-cover"
             />
             <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
@@ -217,7 +263,10 @@ export default function HomeModern() {
         </section>
 
         {/* GALERIJA SEKCIJA */}
-        <section className="w-full px-4 sm:px-8 md:px-16 py-16">
+        <section
+          className="w-full px-4 sm:px-8 md:px-16 py-16"
+          ref={gallerySectionRef}
+        >
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -233,7 +282,17 @@ export default function HomeModern() {
           >
             Pogledajte proizvode, uređaje i sistema na kojima radimo
           </p>
-          <Slider onImageClick={openModal} />
+          {isGalleryReady ? (
+            <Suspense
+              fallback={
+                <div className="w-full h-[clamp(18rem,28vw,26rem)] rounded-2xl bg-gray-100 animate-pulse" />
+              }
+            >
+              <Slider onImageClick={openModal} />
+            </Suspense>
+          ) : (
+            <div className="w-full h-[clamp(18rem,28vw,26rem)] rounded-2xl bg-gray-100 animate-pulse" />
+          )}
         </section>
 
         {/* FEATURES SEKCIJA */}
@@ -284,7 +343,10 @@ export default function HomeModern() {
         </section>
 
         {/* VIDEO SEKCIJA */}
-        <section className="w-full px-4 sm:px-8 md:px-16 py-16">
+        <section
+          className="w-full px-4 sm:px-8 md:px-16 py-16"
+          ref={videoSectionRef}
+        >
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -293,15 +355,26 @@ export default function HomeModern() {
           >
             e-Vaga Program Prezentacija
           </motion.h2>
-          <EvagaVideoPlayer
-            filename="eVaga Program 2026.mp4"
-            namespace="videos"
-            title="e-Vaga Program Prezentacija - Kontrola i Praćenje Merenja"
-            description="Pogledajte kako e-Vaga radi u praksi"
-            autoplay={true}
-            enableAnalytics={isAdmin}
-            onAnalyticsEvent={handleVideoAnalytics}
-          />
+          {isVideoReady ? (
+            <Suspense
+              fallback={
+                <div className="w-full max-w-4xl mx-auto aspect-video rounded-2xl bg-gray-100 animate-pulse" />
+              }
+            >
+              <EvagaVideoPlayer
+                filename="eVaga Program 2026.mp4"
+                namespace="videos"
+                title="e-Vaga Program Prezentacija - Kontrola i Praćenje Merenja"
+                description="Pogledajte kako e-Vaga radi u praksi"
+                autoplay={false}
+                videoPreload="metadata"
+                enableAnalytics={isAdmin}
+                onAnalyticsEvent={handleVideoAnalytics}
+              />
+            </Suspense>
+          ) : (
+            <div className="w-full max-w-4xl mx-auto aspect-video rounded-2xl bg-gray-100 animate-pulse" />
+          )}
         </section>
 
         {/* CTA SEKCIJA */}
