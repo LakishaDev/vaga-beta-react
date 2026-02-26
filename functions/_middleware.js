@@ -244,6 +244,18 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   const pathname = url.pathname;
 
+  if (pathname === "/robots.txt") {
+    return new Response(
+      "User-agent: *\nAllow: /\nSitemap: https://vagabeta.rs/sitemap.xml\n",
+      {
+        headers: {
+          "content-type": "text/plain; charset=utf-8",
+          "cache-control": "public, max-age=3600",
+        },
+      },
+    );
+  }
+
   if (
     pathname.startsWith("/assets/") ||
     pathname.startsWith("/imgs/") ||
@@ -295,7 +307,6 @@ export async function onRequest(context) {
   }
 
   const SSR_ROUTES = [
-    "/",
     "/pricing",
     "/evaga-desktop",
     "/usluge",

@@ -508,6 +508,11 @@ export default function HomeModern() {
               <ProgressiveImage
                 src="/imgs/home/slika3.png"
                 alt="Zašto Vaga Beta"
+                width={1280}
+                height={853}
+                sizes="(min-width: 1024px) 50vw, 100vw"
+                imageLoading="lazy"
+                decoding="async"
                 className="rounded-xl shadow-lg"
               />
             </motion.div>

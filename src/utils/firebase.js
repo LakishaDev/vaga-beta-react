@@ -12,6 +12,16 @@ import { getStorage } from "firebase/storage";
 import { getFunctions } from "firebase/functions";
 import { initializeAppCheck, ReCaptchaV3Provider } from "firebase/app-check";
 
+const isDev = Boolean(import.meta.env.DEV);
+
+const logInfo = (...args) => {
+  if (isDev) console.log(...args);
+};
+
+const logWarn = (...args) => {
+  if (isDev) console.warn(...args);
+};
+
 // Helper da čita varijable sa fallback na process.env tokom build-a
 const getEnvVar = (key) => {
   // Prvo pokušaj import.meta.env (Vite production)
@@ -20,7 +30,7 @@ const getEnvVar = (key) => {
   }
   // Fallback na process.env (Cloudflare Pages build environment)
   if (typeof process !== "undefined" && process.env && process.env[key]) {
-    console.log(`ℹ️  Čitam ${key} iz process.env (Cloudflare deployment)`);
+    logInfo(`ℹ️  Čitam ${key} iz process.env (Cloudflare deployment)`);
     return process.env[key];
   }
   return undefined;
@@ -79,8 +89,9 @@ let appCheck = null;
 
 const recaptchaKey = getEnvVar("VITE_FIREBASE_RECAPTCHA_SITE_KEY");
 const appCheckDebugToken = getEnvVar("VITE_FIREBASE_APPCHECK_DEBUG_TOKEN");
+const appCheckEnabled = getEnvVar("VITE_ENABLE_APPCHECK") === "true";
 
-if (typeof window !== "undefined" && recaptchaKey) {
+if (typeof window !== "undefined" && appCheckEnabled && recaptchaKey) {
   if (import.meta.env.DEV && appCheckDebugToken) {
     self.FIREBASE_APPCHECK_DEBUG_TOKEN = appCheckDebugToken;
   }
@@ -90,18 +101,22 @@ if (typeof window !== "undefined" && recaptchaKey) {
       provider: new ReCaptchaV3Provider(recaptchaKey),
       isTokenAutoRefreshEnabled: true,
     });
-    console.log("✅ Firebase App Check initialized");
+    logInfo("✅ Firebase App Check initialized");
   } catch (error) {
-    console.warn("⚠️ App Check initialization error:", error.message);
+    logWarn("⚠️ App Check initialization error:", error.message);
   }
 } else {
-  if (typeof window !== "undefined") {
-    console.warn(
-      "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY not set - App Check disabled",
-    );
+  if (typeof window !== "undefined" && isDev) {
+    if (!appCheckEnabled) {
+      logInfo("ℹ️ Firebase App Check disabled (VITE_ENABLE_APPCHECK != true)");
+    } else {
+      logWarn(
+        "⚠️ VITE_FIREBASE_RECAPTCHA_SITE_KEY not set - App Check disabled",
+      );
+    }
   }
 }
 
 export { appCheck };
 
-console.log("✅ Firebase initialized successfully");
+logInfo("✅ Firebase initialized successfully");

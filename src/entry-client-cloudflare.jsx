@@ -25,7 +25,13 @@ const app = (
 const hasServerMarkup = container.hasChildNodes();
 
 if (hasServerMarkup) {
-  hydrateRoot(container, app);
+  hydrateRoot(container, app, {
+    onRecoverableError: (error) => {
+      if (import.meta.env.DEV) {
+        console.error("Recoverable hydration error:", error);
+      }
+    },
+  });
 } else {
   createRoot(container).render(app);
 }
