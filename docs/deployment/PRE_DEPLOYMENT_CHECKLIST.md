@@ -5,6 +5,7 @@
 ### Step 1: Local Verification ✓
 
 - [x] Code je commited na Git
+- [x] Env check je uspešan: `npm run env:check`
 - [x] Build je uspešan: `npm run build` (Exit Code 0)
 - [x] Nema build warning-a
 - [x] Nema lint error-a
@@ -13,6 +14,7 @@
 **Proverite:**
 
 ```bash
+npm run env:check
 npm run build:prod
 # Trebalo bi:
 # ✓ 2532 modules transformed
@@ -92,6 +94,16 @@ VITE_ENABLE_ANALYTICS=true
 ### Step 5.1: SEO Smoke Mode u CI ✓
 
 Cloudflare build treba da koristi lokalni smoke test mode (`SEO_SMOKE_MODE=local`) kako deployment ne bi zavisio od trenutnog stanja live sajta.
+
+### Step 5.2: Post-deploy smoke komande ✓
+
+Nakon deploy-a pokreni:
+
+```bash
+npm run verify:live
+```
+
+Time proveravaš robots, sitemap, product canonical + Product schema i image headers na live domenu.
 
 ### Step 6: DNS Setup ✓
 

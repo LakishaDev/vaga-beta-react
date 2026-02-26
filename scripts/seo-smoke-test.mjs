@@ -56,6 +56,12 @@ function hasProductJsonLd(html) {
   return productSchemaRegex.test(html);
 }
 
+function hasCollectionPageJsonLd(html) {
+  const collectionSchemaRegex =
+    /<script[^>]*type=["']application\/ld\+json["'][^>]*>[\s\S]*?"@type"\s*:\s*"CollectionPage"[\s\S]*?<\/script>/i;
+  return collectionSchemaRegex.test(html);
+}
+
 async function fetchText(url, label) {
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
@@ -116,6 +122,33 @@ async function run() {
     return;
   }
 
+  const robotsUrl = `${BASE_URL}/robots.txt`;
+  const { response: robotsResponse, text: robotsText } = await fetchText(
+    robotsUrl,
+    "Robots request failed",
+  );
+
+  if (!robotsResponse.ok) {
+    throw new Error(`robots.txt is not reachable (${robotsResponse.status})`);
+  }
+
+  const robotsContentType = (
+    robotsResponse.headers.get("content-type") || ""
+  ).toLowerCase();
+  if (!robotsContentType.includes("text/plain")) {
+    throw new Error(
+      `robots.txt has invalid content-type (${robotsContentType || "missing"})`,
+    );
+  }
+
+  if (!/User-agent:\s*\*/i.test(robotsText)) {
+    throw new Error("robots.txt missing 'User-agent: *'");
+  }
+
+  if (!/Sitemap:\s*https:\/\/vagabeta\.rs\/sitemap\.xml/i.test(robotsText)) {
+    throw new Error("robots.txt missing canonical sitemap directive");
+  }
+
   const sitemapUrl = `${BASE_URL}/sitemap.xml`;
   const { response: sitemapResponse, text: sitemapText } = await fetchText(
     sitemapUrl,
@@ -143,6 +176,32 @@ async function run() {
   console.log(
     `📄 Sitemap URLs: ${sitemapUrls.length} | Product URLs: ${productUrls.length} | Testing: ${sampledUrls.length}`,
   );
+
+  const listingUrl = `${BASE_URL}/prodavnica/proizvodi`;
+  const { response: listingResponse, text: listingHtml } = await fetchText(
+    listingUrl,
+    "Listing request failed",
+  );
+
+  if (listingResponse.status !== 200) {
+    throw new Error(
+      `Listing route is not reachable (${listingResponse.status})`,
+    );
+  }
+
+  const listingCanonical = extractCanonical(listingHtml);
+  const listingCanonicalOk =
+    listingCanonical &&
+    normalizeCleanUrl(listingCanonical) === normalizeCleanUrl(listingUrl);
+  const listingSchemaOk = hasCollectionPageJsonLd(listingHtml);
+
+  if (!listingCanonicalOk || !listingSchemaOk) {
+    throw new Error(
+      `Listing validation failed (canonical: ${listingCanonicalOk ? "ok" : "missing/mismatch"}, collection-jsonld: ${listingSchemaOk ? "ok" : "missing"})`,
+    );
+  }
+
+  console.log(`✅ ${listingUrl}`);
 
   let failures = 0;
 
