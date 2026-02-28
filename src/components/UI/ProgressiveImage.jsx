@@ -97,6 +97,10 @@ function buildCloudflareSrcSet(url) {
     .join(", ");
 }
 
+// Session-persistent in-memory cache of URLs that have successfully loaded.
+// Survives client-side navigation but is cleared on page refresh.
+const imgCache = new Set();
+
 // Modern, aspect-safe ProgressiveImage
 export default function ProgressiveImage({
   src,
@@ -112,7 +116,9 @@ export default function ProgressiveImage({
   decoding = "async",
   fetchPriority,
 }) {
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(
+    () => !imgCache.has(normalizeImageUrl(src)),
+  );
   const [imageSrc, setImageSrc] = useState(normalizeImageUrl(src));
   const [primaryRetried, setPrimaryRetried] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
@@ -121,8 +127,9 @@ export default function ProgressiveImage({
   const isPriorityImage = imageLoading === "eager" || fetchPriority === "high";
 
   useEffect(() => {
-    setImageSrc(normalizeImageUrl(src));
-    setLoading(true);
+    const normalized = normalizeImageUrl(src);
+    setImageSrc(normalized);
+    setLoading(!imgCache.has(normalized));
     setPrimaryRetried(false);
     setUsingFallback(false);
     setFallbackRetried(false);
@@ -175,7 +182,10 @@ export default function ProgressiveImage({
           group-focus:ring-2 group-focus:ring-brand-secondary
         `}
         style={{ width: "100%", height: "100%", backfaceVisibility: "hidden" }}
-        onLoad={() => setLoading(false)}
+        onLoad={() => {
+          imgCache.add(normalizeImageUrl(src));
+          setLoading(false);
+        }}
         onError={(e) => {
           const normalizedFallback = normalizeImageUrl(fallbackSrc);
 
