@@ -25,7 +25,7 @@ import Cart from "./pages/shop/Cart";
 import CheckoutForm from "./pages/shop/CheckoutForm";
 import AuthForm from "./pages/shop/AuthForm";
 import AdminPanel from "./pages/shop/AdminPanel";
-import Navbar from "./components/shop/Navbar";
+import Navbar from "./components/Navbar";
 import RenderBoundary from "./components/RenderBoundary";
 import Profile from "./pages/shop/Profile";
 import ProductDetails from "./components/shop/ProductDetails";

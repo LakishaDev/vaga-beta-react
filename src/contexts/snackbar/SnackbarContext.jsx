@@ -6,4 +6,4 @@
 // Možeš dodati funkcije za prikazivanje i sakrivanje obaveštenja
 import { createContext } from "react";
 
-export const SnackbarContext = createContext();
+export const SnackbarContext = createContext({ showSnackbar: () => {} });

@@ -24,6 +24,8 @@ import {
   FaClipboardCheck,
   FaStar,
   FaArrowRight,
+  FaQuoteLeft,
+  FaCheckCircle,
 } from "react-icons/fa";
 import LepModal from "../../components/UI/LepModal";
 import { motion, AnimatePresence } from "framer-motion";
@@ -50,6 +52,7 @@ export default function HomeModern() {
     seeks: 0,
   });
   const [ctaStats, setCtaStats] = useState({ test: 0, demo: 0 });
+  const [openFaqIdx, setOpenFaqIdx] = useState(null);
   const gallerySectionRef = useRef(null);
   const videoSectionRef = useRef(null);
   const [isGalleryReady, setIsGalleryReady] = useState(false);
@@ -87,6 +90,13 @@ export default function HomeModern() {
     },
   ];
 
+  const statsData = [
+    { value: "500+", label: "Zadovoljnih klijenata" },
+    { value: "20+", label: "Godina iskustva" },
+    { value: "24/7", label: "Tehnička podrška" },
+    { value: "98%", label: "Stopa zadovoljstva" },
+  ];
+
   const features = [
     {
       icon: FaCertificate,
@@ -114,24 +124,45 @@ export default function HomeModern() {
     {
       icon: FaTools,
       title: "Brza i efikasna popravka",
+      desc: "Dijagnostika i potpun servis svih elektronskih vaga u najkraćem mogućem roku.",
       color: designTokens.colors.brand.primaryHover,
     },
     {
       icon: FaCertificate,
-      title: "Žigosanje vaga i sertifikati",
+      title: "Žigosanje i sertifikati",
+      desc: "Ovlašćeno žigosanje vaga i izdavanje zvaničnih mernih sertifikata.",
       color: designTokens.colors.brand.primary,
     },
     {
       icon: FaFlask,
       title: "Laboratorijsko ispitivanje",
+      desc: "Precizna kalibracija i ispitivanje u akreditovanoj laboratoriji.",
       color: designTokens.colors.brand.primary,
     },
     {
-      icon: FaShieldAlt,
+      icon: FaClipboardCheck,
       title: "Akreditovana garancija",
+      desc: "Pisana garancija na svaki servisiran i prodat uređaj uz punu podršku.",
       color: designTokens.colors.text.secondary,
     },
   ];
+
+  // Hero animation variants
+  const heroContainerVariants = {
+    hidden: {},
+    visible: {
+      transition: { staggerChildren: 0.18, delayChildren: 0.5 },
+    },
+  };
+
+  const heroItemVariants = {
+    hidden: { opacity: 0, y: 28 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.72, ease: [0.25, 0.46, 0.45, 0.94] },
+    },
+  };
 
   const openModal = ({ src, text }) => setModalData({ open: true, src, text });
   const closeModal = () => setModalData((prev) => ({ ...prev, open: false }));
@@ -239,38 +270,157 @@ export default function HomeModern() {
               fetchPriority="high"
               className="w-full h-full object-cover"
             />
-            <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/40 to-transparent" />
+            <div className="absolute inset-0 bg-gradient-to-r from-black/55 via-black/25 to-black/10" />
           </div>
 
-          <div className="relative z-10 w-full px-4 sm:px-8 md:px-16 text-white text-center">
-            <h1 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight">
-              Preciznost. Inovacija. Pouzdanost.
-            </h1>
-            <p className="text-xl sm:text-2xl opacity-90 mb-8 leading-relaxed">
-              Vaga Beta – lider u servisu elektronskih vaga, žigosanju i
-              softverskim rešenjima za merenje
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4">
-              <Link
-                to="/prodavnica"
-                onClick={() => handleCtaClick("test")}
-                className="px-8 py-4 rounded-lg font-bold text-lg transition-all hover:shadow-xl hover:scale-105"
-                style={{
-                  backgroundColor: designTokens.colors.brand.primary,
-                  color: "white",
-                }}
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 overflow-hidden"
+          >
+            {/* Veliki outer atmosphere orb — levo od centra, gornji deo */}
+            <motion.div
+              className="hero-halo-breath absolute left-[42%] top-[38%] h-[44rem] w-[44rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-primary/40 blur-[140px] sm:h-[56rem] sm:w-[56rem]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.4, ease: "easeOut" }}
+            />
+            {/* Mid secondary orb — desno od centra */}
+            <motion.div
+              className="hero-halo-pulse-delayed absolute left-[58%] top-[52%] h-[28rem] w-[28rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-secondary/55 blur-[100px] sm:h-[36rem] sm:w-[36rem]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
+            />
+            {/* Core accent orb — centriran iza teksta */}
+            <motion.div
+              className="hero-halo-pulse absolute left-[48%] top-[50%] h-[18rem] w-[18rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-accent/50 blur-[75px] sm:h-[24rem] sm:w-[24rem]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 1.0, ease: "easeOut", delay: 0.4 }}
+            />
+            {/* Mali hot-spot direktno iza teksta za depth */}
+            <motion.div
+              className="hero-halo-pulse absolute left-[50%] top-[50%] h-[10rem] w-[10rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-brand-secondary/70 blur-[40px] sm:h-[14rem] sm:w-[14rem]"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ duration: 0.9, ease: "easeOut", delay: 0.6 }}
+            />
+          </div>
+
+          <div className="relative z-10 w-full px-4 sm:px-8 md:px-16 text-white">
+            <motion.div
+              className="mx-auto max-w-4xl text-center md:-translate-y-6"
+              variants={heroContainerVariants}
+              initial="hidden"
+              animate="visible"
+            >
+              {/* Trust eyebrow badge */}
+              <motion.div
+                variants={heroItemVariants}
+                className="mb-5 flex justify-center"
               >
-                Testiraj e-Vagu
-              </Link>
-              <Link
-                to="/kontakt"
-                onClick={() => handleCtaClick("demo")}
-                className="px-8 py-4 rounded-lg font-bold text-lg border-2 transition-all hover:bg-white/10 hover:scale-105"
-                style={{ borderColor: "white", color: "white" }}
+                <span className="inline-flex items-center gap-2 rounded-full border border-white/30 bg-white/10 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
+                  <FaShieldAlt className="text-brand-accent" />
+                  Ovlašćeni servis · 20+ godina iskustva
+                </span>
+              </motion.div>
+
+              <motion.h1
+                variants={heroItemVariants}
+                className="text-4xl sm:text-5xl lg:text-6xl font-extrabold mb-6 leading-tight"
               >
-                Zakažite demo
-              </Link>
-            </div>
+                Preciznost. Inovacija. Pouzdanost.
+              </motion.h1>
+              <motion.p
+                variants={heroItemVariants}
+                className="text-xl sm:text-2xl opacity-90 mb-8 leading-relaxed"
+              >
+                Vaga Beta – lider u servisu elektronskih vaga, žigosanju i
+                softverskim rešenjima za merenje
+              </motion.p>
+              <motion.div
+                variants={heroItemVariants}
+                className="flex flex-col sm:flex-row gap-4 justify-center"
+              >
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <Link
+                    to="/prodavnica"
+                    onClick={() => handleCtaClick("test")}
+                    className="block px-8 py-4 rounded-lg font-bold text-lg text-white transition-colors shadow-lg hover:shadow-xl"
+                    style={{
+                      backgroundColor: designTokens.colors.brand.primary,
+                    }}
+                  >
+                    Testiraj e-Vagu
+                  </Link>
+                </motion.div>
+                <motion.div
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.97 }}
+                >
+                  <Link
+                    to="/kontakt"
+                    onClick={() => handleCtaClick("demo")}
+                    className="block px-8 py-4 rounded-lg font-bold text-lg border-2 transition-all hover:bg-white/15"
+                    style={{ borderColor: "white", color: "white" }}
+                  >
+                    Zakažite demo
+                  </Link>
+                </motion.div>
+              </motion.div>
+            </motion.div>
+          </div>
+
+          {/* Scroll indikator */}
+          <motion.div
+            className="absolute bottom-8 left-1/2 -translate-x-1/2 z-10 text-white/60"
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.8, duration: 0.6 }}
+          >
+            <motion.div
+              animate={{ y: [0, 8, 0] }}
+              transition={{
+                repeat: Infinity,
+                duration: 1.8,
+                ease: "easeInOut",
+              }}
+              className="flex flex-col items-center gap-1 text-xs font-medium tracking-widest uppercase"
+            >
+              <span>Skrolujte</span>
+              <FaArrowRight className="rotate-90 text-lg" />
+            </motion.div>
+          </motion.div>
+        </section>
+
+        {/* STATS STRIP SEKCIJA */}
+        <section
+          className="w-full py-10 px-4 sm:px-8"
+          style={{
+            background: `linear-gradient(135deg, ${designTokens.colors.brand.primary}, ${designTokens.colors.brand.secondary})`,
+          }}
+        >
+          <div className="mx-auto max-w-5xl grid grid-cols-2 lg:grid-cols-4 gap-6 text-center">
+            {statsData.map((stat, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1, duration: 0.5 }}
+                className="text-white"
+              >
+                <div className="text-3xl sm:text-4xl font-extrabold mb-1">
+                  {stat.value}
+                </div>
+                <div className="text-sm sm:text-base opacity-80 font-medium">
+                  {stat.label}
+                </div>
+              </motion.div>
+            ))}
           </div>
         </section>
 
@@ -282,6 +432,7 @@ export default function HomeModern() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             transition={{ duration: 0.6 }}
             className="text-3xl sm:text-4xl font-extrabold mb-2"
             style={{ color: designTokens.colors.brand.primary }}
@@ -318,6 +469,7 @@ export default function HomeModern() {
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
               className="text-3xl sm:text-4xl font-extrabold mb-12 text-center"
               style={{ color: designTokens.colors.brand.primary }}
             >
@@ -331,6 +483,7 @@ export default function HomeModern() {
                     key={idx}
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
                     transition={{ delay: idx * 0.1 }}
                     className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all hover:scale-105"
                   >
@@ -362,6 +515,7 @@ export default function HomeModern() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-3xl sm:text-4xl font-extrabold mb-8"
             style={{ color: designTokens.colors.brand.primary }}
           >
@@ -405,21 +559,31 @@ export default function HomeModern() {
               postavljanje, jasni izveštaji, sigurni podaci.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link
-                to="/prodavnica"
-                onClick={() => handleCtaClick("test")}
-                className="px-8 py-4 rounded-lg font-bold bg-white text-lg transition-all hover:shadow-xl"
-                style={{ color: designTokens.colors.brand.primary }}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
               >
-                Testiraj sada
-              </Link>
-              <Link
-                to="/kontakt"
-                onClick={() => handleCtaClick("demo")}
-                className="px-8 py-4 rounded-lg font-bold border-2 border-white text-white text-lg transition-all hover:bg-white/10"
+                <Link
+                  to="/prodavnica"
+                  onClick={() => handleCtaClick("test")}
+                  className="block px-8 py-4 rounded-lg font-bold bg-white text-lg transition-all hover:shadow-xl"
+                  style={{ color: designTokens.colors.brand.primary }}
+                >
+                  Testiraj sada
+                </Link>
+              </motion.div>
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.97 }}
               >
-                Kontaktiraj nas
-              </Link>
+                <Link
+                  to="/kontakt"
+                  onClick={() => handleCtaClick("demo")}
+                  className="block px-8 py-4 rounded-lg font-bold border-2 border-white text-white text-lg transition-all hover:bg-white/10"
+                >
+                  Kontaktiraj nas
+                </Link>
+              </motion.div>
             </div>
           </div>
         </section>
@@ -429,6 +593,7 @@ export default function HomeModern() {
           <motion.h2
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
             className="text-3xl sm:text-4xl font-extrabold mb-12"
             style={{ color: designTokens.colors.brand.primary }}
           >
@@ -442,20 +607,24 @@ export default function HomeModern() {
                   key={idx}
                   initial={{ opacity: 0, scale: 0.9 }}
                   whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all hover:scale-105 border-2"
-                  style={{ borderColor: service.color }}
+                  className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-all hover:scale-105 border-t-4 flex flex-col gap-3"
+                  style={{ borderTopColor: service.color }}
                 >
-                  <Icon
-                    className="text-5xl mb-4"
-                    style={{ color: service.color }}
-                  />
+                  <Icon className="text-4xl" style={{ color: service.color }} />
                   <h3
                     className="text-lg font-bold"
                     style={{ color: service.color }}
                   >
                     {service.title}
                   </h3>
+                  <p
+                    className="text-sm leading-relaxed"
+                    style={{ color: designTokens.colors.text.secondary }}
+                  >
+                    {service.desc}
+                  </p>
                 </motion.div>
               );
             })}
@@ -474,37 +643,58 @@ export default function HomeModern() {
             >
               Česta pitanja
             </h2>
-            <div className="space-y-4">
+            <div className="space-y-4 max-w-3xl mx-auto">
               {faqItems.map((item, idx) => (
-                <motion.details
+                <motion.div
                   key={idx}
-                  initial={{ opacity: 0 }}
-                  whileInView={{ opacity: 1 }}
+                  initial={{ opacity: 0, y: 12 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="group border-2 rounded-lg p-4 bg-white"
+                  className="rounded-xl border-2 bg-white overflow-hidden"
                   style={{
                     borderColor: designTokens.colors.neutral.borderLight,
                   }}
                 >
-                  <summary
-                    className="cursor-pointer font-bold text-lg flex items-center justify-between hover:opacity-80"
+                  <button
+                    onClick={() =>
+                      setOpenFaqIdx(openFaqIdx === idx ? null : idx)
+                    }
+                    className="w-full flex items-center justify-between px-6 py-5 font-bold text-lg text-left focus:outline-none focus-visible:ring-2"
                     style={{ color: designTokens.colors.brand.primary }}
+                    aria-expanded={openFaqIdx === idx}
                   >
                     {item.q}
-                    <span
-                      className="group-open:rotate-45 transition-transform"
+                    <motion.span
+                      animate={{ rotate: openFaqIdx === idx ? 45 : 0 }}
+                      transition={{ duration: 0.2 }}
+                      className="text-xl ml-4 flex-shrink-0"
                       style={{ color: designTokens.colors.brand.accent }}
                     >
                       +
-                    </span>
-                  </summary>
-                  <p
-                    className="mt-3"
-                    style={{ color: designTokens.colors.text.secondary }}
-                  >
-                    {item.a}
-                  </p>
-                </motion.details>
+                    </motion.span>
+                  </button>
+
+                  <AnimatePresence initial={false}>
+                    {openFaqIdx === idx && (
+                      <motion.div
+                        key="answer"
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeInOut" }}
+                        style={{ overflow: "hidden" }}
+                      >
+                        <p
+                          className="px-6 pb-5 text-base leading-relaxed"
+                          style={{ color: designTokens.colors.text.secondary }}
+                        >
+                          {item.a}
+                        </p>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               ))}
             </div>
           </div>
@@ -516,6 +706,7 @@ export default function HomeModern() {
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
             >
               <ProgressiveImage
                 src="/imgs/home/slika3.png"
@@ -531,6 +722,7 @@ export default function HomeModern() {
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
             >
               <h2
                 className="text-3xl sm:text-4xl font-extrabold mb-6"
@@ -542,24 +734,39 @@ export default function HomeModern() {
                 className="space-y-3 text-lg"
                 style={{ color: designTokens.colors.text.secondary }}
               >
-                <li className="flex items-center gap-3">
-                  <FaStar style={{ color: designTokens.colors.brand.accent }} />
+                <li className="flex items-start gap-3">
+                  <FaCheckCircle
+                    className="mt-1 flex-shrink-0 text-lg"
+                    style={{ color: designTokens.colors.brand.accent }}
+                  />
                   Više od 20 godina iskustva
                 </li>
-                <li className="flex items-center gap-3">
-                  <FaStar style={{ color: designTokens.colors.brand.accent }} />
+                <li className="flex items-start gap-3">
+                  <FaCheckCircle
+                    className="mt-1 flex-shrink-0 text-lg"
+                    style={{ color: designTokens.colors.brand.accent }}
+                  />
                   Kompletan servis na jednom mestu
                 </li>
-                <li className="flex items-center gap-3">
-                  <FaStar style={{ color: designTokens.colors.brand.accent }} />
+                <li className="flex items-start gap-3">
+                  <FaCheckCircle
+                    className="mt-1 flex-shrink-0 text-lg"
+                    style={{ color: designTokens.colors.brand.accent }}
+                  />
                   Tim stručnjaka za elektroniku i softver
                 </li>
-                <li className="flex items-center gap-3">
-                  <FaStar style={{ color: designTokens.colors.brand.accent }} />
+                <li className="flex items-start gap-3">
+                  <FaCheckCircle
+                    className="mt-1 flex-shrink-0 text-lg"
+                    style={{ color: designTokens.colors.brand.accent }}
+                  />
                   Brzina i pouzdanost
                 </li>
-                <li className="flex items-center gap-3">
-                  <FaStar style={{ color: designTokens.colors.brand.accent }} />
+                <li className="flex items-start gap-3">
+                  <FaCheckCircle
+                    className="mt-1 flex-shrink-0 text-lg"
+                    style={{ color: designTokens.colors.brand.accent }}
+                  />
                   Individualni pristup svakom klijentu
                 </li>
               </ul>
@@ -568,10 +775,59 @@ export default function HomeModern() {
                 className="inline-flex items-center gap-2 px-8 py-4 rounded-lg font-bold text-lg mt-8 transition-all hover:shadow-xl hover:scale-105 text-white"
                 style={{ backgroundColor: designTokens.colors.brand.primary }}
               >
-                Kontaktirajte nas
+                Kontaktujte nas
                 <FaArrowRight />
               </Link>
             </motion.div>
+          </div>
+        </section>
+
+        {/* TESTIMONIALS SEKCIJA */}
+        <section
+          className="w-full px-4 sm:px-8 md:px-16 py-16"
+          style={{
+            backgroundColor: `${designTokens.colors.neutral.surfaceTint}99`,
+          }}
+        >
+          <motion.h2
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-3xl sm:text-4xl font-extrabold mb-12 text-center"
+            style={{ color: designTokens.colors.brand.primary }}
+          >
+            Šta kažu naši klijenti?
+          </motion.h2>
+          <div className="grid sm:grid-cols-2 gap-6 max-w-4xl mx-auto">
+            {testimonials.map((t, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 24 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.15, duration: 0.6 }}
+                className="bg-white rounded-2xl p-8 shadow-md border-l-4 flex flex-col gap-4"
+                style={{ borderLeftColor: designTokens.colors.brand.accent }}
+              >
+                <FaQuoteLeft
+                  className="text-2xl"
+                  style={{ color: designTokens.colors.brand.accent }}
+                />
+                <p
+                  className="text-lg leading-relaxed italic"
+                  style={{ color: designTokens.colors.text.secondary }}
+                >
+                  &ldquo;{t.text}&rdquo;
+                </p>
+                <p
+                  className="font-bold text-base"
+                  style={{ color: designTokens.colors.brand.primary }}
+                >
+                  — {t.name}
+                </p>
+              </motion.div>
+            ))}
           </div>
         </section>
 
