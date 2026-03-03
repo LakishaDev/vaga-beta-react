@@ -51,6 +51,14 @@ function normalizeImagePath(url) {
   return basePath;
 }
 
+function isFirebaseStorageUrl(url) {
+  if (!url || typeof url !== "string") return false;
+  return (
+    url.includes("firebasestorage.googleapis.com") ||
+    url.includes(".firebasestorage.app")
+  );
+}
+
 function shouldUseCloudflareImageResize(url) {
   if (typeof window === "undefined") return false;
 
@@ -59,6 +67,7 @@ function shouldUseCloudflareImageResize(url) {
     host === "localhost" || host === "127.0.0.1" || host.endsWith(".local");
 
   if (isLocalHost) return false;
+  if (isFirebaseStorageUrl(url)) return false;
 
   return isLocalImagesPath(url) || isRemoteHttpImageUrl(url);
 }

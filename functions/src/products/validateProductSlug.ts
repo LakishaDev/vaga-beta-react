@@ -18,7 +18,7 @@ function hasAdminAccess(req: any): boolean {
   return Boolean(email && adminEmails.includes(email));
 }
 
-export const validateProductSlug = onCall(async (req: any) => {
+export const validateProductSlug = onCall({ cors: true }, async (req: any) => {
   if (!req.auth) {
     throw new HttpsError("unauthenticated", "User not authenticated");
   }
