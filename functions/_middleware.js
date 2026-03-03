@@ -222,6 +222,99 @@ function replaceOrInsertJsonLd(template, id, payload) {
   );
 }
 
+const SITEMAP_STATIC_PAGES = [
+  { url: "", priority: "1.0", changefreq: "daily" },
+  { url: "/usluge", priority: "0.9", changefreq: "weekly" },
+  { url: "/kontakt", priority: "0.8", changefreq: "monthly" },
+  { url: "/onama", priority: "0.7", changefreq: "monthly" },
+  { url: "/aplikacija", priority: "0.8", changefreq: "weekly" },
+  { url: "/newsletter", priority: "0.8", changefreq: "weekly" },
+  { url: "/evaga-desktop", priority: "0.8", changefreq: "weekly" },
+  { url: "/prodavnica", priority: "0.9", changefreq: "daily" },
+  { url: "/prodavnica/proizvodi", priority: "0.9", changefreq: "daily" },
+  { url: "/privacy", priority: "0.3", changefreq: "yearly" },
+];
+
+function escapeXml(value = "") {
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&apos;");
+}
+
+async function fetchAllProductsForSitemap(env) {
+  const projectId = getEnvVar(
+    env,
+    "VITE_FIREBASE_PROJECT_ID",
+    "FIREBASE_PROJECT_ID",
+  );
+  const apiKey = getEnvVar(env, "VITE_FIREBASE_API_KEY", "FIREBASE_API_KEY");
+  if (!projectId || !apiKey) return [];
+
+  const endpoint = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/products?pageSize=500&key=${apiKey}`;
+  try {
+    const response = await fetch(endpoint);
+    if (!response.ok) return [];
+    const payload = await response.json();
+    return payload.documents || [];
+  } catch {
+    return [];
+  }
+}
+
+function buildSitemapXml(documents) {
+  const BASE_URL = "https://vagabeta.rs";
+  const today = new Date().toISOString().split("T")[0];
+
+  const staticEntries = SITEMAP_STATIC_PAGES.map(
+    (page) => `  <url>
+    <loc>${escapeXml(`${BASE_URL}${page.url}`)}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>${page.changefreq}</changefreq>
+    <priority>${page.priority}</priority>
+  </url>`,
+  ).join("\n");
+
+  const productEntries = documents
+    .map((doc) => {
+      const fields = doc.fields || {};
+      const slug = fields.slug?.stringValue;
+      if (!slug) return null;
+
+      const imgUrl = fields.imgUrl?.stringValue || "";
+      const extraImages = (fields.images?.arrayValue?.values || [])
+        .map((v) => v?.stringValue)
+        .filter(Boolean);
+      const allImages = [...new Set([imgUrl, ...extraImages].filter(Boolean))];
+
+      const imageTags = allImages
+        .map(
+          (u) =>
+            `    <image:image>\n      <image:loc>${escapeXml(u)}</image:loc>\n    </image:image>`,
+        )
+        .join("\n");
+
+      return `  <url>
+    <loc>${escapeXml(`${BASE_URL}/p/${encodeURIComponent(slug)}`)}</loc>
+    <lastmod>${today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+${imageTags}
+  </url>`;
+    })
+    .filter(Boolean)
+    .join("\n");
+
+  return `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+${staticEntries}
+${productEntries}
+</urlset>`;
+}
+
 function normalizeHelmetFragment(fragment, kind) {
   if (!fragment) return "";
 
@@ -254,6 +347,17 @@ export async function onRequest(context) {
         },
       },
     );
+  }
+
+  if (pathname === "/sitemap.xml") {
+    const documents = await fetchAllProductsForSitemap(env);
+    const xml = buildSitemapXml(documents);
+    return new Response(xml, {
+      headers: {
+        "content-type": "application/xml; charset=utf-8",
+        "cache-control": "public, max-age=3600, stale-while-revalidate=86400",
+      },
+    });
   }
 
   if (
