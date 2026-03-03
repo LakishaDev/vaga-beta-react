@@ -136,6 +136,11 @@ export default function ProductCard({ product }) {
       <p className="text-brand-secondary mb-2 text-center font-semibold text-sm sm:text-base">
         {product.category}
       </p>
+      {product.description && (
+        <p className="text-gray-400 text-xs text-center line-clamp-2 mb-1 px-1 leading-snug">
+          {product.description}
+        </p>
+      )}
 
       {/* Cene: pre i posle popusta - samo ako cena nije skrivena */}
       {!hasHiddenPrice &&

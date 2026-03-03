@@ -11,6 +11,7 @@ import {
   FiEye,
 } from "react-icons/fi";
 import FloatingLabelInput from "./FloatingLabelInput";
+import FloatingLabelTextarea from "./FloatingLabelTextarea";
 import ProgressiveImage from "./ProgressiveImage";
 import ProgressBar from "./ProgressBar";
 import SoftwareToggle from "./SoftwareToggle";
@@ -253,6 +254,45 @@ export default function EditProductModal({
                 Sakrij cenu za korisnike
               </span>
             </label>
+
+            {/* SEO i opis */}
+            <Motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="flex flex-col gap-1 p-4 rounded-xl border shadow-lg"
+              style={{
+                background: "rgba(11, 58, 141, 0.05)",
+                backdropFilter: "blur(10px)",
+                border: "1.5px solid rgba(11, 58, 141, 0.15)",
+              }}
+            >
+              <h4 className="font-semibold text-[#1E3E49] mb-3 flex items-center gap-2 text-sm uppercase tracking-wide">
+                <span className="inline-block w-2 h-2 rounded-full bg-brand-secondary"></span>
+                SEO i opis
+              </h4>
+              <FloatingLabelTextarea
+                name="description"
+                label="Kratki opis (meta description, maks. 160 znakova)"
+                value={product.description || ""}
+                onChange={onChange}
+                rows={3}
+                maxLength={160}
+              />
+              <FloatingLabelInput
+                name="keywords"
+                label="Ključne reči (odvojene zarezom)"
+                value={product.keywords || ""}
+                onChange={onChange}
+              />
+              <FloatingLabelTextarea
+                name="longDescription"
+                label="Detaljan opis (opciono – vidljiv na stranici proizvoda)"
+                value={product.longDescription || ""}
+                onChange={onChange}
+                rows={5}
+              />
+            </Motion.div>
 
             {/* Software Toggle with Markdown Upload */}
             <SoftwareToggle

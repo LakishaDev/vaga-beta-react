@@ -79,6 +79,9 @@ export default function AdminPanel() {
     category: "",
     price: "",
     hasHiddenPrice: false,
+    description: "",
+    keywords: "",
+    longDescription: "",
     imgFile: null,
     imgPreview: null,
     images: [], // Multiple images
@@ -461,6 +464,9 @@ export default function AdminPanel() {
         hiddenPrice: newProduct.hasHiddenPrice
           ? Number(newProduct.price)
           : null,
+        description: newProduct.description || "",
+        keywords: newProduct.keywords || "",
+        longDescription: newProduct.longDescription || "",
         imgUrl,
         images: imageUrls,
         features: newProduct.features,
@@ -491,6 +497,9 @@ export default function AdminPanel() {
         category: "",
         price: "",
         hasHiddenPrice: false,
+        description: "",
+        keywords: "",
+        longDescription: "",
         imgFile: null,
         imgPreview: null,
         images: [],
@@ -560,6 +569,9 @@ export default function AdminPanel() {
       isSoftware: product.isSoftware || false,
       markdownFiles: product.markdownFiles || [],
       newMarkdownFiles: [],
+      description: product.description || "",
+      keywords: product.keywords || "",
+      longDescription: product.longDescription || "",
     });
 
   const handleEditClose = () => {
@@ -816,6 +828,9 @@ export default function AdminPanel() {
         hiddenPrice: editProduct.hasHiddenPrice
           ? Number(editProduct.price)
           : null,
+        description: editProduct.description || "",
+        keywords: editProduct.keywords || "",
+        longDescription: editProduct.longDescription || "",
         imgUrl,
         images: allImages,
         features: editProduct.features,

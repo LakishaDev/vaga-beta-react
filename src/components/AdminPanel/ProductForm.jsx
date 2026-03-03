@@ -25,6 +25,7 @@
 import { motion as Motion } from "framer-motion";
 import { FiDollarSign } from "react-icons/fi";
 import FloatingLabelInput from "../UI/FloatingLabelInput.jsx";
+import FloatingLabelTextarea from "../UI/FloatingLabelTextarea.jsx";
 import ProgressiveImage from "../UI/ProgressiveImage.jsx";
 import ProgressBar from "../UI/ProgressBar.jsx";
 import SoftwareToggle from "../UI/SoftwareToggle.jsx";
@@ -278,6 +279,40 @@ export default function ProductForm({
 
       {/* Sekcija za dodatne funkcionalnosti - full width */}
       <div className="w-full lg:col-span-2 flex flex-col gap-6 mt-4">
+        {/* SEO i opis */}
+        <Motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="flex flex-col gap-1 p-4 rounded-xl border border-gray-200 bg-white/60 backdrop-blur-sm shadow-sm"
+        >
+          <h4 className="font-semibold text-sm text-text-primary uppercase tracking-wide flex items-center gap-2 mb-2">
+            <span className="inline-block w-2 h-2 rounded-full bg-brand-secondary"></span>
+            SEO i opis
+          </h4>
+          <FloatingLabelTextarea
+            name="description"
+            label="Kratki opis (meta description, maks. 160 znakova)"
+            value={product.description || ""}
+            onChange={onChange}
+            rows={3}
+            maxLength={160}
+          />
+          <FloatingLabelInput
+            name="keywords"
+            label="Ključne reči (odvojene zarezom, npr: vaga, industrijska, digitalna)"
+            value={product.keywords || ""}
+            onChange={onChange}
+          />
+          <FloatingLabelTextarea
+            name="longDescription"
+            label="Detaljan opis (opciono – vidljiv na stranici proizvoda)"
+            value={product.longDescription || ""}
+            onChange={onChange}
+            rows={5}
+          />
+        </Motion.div>
+
         {/* Multiple Images - sa FIXED animacijama */}
         <ProductImageGallery
           images={product.images}

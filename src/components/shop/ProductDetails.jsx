@@ -468,7 +468,10 @@ export default function ProductDetails() {
         "@context": "https://schema.org/",
         "@type": "Product",
         name: product.name,
-        description: product.description || product.name,
+        description: product.description
+          ? product.description.slice(0, 160)
+          : product.name,
+        keywords: product.keywords || undefined,
         image: product.images?.[0] || product.imgUrl,
         brand: {
           "@type": "Brand",
@@ -510,16 +513,28 @@ export default function ProductDetails() {
             <title>{product.name} | Vaga Beta</title>
             <meta
               name="description"
-              content={product.description || product.name}
+              content={
+                product.description
+                  ? product.description.slice(0, 160)
+                  : product.name.slice(0, 160)
+              }
             />
             <meta
               name="keywords"
-              content={`${product.name}, vage, prodavnica, kupovina`}
+              content={
+                product.keywords
+                  ? `${product.keywords}, ${product.name}, vage, prodavnica`
+                  : `${product.name}, vage, prodavnica, kupovina`
+              }
             />
             <meta property="og:title" content={product.name} />
             <meta
               property="og:description"
-              content={product.description || product.name}
+              content={
+                product.description
+                  ? product.description.slice(0, 160)
+                  : product.name.slice(0, 160)
+              }
             />
             <meta
               property="og:image"
@@ -531,7 +546,11 @@ export default function ProductDetails() {
             <meta name="twitter:title" content={product.name} />
             <meta
               name="twitter:description"
-              content={product.description || product.name}
+              content={
+                product.description
+                  ? product.description.slice(0, 160)
+                  : product.name.slice(0, 160)
+              }
             />
             <meta
               name="twitter:image"
@@ -749,6 +768,16 @@ export default function ProductDetails() {
               <div className="text-sm sm:text-base text-gray-500 mb-2">
                 {product.description}
               </div>
+              {product.longDescription && (
+                <div className="mt-1 mb-2 w-full">
+                  <h2 className="text-xs font-semibold text-text-primary mb-1.5 uppercase tracking-wide opacity-60">
+                    O proizvodu
+                  </h2>
+                  <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line border-l-2 border-brand-secondary/30 pl-3">
+                    {product.longDescription}
+                  </div>
+                </div>
+              )}
               {/* Prikaz cene i staru cenu precrtanu */}
               <div className="flex items-center sm:items-end flex-col sm:flex-row gap-2 sm:gap-4 mt-0 sm:mt-1 mb-3 relative min-h-[48px]">
                 <div className="flex flex-col">
