@@ -291,7 +291,7 @@ export default function Navbar() {
       >
         <nav
           className={`mx-2 mt-2 sm:mx-4 rounded-2xl border border-brand-primary/20 bg-white/90 backdrop-blur-md shadow-lg transition-all duration-300 ${
-            isCompact ? "py-2" : "py-3"
+            isCompact ? "py-0.5" : "py-1"
           }`}
         >
           <div className="mx-auto max-w-7xl flex items-center justify-between px-4 sm:px-6">
@@ -303,7 +303,7 @@ export default function Navbar() {
               <ProgressiveImage
                 src="/imgs/vaga-logo.png"
                 alt="Logo"
-                className="h-10 w-10 rounded-xl border border-brand-primary/20 bg-white shadow"
+                className="h-8 w-8 rounded-lg border border-brand-primary/20 bg-white shadow"
               />
               <span className="font-heading font-extrabold text-lg tracking-wide text-brand-primary">
                 Vaga Beta

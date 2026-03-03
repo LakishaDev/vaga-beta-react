@@ -80,7 +80,7 @@ export default function ProductCard({ product }) {
 
             {/* Glavni badge sa glassmorphism */}
             <div
-              className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center backdrop-blur-md border-2 shadow-lg transition-all"
+              className="relative w-7 h-7 sm:w-9 sm:h-9 rounded-full flex items-center justify-center backdrop-blur-md border-2 shadow-lg transition-all"
               style={{
                 background:
                   "linear-gradient(135deg, rgba(145, 206, 193, 0.9) 0%, rgba(30, 62, 73, 0.85) 100%)",
@@ -91,8 +91,8 @@ export default function ProductCard({ product }) {
               }}
             >
               <Terminal
-                size={18}
-                className="text-white drop-shadow-md sm:w-5 sm:h-5"
+                size={14}
+                className="text-white drop-shadow-md sm:w-[16px] sm:h-[16px]"
                 strokeWidth={2.5}
               />
             </div>
@@ -110,11 +110,11 @@ export default function ProductCard({ product }) {
 
       {/* Badge za skrivenu cenu ili običnu cenu gore desno */}
       {hasHiddenPrice ? (
-        <span className="absolute top-32 sm:top-40 right-4 sm:right-7 bg-error/80 text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-sm sm:text-base shadow z-10">
+        <span className="absolute top-32 sm:top-40 right-4 sm:right-7 bg-error text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-sm sm:text-base shadow z-10">
           Cena na upit
         </span>
       ) : (
-        <span className="absolute top-32 sm:top-40 right-4 sm:right-7 bg-brand-secondary text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-base sm:text-lg shadow animate-pop z-10">
+        <span className="absolute top-32 sm:top-40 right-4 sm:right-7 bg-brand-primary text-white px-3 sm:px-4 py-1 rounded-xl font-bold text-base sm:text-lg shadow animate-pop z-10">
           {Number(getDisplayPrice()).toLocaleString("sr-RS")} RSD
         </span>
       )}
@@ -130,7 +130,7 @@ export default function ProductCard({ product }) {
         className="h-32 w-32 sm:h-40 sm:w-40 object-cover rounded-xl shadow-lg mb-4 group-hover:scale-105 group-hover:shadow-2xl transition"
         style={{ aspectRatio: "1/1", background: "#E5E5E5" }}
       />
-      <h3 className="font-bold text-base sm:text-xl text-text-primary mb-1 text-center">
+      <h3 className="font-bold text-base sm:text-xl text-text-primary mb-1 text-center line-clamp-2">
         {product.name}
       </h3>
       <p className="text-brand-secondary mb-2 text-center font-semibold text-sm sm:text-base">
@@ -171,16 +171,18 @@ export default function ProductCard({ product }) {
       </div>
 
       {/* Dugme - ostaje "Dodaj u korpu" za sve proizvode */}
-      <button
-        onClick={handleAddToCart}
-        className="mt-2 sm:mt-4 px-4 sm:px-6 py-2 sm:py-3 w-full rounded-full font-semibold shadow-lg
-          bg-gradient-to-tr from-brand-secondary to-text-primary text-white
-          hover:from-text-primary hover:to-brand-secondary hover:shadow-2xl
-          transition-all group-hover:-translate-y-1 group-hover:scale-105
-          active:scale-95 focus:ring-2 focus:ring-brand-secondary text-sm sm:text-base animate-fadein"
-      >
-        Dodaj u korpu
-      </button>
+      <div className="mt-auto w-full pt-2 sm:pt-4">
+        <button
+          onClick={handleAddToCart}
+          className="px-4 sm:px-6 py-2 sm:py-3 w-full rounded-full font-semibold shadow-lg
+            bg-gradient-to-tr from-brand-secondary to-text-primary text-white
+            hover:from-text-primary hover:to-brand-secondary hover:shadow-2xl
+            transition-all group-hover:-translate-y-1 group-hover:scale-105
+            active:scale-95 focus:ring-2 focus:ring-brand-secondary text-sm sm:text-base animate-fadein"
+        >
+          Dodaj u korpu
+        </button>
+      </div>
     </Link>
   );
 }

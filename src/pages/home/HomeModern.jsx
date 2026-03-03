@@ -257,7 +257,7 @@ export default function HomeModern() {
     <>
       <main className="w-full bg-white">
         {/* HERO SEKCIJA */}
-        <section className="relative h-screen flex items-center justify-center overflow-hidden">
+        <section className="relative h-screen flex items-center justify-center overflow-hidden -mt-24 sm:-mt-28">
           <div className="absolute inset-0">
             <ProgressiveImage
               src="/imgs/home/slika8.jpg"
