@@ -768,16 +768,6 @@ export default function ProductDetails() {
               <div className="text-sm sm:text-base text-gray-500 mb-2">
                 {product.description}
               </div>
-              {product.longDescription && (
-                <div className="mt-1 mb-2 w-full">
-                  <h2 className="text-xs font-semibold text-text-primary mb-1.5 uppercase tracking-wide opacity-60">
-                    O proizvodu
-                  </h2>
-                  <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line border-l-2 border-brand-secondary/30 pl-3">
-                    {product.longDescription}
-                  </div>
-                </div>
-              )}
               {/* Prikaz cene i staru cenu precrtanu */}
               <div className="flex items-center sm:items-end flex-col sm:flex-row gap-2 sm:gap-4 mt-0 sm:mt-1 mb-3 relative min-h-[48px]">
                 <div className="flex flex-col">
@@ -835,6 +825,16 @@ export default function ProductDetails() {
                 <span className="inline-block w-5 h-5 bg-text-primary rounded-full border border-gray-300"></span>
                 <span className="inline-block w-5 h-5 bg-neutral-100 rounded-full border border-gray-300"></span>
               </div>
+              {product.longDescription && (
+                <div className="mt-1 mb-2 w-full">
+                  <h2 className="text-xs font-semibold text-text-primary mb-1.5 uppercase tracking-wide opacity-60">
+                    O proizvodu
+                  </h2>
+                  <div className="text-sm sm:text-base text-gray-600 leading-relaxed whitespace-pre-line border-l-2 border-brand-secondary/30 pl-3">
+                    {product.longDescription}
+                  </div>
+                </div>
+              )}
               {/* Features & Downloads with glassmorphism */}
               <div className="w-full space-y-3 mt-4">
                 {/* Karakteristike */}
