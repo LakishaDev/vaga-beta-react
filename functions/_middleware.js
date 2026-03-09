@@ -332,14 +332,103 @@ function normalizeHelmetFragment(fragment, kind) {
   return "";
 }
 
+const LEGACY_PATH_REDIRECTS = {
+  "/about": "/onama",
+  "/contact": "/kontakt",
+  "/proizvodi": "/prodavnica/proizvodi",
+  "/prodavnica/products": "/prodavnica/proizvodi",
+  "/prodavnica/cart": "/prodavnica/korpa",
+  "/prodavnica/login": "/prodavnica/prijava",
+  "/prodavnica/profile": "/prodavnica/nalog",
+  "/search": "/prodavnica/proizvodi",
+};
+
+const NOINDEX_PATH_PREFIXES = [
+  "/prodavnica/korpa",
+  "/prodavnica/placanje",
+  "/prodavnica/prijava",
+  "/prodavnica/nalog",
+  "/prodavnica/admin",
+  "/prodavnica/porudzbine",
+  "/prodavnica/reset-password",
+  "/prodavnica/email-verifikovan",
+];
+
+const STATIC_PAGE_META = {
+  "/kontakt": {
+    title: "Kontakt | Vaga Beta",
+    description:
+      "Kontaktirajte Vaga Beta tim za servis, overavanje i prodaju vaga. Brz odgovor i stručna podrška.",
+  },
+  "/onama": {
+    title: "O nama | Vaga Beta",
+    description:
+      "Saznajte više o Vaga Beta timu, iskustvu i stručnosti u oblasti vaga, servisa i metrologije.",
+  },
+  "/prodavnica": {
+    title: "Online prodavnica | Vaga Beta",
+    description:
+      "Online prodavnica opreme i softvera za vage. Pregledajte ponudu i izaberite rešenje za vaše poslovanje.",
+  },
+  "/newsletter": {
+    title: "Newsletter | Vaga Beta",
+    description:
+      "Prijavite se na Vaga Beta newsletter i dobijajte korisne novosti, akcije i ponude.",
+  },
+};
+
+function isNoindexPath(pathname) {
+  return NOINDEX_PATH_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+async function nextWithIndexingHeaders(next, pathname) {
+  const response = await next();
+  if (!isNoindexPath(pathname)) {
+    return response;
+  }
+
+  const headers = new Headers(response.headers);
+  headers.set("X-Robots-Tag", "noindex, nofollow");
+
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers,
+  });
+}
+
 export async function onRequest(context) {
   const { request, next, env } = context;
   const url = new URL(request.url);
-  const pathname = url.pathname;
+  let pathname = url.pathname;
+
+  const normalizedPathname =
+    pathname.length > 1 ? pathname.replace(/\/+$/, "") || "/" : pathname;
+  const isProtocolOrHostNonCanonical =
+    url.protocol !== "https:" || url.hostname.startsWith("www.");
+
+  if (isProtocolOrHostNonCanonical || normalizedPathname !== pathname) {
+    const redirectUrl = new URL(url.toString());
+    redirectUrl.protocol = "https:";
+    redirectUrl.hostname = redirectUrl.hostname.replace(/^www\./, "");
+    redirectUrl.pathname = normalizedPathname;
+    return Response.redirect(redirectUrl.toString(), 301);
+  }
+
+  pathname = normalizedPathname;
+
+  const legacyRedirectTarget = LEGACY_PATH_REDIRECTS[pathname];
+  if (legacyRedirectTarget) {
+    const redirectUrl = new URL(url.toString());
+    redirectUrl.pathname = legacyRedirectTarget;
+    return Response.redirect(redirectUrl.toString(), 301);
+  }
 
   if (pathname === "/robots.txt") {
     return new Response(
-      "User-agent: *\nAllow: /\nSitemap: https://vagabeta.rs/sitemap.xml\n",
+      "User-agent: *\nAllow: /\nDisallow: /search\nDisallow: /cdn-cgi/\nSitemap: https://vagabeta.rs/sitemap.xml\n",
       {
         headers: {
           "content-type": "text/plain; charset=utf-8",
@@ -371,7 +460,7 @@ export async function onRequest(context) {
       /\.(js|css|png|jpg|jpeg|svg|ico|json|webp|woff|woff2|ttf|mp4|webm|xml|txt)$/i,
     )
   ) {
-    return next();
+    return nextWithIndexingHeaders(next, pathname);
   }
 
   const CSR_ROUTES = [
@@ -403,17 +492,25 @@ export async function onRequest(context) {
 
   const isCSRRoute = CSR_ROUTES.some((route) => pathname.startsWith(route));
   if (isCSRRoute && !isProductDetailsRoute) {
-    if (isProductsListingRoute) {
+    if (isProductsListingRoute || pathname === "/prodavnica") {
       // SSR enabled for listing route - do not early return.
     } else {
-      return next();
+      return nextWithIndexingHeaders(next, pathname);
     }
   }
 
   const SSR_ROUTES = [
+    "/",
     "/pricing",
     "/evaga-desktop",
     "/usluge",
+    "/kontakt",
+    "/onama",
+    "/aplikacija",
+    "/booking",
+    "/newsletter",
+    "/privacy",
+    "/prodavnica",
     "/prodavnica/proizvodi",
   ];
   const shouldSSR =
@@ -424,7 +521,7 @@ export async function onRequest(context) {
     pathname === "/contact";
 
   if (!shouldSSR) {
-    return next();
+    return nextWithIndexingHeaders(next, pathname);
   }
 
   try {
@@ -464,7 +561,7 @@ export async function onRequest(context) {
 
     if (!render) {
       console.error("SSR render function not found");
-      return next();
+      return nextWithIndexingHeaders(next, pathname);
     }
 
     const ssrProductDataKey = "__VAGA_SSR_PRODUCT__";
@@ -496,7 +593,7 @@ export async function onRequest(context) {
 
     if (!templateResponse.ok) {
       console.error("Failed to fetch template");
-      return next();
+      return nextWithIndexingHeaders(next, pathname);
     }
 
     let template = await templateResponse.text();
@@ -517,6 +614,66 @@ export async function onRequest(context) {
         headContent += normalizeHelmetFragment(helmet.link.toString(), "link");
       }
       template = template.replace("</head>", `${headContent}\n</head>`);
+    }
+
+    const canonicalUrl = `https://vagabeta.rs${canonicalPath}`;
+    const robotsValue = isNoindexPath(pathname)
+      ? "noindex, nofollow"
+      : "index, follow";
+
+    template = replaceOrInsertHeadTag(
+      template,
+      /<link\s+rel=["']canonical["'][^>]*>/i,
+      `<link rel="canonical" href="${escapeHtml(canonicalUrl)}" />`,
+    );
+    template = replaceOrInsertHeadTag(
+      template,
+      /<meta\s+name=["']robots["'][^>]*>/i,
+      `<meta name="robots" content="${escapeHtml(robotsValue)}" />`,
+    );
+
+    const staticMeta = STATIC_PAGE_META[pathname];
+    if (staticMeta) {
+      template = replaceOrInsertHeadTag(
+        template,
+        /<title>[\s\S]*?<\/title>/i,
+        `<title>${escapeHtml(staticMeta.title)}</title>`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+name=["']description["'][^>]*>/i,
+        `<meta name="description" content="${escapeHtml(staticMeta.description)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:title["'][^>]*>/i,
+        `<meta property="og:title" content="${escapeHtml(staticMeta.title)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:description["'][^>]*>/i,
+        `<meta property="og:description" content="${escapeHtml(staticMeta.description)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:url["'][^>]*>/i,
+        `<meta property="og:url" content="${escapeHtml(canonicalUrl)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+name=["']twitter:title["'][^>]*>/i,
+        `<meta name="twitter:title" content="${escapeHtml(staticMeta.title)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+name=["']twitter:description["'][^>]*>/i,
+        `<meta name="twitter:description" content="${escapeHtml(staticMeta.description)}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+name=["']twitter:url["'][^>]*>/i,
+        `<meta name="twitter:url" content="${escapeHtml(canonicalUrl)}" />`,
+      );
     }
 
     if (isProductDetailsRoute) {
@@ -695,6 +852,7 @@ export async function onRequest(context) {
         "Content-Type": "text/html;charset=UTF-8",
         "Cache-Control": "public, s-maxage=3600, stale-while-revalidate=86400",
         "CDN-Cache-Control": "max-age=3600",
+        "X-Robots-Tag": robotsValue,
         "X-Content-Type-Options": "nosniff",
         "X-Frame-Options": "DENY",
         "Referrer-Policy": "strict-origin-when-cross-origin",
