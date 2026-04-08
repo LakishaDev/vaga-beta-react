@@ -148,6 +148,10 @@ async function fetchProductSeoData(productId, env, origin) {
     name,
     description,
     image: primaryImage,
+    images: [
+      primaryImage,
+      ...images.map((u) => toAbsoluteAssetUrl(u, origin)),
+    ].filter(Boolean),
     price,
     stock,
     category,
@@ -760,18 +764,78 @@ export async function onRequest(context) {
           /<meta\s+name=["']twitter:image["'][^>]*>/i,
           `<meta name="twitter:image" content="${escapeHtml(productSeoData.image)}" />`,
         );
+        template = replaceOrInsertHeadTag(
+          template,
+          /<meta\s+property=["']og:image:alt["'][^>]*>/i,
+          `<meta property="og:image:alt" content="${escapeHtml(productSeoData.name)}" />`,
+        );
+        template = replaceOrInsertHeadTag(
+          template,
+          /<meta\s+name=["']twitter:image:alt["'][^>]*>/i,
+          `<meta name="twitter:image:alt" content="${escapeHtml(productSeoData.name)}" />`,
+        );
       }
+
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']og:site_name["'][^>]*>/i,
+        `<meta property="og:site_name" content="Vaga Beta" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']product:brand["'][^>]*>/i,
+        `<meta property="product:brand" content="Vaga Beta" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']product:price:amount["'][^>]*>/i,
+        `<meta property="product:price:amount" content="${escapeHtml(String(productSeoData.price || 0))}" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+property=["']product:price:currency["'][^>]*>/i,
+        `<meta property="product:price:currency" content="RSD" />`,
+      );
+      template = replaceOrInsertHeadTag(
+        template,
+        /<meta\s+name=["']twitter:card["'][^>]*>/i,
+        `<meta name="twitter:card" content="summary_large_image" />`,
+      );
+
+      const allImages =
+        productSeoData.images && productSeoData.images.length > 0
+          ? productSeoData.images
+          : productSeoData.image
+            ? [productSeoData.image]
+            : [];
 
       const productSchema = {
         "@context": "https://schema.org/",
         "@type": "Product",
+        "@id": `${currentUrl}#product`,
         name: productSeoData.name,
         description: productSeoData.description,
-        image: productSeoData.image ? [productSeoData.image] : undefined,
+        url: currentUrl,
+        image:
+          allImages.length > 0
+            ? allImages.map((imgUrl) => ({
+                "@type": "ImageObject",
+                url: imgUrl,
+                name: productSeoData.name,
+                description: productSeoData.description,
+              }))
+            : undefined,
         category: productSeoData.category || undefined,
         brand: {
           "@type": "Brand",
+          "@id": "https://vagabeta.rs/#brand",
           name: "Vaga Beta",
+          url: "https://vagabeta.rs",
+          logo: "https://vagabeta.rs/imgs/vaga-logo.png",
+        },
+        manufacturer: {
+          "@type": "Organization",
+          "@id": "https://vagabeta.rs/#organization",
         },
         offers: {
           "@type": "Offer",
@@ -782,6 +846,11 @@ export async function onRequest(context) {
             productSeoData.stock > 0
               ? "https://schema.org/InStock"
               : "https://schema.org/OutOfStock",
+          seller: {
+            "@type": "Organization",
+            "@id": "https://vagabeta.rs/#organization",
+            name: "Vaga Beta",
+          },
         },
       };
 

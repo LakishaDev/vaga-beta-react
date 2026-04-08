@@ -267,7 +267,7 @@ export default function ProductDetails() {
       "@type": "Product",
       name: product.name,
       description: product.description || product.name,
-      image: product.images?.[0] || product.imgUrl,
+      image: [product.imgUrl, ...(product.images || [])].filter(Boolean),
       brand: {
         "@type": "Brand",
         name: "Vaga Beta",
@@ -463,19 +463,41 @@ export default function ProductDetails() {
     getCleanCurrentUrl() ||
     `https://vagabeta.rs${getProductPath(product?.slug, product?.id)}`;
 
+  const allProductImages = product
+    ? [product.imgUrl, ...(product.images || [])].filter(Boolean)
+    : [];
+
   const productSchema = product
     ? {
         "@context": "https://schema.org/",
         "@type": "Product",
+        "@id": `${currentUrl}#product`,
         name: product.name,
         description: product.description
           ? product.description.slice(0, 160)
           : product.name,
-        keywords: product.keywords || undefined,
-        image: product.images?.[0] || product.imgUrl,
+        keywords: product.keywords
+          ? `${product.keywords}, Vaga Beta`
+          : `${product.name}, Vaga Beta, vage, prodavnica`,
+        url: currentUrl,
+        image: allProductImages.map((imgUrl) => ({
+          "@type": "ImageObject",
+          url: imgUrl,
+          name: product.name,
+          description: product.description
+            ? product.description.slice(0, 160)
+            : product.name,
+        })),
         brand: {
           "@type": "Brand",
+          "@id": "https://vagabeta.rs/#brand",
           name: "Vaga Beta",
+          url: "https://vagabeta.rs",
+          logo: "https://vagabeta.rs/imgs/vaga-logo.png",
+        },
+        manufacturer: {
+          "@type": "Organization",
+          "@id": "https://vagabeta.rs/#organization",
         },
         offers: {
           "@type": "Offer",
@@ -487,6 +509,11 @@ export default function ProductDetails() {
             product.stock > 0
               ? "https://schema.org/InStock"
               : "https://schema.org/OutOfStock",
+          seller: {
+            "@type": "Organization",
+            "@id": "https://vagabeta.rs/#organization",
+            name: "Vaga Beta",
+          },
         },
         aggregateRating:
           reviews.length > 0
@@ -523,11 +550,12 @@ export default function ProductDetails() {
               name="keywords"
               content={
                 product.keywords
-                  ? `${product.keywords}, ${product.name}, vage, prodavnica`
-                  : `${product.name}, vage, prodavnica, kupovina`
+                  ? `${product.keywords}, ${product.name}, Vaga Beta, vage, prodavnica`
+                  : `${product.name}, Vaga Beta, vage, prodavnica, kupovina`
               }
             />
-            <meta property="og:title" content={product.name} />
+            <meta property="og:site_name" content="Vaga Beta" />
+            <meta property="og:title" content={`${product.name} | Vaga Beta`} />
             <meta
               property="og:description"
               content={
@@ -538,12 +566,26 @@ export default function ProductDetails() {
             />
             <meta
               property="og:image"
-              content={product.images?.[0] || product.imgUrl}
+              content={product.imgUrl || product.images?.[0]}
             />
+            <meta property="og:image:alt" content={product.name} />
             <meta property="og:type" content="product" />
             <meta property="og:url" content={currentUrl} />
-            <meta name="twitter:card" content="product" />
-            <meta name="twitter:title" content={product.name} />
+            <meta property="product:brand" content="Vaga Beta" />
+            <meta
+              property="product:price:amount"
+              content={
+                product.price?.toString() ||
+                product.hiddenPrice?.toString() ||
+                "0"
+              }
+            />
+            <meta property="product:price:currency" content="RSD" />
+            <meta name="twitter:card" content="summary_large_image" />
+            <meta
+              name="twitter:title"
+              content={`${product.name} | Vaga Beta`}
+            />
             <meta
               name="twitter:description"
               content={
@@ -554,8 +596,9 @@ export default function ProductDetails() {
             />
             <meta
               name="twitter:image"
-              content={product.images?.[0] || product.imgUrl}
+              content={product.imgUrl || product.images?.[0]}
             />
+            <meta name="twitter:image:alt" content={product.name} />
             <link rel="canonical" href={currentUrl} />
             <script type="application/ld+json">
               {JSON.stringify(productSchema)}
