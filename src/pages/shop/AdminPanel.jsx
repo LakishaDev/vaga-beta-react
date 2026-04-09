@@ -51,6 +51,7 @@ import ProductForm from "../../components/AdminPanel/ProductForm.jsx";
 import ProductList from "../../components/AdminPanel/ProductList.jsx";
 import ProductModal from "../../components/AdminPanel/ProductModal.jsx";
 import DeleteConfirmModal from "../../components/AdminPanel/DeleteConfirmModal.jsx";
+import PromoManager from "../../components/AdminPanel/PromoManager.jsx";
 import {
   normalizeSlug,
   slugifyProductName,
@@ -102,6 +103,7 @@ export default function AdminPanel() {
   });
 
   const [products, setProducts] = useState([]);
+  const [activeTab, setActiveTab] = useState("products");
 
   // ===============================================================================
   // AUTHENTICATION
@@ -908,60 +910,93 @@ export default function AdminPanel() {
         Admin panel
       </h2>
 
-      {/* Forma za unos proizvoda - koristi ProductForm komponentu */}
-      <ProductForm
-        product={newProduct}
-        onChange={handleChange}
-        onSubmit={handleAddProduct}
-        onFileChange={handleFile}
-        formatPriceInput={formatPriceInput}
-        parsePriceInput={parsePriceInput}
-        loading={loading}
-        uploadProgress={uploadProgress}
-        onMultipleImagesChange={handleMultipleImages}
-        onRemoveImage={removeImage}
-        onMoveImageUp={moveImageUp}
-        onMoveImageDown={moveImageDown}
-        onImageClick={(src, text) => setImageModal({ open: true, src, text })}
-        onAddFeature={addFeature}
-        onUpdateFeature={updateFeature}
-        onRemoveFeature={removeFeature}
-        onDatasheetsChange={handleDatasheets}
-        onRemoveDatasheet={removeDatasheet}
-        onMarkdownFilesChange={handleMarkdownFiles}
-        onRemoveMarkdownFile={removeMarkdownFile}
-        slugStatus={newSlugStatus}
-      />
+      <div className="flex flex-wrap items-center gap-3 border-b border-neutral-border pb-4">
+        <button
+          type="button"
+          onClick={() => setActiveTab("products")}
+          className={`rounded-xl px-4 py-2 font-semibold transition ${
+            activeTab === "products"
+              ? "bg-brand-primary text-white shadow"
+              : "bg-neutral-100 text-text-primary hover:bg-neutral-200"
+          }`}
+        >
+          Proizvodi
+        </button>
+        <button
+          type="button"
+          onClick={() => setActiveTab("promo")}
+          className={`rounded-xl px-4 py-2 font-semibold transition ${
+            activeTab === "promo"
+              ? "bg-brand-primary text-white shadow"
+              : "bg-neutral-100 text-text-primary hover:bg-neutral-200"
+          }`}
+        >
+          Promo
+        </button>
+      </div>
 
-      {/* Lista proizvoda - koristi ProductList komponentu */}
-      <ProductList
-        products={products}
-        formatPrice={formatPrice}
-        onEdit={handleEditOpen}
-        onDelete={confirmDelete}
-        onProductClick={setSelectedProduct}
-        allowed={allowed}
-      />
+      {activeTab === "promo" && <PromoManager showSnackbar={showSnackbar} />}
 
-      {/* Mobile Product Modal */}
-      {selectedProduct && (
-        <ProductModal
-          product={selectedProduct}
-          formatPrice={formatPrice}
-          onClose={() => setSelectedProduct(null)}
-          onEdit={handleEditOpen}
-          onDelete={confirmDelete}
-        />
-      )}
+      {activeTab === "products" && (
+        <>
+          {/* Forma za unos proizvoda - koristi ProductForm komponentu */}
+          <ProductForm
+            product={newProduct}
+            onChange={handleChange}
+            onSubmit={handleAddProduct}
+            onFileChange={handleFile}
+            formatPriceInput={formatPriceInput}
+            parsePriceInput={parsePriceInput}
+            loading={loading}
+            uploadProgress={uploadProgress}
+            onMultipleImagesChange={handleMultipleImages}
+            onRemoveImage={removeImage}
+            onMoveImageUp={moveImageUp}
+            onMoveImageDown={moveImageDown}
+            onImageClick={(src, text) =>
+              setImageModal({ open: true, src, text })
+            }
+            onAddFeature={addFeature}
+            onUpdateFeature={updateFeature}
+            onRemoveFeature={removeFeature}
+            onDatasheetsChange={handleDatasheets}
+            onRemoveDatasheet={removeDatasheet}
+            onMarkdownFilesChange={handleMarkdownFiles}
+            onRemoveMarkdownFile={removeMarkdownFile}
+            slugStatus={newSlugStatus}
+          />
 
-      {/* Potvrda brisanja modal */}
-      {deleteConfirm && (
-        <DeleteConfirmModal
-          product={deleteConfirm}
-          formatPrice={formatPrice}
-          onCancel={cancelDelete}
-          onConfirm={handleDelete}
-        />
+          {/* Lista proizvoda - koristi ProductList komponentu */}
+          <ProductList
+            products={products}
+            formatPrice={formatPrice}
+            onEdit={handleEditOpen}
+            onDelete={confirmDelete}
+            onProductClick={setSelectedProduct}
+            allowed={allowed}
+          />
+
+          {/* Mobile Product Modal */}
+          {selectedProduct && (
+            <ProductModal
+              product={selectedProduct}
+              formatPrice={formatPrice}
+              onClose={() => setSelectedProduct(null)}
+              onEdit={handleEditOpen}
+              onDelete={confirmDelete}
+            />
+          )}
+
+          {/* Potvrda brisanja modal */}
+          {deleteConfirm && (
+            <DeleteConfirmModal
+              product={deleteConfirm}
+              formatPrice={formatPrice}
+              onCancel={cancelDelete}
+              onConfirm={handleDelete}
+            />
+          )}
+        </>
       )}
 
       {/* Edit modal - koristi UI EditProductModal sa image reordering */}

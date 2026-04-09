@@ -11,9 +11,11 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && request.auth.token.admin == true || 
-      	(exists(/databases/$(database)/documents/nalozi/$(request.auth.uid)) &&
-      	get(/databases/$(database)/documents/nalozi/$(request.auth.uid)).data.isAdmin == true);
+      return isSignedIn() && (
+        request.auth.token.admin == true ||
+	      (exists(/databases/$(database)/documents/nalozi/$(request.auth.uid)) &&
+	      get(/databases/$(database)/documents/nalozi/$(request.auth.uid)).data.isAdmin == true)
+      );
     }
 
     function hasReservedSlug(slug) {
@@ -154,6 +156,12 @@ service cloud.firestore {
       
       // Write: NEMA iz frontenda - samo Cloud Functions
       allow write: if false;
+    }
+
+    // promotions - svi mogu da citaju, admin menja konfiguraciju promocije
+    match /promotions/{promoId} {
+      allow read: if true;
+      allow write: if isAdmin();
     }
     
     // fallback za sve ostalo - zabrani

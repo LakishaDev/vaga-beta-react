@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import { designTokens } from "../../configs/designTokens";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
 import { motion } from "framer-motion";
+import { usePromo } from "../../contexts/PromoContext";
 import {
   FaShoppingCart,
   FaStar,
@@ -14,6 +15,7 @@ import {
 } from "react-icons/fa";
 
 export default function HeroSectionModern() {
+  const { isActive: isPromoActive } = usePromo();
   const stats = [
     { number: "500+", label: "Zadovoljnih klijent" },
     { number: "1000+", label: "Aktivnih proizvoda" },
@@ -59,6 +61,18 @@ export default function HeroSectionModern() {
             }}
           />
 
+          {isPromoActive && (
+            <motion.div
+              className="absolute inset-0"
+              style={{
+                background:
+                  "linear-gradient(120deg, rgba(232,213,245,0.28) 0%, rgba(213,245,227,0.25) 48%, rgba(255,249,196,0.24) 100%)",
+              }}
+              animate={{ opacity: [0.55, 0.7, 0.55] }}
+              transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+            />
+          )}
+
           {/* Animated shapes */}
           <motion.div
             className="absolute top-10 right-10 w-72 h-72 rounded-full opacity-20"
@@ -90,6 +104,33 @@ export default function HeroSectionModern() {
               ease: "easeInOut",
             }}
           />
+
+          {isPromoActive && (
+            <>
+              <motion.div
+                className="absolute left-[8%] top-[24%] text-3xl"
+                animate={{ y: [0, -12, 0], rotate: [0, -6, 0] }}
+                transition={{
+                  duration: 4.2,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                🥚
+              </motion.div>
+              <motion.div
+                className="absolute right-[10%] bottom-[22%] text-3xl"
+                animate={{ y: [0, 10, 0], rotate: [0, 8, 0] }}
+                transition={{
+                  duration: 4.8,
+                  repeat: Infinity,
+                  ease: "easeInOut",
+                }}
+              >
+                🐣
+              </motion.div>
+            </>
+          )}
         </div>
 
         {/* Content */}

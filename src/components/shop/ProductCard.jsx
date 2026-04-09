@@ -17,12 +17,16 @@ export default function ProductCard({ product }) {
 
   const handleAddToCart = (e) => {
     e.preventDefault();
-    addToCart(product);
+    addToCart({
+      ...product,
+      price: product.basePrice || product.price,
+    });
     showSnackbar(`${product.name} je dodat u korpu!`, "success");
   };
 
   // Funkcija za prikaz cene - koristi price ili hiddenPrice
   const getDisplayPrice = () => {
+    if (product.displayPrice) return product.displayPrice;
     if (product.price) return product.price;
     if (product.hiddenPrice) return product.hiddenPrice;
     return 0;
@@ -35,7 +39,12 @@ export default function ProductCard({ product }) {
         transition-transform hover:scale-105 hover:shadow-2xl hover:border-brand-secondary
         flex flex-col items-center py-4 px-3 sm:px-4 relative overflow-hidden min-h-[300px] sm:min-h-[350px] w-full"
       style={{
-        borderColor: "rgba(203, 207, 187, 0.8)",
+        borderColor: product.isPromoApplied
+          ? "rgba(232, 213, 245, 0.95)"
+          : "rgba(203, 207, 187, 0.8)",
+        boxShadow: product.isPromoApplied
+          ? "0 12px 35px rgba(111, 77, 139, 0.16)"
+          : undefined,
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -45,11 +54,15 @@ export default function ProductCard({ product }) {
         product.originalPrice &&
         product.originalPrice > getDisplayPrice() && (
           <span
-            className={`absolute top-4 left-4 sm:top-6 sm:left-7 bg-green-100 text-green-800 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow ${
-              isHovered ? "animate-bounce" : ""
-            } z-20`}
+            className={`absolute top-4 left-4 sm:top-6 sm:left-7 px-3 py-1 rounded-xl font-bold text-xs sm:text-sm shadow border ${
+              product.isPromoApplied
+                ? "bg-[#fff9c4] text-[#6f4d8b] border-[#ecd78b]"
+                : "bg-green-100 text-green-800 border-green-200"
+            } ${isHovered ? "animate-bounce" : ""} z-20`}
           >
-            -{product.discountPercent}% POPUST
+            {product.isPromoApplied
+              ? `🐣 -${product.discountPercent}% USKRS`
+              : `-${product.discountPercent}% POPUST`}
           </span>
         )}
 

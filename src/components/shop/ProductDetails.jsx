@@ -42,6 +42,8 @@ import { FaStar, FaRegStar, FaUserCircle } from "react-icons/fa";
 import ScrollToTopOnMount from "../UI/ScrollToTopOnMount";
 import { fetchMarkdownFiles } from "../../utils/markdownUtils";
 import { getProductPath, slugifyProductName } from "../../utils/slugUtils";
+import { usePromo } from "../../contexts/PromoContext";
+import { applyPromoPricing } from "../../utils/promoPricing";
 
 const SSR_PRODUCT_DATA_KEY = "__VAGA_SSR_PRODUCT__";
 
@@ -58,26 +60,7 @@ function getCleanCurrentUrl() {
   return `${window.location.origin}${normalizeCanonicalPath(window.location.pathname)}`;
 }
 
-function addDiscountInfo(product) {
-  if (!product) return null;
-
-  let percent = 0.1;
-  if (product.price > 40000 && product.price < 500000) percent = 0.25;
-  else if (product.price < 14000) percent = 0.1;
-  else if (product.price > 500000) percent = 0.3;
-
-  const originalPrice = Math.round(
-    (product.price || product.hiddenPrice || 0) / (1 - percent),
-  );
-
-  return {
-    ...product,
-    originalPrice,
-    discountPercent: Math.round(percent * 100),
-  };
-}
-
-function getInitialSSRProduct(routeValue) {
+function getInitialSSRProduct(routeValue, promoState) {
   const globalScope = typeof window !== "undefined" ? window : globalThis;
   const ssrProduct = globalScope?.[SSR_PRODUCT_DATA_KEY];
 
@@ -97,16 +80,21 @@ function getInitialSSRProduct(routeValue) {
     }
   }
 
-  return addDiscountInfo(ssrProduct);
+  return applyPromoPricing(ssrProduct, promoState);
 }
 
 export default function ProductDetails() {
+  const { isActive: isPromoActive, discountPercent: promoDiscountPercent } =
+    usePromo();
   const { slug, id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
   const routeValue = slug || id || "";
   const [product, setProduct] = useState(() =>
-    getInitialSSRProduct(routeValue),
+    getInitialSSRProduct(routeValue, {
+      isActive: isPromoActive,
+      discountPercent: promoDiscountPercent,
+    }),
   );
   const [relatedProducts, setRelatedProducts] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -194,10 +182,16 @@ export default function ProductDetails() {
         return;
       }
 
-      const productData = addDiscountInfo({
-        id: resolvedDoc.id,
-        ...resolvedDoc.data(),
-      });
+      const productData = applyPromoPricing(
+        {
+          id: resolvedDoc.id,
+          ...resolvedDoc.data(),
+        },
+        {
+          isActive: isPromoActive,
+          discountPercent: promoDiscountPercent,
+        },
+      );
 
       if (!productData.slug) {
         productData.slug = slugifyProductName(productData.name || "");
@@ -226,7 +220,14 @@ export default function ProductDetails() {
     if (typeof window !== "undefined") {
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
-  }, [slug, id, navigate, location.pathname]);
+  }, [
+    slug,
+    id,
+    navigate,
+    location.pathname,
+    isPromoActive,
+    promoDiscountPercent,
+  ]);
 
   useEffect(() => {
     const fetchRelated = async () => {
@@ -261,6 +262,9 @@ export default function ProductDetails() {
   useEffect(() => {
     if (!product) return;
 
+    const displayPrice =
+      product.displayPrice || product.price || product.hiddenPrice || 0;
+
     // Product schema za Google
     const productSchema = {
       "@context": "https://schema.org/",
@@ -278,8 +282,7 @@ export default function ProductDetails() {
           getCleanCurrentUrl() ||
           `https://vagabeta.rs${getProductPath(product.slug, product.id)}`,
         priceCurrency: "RSD",
-        price:
-          product.price?.toString() || product.hiddenPrice?.toString() || "0",
+        price: displayPrice.toString(),
         availability:
           product.stock > 0
             ? "https://schema.org/InStock"
@@ -385,7 +388,10 @@ export default function ProductDetails() {
   };
 
   const handleAddToCart = () => {
-    addToCart(product);
+    addToCart({
+      ...product,
+      price: product.basePrice || product.price,
+    });
     showSnackbar(`Proizvod ${product.name} je dodat u korpu!`, "success");
     setShowAddAnim(true);
     setTimeout(() => setShowAddAnim(false), 1200);
@@ -449,6 +455,7 @@ export default function ProductDetails() {
   // Provera skrivene cene
   const hasHiddenPrice = product.hiddenPrice && !product.price;
   const getDisplayPrice = () => {
+    if (product.displayPrice) return product.displayPrice;
     if (product.price) return product.price;
     if (product.hiddenPrice) return product.hiddenPrice;
     return 0;
@@ -456,7 +463,7 @@ export default function ProductDetails() {
   const showDiscount =
     !hasHiddenPrice &&
     product.originalPrice &&
-    product.originalPrice > product.price;
+    product.originalPrice > getDisplayPrice();
 
   // Pripremi Product schema za rendering
   const currentUrl =
@@ -504,7 +511,9 @@ export default function ProductDetails() {
           url: currentUrl,
           priceCurrency: "RSD",
           price:
-            product.price?.toString() || product.hiddenPrice?.toString() || "0",
+            getDisplayPrice()?.toString() ||
+            product.hiddenPrice?.toString() ||
+            "0",
           availability:
             product.stock > 0
               ? "https://schema.org/InStock"
@@ -575,7 +584,7 @@ export default function ProductDetails() {
             <meta
               property="product:price:amount"
               content={
-                product.price?.toString() ||
+                getDisplayPrice()?.toString() ||
                 product.hiddenPrice?.toString() ||
                 "0"
               }

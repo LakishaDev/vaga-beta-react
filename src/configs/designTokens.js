@@ -74,6 +74,13 @@ export const designTokens = {
       ring: "#1D4ED8", // Focus ring color
       ringOpacity: 0.35, // Focus ring opacity
     },
+
+    easter: {
+      lavender: "#E8D5F5",
+      mint: "#D5F5E3",
+      softYellow: "#FFF9C4",
+      plumText: "#6F4D8B",
+    },
   },
 
   // Typography

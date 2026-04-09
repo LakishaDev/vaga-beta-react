@@ -68,7 +68,7 @@ const firmValidators = {
 };
 
 export default function CheckoutForm() {
-  const { cart, clearCart } = useContext(CartContext);
+  const { cart, cartPricing, promoInfo, clearCart } = useContext(CartContext);
   const [values, setValues] = useState(initialValues);
   const [touched, setTouched] = useState({});
   const [fieldErrors, setFieldErrors] = useState({});
@@ -211,6 +211,17 @@ export default function CheckoutForm() {
       await addDoc(collection(db, "orders"), {
         ...values,
         cart,
+        promoApplied:
+          promoInfo?.isActive && promoInfo?.discountPercent > 0
+            ? "easter-2026"
+            : null,
+        promoDiscountPercent:
+          promoInfo?.isActive && promoInfo?.discountPercent > 0
+            ? promoInfo.discountPercent
+            : 0,
+        orderSubtotalBase: cartPricing?.subtotalBase || 0,
+        orderTotal: cartPricing?.total || 0,
+        promoSavings: cartPricing?.savings || 0,
         createdAt: serverTimestamp(),
         status: "primljeno",
       });
@@ -435,6 +446,42 @@ export default function CheckoutForm() {
                 </motion.div>
               )}
             </AnimatePresence>
+
+            <div className="rounded-xl border border-neutral-border bg-white/80 p-4 shadow-sm">
+              <h3 className="mb-2 text-base font-bold text-text-primary">
+                Pregled porudzbine
+              </h3>
+              <div className="flex items-center justify-between text-sm text-text-secondary">
+                <span>Medjuzbir</span>
+                <span>
+                  {Math.round(cartPricing?.subtotalBase || 0).toLocaleString(
+                    "sr-RS",
+                  )}{" "}
+                  RSD
+                </span>
+              </div>
+              {cartPricing?.isPromoActive && cartPricing?.savings > 0 && (
+                <div className="mt-1 flex items-center justify-between text-sm font-semibold text-[#6f4d8b]">
+                  <span>
+                    🐣 Uskrsnji popust (-{promoInfo?.discountPercent || 0}%)
+                  </span>
+                  <span>
+                    -
+                    {Math.round(cartPricing?.savings || 0).toLocaleString(
+                      "sr-RS",
+                    )}{" "}
+                    RSD
+                  </span>
+                </div>
+              )}
+              <div className="mt-2 flex items-center justify-between border-t border-neutral-border pt-2 text-base font-extrabold text-brand-primary">
+                <span>Ukupno</span>
+                <span>
+                  {Math.round(cartPricing?.total || 0).toLocaleString("sr-RS")}{" "}
+                  RSD
+                </span>
+              </div>
+            </div>
 
             <motion.button
               type="submit"

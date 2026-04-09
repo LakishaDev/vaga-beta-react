@@ -20,6 +20,7 @@
     "env:check": "node scripts/check-required-env.mjs",
     "generate:sitemap": "node scripts/generate-sitemap.js",
     "seo:smoke": "node scripts/seo-smoke-test.mjs",
+    "seed:promo": "node scripts/seed-promo.mjs",
     "seo:smoke:local": "cross-env SEO_SMOKE_MODE=local npm run seo:smoke",
     "seo:smoke:live": "cross-env SEO_SMOKE_MODE=live npm run seo:smoke",
     "seo:health": "node scripts/seo-smoke-test.mjs",

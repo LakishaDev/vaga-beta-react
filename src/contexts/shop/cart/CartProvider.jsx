@@ -15,6 +15,8 @@ import { CartContext } from "./CartContext";
 import { useReducer, useEffect, useState } from "react";
 import { CartService } from "../../../services/CartService"; // putanja do CartService
 import { useAuth } from "../../../hooks/useAuth";
+import { usePromo } from "../../PromoContext";
+import { getCartPricing } from "../../../utils/promoPricing";
 
 // Reducer funkcija za upravljanje stanjem korpe
 
@@ -47,6 +49,8 @@ const cartReducer = (state, action) => {
 export function CartProvider({ children }) {
   const [cart, dispatch] = useReducer(cartReducer, []);
   const { user } = useAuth();
+  const { isActive: isPromoActive, discountPercent: promoDiscountPercent } =
+    usePromo();
   const [isClient, setIsClient] = useState(false);
 
   // Client-side guard
@@ -142,10 +146,20 @@ export function CartProvider({ children }) {
     }
   }
 
+  const cartPricing = getCartPricing(cart, {
+    isActive: isPromoActive,
+    discountPercent: promoDiscountPercent,
+  });
+
   return (
     <CartContext.Provider
       value={{
         cart,
+        cartPricing,
+        promoInfo: {
+          isActive: isPromoActive,
+          discountPercent: promoDiscountPercent,
+        },
         addToCart,
         removeFromCart,
         clearCart,

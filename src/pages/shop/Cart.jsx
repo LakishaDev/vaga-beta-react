@@ -21,14 +21,21 @@ import {
 } from "react-icons/fa";
 import Modal from "../../components/UI/Modal";
 import ProgressiveImage from "../../components/UI/ProgressiveImage";
+import { applyPromoPricing } from "../../utils/promoPricing";
 
 function formatPrice(price) {
   return price.toLocaleString("sr-RS");
 }
 
 export default function Cart() {
-  const { cart, removeFromCart, clearCart, updateQuantity } =
-    useContext(CartContext);
+  const {
+    cart,
+    cartPricing,
+    promoInfo,
+    removeFromCart,
+    clearCart,
+    updateQuantity,
+  } = useContext(CartContext);
   const [showRemoveModal, setShowRemoveModal] = useState(false);
   const [removeId, setRemoveId] = useState(null);
   const [showClearModal, setShowClearModal] = useState(false);
@@ -40,14 +47,16 @@ export default function Cart() {
   const [animIndex, setAnimIndex] = useState(null);
   const [animType, setAnimType] = useState(""); // "inc" ili "dec"
 
-  const getItemPrice = (item) => item.price || item.hiddenPrice || 0;
+  const getItemPrice = (item) => {
+    const itemWithPromo = applyPromoPricing(item, promoInfo);
+    return (
+      itemWithPromo.displayPrice || itemWithPromo.price || item.hiddenPrice || 0
+    );
+  };
   const hasHiddenPrice = (item) => item.hiddenPrice && !item.price;
 
   // Suma vidljivih cena
-  const totalVisible = cart.reduce(
-    (acc, item) => (item.price ? acc + item.price * item.qty : acc),
-    0,
-  );
+  const totalVisible = cartPricing?.total || 0;
 
   // Ukupno artikala sa skrivenom cenom
   const hiddenPriceCount = cart.filter(hasHiddenPrice).length;
@@ -242,6 +251,12 @@ export default function Cart() {
                   )}
                 </span>
               </div>
+              {cartPricing?.isPromoActive && cartPricing?.savings > 0 && (
+                <div className="mb-5 rounded-xl border border-[#ecd78b] bg-[#fff9c4]/80 px-4 py-3 text-sm text-[#6f4d8b]">
+                  🐣 Uskrsnji promo popust je primenjen. Usteda:{" "}
+                  {formatPrice(Math.round(cartPricing.savings))} RSD
+                </div>
+              )}
               <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto">
                 <Link
                   to="/prodavnica/placanje"

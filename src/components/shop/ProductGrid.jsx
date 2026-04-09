@@ -20,6 +20,8 @@ import ProductCard from "./ProductCard";
 import Lenis from "lenis";
 import { Helmet } from "react-helmet-async";
 import { getProductPath, slugifyProductName } from "../../utils/slugUtils";
+import { usePromo } from "../../contexts/PromoContext";
+import { applyPromoPricing } from "../../utils/promoPricing";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -88,6 +90,8 @@ const MemoizedProductItem = memo(({ product, isNew, priceChanged }) => {
 MemoizedProductItem.displayName = "MemoizedProductItem";
 
 export default function ProductGrid() {
+  const { isActive: isPromoActive, discountPercent: promoDiscountPercent } =
+    usePromo();
   const [products, setProducts] = useState([]);
   const [newProductIds, setNewProductIds] = useState(new Set());
   const [changedPriceIds, setChangedPriceIds] = useState(new Set());
@@ -132,19 +136,6 @@ export default function ProductGrid() {
   //   return { ...product, originalPrice, discountPercent: Math.round(percent*100) };
   // }
 
-  function addDiscountInfo(product) {
-    let percent = 0.1; // 10% popusta za proizvode ispod 14k
-    if (product.price > 40000 && product.price < 500000) percent = 0.25;
-    else if (product.price < 14000) percent = 0.1;
-    else if (product.price > 500000) percent = 0.3;
-    let originalPrice = Math.round(product.price / (1 - percent));
-    return {
-      ...product,
-      originalPrice,
-      discountPercent: Math.round(percent * 100),
-    };
-  }
-
   // Real-time listener with onSnapshot for products
   useEffect(() => {
     const q = query(collection(db, "products"), orderBy("createdAt", "desc"));
@@ -179,7 +170,12 @@ export default function ProductGrid() {
             ...doc.data(),
             slug: doc.data().slug || slugifyProductName(doc.data().name || ""),
           }))
-          .map(addDiscountInfo);
+          .map((product) =>
+            applyPromoPricing(product, {
+              isActive: isPromoActive,
+              discountPercent: promoDiscountPercent,
+            }),
+          );
 
         // Store current prices for next comparison
         arr.forEach((product) => {
@@ -233,15 +229,17 @@ export default function ProductGrid() {
 
     // Cleanup listener on unmount
     return () => unsubscribe();
-  }, []);
+  }, [isPromoActive, promoDiscountPercent]);
 
   const getEffectivePrice = useCallback((product) => {
     // Vraća cenu koja treba da se koristi za sortiranje/filter
-    return product.price !== null && product.price !== undefined
-      ? product.price
-      : product.hiddenPrice !== null && product.hiddenPrice !== undefined
-        ? product.hiddenPrice
-        : 0;
+    return product.displayPrice !== null && product.displayPrice !== undefined
+      ? product.displayPrice
+      : product.price !== null && product.price !== undefined
+        ? product.price
+        : product.hiddenPrice !== null && product.hiddenPrice !== undefined
+          ? product.hiddenPrice
+          : 0;
   }, []);
 
   const filteredProducts = useMemo(() => {
