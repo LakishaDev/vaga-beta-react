@@ -38,9 +38,11 @@ import AdminOrders from "./pages/shop/AdminOrders";
 import PasswordResetForm from "./components/shop/PasswordResetForm";
 import { AuthProvider } from "./contexts/shop/auth/AuthProvider";
 import { LicensesPage, OrdersPage } from "./pages/admin/licensing";
+import { usePromo } from "./contexts/PromoContext";
 import { Toaster } from "react-hot-toast";
 
 function Prodavnica() {
+  const { isActive: isPromoActive } = usePromo();
   const [user] = useAuthState(auth);
 
   // Kreiraj ili ažuriraj korisnički nalog pri svakom loginu
@@ -101,7 +103,7 @@ function Prodavnica() {
             }}
           />
           <Navbar />
-          <main className="pt-24 sm:pt-28">
+          <main className={isPromoActive ? "pt-36 sm:pt-40" : "pt-24 sm:pt-28"}>
             <RenderBoundary>
               <Routes>
                 <Route path="/prodavnica" element={<HeroSectionModern />} />

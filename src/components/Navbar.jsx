@@ -32,6 +32,7 @@ import {
   FaArrowRight,
 } from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
+import PromoBanner from "./PromoBanner";
 
 // ─── Nav data ─────────────────────────────────────────────────────────────────
 
@@ -368,6 +369,7 @@ export default function Navbar() {
             </div>
           </div>
         </nav>
+        <PromoBanner />
       </header>
 
       {/* Mobile drawer */}

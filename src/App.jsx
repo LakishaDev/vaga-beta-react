@@ -9,7 +9,7 @@ import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
 import Loader from "./components/Loader";
 import RenderBoundary from "./components/RenderBoundary";
-import PromoBanner from "./components/PromoBanner";
+import { usePromo } from "./contexts/PromoContext";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import { PromoProvider } from "./contexts/PromoContext";
 import { lazy, Suspense, useEffect, useState } from "react";
@@ -31,6 +31,7 @@ function AppContent() {
   // useLocation hook - dobija se iz router context-a
   // Sigurno je koristiti jer je App uvek unutar BrowserRouter ili StaticRouter
   const location = useLocation();
+  const { isActive: isPromoActive } = usePromo();
   const isShop =
     location.pathname.startsWith("/prodavnica") ||
     location.pathname.startsWith("/p/");
@@ -50,7 +51,10 @@ function AppContent() {
   return (
     <>
       <Navbar />
-      <main className="pt-24 sm:pt-28" suppressHydrationWarning>
+      <main
+        className={isPromoActive ? "pt-36 sm:pt-40" : "pt-24 sm:pt-28"}
+        suppressHydrationWarning
+      >
         <RenderBoundary>
           <Suspense fallback={<Loader />} key={location.pathname}>
             <Routes>
@@ -143,7 +147,6 @@ function App() {
           className="min-h-screen w-full bg-neutral-bg text-text-primary"
           suppressHydrationWarning
         >
-          <PromoBanner />
           <AppContent />
           {showNewsletterModal && (
             <Suspense fallback={null}>

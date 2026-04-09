@@ -37,7 +37,7 @@ export default function PromoBanner() {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -48, opacity: 0 }}
       transition={{ type: "spring", stiffness: 180, damping: 24 }}
-      className="sticky top-0 z-[1200] border-b border-[#e7d4f1]"
+      className="w-full border-t border-[#e7d4f1]"
       style={{
         background:
           "linear-gradient(120deg, rgba(255,249,196,0.95) 0%, rgba(213,245,227,0.95) 45%, rgba(232,213,245,0.95) 100%)",
