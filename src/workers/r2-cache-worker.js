@@ -617,6 +617,19 @@ function handleOptions(request, env) {
   });
 }
 
+function addCorsHeaders(response, request, env) {
+  const corsHeaders = getCorsHeaders(request, env);
+  const newHeaders = new Headers(response.headers);
+  for (const [key, value] of Object.entries(corsHeaders)) {
+    newHeaders.set(key, value);
+  }
+  return new Response(response.body, {
+    status: response.status,
+    statusText: response.statusText,
+    headers: newHeaders,
+  });
+}
+
 /**
  * Main request handler
  */
@@ -625,69 +638,75 @@ export default {
     const url = new URL(request.url);
     const path = url.pathname;
 
-    // CORS
+    // CORS preflight
     if (request.method === "OPTIONS") {
       return handleOptions(request, env);
     }
 
+    let response;
     try {
       // Upload endpoint
       if (path === "/upload" && request.method === "POST") {
-        return handleUpload(request, env);
+        response = await handleUpload(request, env);
       }
 
       // Batch upload endpoint
-      if (path === "/upload-batch" && request.method === "POST") {
-        return handleUploadBatch(request, env);
+      else if (path === "/upload-batch" && request.method === "POST") {
+        response = await handleUploadBatch(request, env);
       }
 
       // Clean image endpoint
-      if (path.startsWith("/images/") && request.method === "GET") {
+      else if (path.startsWith("/images/") && request.method === "GET") {
         const parts = path.replace("/images/", "").split("/");
         const slug = parts.shift();
         const filename = parts.join("/");
-        return handleImageDownload(request, env, slug, filename);
+        response = await handleImageDownload(request, env, slug, filename);
       }
 
       // Download endpoint
-      if (path.startsWith("/download/")) {
+      else if (path.startsWith("/download/")) {
         const key = path.replace("/download/", "");
-        return handleDownload(request, env, key);
+        response = await handleDownload(request, env, key);
       }
 
       // Delete endpoint
-      if (path.startsWith("/delete/") && request.method === "DELETE") {
+      else if (path.startsWith("/delete/") && request.method === "DELETE") {
         const key = path.replace("/delete/", "");
-        return handleDelete(request, env, key);
+        response = await handleDelete(request, env, key);
       }
 
       // List endpoint
-      if (path === "/list" && request.method === "GET") {
-        return handleList(request, env);
+      else if (path === "/list" && request.method === "GET") {
+        response = await handleList(request, env);
       }
 
       // Presigned URL endpoint (za velike fajlove)
-      if (path === "/presigned-upload" && request.method === "POST") {
-        return handlePresignedUpload(request, env);
+      else if (path === "/presigned-upload" && request.method === "POST") {
+        response = await handlePresignedUpload(request, env);
       }
 
       // Health check
-      if (path === "/health") {
-        return new Response(JSON.stringify({ status: "ok" }), {
+      else if (path === "/health") {
+        response = new Response(JSON.stringify({ status: "ok" }), {
+          headers: { "Content-Type": "application/json" },
+        });
+      } else {
+        response = new Response(JSON.stringify({ error: "Not found" }), {
+          status: 404,
           headers: { "Content-Type": "application/json" },
         });
       }
-
-      return new Response(JSON.stringify({ error: "Not found" }), {
-        status: 404,
-        headers: { "Content-Type": "application/json" },
-      });
     } catch (error) {
       console.error("Worker error:", error);
-      return new Response(JSON.stringify({ error: "Internal server error" }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
+      response = new Response(
+        JSON.stringify({ error: "Internal server error" }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        },
+      );
     }
+
+    return addCorsHeaders(response, request, env);
   },
 };
