@@ -26,10 +26,62 @@ function getBucketForKey(env, key = "") {
   return env.R2_BUCKET;
 }
 
+function validateAuth(request, env) {
+  if (!env.API_TOKEN) return true;
+
+  if (
+    request.method === "GET" ||
+    request.method === "HEAD" ||
+    request.method === "OPTIONS"
+  ) {
+    return true;
+  }
+
+  const authHeader = request.headers.get("Authorization");
+  if (!authHeader) return false;
+
+  const token = authHeader.replace("Bearer ", "");
+  return token === env.API_TOKEN;
+}
+
+function getCorsHeaders(request, env) {
+  const requestOrigin = request.headers.get("Origin");
+  const configuredOrigin = env.CORS_ORIGIN;
+
+  if (!configuredOrigin) {
+    return {
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+      "Access-Control-Allow-Headers": "Content-Type, Authorization",
+      "Access-Control-Max-Age": "86400",
+    };
+  }
+
+  const allowOrigin =
+    requestOrigin === configuredOrigin ? requestOrigin : "null";
+
+  return {
+    "Access-Control-Allow-Origin": allowOrigin,
+    "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type, Authorization",
+    "Access-Control-Max-Age": "86400",
+  };
+}
+
 /**
  * Obrada upload zahteva
  */
 async function handleUpload(request, env) {
+  if (!validateAuth(request, env)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        ...getCorsHeaders(request, env),
+      },
+    });
+  }
+
   const formData = await request.formData();
   const file = formData.get("file");
   const namespace = formData.get("namespace") || "general";
@@ -111,6 +163,16 @@ async function handleUpload(request, env) {
  * Obrada batch upload zahteva
  */
 async function handleUploadBatch(request, env) {
+  if (!validateAuth(request, env)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        ...getCorsHeaders(request, env),
+      },
+    });
+  }
+
   const formData = await request.formData();
   const namespace = formData.get("namespace") || "general";
   const slug = sanitizeFilename(formData.get("slug") || "");
@@ -302,9 +364,16 @@ async function handleImageDownload(request, env, slug, filename) {
     });
   }
 
-  const key = `v1/product-images/${decodedSlug}/${decodedFilename}`;
   const bucket = env.R2_CDN || env.R2_BUCKET;
-  const object = await bucket.get(key);
+
+  // Pokušaj subfolder format prvo, pa flat kao fallback
+  const keySubfolder = `v1/product-images/${decodedSlug}/${decodedFilename}`;
+  const keyFlat = `v1/product-images/${decodedFilename}`;
+
+  let object = await bucket.get(keySubfolder);
+  if (!object) {
+    object = await bucket.get(keyFlat);
+  }
 
   if (!object) {
     return new Response(JSON.stringify({ error: "Image not found" }), {
@@ -328,6 +397,16 @@ async function handleImageDownload(request, env, slug, filename) {
  * Obrada delete zahteva
  */
 async function handleDelete(request, env, key) {
+  if (!validateAuth(request, env)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        ...getCorsHeaders(request, env),
+      },
+    });
+  }
+
   try {
     const bucket = getBucketForKey(env, key);
     await bucket.delete(key);
@@ -401,6 +480,16 @@ async function handleList(request, env) {
  * Generiši presigned URL za direktan upload na R2 (za velike fajlove)
  */
 async function handlePresignedUpload(request, env) {
+  if (!validateAuth(request, env)) {
+    return new Response(JSON.stringify({ error: "Unauthorized" }), {
+      status: 401,
+      headers: {
+        "Content-Type": "application/json",
+        ...getCorsHeaders(request, env),
+      },
+    });
+  }
+
   try {
     const {
       filename,
@@ -448,14 +537,9 @@ async function handlePresignedUpload(request, env) {
 /**
  * CORS preflight
  */
-function handleOptions() {
+function handleOptions(request, env) {
   return new Response(null, {
-    headers: {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Methods": "GET, POST, DELETE, OPTIONS",
-      "Access-Control-Allow-Headers": "Content-Type",
-      "Access-Control-Max-Age": "86400",
-    },
+    headers: getCorsHeaders(request, env),
   });
 }
 
@@ -469,7 +553,7 @@ export default {
 
     // CORS
     if (request.method === "OPTIONS") {
-      return handleOptions();
+      return handleOptions(request, env);
     }
 
     try {

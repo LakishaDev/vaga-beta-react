@@ -12,7 +12,7 @@ name = "vaga-beta-r2-worker"
 main = "src/workers/r2-cache-worker.js"
 workers_dev = true
 compatibility_date = "2024-01-01"
-compatibility_flags = ["nodejs_compat", "streams_enable_constructors"]
+compatibility_flags = ["nodejs_compat"]
 
 # R2 Bucket Configuration
 [[r2_buckets]]
@@ -21,16 +21,14 @@ binding = "R2_BUCKET"
 jurisdiction = "eu"
 
 [[r2_buckets]]
-bucket_name = "vaga-beta-cdn"
+bucket_name = "vaga-beta-cache"
 binding = "R2_CDN"
 jurisdiction = "eu"
 
 # KV Namespace for cache metadata
-# SECURITY: KV ID je premešteno u .env.local ili CLI auth
 [[kv_namespaces]]
 binding = "CACHE_METADATA"
-# id = "your_kv_id" # Dodaj samo u .env.local!
-# preview_id = "your_kv_preview_id" # Dodaj samo u .env.local!
+
 
 # Analytics Engine binding
 [[analytics_engine_datasets]]
@@ -41,6 +39,7 @@ binding = "ANALYTICS"
 [env.production]
 name = "vaga-beta-r2-production"
 workers_dev = false
+vars = { ENVIRONMENT = "production", CORS_ORIGIN = "https://vagabeta.rs", MAX_FILE_SIZE = "104857600" }
 
 # routes = [
 #   { pattern = "https://cache.your-domain.com/*", zone_id = "YOUR_ZONE_ID" },
@@ -55,7 +54,7 @@ binding = "R2_BUCKET"
 jurisdiction = "eu"
 
 [[env.production.r2_buckets]]
-bucket_name = "vaga-beta-cdn"
+bucket_name = "vaga-beta-cache"
 binding = "R2_CDN"
 jurisdiction = "eu"
 
