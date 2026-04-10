@@ -39,7 +39,7 @@ binding = "ANALYTICS"
 [env.production]
 name = "vaga-beta-r2-production"
 workers_dev = false
-vars = { ENVIRONMENT = "production", CORS_ORIGIN = "https://vagabeta.rs", MAX_FILE_SIZE = "104857600" }
+vars = { ENVIRONMENT = "production", CORS_ORIGIN = "https://vagabeta.rs", MAX_FILE_SIZE = "104857600", FIREBASE_PROJECT_ID = "vaga-beta-sajt", ADMIN_EMAILS = "lazar.cve@gmail.com" }
 
 # routes = [
 #   { pattern = "https://cache.your-domain.com/*", zone_id = "YOUR_ZONE_ID" },

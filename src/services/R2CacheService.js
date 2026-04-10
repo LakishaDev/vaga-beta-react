@@ -6,6 +6,8 @@
  * Ako VITE_R2_WORKER_URL nije dostupan, service će biti disabled
  */
 
+import { auth } from "../utils/firebase";
+
 const R2_WORKER_URL = import.meta.env.VITE_R2_WORKER_URL;
 
 const isR2Enabled = !!R2_WORKER_URL;
@@ -21,6 +23,17 @@ class R2CacheService {
     this.workerUrl = R2_WORKER_URL;
     this.cacheVersion = "v1";
     this.enabled = isR2Enabled;
+  }
+
+  async _getAuthHeader() {
+    try {
+      const user = auth.currentUser;
+      if (!user) return null;
+      const token = await user.getIdToken();
+      return `Bearer ${token}`;
+    } catch {
+      return null;
+    }
   }
 
   /**
@@ -47,6 +60,8 @@ class R2CacheService {
         customMetadata = {},
         onProgress = null,
       } = options;
+
+      const authHeader = await this._getAuthHeader();
 
       const formData = new FormData();
       formData.append("file", file);
@@ -94,6 +109,9 @@ class R2CacheService {
         }
 
         xhr.open("POST", `${this.workerUrl}/upload`);
+        if (authHeader) {
+          xhr.setRequestHeader("Authorization", authHeader);
+        }
         xhr.send(formData);
       });
     } catch (error) {
@@ -130,9 +148,12 @@ class R2CacheService {
       }
     });
 
+    const authHeader = await this._getAuthHeader();
+
     const response = await fetch(`${this.workerUrl}/upload-batch`, {
       method: "POST",
       body: formData,
+      headers: authHeader ? { Authorization: authHeader } : {},
     });
 
     if (!response.ok) {
@@ -260,8 +281,10 @@ class R2CacheService {
   async deleteFile(filename, namespace = "general") {
     try {
       const cacheKey = this.generateCacheKey(filename, namespace);
+      const authHeader = await this._getAuthHeader();
       const response = await fetch(`${this.workerUrl}/delete/${cacheKey}`, {
         method: "DELETE",
+        headers: authHeader ? { Authorization: authHeader } : {},
       });
 
       if (!response.ok) {

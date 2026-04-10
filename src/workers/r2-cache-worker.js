@@ -26,9 +26,70 @@ function getBucketForKey(env, key = "") {
   return env.R2_BUCKET;
 }
 
-function validateAuth(request, env) {
-  if (!env.API_TOKEN) return true;
+function base64urlToBytes(str) {
+  const b64 = str.replace(/-/g, "+").replace(/_/g, "/");
+  const raw = atob(b64);
+  const bytes = new Uint8Array(raw.length);
+  for (let i = 0; i < raw.length; i++) bytes[i] = raw.charCodeAt(i);
+  return bytes;
+}
 
+async function verifyFirebaseJWT(token, env) {
+  try {
+    const projectId = env.FIREBASE_PROJECT_ID;
+    if (!projectId) return null;
+
+    const parts = token.split(".");
+    if (parts.length !== 3) return null;
+
+    const header = JSON.parse(
+      atob(parts[0].replace(/-/g, "+").replace(/_/g, "/")),
+    );
+    const payload = JSON.parse(
+      atob(parts[1].replace(/-/g, "+").replace(/_/g, "/")),
+    );
+
+    const now = Math.floor(Date.now() / 1000);
+    if (payload.exp < now) return null;
+    if (payload.aud !== projectId) return null;
+    if (payload.iss !== `https://securetoken.google.com/${projectId}`)
+      return null;
+    if (!payload.sub) return null;
+
+    const jwksResp = await fetch(
+      "https://www.googleapis.com/service_accounts/v1/jwk/securetoken@system.gserviceaccount.com",
+      { cf: { cacheTtl: 3600, cacheEverything: true } },
+    );
+    if (!jwksResp.ok) return null;
+    const { keys } = await jwksResp.json();
+
+    const jwk = keys?.find((k) => k.kid === header.kid);
+    if (!jwk) return null;
+
+    const cryptoKey = await crypto.subtle.importKey(
+      "jwk",
+      jwk,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+
+    const sigInput = `${parts[0]}.${parts[1]}`;
+    const sigBytes = base64urlToBytes(parts[2]);
+    const valid = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      cryptoKey,
+      sigBytes,
+      new TextEncoder().encode(sigInput),
+    );
+
+    return valid ? payload.email || payload.sub : null;
+  } catch {
+    return null;
+  }
+}
+
+async function validateAuth(request, env) {
   if (
     request.method === "GET" ||
     request.method === "HEAD" ||
@@ -38,10 +99,23 @@ function validateAuth(request, env) {
   }
 
   const authHeader = request.headers.get("Authorization");
-  if (!authHeader) return false;
+  if (!authHeader || !authHeader.startsWith("Bearer ")) return false;
 
-  const token = authHeader.replace("Bearer ", "");
-  return token === env.API_TOKEN;
+  const token = authHeader.slice(7);
+
+  // 1. Statični API token (za skripte/wrangler)
+  if (env.API_TOKEN && token === env.API_TOKEN) return true;
+
+  // 2. Firebase ID token (za prijavljene admin korisnike)
+  const identity = await verifyFirebaseJWT(token, env);
+  if (!identity) return false;
+
+  if (env.ADMIN_EMAILS) {
+    const admins = env.ADMIN_EMAILS.split(",").map((e) => e.trim());
+    return admins.includes(identity);
+  }
+
+  return true;
 }
 
 function getCorsHeaders(request, env) {
@@ -72,7 +146,7 @@ function getCorsHeaders(request, env) {
  * Obrada upload zahteva
  */
 async function handleUpload(request, env) {
-  if (!validateAuth(request, env)) {
+  if (!(await validateAuth(request, env))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: {
@@ -163,7 +237,7 @@ async function handleUpload(request, env) {
  * Obrada batch upload zahteva
  */
 async function handleUploadBatch(request, env) {
-  if (!validateAuth(request, env)) {
+  if (!(await validateAuth(request, env))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: {
@@ -397,7 +471,7 @@ async function handleImageDownload(request, env, slug, filename) {
  * Obrada delete zahteva
  */
 async function handleDelete(request, env, key) {
-  if (!validateAuth(request, env)) {
+  if (!(await validateAuth(request, env))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: {
@@ -480,7 +554,7 @@ async function handleList(request, env) {
  * Generiši presigned URL za direktan upload na R2 (za velike fajlove)
  */
 async function handlePresignedUpload(request, env) {
-  if (!validateAuth(request, env)) {
+  if (!(await validateAuth(request, env))) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: {
