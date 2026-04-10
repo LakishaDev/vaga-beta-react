@@ -21,6 +21,12 @@ const STATIC_ROUTES = [
   { url: "/evaga-desktop", priority: 0.6, changefreq: "monthly" },
 ];
 
+function resolveImageUrl(value) {
+  if (!value) return "";
+  if (typeof value === "string") return value;
+  return value.original || value.medium || value.thumb || "";
+}
+
 function slugifyName(value = "") {
   return String(value)
     .toLowerCase()
@@ -74,6 +80,12 @@ const generateSitemap = async () => {
           url: `/p/${slug}`,
           priority: 0.8,
           changefreq: "weekly",
+          images: [
+            data.imgUrl,
+            ...(Array.isArray(data.images) ? data.images : []),
+          ]
+            .map(resolveImageUrl)
+            .filter(Boolean),
         };
       })
       .filter(Boolean);
@@ -103,19 +115,27 @@ const generateSitemapXml = (routes) => {
   const today = new Date().toISOString().split("T")[0];
 
   const urlEntries = routes
-    .map(
-      (route) =>
-        `  <url>
+    .map((route) => {
+      const imageTags = (route.images || [])
+        .map(
+          (url) =>
+            `    <image:image>\n      <image:loc>${url}</image:loc>\n    </image:image>`,
+        )
+        .join("\n");
+
+      return `  <url>
     <loc>${baseUrl}${route.url}</loc>
     <lastmod>${today}</lastmod>
     <changefreq>${route.changefreq}</changefreq>
     <priority>${route.priority}</priority>
-  </url>`,
-    )
+${imageTags}
+  </url>`;
+    })
     .join("\n");
 
   return `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
 ${urlEntries}
 </urlset>`;
 };

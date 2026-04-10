@@ -1,20 +1,10 @@
-// src/components/UI/ProgressiveImage.jsx
-// Komponenta za progresivno učitavanje slike sa efektom zamućenja i preliva
-// Prikazuje placeholder dok se slika učitava
-// Props:
-// - src: URL slike
-// - alt: alt tekst slike (default "")
-// - className: dodatne klase za stilizaciju
-// - style: dodatni stilovi (default {})
-// - fit: "cover" (default) ili "contain" za object-fit stil
-// Koristi useState za praćenje stanja učitavanja slike
-// Koristi Tailwind CSS za stilizaciju i animacije
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
+import { useDataSaver } from "../../contexts/DataSaverContext";
+import { getImageUrl, isImageVariantsObject } from "../../utils/imageVariants";
 
 function normalizeImageUrl(url) {
-  if (!url || typeof url !== "string") return url;
+  if (!url || typeof url !== "string") return "";
   if (url.startsWith("data:") || url.startsWith("blob:")) return url;
-
   if (url.startsWith("imgs/")) return `/${url}`;
   return url;
 }
@@ -59,8 +49,9 @@ function isFirebaseStorageUrl(url) {
   );
 }
 
-function shouldUseCloudflareImageResize(url) {
+function shouldUseCloudflareImageResize(url, hasVariants) {
   if (typeof window === "undefined") return false;
+  if (hasVariants) return false;
 
   const host = window.location.hostname;
   const isLocalHost =
@@ -106,13 +97,55 @@ function buildCloudflareSrcSet(url) {
     .join(", ");
 }
 
-// Session-persistent in-memory cache of URLs that have successfully loaded.
-// Survives client-side navigation but is cleared on page refresh.
+function preloadImage(url) {
+  return new Promise((resolve, reject) => {
+    if (!url) {
+      resolve(false);
+      return;
+    }
+
+    const img = new Image();
+    img.onload = () => resolve(true);
+    img.onerror = () => reject(new Error("Image preload failed"));
+    img.src = url;
+  });
+}
+
+function resolveVariants(src, variants) {
+  if (isImageVariantsObject(variants)) return variants;
+  if (isImageVariantsObject(src)) return src;
+  return null;
+}
+
+function resolveBaseSrc(src, resolvedVariants, isDataSaver, variantPreference) {
+  if (resolvedVariants) {
+    if (variantPreference === "original") {
+      return getImageUrl(resolvedVariants, ["original", "medium", "thumb"]);
+    }
+
+    if (variantPreference === "medium") {
+      return getImageUrl(resolvedVariants, ["medium", "thumb", "original"]);
+    }
+
+    if (variantPreference === "thumb") {
+      return getImageUrl(resolvedVariants, ["thumb", "medium", "original"]);
+    }
+
+    if (isDataSaver) {
+      return getImageUrl(resolvedVariants, ["thumb", "medium", "original"]);
+    }
+
+    return getImageUrl(resolvedVariants, ["medium", "thumb", "original"]);
+  }
+
+  return normalizeImageUrl(typeof src === "string" ? src : "");
+}
+
 const imgCache = new Set();
 
-// Modern, aspect-safe ProgressiveImage
 export default function ProgressiveImage({
   src,
+  variants,
   alt = "",
   className = "",
   style = {},
@@ -124,11 +157,22 @@ export default function ProgressiveImage({
   imageLoading = "lazy",
   decoding = "async",
   fetchPriority,
+  variantPreference = "auto",
 }) {
-  const [loading, setLoading] = useState(
-    () => !imgCache.has(normalizeImageUrl(src)),
+  const { isDataSaver } = useDataSaver();
+
+  const resolvedVariants = useMemo(
+    () => resolveVariants(src, variants),
+    [src, variants],
   );
-  const [imageSrc, setImageSrc] = useState(normalizeImageUrl(src));
+
+  const initialSrc = useMemo(
+    () => resolveBaseSrc(src, resolvedVariants, isDataSaver, variantPreference),
+    [src, resolvedVariants, isDataSaver, variantPreference],
+  );
+
+  const [loading, setLoading] = useState(() => !imgCache.has(initialSrc));
+  const [imageSrc, setImageSrc] = useState(initialSrc);
   const [primaryRetried, setPrimaryRetried] = useState(false);
   const [usingFallback, setUsingFallback] = useState(false);
   const [fallbackRetried, setFallbackRetried] = useState(false);
@@ -136,19 +180,71 @@ export default function ProgressiveImage({
   const isPriorityImage = imageLoading === "eager" || fetchPriority === "high";
 
   useEffect(() => {
-    const normalized = normalizeImageUrl(src);
-    setImageSrc(normalized);
-    setLoading(!imgCache.has(normalized));
+    setImageSrc(initialSrc);
+    setLoading(!imgCache.has(initialSrc));
     setPrimaryRetried(false);
     setUsingFallback(false);
     setFallbackRetried(false);
     setOptimizationDisabled(false);
-  }, [src]);
+  }, [initialSrc]);
 
-  // Dozvoli izbor fit moda: "cover" (za kartice/grid), "contain" (za modale/lightbox)
+  useEffect(() => {
+    const canUpgradeVariants =
+      resolvedVariants &&
+      variantPreference === "auto" &&
+      !isDataSaver &&
+      !isPriorityImage;
+
+    if (!canUpgradeVariants) return;
+
+    let active = true;
+
+    const runProgressiveUpgrade = async () => {
+      const mediumSrc = normalizeImageUrl(
+        getImageUrl(resolvedVariants, ["medium", "original", "thumb"]),
+      );
+      const originalSrc = normalizeImageUrl(
+        getImageUrl(resolvedVariants, ["original", "medium", "thumb"]),
+      );
+
+      if (mediumSrc && mediumSrc !== imageSrc) {
+        try {
+          await preloadImage(mediumSrc);
+          if (active) setImageSrc(mediumSrc);
+        } catch {
+          // noop
+        }
+      }
+
+      const shouldLoadOriginal =
+        typeof window !== "undefined" && window.innerWidth > 512;
+      if (shouldLoadOriginal && originalSrc && originalSrc !== mediumSrc) {
+        try {
+          await preloadImage(originalSrc);
+          if (active) setImageSrc(originalSrc);
+        } catch {
+          // noop
+        }
+      }
+    };
+
+    runProgressiveUpgrade();
+
+    return () => {
+      active = false;
+    };
+  }, [
+    resolvedVariants,
+    variantPreference,
+    isDataSaver,
+    imageSrc,
+    isPriorityImage,
+  ]);
+
   const fitClass = fit === "contain" ? "object-contain" : "object-cover";
   const canUseCloudflareResize =
-    !optimizationDisabled && shouldUseCloudflareImageResize(imageSrc);
+    !optimizationDisabled &&
+    shouldUseCloudflareImageResize(imageSrc, Boolean(resolvedVariants));
   const priorityWidth =
     Number.isFinite(Number(width)) && Number(width) > 0 ? Number(width) : 1280;
   const resolvedSrc =
@@ -192,7 +288,7 @@ export default function ProgressiveImage({
         `}
         style={{ width: "100%", height: "100%", backfaceVisibility: "hidden" }}
         onLoad={() => {
-          imgCache.add(normalizeImageUrl(src));
+          imgCache.add(initialSrc);
           setLoading(false);
         }}
         onError={(e) => {

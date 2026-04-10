@@ -12,6 +12,7 @@ import RenderBoundary from "./components/RenderBoundary";
 import { usePromo } from "./contexts/PromoContext";
 import { EVagaDesktopProvider } from "./contexts/EVagaDesktopContext";
 import { PromoProvider } from "./contexts/PromoContext";
+import { DataSaverProvider } from "./contexts/DataSaverContext";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 const Home = lazy(() => import("./pages/home/HomeModern"));
@@ -142,24 +143,26 @@ function App() {
 
   return (
     <PromoProvider>
-      <EVagaDesktopProvider>
-        <div
-          className="min-h-screen w-full bg-neutral-bg text-text-primary"
-          suppressHydrationWarning
-        >
-          <AppContent />
-          {showNewsletterModal && (
-            <Suspense fallback={null}>
-              <NewsletterModal />
-            </Suspense>
-          )}
-          {import.meta.env.DEV ? (
-            <Suspense fallback={null}>
-              <CloudflareDeploymentDebugLazy />
-            </Suspense>
-          ) : null}
-        </div>
-      </EVagaDesktopProvider>
+      <DataSaverProvider>
+        <EVagaDesktopProvider>
+          <div
+            className="min-h-screen w-full bg-neutral-bg text-text-primary"
+            suppressHydrationWarning
+          >
+            <AppContent />
+            {showNewsletterModal && (
+              <Suspense fallback={null}>
+                <NewsletterModal />
+              </Suspense>
+            )}
+            {import.meta.env.DEV ? (
+              <Suspense fallback={null}>
+                <CloudflareDeploymentDebugLazy />
+              </Suspense>
+            ) : null}
+          </div>
+        </EVagaDesktopProvider>
+      </DataSaverProvider>
     </PromoProvider>
   );
 }

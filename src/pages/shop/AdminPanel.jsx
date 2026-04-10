@@ -58,6 +58,8 @@ import {
   validateSlug,
 } from "../../utils/slugUtils.js";
 import { checkProductSlugAvailability } from "../../services/productSlugService.js";
+import ProductImageService from "../../services/ProductImageService.js";
+import { getImageDisplayUrl } from "../../utils/imageVariants.js";
 
 export default function AdminPanel() {
   const { showSnackbar } = useContext(SnackbarContext);
@@ -406,23 +408,14 @@ export default function AdminPanel() {
       // Upload main image
       if (newProduct.imgFile) {
         simulateUpload(setUploadProgress);
-        const storageRef = ref(
-          storage,
-          `products/${Date.now()}_${newProduct.imgFile.name}`,
+        const uploadResult = await ProductImageService.uploadProductImages(
+          finalSlug,
+          newProduct.imgFile,
+          newProduct.images.map((img) => img.file),
         );
-        await uploadBytes(storageRef, newProduct.imgFile);
-        imgUrl = await getDownloadURL(storageRef);
-      }
 
-      // Upload additional images
-      for (const img of newProduct.images) {
-        const storageRef = ref(
-          storage,
-          `products/${Date.now()}_${img.file.name}`,
-        );
-        await uploadBytes(storageRef, img.file);
-        const url = await getDownloadURL(storageRef);
-        imageUrls.push(url);
+        imgUrl = uploadResult.mainImage || "";
+        imageUrls.push(...(uploadResult.galleryImages || []));
       }
 
       // Upload datasheets
@@ -562,7 +555,7 @@ export default function AdminPanel() {
       originalSlug: product.slug || "",
       hasHiddenPrice: !!product.hiddenPrice,
       price: product.hiddenPrice || product.price,
-      imgPreview: product.imgUrl,
+      imgPreview: getImageDisplayUrl(product.imgUrl),
       images: product.images || [],
       newImages: [],
       features: product.features || [],
@@ -596,7 +589,9 @@ export default function AdminPanel() {
     setEditProduct({
       ...editProduct,
       imgFile: file,
-      imgPreview: file ? URL.createObjectURL(file) : editProduct.imgUrl,
+      imgPreview: file
+        ? URL.createObjectURL(file)
+        : getImageDisplayUrl(editProduct.imgUrl),
     });
   };
 
@@ -754,26 +749,23 @@ export default function AdminPanel() {
       let imgUrl = editProduct.imgUrl;
       if (editProduct.imgFile) {
         simulateUpload(setEditUploadProgress);
-        const storageRef = ref(
-          storage,
-          `products/${Date.now()}_${editProduct.imgFile.name}`,
+        imgUrl = await ProductImageService.uploadMainImage(
+          finalSlug,
+          editProduct.imgFile,
+          1,
         );
-        await uploadBytes(storageRef, editProduct.imgFile);
-        imgUrl = await getDownloadURL(storageRef);
       }
 
       // Upload new additional images
       const newImageUrls = [];
       if (editProduct.newImages && editProduct.newImages.length > 0) {
-        for (const img of editProduct.newImages) {
-          const storageRef = ref(
-            storage,
-            `products/${Date.now()}_${img.file.name}`,
-          );
-          await uploadBytes(storageRef, img.file);
-          const url = await getDownloadURL(storageRef);
-          newImageUrls.push(url);
-        }
+        const uploadedGallery = await ProductImageService.uploadGalleryImages(
+          finalSlug,
+          editProduct.newImages.map((img) => img.file),
+          (Array.isArray(editProduct.images) ? editProduct.images.length : 0) +
+            2,
+        );
+        newImageUrls.push(...uploadedGallery);
       }
 
       // Upload new datasheets

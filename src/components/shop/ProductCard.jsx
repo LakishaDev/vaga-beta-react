@@ -6,11 +6,15 @@ import ProgressiveImage from "../UI/ProgressiveImage";
 import { Terminal } from "lucide-react";
 import { motion as Motion } from "framer-motion";
 import { getProductPath } from "../../utils/slugUtils";
+import { isImageVariantsObject } from "../../utils/imageVariants";
 
 export default function ProductCard({ product }) {
   const { addToCart } = useContext(CartContext);
   const { showSnackbar } = useContext(SnackbarContext);
   const [isHovered, setIsHovered] = useState(false);
+  const imageVariants = isImageVariantsObject(product.imgUrl)
+    ? product.imgUrl
+    : undefined;
 
   // Proveri da li je cena skrivena
   const hasHiddenPrice = product.hiddenPrice && !product.price;
@@ -133,7 +137,13 @@ export default function ProductCard({ product }) {
       )}
 
       <ProgressiveImage
-        src={product.imgUrl}
+        src={
+          imageVariants
+            ? imageVariants.thumb || imageVariants.medium
+            : product.imgUrl
+        }
+        variants={imageVariants}
+        variantPreference="thumb"
         alt={`${product.name} - Vaga Beta Beograd`}
         width={320}
         height={320}

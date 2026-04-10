@@ -39,6 +39,34 @@ function getFirestoreStringArray(fields, key) {
   return values.map((v) => v?.stringValue).filter(Boolean);
 }
 
+function getFirestoreVariantImage(fields, key) {
+  const mapFields = fields?.[key]?.mapValue?.fields;
+  if (!mapFields) return "";
+
+  return (
+    mapFields?.original?.stringValue ||
+    mapFields?.medium?.stringValue ||
+    mapFields?.thumb?.stringValue ||
+    ""
+  );
+}
+
+function getFirestoreVariantImageArray(fields, key) {
+  const values = fields?.[key]?.arrayValue?.values || [];
+  return values
+    .map((value) => {
+      if (value?.stringValue) return value.stringValue;
+      const mapFields = value?.mapValue?.fields;
+      return (
+        mapFields?.original?.stringValue ||
+        mapFields?.medium?.stringValue ||
+        mapFields?.thumb?.stringValue ||
+        ""
+      );
+    })
+    .filter(Boolean);
+}
+
 function extractDocId(documentName = "") {
   const parts = documentName.split("/");
   return parts[parts.length - 1] || null;
@@ -133,11 +161,30 @@ async function fetchProductSeoData(productId, env, origin) {
     product.description ||
     getFirestoreString(fields, "description") ||
     `${name} | Vaga Beta Shop`;
-  const imgUrl = product.imgUrl || getFirestoreString(fields, "imgUrl");
+  const imgUrl =
+    (typeof product.imgUrl === "string"
+      ? product.imgUrl
+      : product?.imgUrl?.original ||
+        product?.imgUrl?.medium ||
+        product?.imgUrl?.thumb) ||
+    getFirestoreString(fields, "imgUrl") ||
+    getFirestoreVariantImage(fields, "imgUrl");
+  const imagesFromProduct = Array.isArray(product.images)
+    ? product.images
+        .map((image) => {
+          if (typeof image === "string") return image;
+          return image?.original || image?.medium || image?.thumb || "";
+        })
+        .filter(Boolean)
+    : [];
+  const imagesFromStrings = getFirestoreStringArray(fields, "images");
+  const imagesFromVariants = getFirestoreVariantImageArray(fields, "images");
   const images =
-    (Array.isArray(product.images)
-      ? product.images.filter((image) => typeof image === "string")
-      : null) || getFirestoreStringArray(fields, "images");
+    imagesFromProduct.length > 0
+      ? imagesFromProduct
+      : imagesFromStrings.length > 0
+        ? imagesFromStrings
+        : imagesFromVariants;
   const primaryImage = toAbsoluteAssetUrl(imgUrl || images[0] || "", origin);
   const price = Number(product.price) || Number(product.hiddenPrice) || 0;
   const stock = Number(product.stock) || 0;
@@ -287,9 +334,21 @@ function buildSitemapXml(documents) {
       const slug = fields.slug?.stringValue;
       if (!slug) return null;
 
-      const imgUrl = fields.imgUrl?.stringValue || "";
+      const imgUrl =
+        fields.imgUrl?.stringValue ||
+        getFirestoreVariantImage(fields, "imgUrl") ||
+        "";
       const extraImages = (fields.images?.arrayValue?.values || [])
-        .map((v) => v?.stringValue)
+        .map((v) => {
+          if (v?.stringValue) return v.stringValue;
+          const mapFields = v?.mapValue?.fields;
+          return (
+            mapFields?.original?.stringValue ||
+            mapFields?.medium?.stringValue ||
+            mapFields?.thumb?.stringValue ||
+            ""
+          );
+        })
         .filter(Boolean);
       const allImages = [...new Set([imgUrl, ...extraImages].filter(Boolean))];
 

@@ -4,6 +4,28 @@
  * Deploy sa: wrangler deploy
  */
 
+function sanitizeFilename(filename = "") {
+  return String(filename)
+    .replace(/\\/g, "/")
+    .replace(/^\/+/, "")
+    .replace(/\.\.(\/|\\)/g, "")
+    .trim();
+}
+
+function getBucketForNamespace(env, namespace = "general") {
+  if (namespace === "product-images" && env.R2_CDN) {
+    return env.R2_CDN;
+  }
+  return env.R2_BUCKET;
+}
+
+function getBucketForKey(env, key = "") {
+  if (String(key).startsWith("v1/product-images/") && env.R2_CDN) {
+    return env.R2_CDN;
+  }
+  return env.R2_BUCKET;
+}
+
 /**
  * Obrada upload zahteva
  */
@@ -11,6 +33,7 @@ async function handleUpload(request, env) {
   const formData = await request.formData();
   const file = formData.get("file");
   const namespace = formData.get("namespace") || "general";
+  const customFilename = sanitizeFilename(formData.get("filename") || "");
   const cacheControl =
     formData.get("cacheControl") || "public, max-age=31536000";
   const metadata = JSON.parse(formData.get("metadata") || "{}");
@@ -24,12 +47,14 @@ async function handleUpload(request, env) {
 
   try {
     const buffer = await file.arrayBuffer();
-    const key = `v1/${namespace}/${file.name}`;
+    const filename = customFilename || sanitizeFilename(file.name);
+    const key = `v1/${namespace}/${filename}`;
+    const bucket = getBucketForNamespace(env, namespace);
 
     // Upload u R2
-    await env.R2_BUCKET.put(key, buffer, {
+    await bucket.put(key, buffer, {
       httpMetadata: {
-        contentType: file.type,
+        contentType: file.type || "application/octet-stream",
         cacheControl,
       },
       customMetadata: {
@@ -45,6 +70,7 @@ async function handleUpload(request, env) {
         key,
         JSON.stringify({
           fileName: file.name,
+          storageName: filename,
           fileSize: file.size,
           fileType: file.type,
           uploadedAt: new Date().toISOString(),
@@ -59,9 +85,13 @@ async function handleUpload(request, env) {
       JSON.stringify({
         success: true,
         key,
-        fileName: file.name,
+        fileName: filename,
         fileSize: file.size,
         url: `${new URL(request.url).origin}/download/${key}`,
+        imageUrl:
+          namespace === "product-images"
+            ? `${new URL(request.url).origin}/images/${encodeURIComponent((filename.split("/")[0] || "").trim())}/${encodeURIComponent((filename.split("/").slice(1).join("/") || "").trim())}`
+            : null,
       }),
       {
         status: 200,
@@ -78,13 +108,91 @@ async function handleUpload(request, env) {
 }
 
 /**
+ * Obrada batch upload zahteva
+ */
+async function handleUploadBatch(request, env) {
+  const formData = await request.formData();
+  const namespace = formData.get("namespace") || "general";
+  const slug = sanitizeFilename(formData.get("slug") || "");
+  const cacheControl =
+    formData.get("cacheControl") || "public, max-age=31536000, immutable";
+
+  const files = formData.getAll("files");
+  const filenames = formData
+    .getAll("filenames")
+    .map((name) => sanitizeFilename(name));
+
+  if (!files.length) {
+    return new Response(JSON.stringify({ error: "No files provided" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const bucket = getBucketForNamespace(env, namespace);
+  const baseUrl = new URL(request.url).origin;
+  const uploads = [];
+
+  for (let i = 0; i < files.length; i += 1) {
+    const file = files[i];
+    if (!file) continue;
+
+    const fallbackName = sanitizeFilename(file.name || `file-${i + 1}.bin`);
+    const selectedName = filenames[i] || fallbackName;
+    const filename = slug
+      ? sanitizeFilename(`${slug}/${selectedName}`)
+      : selectedName;
+    const key = `v1/${namespace}/${filename}`;
+
+    const buffer = await file.arrayBuffer();
+    await bucket.put(key, buffer, {
+      httpMetadata: {
+        contentType: file.type || "application/octet-stream",
+        cacheControl,
+      },
+      customMetadata: {
+        uploadedAt: new Date().toISOString(),
+        originalName: file.name,
+      },
+    });
+
+    const pathSegments = filename.split("/");
+    const imageSlug = pathSegments[0] || "";
+    const imageName = pathSegments.slice(1).join("/");
+
+    uploads.push({
+      key,
+      fileName: filename,
+      url: `${baseUrl}/download/${key}`,
+      imageUrl:
+        namespace === "product-images" && imageSlug && imageName
+          ? `${baseUrl}/images/${encodeURIComponent(imageSlug)}/${encodeURIComponent(imageName)}`
+          : null,
+    });
+  }
+
+  return new Response(
+    JSON.stringify({
+      success: true,
+      count: uploads.length,
+      files: uploads,
+    }),
+    {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    },
+  );
+}
+
+/**
  * Obrada download zahteva sa cache headers-ima i Range podrskom
  */
 async function handleDownload(request, env, key) {
   try {
     // Key može biti percent-encoded iz URL-a; dekoduj pre pristupa
     const decodedKey = decodeURIComponent(key);
-    const object = await env.R2_BUCKET.get(decodedKey);
+    const bucket = getBucketForKey(env, decodedKey);
+    const object = await bucket.get(decodedKey);
 
     if (!object) {
       return new Response(JSON.stringify({ error: "File not found" }), {
@@ -160,7 +268,7 @@ async function handleDownload(request, env, key) {
     headers.set("Content-Range", `bytes ${rangeStart}-${rangeEnd}/${fileSize}`);
 
     // Za Range requests, mora se getObject sa range parametrima
-    const rangedObject = await env.R2_BUCKET.get(decodedKey, {
+    const rangedObject = await bucket.get(decodedKey, {
       range: {
         offset: rangeStart,
         length: rangeLength,
@@ -181,11 +289,48 @@ async function handleDownload(request, env, key) {
 }
 
 /**
+ * Clean image route: /images/{slug}/{filename}
+ */
+async function handleImageDownload(request, env, slug, filename) {
+  const decodedSlug = sanitizeFilename(decodeURIComponent(slug || ""));
+  const decodedFilename = sanitizeFilename(decodeURIComponent(filename || ""));
+
+  if (!decodedSlug || !decodedFilename) {
+    return new Response(JSON.stringify({ error: "Invalid image path" }), {
+      status: 400,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  const key = `v1/product-images/${decodedSlug}/${decodedFilename}`;
+  const bucket = env.R2_CDN || env.R2_BUCKET;
+  const object = await bucket.get(key);
+
+  if (!object) {
+    return new Response(JSON.stringify({ error: "Image not found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
+  return new Response(object.body, {
+    status: 200,
+    headers: {
+      "Content-Type": object.httpMetadata?.contentType || "image/webp",
+      "Cache-Control": "public, max-age=31536000, immutable",
+      "Access-Control-Allow-Origin": "*",
+      "Access-Control-Allow-Methods": "GET, HEAD, OPTIONS",
+    },
+  });
+}
+
+/**
  * Obrada delete zahteva
  */
 async function handleDelete(request, env, key) {
   try {
-    await env.R2_BUCKET.delete(key);
+    const bucket = getBucketForKey(env, key);
+    await bucket.delete(key);
 
     // Obriši metadata iz KV
     if (env.CACHE_METADATA) {
@@ -225,7 +370,9 @@ async function handleList(request, env) {
       prefix = `v1/${ns}/`;
     }
 
-    const objects = await env.R2_BUCKET.list({ prefix });
+    const namespacePrefix = prefix.split("/")[1] || "general";
+    const bucket = getBucketForNamespace(env, namespacePrefix);
+    const objects = await bucket.list({ prefix });
     const files = objects.objects.map((obj) => ({
       key: obj.key,
       name: obj.key.replace(prefix, ""),
@@ -329,6 +476,19 @@ export default {
       // Upload endpoint
       if (path === "/upload" && request.method === "POST") {
         return handleUpload(request, env);
+      }
+
+      // Batch upload endpoint
+      if (path === "/upload-batch" && request.method === "POST") {
+        return handleUploadBatch(request, env);
+      }
+
+      // Clean image endpoint
+      if (path.startsWith("/images/") && request.method === "GET") {
+        const parts = path.replace("/images/", "").split("/");
+        const slug = parts.shift();
+        const filename = parts.join("/");
+        return handleImageDownload(request, env, slug, filename);
       }
 
       // Download endpoint

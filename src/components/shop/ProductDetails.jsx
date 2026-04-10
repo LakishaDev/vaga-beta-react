@@ -44,6 +44,11 @@ import { fetchMarkdownFiles } from "../../utils/markdownUtils";
 import { getProductPath, slugifyProductName } from "../../utils/slugUtils";
 import { usePromo } from "../../contexts/PromoContext";
 import { applyPromoPricing } from "../../utils/promoPricing";
+import {
+  getImageDisplayUrl,
+  getImageOriginalUrl,
+  normalizeImageArray,
+} from "../../utils/imageVariants";
 
 const SSR_PRODUCT_DATA_KEY = "__VAGA_SSR_PRODUCT__";
 
@@ -271,7 +276,9 @@ export default function ProductDetails() {
       "@type": "Product",
       name: product.name,
       description: product.description || product.name,
-      image: [product.imgUrl, ...(product.images || [])].filter(Boolean),
+      image: [product.imgUrl, ...(product.images || [])]
+        .map((item) => getImageOriginalUrl(item) || getImageDisplayUrl(item))
+        .filter(Boolean),
       brand: {
         "@type": "Brand",
         name: "Vaga Beta",
@@ -470,9 +477,15 @@ export default function ProductDetails() {
     getCleanCurrentUrl() ||
     `https://vagabeta.rs${getProductPath(product?.slug, product?.id)}`;
 
-  const allProductImages = product
-    ? [product.imgUrl, ...(product.images || [])].filter(Boolean)
+  const productImageItems = product
+    ? [product.imgUrl, ...normalizeImageArray(product.images)]
     : [];
+  const allProductImages = productImageItems
+    .map((item) => getImageOriginalUrl(item) || getImageDisplayUrl(item))
+    .filter(Boolean);
+  const modalImages = productImageItems
+    .map((item) => getImageOriginalUrl(item) || getImageDisplayUrl(item))
+    .filter(Boolean);
 
   const productSchema = product
     ? {
@@ -575,7 +588,11 @@ export default function ProductDetails() {
             />
             <meta
               property="og:image"
-              content={product.imgUrl || product.images?.[0]}
+              content={
+                getImageOriginalUrl(product.imgUrl) ||
+                getImageDisplayUrl(product.imgUrl) ||
+                getImageOriginalUrl(product.images?.[0])
+              }
             />
             <meta property="og:image:alt" content={product.name} />
             <meta property="og:type" content="product" />
@@ -605,7 +622,11 @@ export default function ProductDetails() {
             />
             <meta
               name="twitter:image"
-              content={product.imgUrl || product.images?.[0]}
+              content={
+                getImageOriginalUrl(product.imgUrl) ||
+                getImageDisplayUrl(product.imgUrl) ||
+                getImageOriginalUrl(product.images?.[0])
+              }
             />
             <meta name="twitter:image:alt" content={product.name} />
             <link rel="canonical" href={currentUrl} />
@@ -621,7 +642,7 @@ export default function ProductDetails() {
         <ImageModal
           isOpen={showImageModal}
           onClose={closeModal}
-          images={[product?.imgUrl, ...(product?.images || [])].filter(Boolean)}
+          images={modalImages}
           initialIndex={currentImageIndex}
           productName={product?.name || "Product"}
         />
@@ -725,6 +746,11 @@ export default function ProductDetails() {
                     >
                       <ProgressiveImage
                         src={
+                          currentImageIndex === 0
+                            ? product.imgUrl
+                            : product.images?.[currentImageIndex - 1]
+                        }
+                        variants={
                           currentImageIndex === 0
                             ? product.imgUrl
                             : product.images?.[currentImageIndex - 1]

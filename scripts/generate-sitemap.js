@@ -133,14 +133,22 @@ function toAbsoluteUrl(url) {
 function extractProductImages(fields = {}) {
   const imageSet = new Set();
 
-  const imgUrl = fields.imgUrl?.stringValue;
+  const imgUrl =
+    fields.imgUrl?.stringValue ||
+    fields.imgUrl?.mapValue?.fields?.original?.stringValue ||
+    fields.imgUrl?.mapValue?.fields?.medium?.stringValue ||
+    fields.imgUrl?.mapValue?.fields?.thumb?.stringValue;
   if (imgUrl) {
     imageSet.add(toAbsoluteUrl(imgUrl));
   }
 
   const imageValues = fields.images?.arrayValue?.values || [];
   imageValues.forEach((value) => {
-    const imageUrl = value?.stringValue;
+    const imageUrl =
+      value?.stringValue ||
+      value?.mapValue?.fields?.original?.stringValue ||
+      value?.mapValue?.fields?.medium?.stringValue ||
+      value?.mapValue?.fields?.thumb?.stringValue;
     if (imageUrl) {
       imageSet.add(toAbsoluteUrl(imageUrl));
     }

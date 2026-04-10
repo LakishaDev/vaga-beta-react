@@ -43,6 +43,7 @@ class R2CacheService {
       const {
         namespace = "general",
         cacheControl = "public, max-age=31536000", // 1 god za statični sadržaj
+        filename,
         customMetadata = {},
         onProgress = null,
       } = options;
@@ -50,6 +51,9 @@ class R2CacheService {
       const formData = new FormData();
       formData.append("file", file);
       formData.append("namespace", namespace);
+      if (filename) {
+        formData.append("filename", filename);
+      }
       formData.append("cacheControl", cacheControl);
       formData.append(
         "metadata",
@@ -96,6 +100,46 @@ class R2CacheService {
       console.error("R2 upload error:", error);
       throw error;
     }
+  }
+
+  /**
+   * Batch upload više fajlova jednim request-om
+   */
+  async uploadBatch(files = [], options = {}) {
+    if (!this.enabled) {
+      console.warn("⚠️ R2 Cache disabled - batch upload skipped");
+      return { success: false, error: "R2 Cache disabled" };
+    }
+
+    const {
+      namespace = "general",
+      slug = "",
+      cacheControl = "public, max-age=31536000, immutable",
+    } = options;
+
+    const formData = new FormData();
+    formData.append("namespace", namespace);
+    formData.append("slug", slug);
+    formData.append("cacheControl", cacheControl);
+
+    files.forEach((item) => {
+      if (!item?.file) return;
+      formData.append("files", item.file);
+      if (item.filename) {
+        formData.append("filenames", item.filename);
+      }
+    });
+
+    const response = await fetch(`${this.workerUrl}/upload-batch`, {
+      method: "POST",
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Batch upload failed (${response.status})`);
+    }
+
+    return response.json();
   }
 
   /**
