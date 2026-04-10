@@ -5,7 +5,7 @@ import { X, ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from "lucide-react";
 /**
  * ImageModal Component
  * A reusable modal for displaying images with zoom, magnifier, and carousel features
- * 
+ *
  * @param {Object} props
  * @param {boolean} props.isOpen - Modal visibility state
  * @param {Function} props.onClose - Close callback
@@ -93,7 +93,7 @@ export default function ImageModal({
 
   const handleMouseMove = (e) => {
     if (!isZoomed || isDragging) return;
-    
+
     const rect = e.currentTarget.getBoundingClientRect();
     const x = ((e.clientX - rect.left) / rect.width) * 100;
     const y = ((e.clientY - rect.top) / rect.height) * 100;
@@ -112,15 +112,15 @@ export default function ImageModal({
 
   const handleDragMove = (e) => {
     if (!isDragging) return;
-    
+
     const deltaX = (e.clientX - dragStart.x) / 5;
     const deltaY = (e.clientY - dragStart.y) / 5;
-    
+
     setImagePosition((prev) => ({
       x: Math.max(0, Math.min(100, prev.x - deltaX)),
       y: Math.max(0, Math.min(100, prev.y - deltaY)),
     }));
-    
+
     setDragStart({ x: e.clientX, y: e.clientY });
   };
 
@@ -131,7 +131,7 @@ export default function ImageModal({
       const touch2 = e.touches[1];
       const distance = Math.hypot(
         touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
+        touch2.clientY - touch1.clientY,
       );
       setDragStart({ x: distance, y: 0 });
     }
@@ -143,9 +143,9 @@ export default function ImageModal({
       const touch2 = e.touches[1];
       const distance = Math.hypot(
         touch2.clientX - touch1.clientX,
-        touch2.clientY - touch1.clientY
+        touch2.clientY - touch1.clientY,
       );
-      
+
       const scale = distance / dragStart.x;
       const newZoom = Math.max(1, Math.min(4, zoomLevel * scale));
       setZoomLevel(newZoom);
@@ -197,7 +197,7 @@ export default function ImageModal({
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         transition={{ duration: 0.3 }}
-        className={`fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md ${
+        className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/80 backdrop-blur-md ${
           isAnimating ? "pointer-events-none" : ""
         }`}
         onClick={handleClose}
@@ -288,11 +288,11 @@ export default function ImageModal({
           {/* Fixed size container to prevent layout shift */}
           <div className="relative w-full" style={{ minHeight: "60vh" }}>
             {/* Loading skeleton */}
-            {!imageLoaded && (
+            {/* {!imageLoaded && (
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="w-16 h-16 border-4 border-white/20 border-t-white rounded-full animate-spin" />
               </div>
-            )}
+            )} */}
 
             {/* Actual image */}
             <AnimatePresence mode="wait">
@@ -301,10 +301,10 @@ export default function ImageModal({
                 initial={{ opacity: 0 }}
                 animate={{ opacity: imageLoaded ? 1 : 0 }}
                 exit={{ opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className={`relative rounded-2xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-sm border border-white/10 ${
-                  isZoomed ? "cursor-move" : "cursor-zoom-in"
-                }`}
+                transition={{ duration: 0.2 }}
+                className={`relative rounded-2xl overflow-hidden shadow-2xl bg-white/5 backdrop-blur-sm border border-white/10
+                  flex items-center justify-center
+                ${isZoomed ? "cursor-move" : "cursor-zoom-in"}`}
                 onClick={toggleZoom}
                 onMouseMove={handleMouseMove}
                 onMouseDown={handleMouseDown}
@@ -322,9 +322,7 @@ export default function ImageModal({
                   alt={`${productName} - ${currentIndex + 1}`}
                   className="max-w-full max-h-[70vh] object-contain select-none"
                   style={{
-                    transform: isZoomed 
-                      ? `scale(${zoomLevel})` 
-                      : "scale(1)",
+                    transform: isZoomed ? `scale(${zoomLevel})` : "scale(1)",
                     transformOrigin: `${imagePosition.x}% ${imagePosition.y}%`,
                     transition: isDragging ? "none" : "transform 0.3s ease-out",
                   }}

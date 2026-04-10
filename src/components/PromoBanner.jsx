@@ -37,7 +37,7 @@ export default function PromoBanner() {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: -48, opacity: 0 }}
       transition={{ type: "spring", stiffness: 180, damping: 24 }}
-      className="w-full border-t border-[#e7d4f1]"
+      className="w-11/12 border-t border-[#e7d4f1] margin-auto rounded-2xl my-4 mx-auto overflow-hidden shadow-lg z-50 shadow-black/20"
       style={{
         background:
           "linear-gradient(120deg, rgba(255,249,196,0.95) 0%, rgba(213,245,227,0.95) 45%, rgba(232,213,245,0.95) 100%)",
@@ -60,7 +60,7 @@ export default function PromoBanner() {
           {promo.showCountdown ? <CountdownTimer timeLeft={timeLeft} /> : null}
           <button
             type="button"
-            className="inline-flex h-8 w-8 items-center justify-center rounded-full border border-[#d8c4ea] bg-white/80 text-[#7d59a2] transition hover:bg-white"
+            className="inline-flex h-6 w-6 items-center justify-center rounded-full border border-[#d8c4ea] bg-white/80 text-[#7d59a2] transition hover:bg-white"
             aria-label="Zatvori promo banner"
             onClick={() => {
               if (typeof window !== "undefined") {

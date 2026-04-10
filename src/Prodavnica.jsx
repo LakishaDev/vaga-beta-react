@@ -103,7 +103,7 @@ function Prodavnica() {
             }}
           />
           <Navbar />
-          <main className={isPromoActive ? "pt-36 sm:pt-40" : "pt-24 sm:pt-28"}>
+          <main className={isPromoActive ? "pt-64 sm:pt-44" : "pt-24 sm:pt-28"}>
             <RenderBoundary>
               <Routes>
                 <Route path="/prodavnica" element={<HeroSectionModern />} />

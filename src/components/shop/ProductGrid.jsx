@@ -515,7 +515,7 @@ export default function ProductGrid() {
                 </div>
                 <button
                   type="button"
-                  className="px-5 py-2 rounded-xl bg-error text-white font-bold shadow-md hover:bg-brand-primary w-full transition-colors text-base mt-2 flex items-center justify-center gap-2"
+                  className="px-5 py-2 rounded-xl bg-error text-white font-bold shadow-md bg-brand-secondary hover:bg-brand-primary w-full transition-colors text-base mt-2 flex items-center justify-center gap-2"
                   onClick={handleResetFilters}
                 >
                   <Trash size={18} /> Resetuj sve filtere

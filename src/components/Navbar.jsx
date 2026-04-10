@@ -17,7 +17,6 @@ import {
   X,
   ChevronRight,
   KeyRoundIcon,
-  Gauge,
 } from "lucide-react";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { BiSolidReceipt } from "react-icons/bi";
@@ -34,7 +33,6 @@ import {
 } from "react-icons/fa";
 import ProgressiveImage from "./UI/ProgressiveImage";
 import PromoBanner from "./PromoBanner";
-import { useDataSaver } from "../contexts/DataSaverContext";
 
 // ─── Nav data ─────────────────────────────────────────────────────────────────
 
@@ -76,8 +74,6 @@ export default function Navbar() {
   // Safe context consumption — defaults prevent crash outside providers
   const { cart } = useContext(CartContext);
   const { showSnackbar } = useContext(SnackbarContext);
-  const { isDataSaver, toggleDataSaver, connectionInfo, isAutoDetected } =
-    useDataSaver();
   const cartCount = cart.reduce((acc, item) => acc + (item.qty ?? 1), 0);
 
   const [user, setUser] = useState(null);
@@ -285,25 +281,6 @@ export default function Navbar() {
     </>
   );
 
-  const DataSaverToggle = isShop ? (
-    <button
-      type="button"
-      onClick={toggleDataSaver}
-      title={`Stednja interneta: ${isDataSaver ? "ukljucena" : "iskljucena"}`}
-      className={`relative flex h-9 items-center gap-1.5 rounded-lg border px-2.5 text-xs font-semibold transition-colors ${
-        isDataSaver
-          ? "border-emerald-500 bg-emerald-500/10 text-emerald-700"
-          : "border-neutral-border text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
-      }`}
-    >
-      <Gauge size={15} />
-      <span className="hidden md:inline">Data Saver</span>
-      {isDataSaver && (
-        <span className="absolute -right-1 -top-1 h-2.5 w-2.5 rounded-full bg-emerald-500" />
-      )}
-    </button>
-  ) : null;
-
   // ─── Render ──────────────────────────────────────────────────────────────────
 
   return (
@@ -344,7 +321,6 @@ export default function Navbar() {
             {/* ZONA 3: Korpa + Auth + Hamburger */}
             <div className="flex items-center gap-2">
               {CartBtn}
-              {DataSaverToggle}
               <div className="hidden sm:flex items-center gap-2">
                 {DesktopAuth}
               </div>
@@ -454,25 +430,6 @@ export default function Navbar() {
               <div className="px-4 pb-6 pt-3 border-t border-neutral-border flex flex-col gap-2">
                 {isShop ? (
                   <>
-                    <button
-                      type="button"
-                      onClick={toggleDataSaver}
-                      className={`flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition-colors ${
-                        isDataSaver
-                          ? "bg-emerald-500/10 text-emerald-700 border border-emerald-500/30"
-                          : "border border-neutral-border text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
-                      }`}
-                    >
-                      <Gauge size={16} />
-                      {isDataSaver
-                        ? "Stednja interneta: ON"
-                        : "Stednja interneta: OFF"}
-                    </button>
-                    {isAutoDetected && connectionInfo?.effectiveType ? (
-                      <p className="text-xs text-text-muted px-1">
-                        Mrezni profil: {connectionInfo.effectiveType}
-                      </p>
-                    ) : null}
                     {user && (
                       <Link
                         to="/prodavnica/nalog"

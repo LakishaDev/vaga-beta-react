@@ -21,6 +21,7 @@ import {
   Phone,
   Pen,
   Settings,
+  Gauge,
   Upload,
   LogOut,
   Trash2,
@@ -39,6 +40,7 @@ import PasswordResetModal from "../../components/shop/PasswordResetModal";
 import OrderDetailsModal from "../../components/shop/OrderDetailsModal";
 import PhoneVerifyModal from "../../components/shop/PhoneVerifyModal";
 import { FaClipboardList, FaShippingFast } from "react-icons/fa";
+import { useDataSaver } from "../../contexts/DataSaverContext";
 
 // Helperi
 function srRsd(n) {
@@ -153,6 +155,8 @@ const VerificationBadge = ({ verified, type, value, onClick }) => {
 
 export default function Profile() {
   const { user, userData, loading, refreshUserData } = useUserData();
+  const { isDataSaver, toggleDataSaver, connectionInfo, isAutoDetected } =
+    useDataSaver();
   const [orders, setOrders] = useState([]);
   const [bookings, setBookings] = useState([]);
   const [updatedOrderIds, setUpdatedOrderIds] = useState(new Set());
@@ -975,6 +979,27 @@ export default function Profile() {
                 Podešavanja profila
               </h3>
               <div className="space-y-3">
+                <motion.button
+                  type="button"
+                  onClick={toggleDataSaver}
+                  className={`flex gap-3 items-center w-full px-5 py-3 rounded-xl shadow-md hover:shadow-lg transition-all font-semibold ${
+                    isDataSaver
+                      ? "bg-emerald-500 text-white"
+                      : "bg-emerald-100 text-emerald-800"
+                  }`}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  <Gauge size={18} />
+                  {isDataSaver
+                    ? "Data Saver: uključen"
+                    : "Data Saver: isključen"}
+                </motion.button>
+                {isAutoDetected && connectionInfo?.effectiveType ? (
+                  <p className="text-xs text-text-muted px-1">
+                    Mrežni profil: {connectionInfo.effectiveType}
+                  </p>
+                ) : null}
                 <motion.button
                   onClick={() => {
                     setSettingsOpen(false);
