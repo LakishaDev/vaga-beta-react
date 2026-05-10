@@ -3,7 +3,11 @@
     "allow": [
       "Bash(npm run *)",
       "Bash(npx eslint *)",
-      "Bash(curl -s -I \"http://127.0.0.1:8788/usluge\")"
+      "Bash(curl -s -I \"http://127.0.0.1:8788/usluge\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{size_download}b %{content_type}\" \"https://vagabeta.rs/imgs/usluge/og-usluge.jpg\")",
+      "Bash(curl -s -o /dev/null -w \"%{http_code} %{size_download}b %{content_type}\" \"https://vagabeta.rs/imgs/usluge/og-usluge.png\")",
+      "Bash(ls -la public/imgs/usluge/og-usluge.*)",
+      "Bash(dir public\\\\imgs\\\\usluge\\\\og-usluge.*)"
     ]
   }
 }
