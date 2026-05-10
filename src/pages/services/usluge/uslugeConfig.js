@@ -58,6 +58,12 @@ export const USLUGE_CONFIG = {
         x: 0,
         y: 0,
         box: { left: 34, top: 43, width: 60, height: 31 },
+        mob: {
+          scale: 1.2,
+          x: -12,
+          y: 5,
+          box: { left: 30, top: 27, width: 72, height: 28 },
+        },
       },
       {
         label: "02 — Žig overavanja",
@@ -67,6 +73,12 @@ export const USLUGE_CONFIG = {
         x: 30,
         y: -15,
         box: { left: 3, top: 43, width: 30, height: 34 },
+        mob: {
+          scale: 2.2,
+          x: 30,
+          y: -10,
+          box: { left: 0, top: 40, width: 30, height: 20 },
+        },
       },
       {
         label: "03 — Klasa tačnosti",
@@ -76,6 +88,12 @@ export const USLUGE_CONFIG = {
         x: -25,
         y: -20,
         box: { left: 73, top: 63, width: 17, height: 7 },
+        mob: {
+          scale: 3.0,
+          x: -30,
+          y: -15,
+          box: { left: 79, top: 57, width: 17, height: 8 },
+        },
       },
     ],
     frameMs: 6500,

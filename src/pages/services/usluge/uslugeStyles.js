@@ -807,6 +807,56 @@ export const procStyles = {
   },
 };
 
+export const USLUGE_RESPONSIVE_CSS = `
+  @media (max-width: 1200px) {
+    .u-klase-grid, .u-std-grid { grid-template-columns: repeat(2, 1fr) !important; }
+    .u-mko-cards { grid-template-columns: repeat(3, 1fr) !important; }
+    .u-proc-list { grid-template-columns: repeat(2, 1fr) !important; gap: 40px 0 !important; }
+    .u-proc-list .step-line { display: none !important; }
+  }
+
+  @media (max-width: 900px) {
+    .u-hero-grid { grid-template-columns: 1fr !important; gap: 40px !important; }
+    .u-hero-art { max-width: 360px; margin: 0 auto; }
+    .u-hero-stats { grid-template-columns: repeat(2, 1fr) !important; }
+    .u-svc-grid { grid-template-columns: 1fr !important; }
+    .u-mko-intro { grid-template-columns: 1fr !important; gap: 24px !important; align-items: start !important; }
+    .u-mko-inner { grid-template-columns: 1fr !important; padding: 32px !important; }
+    .u-mko-cards { grid-template-columns: repeat(2, 1fr) !important; }
+    .u-mko-pad { padding: 0 24px 32px !important; }
+    .u-cta-card { grid-template-columns: 1fr !important; padding: 48px 32px !important; }
+    .u-zig-header { flex-direction: column !important; align-items: flex-start !important; gap: 20px !important; }
+    .u-zig-stage { aspect-ratio: auto !important; display: flex !important; flex-direction: column !important; }
+    .u-zig-img { position: relative !important; aspect-ratio: 4/3 !important; width: 100% !important; inset: auto !important; }
+    .u-zig-vignette, .u-zig-scanline { bottom: auto !important; aspect-ratio: 4/3 !important; }
+    .u-zig-cap { position: relative !important; left: 0 !important; right: 0 !important; bottom: 0 !important; border-radius: 0 !important; border-left: none !important; border-right: none !important; grid-template-columns: 1fr !important; row-gap: 6px !important; padding: 18px 22px !important; backdrop-filter: none !important; background: rgba(5,13,34,0.7) !important; }
+    .u-zig-cap-num { font-size: 36px !important; }
+    .u-zig-cap-title { font-size: 22px !important; }
+    .u-zig-cap-body { grid-column: 1 !important; font-size: 13.5px !important; }
+    .u-zig-controls, .u-zig-legend { padding: 14px 20px !important; }
+    .u-mko-stage { aspect-ratio: 4/3 !important; }
+    .u-mko-scene-zoom { transform: scale(0.68) !important; transform-origin: 50% 50% !important; }
+    .u-mko-storycap { position: relative !important; left: auto !important; right: auto !important; bottom: auto !important; grid-template-columns: 1fr !important; border-radius: 0 !important; margin: 0 !important; }
+  }
+
+  @media (max-width: 600px) {
+    .u-mko-stage { aspect-ratio: 16/9 !important; }
+    .u-mko-scene-zoom { transform: scale(0.58) !important; transform-origin: 50% 50% !important; }
+    .u-mko-storycap { text-align: center !important; padding: 16px 18px !important; }
+    .u-mko-storycap > div:first-child { font-size: 32px !important; opacity: 0.7; }
+    .u-mko-pad { padding: 0 16px 24px !important; }
+    .u-hero-stats { grid-template-columns: 1fr !important; }
+    .u-klase-grid, .u-std-grid, .u-mko-cards { grid-template-columns: 1fr !important; }
+    .u-proc-list { grid-template-columns: 1fr !important; gap: 32px 0 !important; }
+    .u-proc-list .step-line { display: none !important; }
+    .u-cta-side { gap: 12px !important; }
+    .u-cta-card { padding: 36px 22px !important; }
+    .u-zig-img { aspect-ratio: 3/2 !important; }
+    .u-zig-header h2, .u-mko-intro h2, .u-cta-card h2 { font-size: clamp(28px, 8vw, 40px) !important; }
+    .usluge-page > * { padding-left: 16px !important; padding-right: 16px !important; }
+  }
+`;
+
 export const ctaStyles = {
   section: { maxWidth: 1280, margin: "140px auto 80px", padding: "0 32px" },
   card: {

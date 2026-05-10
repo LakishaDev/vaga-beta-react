@@ -9,6 +9,7 @@ import MKOSection from "./usluge/MKOSection.jsx";
 import Proces from "./usluge/Proces.jsx";
 import CTA from "./usluge/CTA.jsx";
 import { USLUGE_CONFIG } from "./usluge/uslugeConfig.js";
+import { USLUGE_RESPONSIVE_CSS } from "./usluge/uslugeStyles.js";
 
 // Mapiranje FAQ u FAQPage JSON-LD format
 function buildFaqJsonLd() {
@@ -70,6 +71,7 @@ export default function Usluge() {
           @media (max-width: 900px) {
             .usluge-page > * { padding-left: 22px !important; padding-right: 22px !important; }
           }
+          ${USLUGE_RESPONSIVE_CSS}
         `}</style>
       </div>
     </>

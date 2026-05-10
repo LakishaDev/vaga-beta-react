@@ -26,7 +26,7 @@ export default function CTA() {
 
   return (
     <section id="kontakt" style={ctaStyles.section} data-screen-label="cta">
-      <div style={ctaStyles.card}>
+      <div style={ctaStyles.card} className="u-cta-card">
         <div style={ctaStyles.bg} />
         <div>
           <div style={{ ...svcStyles.eyebrow, marginBottom: 16 }}>VII — Kontakt</div>
@@ -45,7 +45,7 @@ export default function CTA() {
             <a href="/kontakt" style={heroStyles.ctaGhost}>Pošalji poruku</a>
           </div>
         </div>
-        <div style={ctaStyles.side}>
+        <div style={ctaStyles.side} className="u-cta-side">
           {contact.phones.map((p, i) => (
             <div key={i} style={ctaStyles.contact}>
               <div style={ctaStyles.contactIcon}><PhoneIcon /></div>

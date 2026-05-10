@@ -14,11 +14,11 @@ export default function Proces() {
           </h2>
         </div>
       </div>
-      <ol style={procStyles.list}>
+      <ol style={procStyles.list} className="u-proc-list">
         {steps.map((s, i) => (
           <li key={i} style={procStyles.step}>
             <div style={procStyles.stepDot}>
-              {i < steps.length - 1 && <div style={procStyles.stepLine} />}
+              {i < steps.length - 1 && <div style={procStyles.stepLine} className="step-line" />}
             </div>
             <div style={procStyles.stepNum}>{s.n}</div>
             <h3 style={procStyles.stepTitle}>{s.t}</h3>

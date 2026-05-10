@@ -83,7 +83,7 @@ export default function Hero() {
 
   return (
     <header style={heroStyles.wrap} data-screen-label="hero">
-      <div style={heroStyles.grid}>
+      <div style={heroStyles.grid} className="u-hero-grid">
         <div>
           <div style={heroStyles.eyebrow}>
             <span style={heroStyles.pulse} />
@@ -109,7 +109,7 @@ export default function Hero() {
               {hero.secondaryCta.label}
             </a>
           </div>
-          <div style={heroStyles.stats}>
+          <div style={heroStyles.stats} className="u-hero-stats">
             <div>
               <div style={heroStyles.statNum} suppressHydrationWarning>{yearsOfExperience}+</div>
               <div style={heroStyles.statLbl}>Godina iskustva</div>
@@ -125,7 +125,7 @@ export default function Hero() {
           </div>
         </div>
 
-        <div style={{ position: "relative" }}>
+        <div style={{ position: "relative" }} className="u-hero-art">
           <BalanceScale />
         </div>
       </div>

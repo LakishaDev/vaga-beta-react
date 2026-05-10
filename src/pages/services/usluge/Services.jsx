@@ -39,7 +39,7 @@ export default function Services() {
           </h2>
         </div>
       </div>
-      <div style={svcStyles.grid}>
+      <div style={svcStyles.grid} className="u-svc-grid">
         {USLUGE_CONFIG.services.map((s, i) => (
           <ServiceCard key={i} {...s} />
         ))}

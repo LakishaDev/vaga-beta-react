@@ -17,7 +17,7 @@ export default function Standards() {
           Akreditacija i usklađenost sa standardima — osnova poverenja u svako merenje koje overavamo.
         </p>
       </div>
-      <div style={{
+      <div className="u-std-grid" style={{
         ...standardsStyles.grid,
         gridTemplateColumns: `repeat(${USLUGE_CONFIG.standards.length}, 1fr)`,
       }}>

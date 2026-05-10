@@ -27,7 +27,7 @@ export default function Klase() {
           toleranciju, intervale overavanja i zahteve za servis.
         </p>
       </div>
-      <div style={klasaStyles.grid}>
+      <div style={klasaStyles.grid} className="u-klase-grid">
         {USLUGE_CONFIG.klase.map((k, i) => {
           const Icon = KLASA_ICONS[i];
           const isSoon = k.status === "soon";

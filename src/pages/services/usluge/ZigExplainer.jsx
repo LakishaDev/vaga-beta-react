@@ -38,11 +38,17 @@ export default function ZigExplainer() {
   const [idx, setIdx] = useState(0);
   const [playing, setPlaying] = useState(true);
   const [progress, setProgress] = useState(0);
+  const [isMob, setIsMob] = useState(false);
   const startRef = useRef(0);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
+    const mq = window.matchMedia("(max-width: 900px)");
+    setIsMob(mq.matches);
+    const handler = (e) => setIsMob(e.matches);
+    mq.addEventListener("change", handler);
     startRef.current = performance.now();
+    return () => mq.removeEventListener("change", handler);
   }, []);
 
   useEffect(() => {
@@ -66,11 +72,12 @@ export default function ZigExplainer() {
   }, [playing, idx]);
 
   const f = FRAMES[idx];
-  const transform = `scale(${f.scale}) translate(${f.x}%, ${f.y}%)`;
+  const v = (isMob && f.mob) ? { ...f, ...f.mob } : f;
+  const transform = `scale(${v.scale}) translate(${v.x}%, ${v.y}%)`;
 
   return (
     <section style={{ ...explStyles.wrap, marginTop: 120 }} data-screen-label="zig-explainer">
-      <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28, gap: 32, flexWrap: "wrap" }}>
+      <div className="u-zig-header" style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginBottom: 28, gap: 32, flexWrap: "wrap" }}>
         <div>
           <div style={{ ...explStyles.eyebrow, marginBottom: 12 }}>I — Anatomija žiga</div>
           <h2 style={{ fontSize: "clamp(36px, 5vw, 64px)", lineHeight: 1.02, maxWidth: 720, fontStyle: "italic", fontWeight: 400, color: "var(--bone)" }}>
@@ -84,28 +91,28 @@ export default function ZigExplainer() {
         </p>
       </div>
 
-      <div style={explStyles.shell}>
+      <div style={explStyles.shell} className="u-zig-shell">
         <div style={explStyles.header}>
           <div style={explStyles.eyebrow}>Vizuelni vodič · ELICOM EVL-LB · Kl. III</div>
           <div style={explStyles.frameLabel}>{f.label}</div>
         </div>
 
-        <div style={explStyles.stage}>
-          <div style={{ ...explStyles.imageLayer, backgroundImage: `url(${image})`, transform }} />
-          <div style={explStyles.vignette} />
-          <div style={explStyles.scanline} />
+        <div style={explStyles.stage} className="u-zig-stage">
+          <div className="u-zig-img" style={{ ...explStyles.imageLayer, backgroundImage: `url(${image})`, transform }} />
+          <div style={explStyles.vignette} className="u-zig-vignette" />
+          <div style={explStyles.scanline} className="u-zig-scanline" />
 
-          {f.box && (
+          {v.box && (
             <div style={{
               position: "absolute", inset: 0, transform, transformOrigin: "50% 50%",
               transition: "transform 1400ms cubic-bezier(.22,.61,.36,1)",
             }}>
               <div style={{
                 ...explStyles.highlight,
-                left: `${f.box.left}%`,
-                top: `${f.box.top}%`,
-                width: `${f.box.width}%`,
-                height: `${f.box.height}%`,
+                left: `${v.box.left}%`,
+                top: `${v.box.top}%`,
+                width: `${v.box.width}%`,
+                height: `${v.box.height}%`,
               }}>
                 {["tl", "tr", "bl", "br"].map((c) => {
                   const pos = {
@@ -126,14 +133,14 @@ export default function ZigExplainer() {
             </div>
           )}
 
-          <div key={idx} style={{ ...explStyles.caption, animation: "capRise 700ms cubic-bezier(.22,.61,.36,1) both" }}>
-            <div style={explStyles.capNum}>{String(idx + 1).padStart(2, "0")}</div>
-            <h3 style={explStyles.capTitle}>{f.title}</h3>
-            <p style={explStyles.capBody}>{f.body}</p>
+          <div key={idx} className="u-zig-cap" style={{ ...explStyles.caption, animation: "capRise 700ms cubic-bezier(.22,.61,.36,1) both" }}>
+            <div className="u-zig-cap-num" style={explStyles.capNum}>{String(idx + 1).padStart(2, "0")}</div>
+            <h3 className="u-zig-cap-title" style={explStyles.capTitle}>{f.title}</h3>
+            <p className="u-zig-cap-body" style={explStyles.capBody}>{f.body}</p>
           </div>
         </div>
 
-        <div style={explStyles.controls}>
+        <div style={explStyles.controls} className="u-zig-controls">
           <button style={explStyles.playBtn} onClick={() => setPlaying((p) => !p)} aria-label={playing ? "Pauziraj" : "Pusti"}>
             {playing ? (
               <svg width="12" height="12" viewBox="0 0 12 12">
@@ -160,7 +167,7 @@ export default function ZigExplainer() {
           </div>
         </div>
 
-        <div style={explStyles.legend}>
+        <div style={explStyles.legend} className="u-zig-legend">
           {FRAMES.map((fr, i) => (
             <button key={i} style={chipStyle(i === idx)} onClick={() => {
               setIdx(i);
