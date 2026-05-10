@@ -1,15 +1,8 @@
 /**
  * SEO Component - Dinamički postavlja meta tagove za svaku stranicu
- * Koristi useEffect i Helmet pattern za SEO optimizaciju
- *
- * Primer upotrebe:
- * import SEO from '@/components/SEO';
- * import { SEO_CONFIGS } from '@/configs/seoConfigs';
- *
- * <SEO {...SEO_CONFIGS.home} />
  */
 
-import { useEffect } from "react";
+import { useEffect, useRef } from "react";
 import PropTypes from "prop-types";
 
 const SEO = ({
@@ -27,18 +20,17 @@ const SEO = ({
   noindex = false,
   nofollow = false,
   canonicalUrl,
+  structuredData,
 }) => {
+  const jsonLdRefs = useRef([]);
+
   useEffect(() => {
-    // Set title
     document.title = title;
 
-    // Set or update meta tags
     const setMetaTag = (name, content, isProperty = false) => {
       if (!content) return;
-
       const attribute = isProperty ? "property" : "name";
       let element = document.querySelector(`meta[${attribute}="${name}"]`);
-
       if (element) {
         element.setAttribute("content", content);
       } else {
@@ -49,16 +41,15 @@ const SEO = ({
       }
     };
 
-    // Basic meta tags
+    const keywordsStr = Array.isArray(keywords) ? keywords.join(", ") : keywords;
+
     setMetaTag("description", description);
-    setMetaTag("keywords", keywords);
+    setMetaTag("keywords", keywordsStr);
     setMetaTag("author", author);
 
-    // Robots meta
     const robotsContent = `${noindex ? "noindex" : "index"}, ${nofollow ? "nofollow" : "follow"}`;
     setMetaTag("robots", robotsContent);
 
-    // Open Graph tags
     setMetaTag("og:title", title, true);
     setMetaTag("og:description", description, true);
     setMetaTag("og:image", image, true);
@@ -66,29 +57,22 @@ const SEO = ({
     setMetaTag("og:type", type, true);
     setMetaTag("og:site_name", "Vaga Beta", true);
     setMetaTag("og:locale", "sr_RS", true);
+    setMetaTag("og:locale:alternate", "sr_Latn_RS", true);
 
-    // Article specific OG tags
     if (type === "article") {
-      if (publishedTime)
-        setMetaTag("article:published_time", publishedTime, true);
+      if (publishedTime) setMetaTag("article:published_time", publishedTime, true);
       if (modifiedTime) setMetaTag("article:modified_time", modifiedTime, true);
       if (section) setMetaTag("article:section", section, true);
       if (author) setMetaTag("article:author", author, true);
-
-      // Tags
-      tags.forEach((tag) => {
-        setMetaTag("article:tag", tag, true);
-      });
+      tags.forEach((tag) => setMetaTag("article:tag", tag, true));
     }
 
-    // Twitter Card tags
     setMetaTag("twitter:card", "summary_large_image");
     setMetaTag("twitter:title", title);
     setMetaTag("twitter:description", description);
     setMetaTag("twitter:image", image);
     setMetaTag("twitter:url", url);
 
-    // Canonical URL
     let canonicalLink = document.querySelector('link[rel="canonical"]');
     if (canonicalLink) {
       canonicalLink.setAttribute("href", canonicalUrl || url);
@@ -99,9 +83,24 @@ const SEO = ({
       document.head.appendChild(canonicalLink);
     }
 
-    // Cleanup function (opciono, vraća default vrednosti)
+    // Inject JSON-LD structured data
+    if (structuredData) {
+      const items = Array.isArray(structuredData) ? structuredData : [structuredData];
+      const scripts = items.map((data) => {
+        const script = document.createElement("script");
+        script.setAttribute("type", "application/ld+json");
+        script.setAttribute("data-seo-jsonld", "true");
+        script.textContent = JSON.stringify(data);
+        document.head.appendChild(script);
+        return script;
+      });
+      jsonLdRefs.current = scripts;
+    }
+
     return () => {
-      // Opciono: resetuj na default vrednosti kada se komponenta unmount-uje
+      // Cleanup JSON-LD scripts added by this instance
+      jsonLdRefs.current.forEach((s) => s.parentNode?.removeChild(s));
+      jsonLdRefs.current = [];
     };
   }, [
     title,
@@ -118,16 +117,16 @@ const SEO = ({
     noindex,
     nofollow,
     canonicalUrl,
+    structuredData,
   ]);
 
-  // Ova komponenta ne renderuje ništa vizuelno
   return null;
 };
 
 SEO.propTypes = {
   title: PropTypes.string,
   description: PropTypes.string,
-  keywords: PropTypes.string,
+  keywords: PropTypes.oneOfType([PropTypes.string, PropTypes.arrayOf(PropTypes.string)]),
   image: PropTypes.string,
   url: PropTypes.string,
   type: PropTypes.oneOf(["website", "article", "product"]),
@@ -139,6 +138,7 @@ SEO.propTypes = {
   noindex: PropTypes.bool,
   nofollow: PropTypes.bool,
   canonicalUrl: PropTypes.string,
+  structuredData: PropTypes.oneOfType([PropTypes.object, PropTypes.arrayOf(PropTypes.object)]),
 };
 
 export default SEO;

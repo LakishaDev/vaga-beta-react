@@ -6,222 +6,240 @@
         http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd">
   <url>
     <loc>https://vagabeta.rs</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/usluge</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.9</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/kontakt</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.8</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/onama</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/aplikacija</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/newsletter</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/evaga-desktop</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/prodavnica</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/prodavnica/proizvodi</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.9</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/privacy</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>yearly</changefreq>
     <priority>0.3</priority>
 
   </url>
   <url>
     <loc>https://vagabeta.rs/p/xk3190-a12</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759579108756_4555-001377_0-736x1000.jpg?alt=media&amp;token=34ba8757-e540-4135-84dd-94299237d101</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/xk3190-a12/xk3190-a12-1-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1772737791557_s16.png?alt=media&amp;token=5bf7b353-5661-4e10-8f59-4a98b52c603c</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/xk3190-a12/xk3190-a12-2-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/evagadesktopv1</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762114502339_konacno.png?alt=media&amp;token=f1895d0d-cc19-42e4-bb64-7fcd6afa2f47</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/evagadesktopv1/evagadesktopv1-1-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/rolnice-za-kasu-57x40-57x50</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1772567061663_57-mm-X-40-mm-57-X50mm-Thermal-Printer-Thermal-Cashier-Paper-Roll.jpg?alt=media&amp;token=aba423a9-617a-4908-950f-52bd7118bec1</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/rolnice-za-kasu-57x40-57x50/rolnice-za-kasu-57x40-57x50-1-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/platformska-vaga-1500-1515</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759599032432_IMG-268c0b2e4c6ee280b07d8f17169745a9-V.jpg?alt=media&amp;token=f0edcc0d-57d4-4c12-91f6-b98acdfc871e</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/platformska-vaga-1500-1515/platformska-vaga-1500-1515-1-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/mk-3729</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759532431676_9-1.jpg?alt=media&amp;token=f3b00599-54b7-47af-b6d7-265f5ac2ad3e</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-1-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762086074328_20251102_130343.jpg?alt=media&amp;token=37b45f7a-ab17-4c37-83eb-a17c5c21143f</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-2-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762086029447_20251102_130459.jpg?alt=media&amp;token=26260332-1774-4090-b9af-e06ef9b15771</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-3-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762085982389_20251102_130535.jpg?alt=media&amp;token=d8c576b5-e7ff-4034-a9b5-98fa33b666d6</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-4-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762085990516_20251102_130515.jpg?alt=media&amp;token=ba3f132f-cf2d-4047-91aa-8c86e137c5ef</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-5-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762086002947_20251102_130507.jpg?alt=media&amp;token=646b489d-f44d-4767-a48f-2a1dfb27eb1b</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-6-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1762086051242_20251102_130449.jpg?alt=media&amp;token=bcd7b5d1-0307-4c27-9834-86e63e1cb825</image:loc>
-    </image:image>
-  </url>
-  <url>
-    <loc>https://vagabeta.rs/p/el-vaga-6151530</loc>
-    <lastmod>2026-03-05</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.8</priority>
-    <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759598604792_IMG-15df2932e806ffdb06c45a4086584025-V.jpg?alt=media&amp;token=98dd3a44-2553-4272-bd1d-d1d690b94e74</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/mk-3729/mk-3729-7-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/kv-50t-60t</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759866288936_Untitled.png?alt=media&amp;token=3ad040df-f738-45f3-94b4-13679f66d5c7</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/kv-50t-60t/kv-50t-60t-1-original.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/kv-50t-60t/kv-50t-60t-2-original.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/kv-50t-60t/kv-50t-60t-3-original.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/kv-50t-60t/kv-50t-60t-4-original.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/kv-50t-60t/kv-50t-60t-5-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/acs-vaga-6151530</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759520680442_20210707_132015.png?alt=media&amp;token=1f338223-4e86-4a69-8bd6-bff035eb32d4</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/acs-vaga-6151530/acs-vaga-6151530-1-original.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/acs-vaga-6151530/acs-vaga-6151530-2-original.webp</image:loc>
+    </image:image>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/acs-vaga-6151530/acs-vaga-6151530-3-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/dfwl-1</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759588889922_dfwl_2017.png?alt=media&amp;token=3f3b66f6-4ee7-4290-9d68-87251b61ac82</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/dfwl-1/dfwl-1-1-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759921311558_diniArgeo.png?alt=media&amp;token=0c6e082c-b0f7-4398-b66f-8daacb81bdbc</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/dfwl-1/dfwl-1-2-original.webp</image:loc>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://vagabeta.rs/p/termalna-glava-bizerba-sc-bc-ii-h-800-500</loc>
+    <lastmod>2026-05-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.8</priority>
+    <image:image>
+      <image:loc>https://worker.vagabeta.rs/images/termalna-glava-bizerba-sc-bc-ii-h-800-500/termalna-glava-bizerba-sc-bc-ii-h-800-500-1-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/elicom-s300-366151530</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759598389689_IMG-6292862bda2b1a6f15812f39a3e51cbd-V.jpg?alt=media&amp;token=962787f6-469f-4f20-9624-11229c6c49ec</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/elicom-s300-366151530/elicom-s300-366151530-1-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759923932256_IMG_9491_size-web.jpg?alt=media&amp;token=0ff0db23-4887-47e2-b0f1-af5cfea34d92</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/elicom-s300-366151530/elicom-s300-366151530-2-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759923933339_IMG_9494-web.jpg?alt=media&amp;token=ece0738a-434c-4a48-8bcf-ab3d7aab5da5</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/elicom-s300-366151530/elicom-s300-366151530-3-original.webp</image:loc>
     </image:image>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759923934995_backlights-510x526.jpg?alt=media&amp;token=81049d75-9e19-4413-b92c-bb9384a2c8e0</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/elicom-s300-366151530/elicom-s300-366151530-4-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/dc-adapter-12v-1a</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759845409619_7e963674-80d4-442e-bf5f-744ed7862b22.png?alt=media&amp;token=1a9fd53b-a2c2-4427-861d-cd630d957353</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/dc-adapter-12v-1a/dc-adapter-12v-1a-1-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/visokoprecizna-vaga-1</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759598787042_IMG-89b1fe38a897f6c3ad91dd5957de7f06-V.jpg?alt=media&amp;token=98ef1eed-c169-4729-b4e5-aa8c8beb4c22</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/visokoprecizna-vaga-1/visokoprecizna-vaga-1-1-original.webp</image:loc>
     </image:image>
   </url>
   <url>
     <loc>https://vagabeta.rs/p/magacinksa-vaga-500-300-150kg</loc>
-    <lastmod>2026-03-05</lastmod>
+    <lastmod>2026-05-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.8</priority>
     <image:image>
-      <image:loc>https://firebasestorage.googleapis.com/v0/b/vaga-beta-sajt.firebasestorage.app/o/products%2F1759598963918_IMG-5843a58841bbefe74d4c9bc4ac2aebe8-V.jpg?alt=media&amp;token=cb7c6b59-2cb8-4771-992f-ab44d90c624d</image:loc>
+      <image:loc>https://worker.vagabeta.rs/images/magacinksa-vaga-500-300-150kg/magacinksa-vaga-500-300-150kg-1-original.webp</image:loc>
     </image:image>
   </url>
 </urlset>

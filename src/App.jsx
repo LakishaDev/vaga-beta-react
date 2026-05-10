@@ -16,7 +16,7 @@ import { DataSaverProvider } from "./contexts/DataSaverContext";
 import { lazy, Suspense, useEffect, useState } from "react";
 
 const Home = lazy(() => import("./pages/home/HomeModern"));
-const Usluge = lazy(() => import("./pages/services/UslugaModern"));
+const Usluge = lazy(() => import("./pages/services/Usluge"));
 const Kontakt = lazy(() => import("./pages/contact/KontaktModern"));
 const Onama = lazy(() => import("./pages/about/OnamaModern"));
 const Aplikacija = lazy(() => import("./pages/Aplikacija"));
