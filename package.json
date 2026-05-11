@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "vite --host",
     "dev:ssr": "node server.js",
     "build": "npm run generate:sitemap && vite build",
     "build:ssr": "npm run generate:sitemap && vite build -c vite.config.ssr.js",

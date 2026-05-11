@@ -11,14 +11,15 @@ export const glass = {
 export const heroStyles = {
   wrap: {
     position: "relative",
-    maxWidth: 1280,
+    maxWidth: "min(85%, 96vw)",
     margin: "0 auto",
-    padding: "120px 32px 80px",
+    padding:
+      "clamp(80px, 8vw, 160px) clamp(20px, 2vw, 80px) clamp(60px, 5vw, 120px)",
   },
   grid: {
     display: "grid",
     gridTemplateColumns: "1.15fr 0.85fr",
-    gap: 60,
+    gap: "clamp(40px, 5vw, 100px)",
     alignItems: "center",
   },
   eyebrow: {
@@ -26,7 +27,7 @@ export const heroStyles = {
     alignItems: "center",
     gap: 12,
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 11,
+    fontSize: "clamp(10px, 0.85vw, 17px)",
     letterSpacing: "0.22em",
     textTransform: "uppercase",
     color: "var(--champagne)",
@@ -34,7 +35,7 @@ export const heroStyles = {
     border: "1px solid rgba(212,181,116,0.3)",
     borderRadius: 999,
     background: "rgba(212,181,116,0.05)",
-    marginBottom: 28,
+    marginBottom: "clamp(20px, 2vw, 36px)",
   },
   pulse: {
     width: 6,
@@ -44,7 +45,7 @@ export const heroStyles = {
     animation: "pulse 2s ease-in-out infinite",
   },
   title: {
-    fontSize: "clamp(48px, 7vw, 92px)",
+    fontSize: "clamp(48px, 6.5vw, 160px)",
     lineHeight: 0.96,
     letterSpacing: "-0.02em",
     color: "var(--bone)",
@@ -55,24 +56,29 @@ export const heroStyles = {
     height: 1,
     width: 80,
     background: "linear-gradient(90deg, var(--champagne), transparent)",
-    margin: "32px 0 24px",
+    margin: "clamp(20px, 2.5vw, 40px) 0 clamp(16px, 1.5vw, 28px)",
   },
   lede: {
-    fontSize: 18,
+    fontSize: "clamp(16px, 1.6vw, 34px)",
     lineHeight: 1.65,
     color: "var(--ink)",
-    maxWidth: 540,
+    maxWidth: "clamp(400px, 38vw, 800px)",
   },
-  ctaRow: { display: "flex", gap: 14, marginTop: 36, flexWrap: "wrap" },
+  ctaRow: {
+    display: "flex",
+    gap: "clamp(10px, 1vw, 18px)",
+    marginTop: "clamp(24px, 2.5vw, 48px)",
+    flexWrap: "wrap",
+  },
   ctaPrimary: {
     display: "inline-flex",
     alignItems: "center",
     gap: 10,
-    padding: "14px 22px",
+    padding: "clamp(12px, 1vw, 18px) clamp(18px, 1.5vw, 28px)",
     background: "var(--champagne)",
     color: "var(--midnight)",
     fontWeight: 600,
-    fontSize: 14,
+    fontSize: "clamp(13px, 1.3vw, 20px)",
     letterSpacing: "0.04em",
     borderRadius: 999,
     border: "none",
@@ -84,11 +90,11 @@ export const heroStyles = {
     display: "inline-flex",
     alignItems: "center",
     gap: 10,
-    padding: "14px 22px",
+    padding: "clamp(12px, 1vw, 18px) clamp(18px, 1.5vw, 28px)",
     background: "transparent",
     color: "var(--bone)",
     fontWeight: 500,
-    fontSize: 14,
+    fontSize: "clamp(13px, 1.3vw, 20px)",
     letterSpacing: "0.04em",
     borderRadius: 999,
     border: "1px solid rgba(255,255,255,0.16)",
@@ -98,22 +104,22 @@ export const heroStyles = {
   stats: {
     display: "grid",
     gridTemplateColumns: "repeat(3, 1fr)",
-    gap: 28,
-    marginTop: 60,
-    paddingTop: 32,
+    gap: "clamp(16px, 2vw, 36px)",
+    marginTop: "clamp(40px, 4vw, 80px)",
+    paddingTop: "clamp(20px, 2.5vw, 40px)",
     borderTop: "1px solid rgba(255,255,255,0.07)",
-    maxWidth: 540,
+    maxWidth: "clamp(400px, 38vw, 800px)",
   },
   statNum: {
     fontFamily: "Cormorant Garamond, serif",
-    fontSize: 42,
+    fontSize: "clamp(36px, 3.2vw, 72px)",
     color: "var(--champagne)",
     lineHeight: 1,
     fontStyle: "italic",
     fontWeight: 500,
   },
   statLbl: {
-    fontSize: 12,
+    fontSize: "clamp(10px, 1.1vw, 18px)",
     color: "var(--ink-soft)",
     marginTop: 6,
     letterSpacing: "0.06em",
@@ -123,35 +129,39 @@ export const heroStyles = {
 
 export const svcStyles = {
   section: {
-    maxWidth: 1280,
-    margin: "120px auto 0",
-    padding: "0 32px",
+    maxWidth: "min(85%, 96vw)",
+    margin: "clamp(80px, 8vw, 160px) auto 0",
+    padding: "0 clamp(20px, 2vw, 80px)",
   },
   header: {
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "space-between",
     flexWrap: "wrap",
-    gap: 32,
-    marginBottom: 48,
+    gap: "clamp(20px, 2.5vw, 40px)",
+    marginBottom: "clamp(32px, 3.5vw, 64px)",
   },
   eyebrow: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 11,
+    fontSize: "clamp(10px, 0.85vw, 17px)",
     letterSpacing: "0.22em",
     textTransform: "uppercase",
     color: "var(--champagne)",
     marginBottom: 14,
   },
   title: {
-    fontSize: "clamp(36px, 5vw, 64px)",
+    fontSize: "clamp(36px, 4.5vw, 100px)",
     lineHeight: 1.02,
     fontWeight: 400,
-    maxWidth: 720,
+    maxWidth: "clamp(500px, 50vw, 1000px)",
     fontStyle: "italic",
     color: "var(--bone)",
   },
-  grid: { display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 24 },
+  grid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(2, 1fr)",
+    gap: "clamp(16px, 1.8vw, 40px)",
+  },
   card: {
     background:
       "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
@@ -160,7 +170,7 @@ export const svcStyles = {
       "0 30px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
     backdropFilter: "blur(18px) saturate(1.2)",
     borderRadius: 18,
-    padding: 40,
+    padding: "clamp(28px, 2.5vw, 72px)",
     position: "relative",
     overflow: "hidden",
     transition:
@@ -179,13 +189,13 @@ export const svcStyles = {
     fontFamily: "Cormorant Garamond, serif",
     fontStyle: "italic",
     fontWeight: 500,
-    fontSize: 18,
+    fontSize: "clamp(16px, 1.4vw, 26px)",
     color: "var(--champagne)",
     letterSpacing: "0.1em",
   },
   cardIcon: {
-    width: 56,
-    height: 56,
+    width: "clamp(44px, 4vw, 80px)",
+    height: "clamp(44px, 4vw, 80px)",
     borderRadius: 999,
     display: "grid",
     placeItems: "center",
@@ -193,16 +203,16 @@ export const svcStyles = {
     background:
       "radial-gradient(circle at 30% 30%, rgba(212,181,116,0.18), rgba(212,181,116,0.02))",
     border: "1px solid rgba(212,181,116,0.3)",
-    marginTop: 28,
+    marginTop: "clamp(18px, 2vw, 36px)",
   },
   cardTitle: {
-    fontSize: 36,
+    fontSize: "clamp(26px, 2.6vw, 56px)",
     lineHeight: 1.05,
-    marginTop: 22,
+    marginTop: "clamp(14px, 1.5vw, 28px)",
     color: "var(--bone)",
   },
   cardLead: {
-    fontSize: 15,
+    fontSize: "clamp(14px, 1.5vw, 28px)",
     lineHeight: 1.65,
     color: "var(--ink)",
     marginTop: 14,
@@ -210,7 +220,7 @@ export const svcStyles = {
   },
   bullets: {
     display: "grid",
-    gap: 12,
+    gap: "clamp(8px, 0.8vw, 16px)",
     listStyle: "none",
     paddingTop: 20,
     borderTop: "1px solid rgba(255,255,255,0.07)",
@@ -221,14 +231,14 @@ export const svcStyles = {
     display: "flex",
     alignItems: "flex-start",
     gap: 12,
-    fontSize: 14,
+    fontSize: "clamp(13px, 1.4vw, 24px)",
     lineHeight: 1.5,
     color: "var(--ink)",
   },
   bulletIcon: {
     flex: "0 0 auto",
-    width: 22,
-    height: 22,
+    width: "clamp(18px, 1.6vw, 28px)",
+    height: "clamp(18px, 1.6vw, 28px)",
     borderRadius: 999,
     display: "grid",
     placeItems: "center",
@@ -240,9 +250,9 @@ export const svcStyles = {
     display: "inline-flex",
     alignItems: "center",
     gap: 10,
-    marginTop: 28,
+    marginTop: "clamp(18px, 2vw, 36px)",
     color: "var(--champagne)",
-    fontSize: 13,
+    fontSize: "clamp(12px, 1.25vw, 22px)",
     letterSpacing: "0.08em",
     textTransform: "uppercase",
     fontWeight: 500,
@@ -251,12 +261,16 @@ export const svcStyles = {
 };
 
 export const klasaStyles = {
-  section: { maxWidth: 1280, margin: "120px auto 0", padding: "0 32px" },
+  section: {
+    maxWidth: "min(85%, 96vw)",
+    margin: "clamp(80px, 8vw, 160px) auto 0",
+    padding: "0 clamp(20px, 2vw, 80px)",
+  },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
-    gap: 16,
-    marginTop: 48,
+    gap: "clamp(52px, 1.2vw, 24px)",
+    marginTop: "clamp(32px, 3.5vw, 64px)",
   },
   card: {
     background:
@@ -266,8 +280,8 @@ export const klasaStyles = {
       "0 30px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
     backdropFilter: "blur(18px) saturate(1.2)",
     borderRadius: 18,
-    padding: "32px 24px",
-    minHeight: 280,
+    padding: "clamp(24px, 2.2vw, 62px) clamp(18px, 1.8vw, 46px)",
+    minHeight: "clamp(220px, 20vw, 360px)",
     display: "flex",
     flexDirection: "column",
     position: "relative",
@@ -277,26 +291,26 @@ export const klasaStyles = {
   roman: {
     fontFamily: "Cormorant Garamond, serif",
     fontStyle: "italic",
-    fontSize: 84,
+    fontSize: "clamp(60px, 5.5vw, 120px)",
     lineHeight: 0.85,
     color: "var(--champagne)",
     fontWeight: 500,
   },
   klasaTitle: {
-    fontSize: 19,
-    marginTop: 18,
+    fontSize: "clamp(17px, 1.8vw, 30px)",
+    marginTop: "clamp(12px, 1.2vw, 24px)",
     color: "var(--bone)",
     lineHeight: 1.2,
   },
   klasaBody: {
-    fontSize: 13.5,
+    fontSize: "clamp(12px, 1.4vw, 24px)",
     lineHeight: 1.55,
     color: "var(--ink-soft)",
     marginTop: 10,
   },
   klasaTag: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 10,
+    fontSize: "clamp(9px, 0.7vw, 13px)",
     letterSpacing: "0.16em",
     textTransform: "uppercase",
     color: "var(--ink-soft)",
@@ -309,12 +323,16 @@ export const klasaStyles = {
 };
 
 export const standardsStyles = {
-  section: { maxWidth: 1280, margin: "120px auto 0", padding: "0 32px" },
+  section: {
+    maxWidth: "min(85%, 96vw)",
+    margin: "clamp(80px, 8vw, 160px) auto 0",
+    padding: "0 clamp(20px, 2vw, 80px)",
+  },
   grid: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
-    gap: 16,
-    marginTop: 48,
+    gap: "clamp(12px, 1.2vw, 24px)",
+    marginTop: "clamp(32px, 3.5vw, 64px)",
   },
   card: {
     background:
@@ -324,7 +342,7 @@ export const standardsStyles = {
       "0 30px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
     backdropFilter: "blur(18px) saturate(1.2)",
     borderRadius: 18,
-    padding: "32px 24px",
+    padding: "clamp(24px, 2.2vw, 62px) clamp(18px, 1.8vw, 46px)",
     position: "relative",
     overflow: "hidden",
     display: "flex",
@@ -334,22 +352,27 @@ export const standardsStyles = {
   code: {
     fontFamily: "Cormorant Garamond, serif",
     fontStyle: "italic",
-    fontSize: 28,
+    fontSize: "clamp(22px, 2.2vw, 48px)",
     lineHeight: 1,
     color: "var(--champagne)",
     fontWeight: 500,
     marginBottom: 10,
   },
   title: {
-    fontSize: 16,
+    fontSize: "clamp(14px, 1.5vw, 24px)",
     color: "var(--bone)",
     lineHeight: 1.3,
     marginBottom: 10,
   },
-  body: { fontSize: 13, lineHeight: 1.6, color: "var(--ink-soft)", flex: 1 },
+  body: {
+    fontSize: "clamp(12px, 1.4vw, 24px)",
+    lineHeight: 1.6,
+    color: "var(--ink-soft)",
+    flex: 1,
+  },
   authority: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 9.5,
+    fontSize: "clamp(9px, 0.7vw, 13px)",
     letterSpacing: "0.14em",
     textTransform: "uppercase",
     color: "var(--ink-soft)",
@@ -373,14 +396,14 @@ export const standardsStyles = {
 export const mkoStyles = {
   section: {
     position: "relative",
-    maxWidth: 1280,
-    margin: "140px auto 0",
-    padding: "0 32px",
+    maxWidth: "min(85%, 96vw)",
+    margin: "clamp(100px, 10vw, 180px) auto 0",
+    padding: "0 clamp(20px, 2vw, 80px)",
   },
   intro: {
     display: "grid",
     gridTemplateColumns: "1.1fr 0.9fr",
-    gap: 56,
+    gap: "clamp(32px, 4vw, 80px)",
     alignItems: "end",
     marginBottom: 36,
   },
@@ -393,7 +416,7 @@ export const mkoStyles = {
     border: "1px solid rgba(74,124,240,0.35)",
     borderRadius: 999,
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 10.5,
+    fontSize: "clamp(10px, 0.8vw, 14px)",
     letterSpacing: "0.22em",
     textTransform: "uppercase",
     color: "#7ea4ff",
@@ -408,7 +431,7 @@ export const mkoStyles = {
     animation: "pulse 2s ease-in-out infinite",
   },
   h2: {
-    fontSize: "clamp(40px, 5.4vw, 72px)",
+    fontSize: "clamp(40px, 5vw, 110px)",
     lineHeight: 0.98,
     fontWeight: 400,
     color: "var(--bone)",
@@ -416,14 +439,19 @@ export const mkoStyles = {
     paddingBottom: 14,
   },
   sub: {
-    fontSize: 17,
+    fontSize: "clamp(15px, 1.6vw, 26px)",
     lineHeight: 1.55,
     color: "var(--ink)",
-    maxWidth: 520,
+    maxWidth: "clamp(360px, 35vw, 680px)",
     fontStyle: "italic",
     fontFamily: "Cormorant Garamond, serif",
   },
-  desc: { fontSize: 15.5, lineHeight: 1.7, color: "var(--ink)", maxWidth: 460 },
+  desc: {
+    fontSize: "clamp(14px, 1.6vw, 30px)",
+    lineHeight: 1.7,
+    color: "var(--ink)",
+    maxWidth: "clamp(320px, 32vw, 600px)",
+  },
   shell: {
     position: "relative",
     borderRadius: 24,
@@ -454,8 +482,8 @@ export const mkoStyles = {
     position: "relative",
     display: "grid",
     gridTemplateColumns: "1.05fr 0.95fr",
-    gap: 36,
-    padding: "48px 48px",
+    gap: "clamp(24px, 2.5vw, 56px)",
+    padding: "clamp(32px, 3.5vw, 72px) clamp(28px, 3vw, 64px)",
   },
   statusPanel: {
     background:
@@ -472,7 +500,7 @@ export const mkoStyles = {
     padding: "16px 22px",
     borderBottom: "1px solid rgba(74,124,240,0.18)",
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 10.5,
+    fontSize: "clamp(9px, 1vw, 15px)",
     letterSpacing: "0.18em",
     textTransform: "uppercase",
   },
@@ -486,8 +514,8 @@ export const mkoStyles = {
     borderBottom: "1px solid rgba(74,124,240,0.08)",
   },
   statusIcon: {
-    width: 32,
-    height: 32,
+    width: "clamp(26px, 2.2vw, 44px)",
+    height: "clamp(26px, 2.2vw, 44px)",
     borderRadius: 8,
     border: "1px solid rgba(212,181,116,0.4)",
     background: "rgba(212,181,116,0.08)",
@@ -497,7 +525,7 @@ export const mkoStyles = {
   },
   statusLbl: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 10,
+    fontSize: "clamp(9px, 1vw, 15px)",
     letterSpacing: "0.16em",
     color: "var(--ink-soft)",
     textTransform: "uppercase",
@@ -505,13 +533,13 @@ export const mkoStyles = {
   statusVal: {
     fontFamily: "Cormorant Garamond, serif",
     fontStyle: "italic",
-    fontSize: 20,
+    fontSize: "clamp(16px, 1.8vw, 30px)",
     color: "var(--bone)",
     marginTop: 3,
   },
   pillOk: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 9.5,
+    fontSize: "clamp(9px, 0.7vw, 12px)",
     letterSpacing: "0.16em",
     textTransform: "uppercase",
     padding: "5px 10px",
@@ -522,7 +550,7 @@ export const mkoStyles = {
   },
   pillGold: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 9.5,
+    fontSize: "clamp(9px, 0.7vw, 12px)",
     letterSpacing: "0.16em",
     textTransform: "uppercase",
     padding: "5px 10px",
@@ -532,26 +560,26 @@ export const mkoStyles = {
     border: "1px solid rgba(212,181,116,0.4)",
   },
   cards: {
-    marginTop: 48,
+    marginTop: "clamp(32px, 3.5vw, 64px)",
     display: "grid",
     gridTemplateColumns: "repeat(5, 1fr)",
-    gap: 14,
+    gap: "clamp(10px, 1.1vw, 22px)",
   },
   card: {
-    padding: "22px 18px",
+    padding: "clamp(16px, 1.5vw, 42px) clamp(14px, 1.3vw, 34px)",
     background:
       "linear-gradient(180deg, rgba(255,255,255,0.04), rgba(255,255,255,0.015))",
     border: "1px solid rgba(74,124,240,0.18)",
     borderRadius: 14,
     backdropFilter: "blur(14px)",
-    minHeight: 200,
+    minHeight: "clamp(160px, 15vw, 280px)",
     display: "flex",
     flexDirection: "column",
     transition: "transform 400ms ease, border-color 400ms",
   },
   cardIcon: {
-    width: 38,
-    height: 38,
+    width: "clamp(30px, 2.8vw, 52px)",
+    height: "clamp(30px, 2.8vw, 52px)",
     borderRadius: 10,
     background: "rgba(74,124,240,0.12)",
     border: "1px solid rgba(126,164,255,0.35)",
@@ -561,30 +589,34 @@ export const mkoStyles = {
     marginBottom: 14,
   },
   cardTitle: {
-    fontSize: 15,
+    fontSize: "clamp(14px, 1.45vw, 24px)",
     color: "var(--bone)",
     lineHeight: 1.25,
     fontWeight: 500,
     marginBottom: 8,
   },
-  cardBody: { fontSize: 12.5, lineHeight: 1.55, color: "var(--ink-soft)" },
+  cardBody: {
+    fontSize: "clamp(11px, 1.25vw, 22px)",
+    lineHeight: 1.55,
+    color: "var(--ink-soft)",
+  },
   note: {
     marginTop: 32,
-    padding: "20px 24px",
+    padding: "clamp(14px, 1.5vw, 28px) clamp(18px, 1.8vw, 36px)",
     background: "rgba(212,181,116,0.05)",
     border: "1px solid rgba(212,181,116,0.22)",
     borderRadius: 12,
     display: "flex",
     gap: 16,
     alignItems: "flex-start",
-    fontSize: 14,
+    fontSize: "clamp(13px, 1.45vw, 22px)",
     lineHeight: 1.6,
     color: "var(--ink)",
   },
   noteIcon: {
     flex: "0 0 auto",
-    width: 32,
-    height: 32,
+    width: "clamp(26px, 2.2vw, 44px)",
+    height: "clamp(26px, 2.2vw, 44px)",
     borderRadius: 999,
     background: "rgba(212,181,116,0.12)",
     color: "var(--champagne)",
@@ -598,8 +630,8 @@ export const explStyles = {
   wrap: {
     position: "relative",
     margin: "0 auto",
-    maxWidth: 1280,
-    padding: "0 32px",
+    maxWidth: "min(85%, 96vw)",
+    padding: "0 clamp(20px, 2vw, 80px)",
   },
   shell: {
     position: "relative",
@@ -622,14 +654,14 @@ export const explStyles = {
   },
   eyebrow: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 11,
+    fontSize: "clamp(10px, 1.05vw, 16px)",
     letterSpacing: "0.18em",
     textTransform: "uppercase",
     color: "var(--champagne)",
   },
   frameLabel: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 11,
+    fontSize: "clamp(10px, 1.05vw, 16px)",
     letterSpacing: "0.16em",
     color: "var(--ink-soft)",
   },
@@ -682,7 +714,7 @@ export const explStyles = {
     gridTemplateColumns: "auto 1fr",
     columnGap: 22,
     rowGap: 6,
-    padding: "20px 24px",
+    padding: "clamp(14px, 1.5vw, 28px) clamp(18px, 1.8vw, 36px)",
     background: "rgba(5,13,34,0.55)",
     backdropFilter: "blur(18px) saturate(1.4)",
     border: "1px solid rgba(212,181,116,0.22)",
@@ -692,7 +724,7 @@ export const explStyles = {
   },
   capNum: {
     fontFamily: "Cormorant Garamond, serif",
-    fontSize: 56,
+    fontSize: "clamp(40px, 4.5vw, 90px)",
     lineHeight: 0.85,
     color: "var(--champagne)",
     fontWeight: 500,
@@ -700,13 +732,13 @@ export const explStyles = {
   },
   capTitle: {
     fontFamily: "Cormorant Garamond, serif",
-    fontSize: 28,
+    fontSize: "clamp(22px, 2.2vw, 48px)",
     lineHeight: 1.05,
     color: "var(--bone)",
     marginTop: 4,
   },
   capBody: {
-    fontSize: 14.5,
+    fontSize: "clamp(13px, 1.45vw, 22px)",
     lineHeight: 1.55,
     color: "var(--ink)",
     maxWidth: 640,
@@ -757,17 +789,21 @@ export const explStyles = {
 };
 
 export const procStyles = {
-  section: { maxWidth: 1280, margin: "120px auto 0", padding: "0 32px" },
+  section: {
+    maxWidth: "min(90%, 96vw)",
+    margin: "clamp(80px, 8vw, 160px) auto 0",
+    padding: "0 clamp(20px, 2vw, 80px)",
+  },
   list: {
     display: "grid",
     gridTemplateColumns: "repeat(4, 1fr)",
     gap: 0,
-    marginTop: 64,
+    marginTop: "clamp(40px, 5vw, 96px)",
     position: "relative",
     listStyle: "none",
     padding: 0,
   },
-  step: { padding: "0 24px", position: "relative" },
+  step: { padding: "0 clamp(16px, 2vw, 36px)", position: "relative" },
   stepDot: {
     width: 14,
     height: 14,
@@ -788,19 +824,19 @@ export const procStyles = {
   },
   stepNum: {
     fontFamily: "JetBrains Mono, monospace",
-    fontSize: 11,
+    fontSize: "clamp(10px, 1.05vw, 16px)",
     letterSpacing: "0.18em",
     color: "var(--ink-soft)",
-    marginTop: 24,
+    marginTop: "clamp(16px, 1.8vw, 32px)",
   },
   stepTitle: {
-    fontSize: 22,
+    fontSize: "clamp(18px, 2.1vw, 40px)",
     marginTop: 8,
     color: "var(--bone)",
     lineHeight: 1.15,
   },
   stepBody: {
-    fontSize: 13.5,
+    fontSize: "clamp(12px, 1.4vw, 24px)",
     lineHeight: 1.6,
     color: "var(--ink-soft)",
     marginTop: 10,
@@ -808,6 +844,47 @@ export const procStyles = {
 };
 
 export const USLUGE_RESPONSIVE_CSS = `
+  @media (min-width: 1680px) {
+    .usluge-page {
+      --u-fs-body: 19px;
+      --u-fs-body-lg: 24px;
+      --u-fs-ui: 17px;
+      --u-fs-label: 13px;
+    }
+    .u-hero-grid { gap: clamp(60px, 5vw, 100px) !important; }
+    .u-svc-grid { grid-template-columns: repeat(2, 1fr) !important; gap: 48px !important; }
+    .u-klase-grid, .u-std-grid { grid-template-columns: repeat(5, 1fr) !important; }
+    .u-mko-cards { grid-template-columns: repeat(5, 1fr) !important; }
+    .u-proc-list { grid-template-columns: repeat(4, 1fr) !important; }
+  }
+
+  @media (min-width: 1920px) {
+    .usluge-page {
+      --u-fs-body: 22px;
+      --u-fs-body-lg: 28px;
+      --u-fs-ui: 19px;
+      --u-fs-label: 14px;
+    }
+    .u-hero-grid { grid-template-columns: 1fr 1fr !important; gap: clamp(80px, 6vw, 120px) !important; }
+    .u-svc-grid { gap: clamp(32px, 2.5vw, 56px) !important; }
+    .u-klase-grid, .u-std-grid { grid-template-columns: repeat(4, 1fr) !important; gap: clamp(16px, 1.5vw, 32px) !important; }
+    .u-mko-cards { grid-template-columns: repeat(5, 1fr) !important; gap: clamp(14px, 1.3vw, 28px) !important; }
+    .u-proc-list { grid-template-columns: repeat(4, 1fr) !important; }
+    .u-cta-card { padding: clamp(64px, 6vw, 120px) clamp(56px, 5vw, 100px) !important; }
+  }
+
+  @media (min-width: 2560px) {
+    .usluge-page {
+      --u-fs-body: 26px;
+      --u-fs-body-lg: 34px;
+      --u-fs-ui: 22px;
+      --u-fs-label: 16px;
+    }
+    .u-hero-grid { gap: clamp(100px, 7vw, 140px) !important; }
+    .u-klase-grid, .u-std-grid { grid-template-columns: repeat(6, 1fr) !important; }
+    .u-svc-grid { grid-template-columns: repeat(3, 1fr) !important; }
+  }
+
   @media (max-width: 1200px) {
     .u-klase-grid, .u-std-grid { grid-template-columns: repeat(2, 1fr) !important; }
     .u-mko-cards { grid-template-columns: repeat(3, 1fr) !important; }
@@ -858,7 +935,11 @@ export const USLUGE_RESPONSIVE_CSS = `
 `;
 
 export const ctaStyles = {
-  section: { maxWidth: 1280, margin: "140px auto 80px", padding: "0 32px" },
+  section: {
+    maxWidth: "min(90%, 96vw)",
+    margin: "clamp(100px, 10vw, 180px) auto clamp(60px, 6vw, 120px)",
+    padding: "0 clamp(20px, 2vw, 80px)",
+  },
   card: {
     background:
       "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
@@ -867,10 +948,10 @@ export const ctaStyles = {
       "0 30px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
     backdropFilter: "blur(18px) saturate(1.2)",
     borderRadius: 18,
-    padding: "72px 56px",
+    padding: "clamp(48px, 5vw, 96px) clamp(40px, 4.5vw, 88px)",
     display: "grid",
     gridTemplateColumns: "1.4fr 1fr",
-    gap: 48,
+    gap: "clamp(32px, 4vw, 72px)",
     alignItems: "center",
     position: "relative",
     overflow: "hidden",
@@ -887,20 +968,20 @@ export const ctaStyles = {
     pointerEvents: "none",
   },
   title: {
-    fontSize: "clamp(36px, 4.5vw, 56px)",
+    fontSize: "clamp(36px, 4vw, 96px)",
     lineHeight: 1.02,
     fontWeight: 400,
     color: "var(--bone)",
     fontStyle: "italic",
   },
   body: {
-    fontSize: 15.5,
+    fontSize: "clamp(14px, 1.6vw, 32px)",
     lineHeight: 1.65,
     color: "var(--ink)",
     marginTop: 18,
-    maxWidth: 480,
+    maxWidth: "clamp(360px, 36vw, 720px)",
   },
-  side: { display: "grid", gap: 18 },
+  side: { display: "grid", gap: "clamp(12px, 1.2vw, 24px)" },
   contact: {
     background:
       "linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02))",
@@ -909,28 +990,28 @@ export const ctaStyles = {
       "0 30px 60px -30px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.04)",
     backdropFilter: "blur(18px) saturate(1.2)",
     borderRadius: 18,
-    padding: "20px 22px",
+    padding: "clamp(16px, 1.5vw, 30px) clamp(18px, 1.8vw, 36px)",
     display: "flex",
     alignItems: "center",
-    gap: 16,
+    gap: "clamp(12px, 1.2vw, 24px)",
   },
   contactLabel: {
-    fontSize: 11,
+    fontSize: "clamp(9px, 1vw, 16px)",
     letterSpacing: "0.18em",
     textTransform: "uppercase",
     color: "var(--ink-soft)",
     fontFamily: "JetBrains Mono, monospace",
   },
   contactValue: {
-    fontSize: 18,
+    fontSize: "clamp(16px, 1.9vw, 30px)",
     color: "var(--bone)",
     marginTop: 4,
     fontFamily: "Cormorant Garamond, serif",
     fontStyle: "italic",
   },
   contactIcon: {
-    width: 40,
-    height: 40,
+    width: "clamp(32px, 3vw, 56px)",
+    height: "clamp(32px, 3vw, 56px)",
     borderRadius: 999,
     display: "grid",
     placeItems: "center",

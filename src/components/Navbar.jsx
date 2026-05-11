@@ -156,7 +156,7 @@ export default function Navbar() {
 
   // Active link class helper
   const linkClass = (path) =>
-    `flex items-center gap-2 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${
+    `flex items-center gap-2 rounded-lg px-3 py-2 2xl:px-4 2xl:py-2.5 3xl:px-5 3xl:py-3 text-sm 2xl:text-base 3xl:text-lg font-semibold transition-colors ${
       location.pathname === path
         ? "bg-brand-primary text-white"
         : "text-text-secondary hover:bg-brand-primary/10 hover:text-brand-primary"
@@ -266,17 +266,17 @@ export default function Navbar() {
     <>
       <Link
         to="/kontakt"
-        className="flex items-center gap-1.5 rounded-lg border border-brand-primary/30 px-3 py-1.5 text-sm font-semibold text-brand-primary transition-colors hover:bg-brand-primary/10"
+        className="flex items-center gap-1.5 rounded-lg border border-brand-primary/30 px-3 py-1.5 2xl:px-4 2xl:py-2 3xl:px-5 3xl:py-2.5 text-sm 2xl:text-base 3xl:text-lg font-semibold text-brand-primary transition-colors hover:bg-brand-primary/10"
       >
-        <FaEnvelope className="text-xs" />
+        <FaEnvelope className="text-xs 2xl:text-sm" />
         Kontakt
       </Link>
       <Link
         to="/prodavnica"
-        className="flex items-center gap-1.5 rounded-lg bg-brand-primary px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-brand-primaryHover"
+        className="flex items-center gap-1.5 rounded-lg bg-brand-primary px-3 py-1.5 2xl:px-4 2xl:py-2 3xl:px-5 3xl:py-2.5 text-sm 2xl:text-base 3xl:text-lg font-semibold text-white transition-colors hover:bg-brand-primaryHover"
       >
         Prodavnica
-        <FaArrowRight className="text-xs" />
+        <FaArrowRight className="text-xs 2xl:text-sm" />
       </Link>
     </>
   );
@@ -295,7 +295,7 @@ export default function Navbar() {
             isCompact ? "py-0.5" : "py-1"
           }`}
         >
-          <div className="mx-auto max-w-7xl flex items-center justify-between px-4 sm:px-6">
+          <div className="w-full flex items-center justify-between px-4 sm:px-6 xl:px-[3vw] 2xl:px-[2.5vw]">
             {/* ZONA 1: Logo */}
             <Link
               to={isShop ? "/prodavnica" : "/"}
@@ -304,9 +304,9 @@ export default function Navbar() {
               <ProgressiveImage
                 src="/imgs/vaga-logo.png"
                 alt="Logo"
-                className="h-8 w-8 rounded-lg border border-brand-primary/20 bg-white shadow"
+                className="h-8 w-8 2xl:h-10 2xl:w-10 3xl:h-12 3xl:w-12 rounded-lg border border-brand-primary/20 bg-white shadow"
               />
-              <span className="font-heading font-extrabold text-lg tracking-wide text-brand-primary">
+              <span className="font-heading font-extrabold text-lg 2xl:text-xl 3xl:text-2xl tracking-wide text-brand-primary">
                 Vaga Beta
               </span>
             </Link>

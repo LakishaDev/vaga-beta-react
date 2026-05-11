@@ -56,6 +56,12 @@ export default function Usluge() {
             --ink: rgba(240,235,226,0.62);
             --ink-soft: rgba(240,235,226,0.38);
             --line: rgba(255,255,255,0.07);
+            --u-fs-body: clamp(14px, 1.1vw, 22px);
+            --u-fs-body-lg: clamp(16px, 1.3vw, 28px);
+            --u-fs-ui: clamp(13px, 1vw, 20px);
+            --u-fs-label: clamp(10px, 0.8vw, 14px);
+            --u-pad-card: clamp(28px, 2.5vw, 56px);
+            --u-gap-section: clamp(80px, 8vw, 160px);
             background: linear-gradient(180deg, var(--royal) 0%, var(--abyss) 40%, var(--midnight) 100%);
             min-height: 100vh;
             font-family: 'DM Sans', sans-serif;

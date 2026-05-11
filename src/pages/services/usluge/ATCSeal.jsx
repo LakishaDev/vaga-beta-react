@@ -1,6 +1,6 @@
 export default function ATCSeal({ size = 180, withGlow = true }) {
   const w = size;
-  const h = Math.round(size * 250 / 200);
+  const h = Math.round((size * 250) / 200);
 
   return (
     <svg
@@ -12,12 +12,26 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
       style={{ display: "block", flexShrink: 0 }}
     >
       <defs>
-        <linearGradient id="atcGold" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="250">
+        <linearGradient
+          id="atcGold"
+          gradientUnits="userSpaceOnUse"
+          x1="0"
+          y1="0"
+          x2="200"
+          y2="250"
+        >
           <stop offset="0%" stopColor="#a8814b" />
           <stop offset="50%" stopColor="#e8c98a" />
           <stop offset="100%" stopColor="#a8814b" />
         </linearGradient>
-        <linearGradient id="atcGold2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="200" y2="0">
+        <linearGradient
+          id="atcGold2"
+          gradientUnits="userSpaceOnUse"
+          x1="0"
+          y1="0"
+          x2="200"
+          y2="0"
+        >
           <stop offset="0%" stopColor="#c9a55a" />
           <stop offset="50%" stopColor="#f0d090" />
           <stop offset="100%" stopColor="#c9a55a" />
@@ -28,11 +42,19 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
           <stop offset="100%" stopColor="rgba(212,181,116,0)" />
         </radialGradient>
         <filter id="atcShadow" x="-30%" y="-30%" width="160%" height="160%">
-          <feDropShadow dx="0" dy="8" stdDeviation="14" floodColor="rgba(0,0,0,0.45)" />
+          <feDropShadow
+            dx="0"
+            dy="8"
+            stdDeviation="14"
+            floodColor="rgba(0,0,0,0.45)"
+          />
         </filter>
         <filter id="atcGlow" x="-20%" y="-20%" width="140%" height="140%">
           <feGaussianBlur stdDeviation="3" result="blur" />
-          <feMerge><feMergeNode in="blur" /><feMergeNode in="SourceGraphic" /></feMerge>
+          <feMerge>
+            <feMergeNode in="blur" />
+            <feMergeNode in="SourceGraphic" />
+          </feMerge>
         </filter>
         <style>{`
           @keyframes atcPulse {
@@ -44,8 +66,26 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
 
       {/* Outer cartouche — double border */}
       <g filter="url(#atcShadow)">
-        <rect x="8" y="8" width="184" height="234" rx="14" fill="#06101f" stroke="url(#atcGold)" strokeWidth="1.8" />
-        <rect x="13" y="13" width="174" height="224" rx="11" fill="none" stroke="rgba(240,235,226,0.18)" strokeWidth="0.6" />
+        <rect
+          x="8"
+          y="8"
+          width="184"
+          height="234"
+          rx="14"
+          fill="#06101f"
+          stroke="url(#atcGold)"
+          strokeWidth="1.8"
+        />
+        <rect
+          x="13"
+          y="13"
+          width="174"
+          height="224"
+          rx="11"
+          fill="none"
+          stroke="rgba(240,235,226,0.18)"
+          strokeWidth="0.6"
+        />
       </g>
 
       {/* Holographic overlay */}
@@ -90,7 +130,7 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
         fill="url(#atcGold)"
         fontWeight="500"
       >
-        ATC
+        ATS
       </text>
 
       {/* 06-373 */}
@@ -107,7 +147,15 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
       </text>
 
       {/* Divider line */}
-      <line x1="30" y1="114" x2="170" y2="114" stroke="url(#atcGold)" strokeWidth="0.8" opacity="0.7" />
+      <line
+        x1="30"
+        y1="114"
+        x2="170"
+        y2="114"
+        stroke="url(#atcGold)"
+        strokeWidth="0.8"
+        opacity="0.7"
+      />
 
       {/* KONTROLNO TELO */}
       <text
@@ -136,7 +184,14 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
       </text>
 
       {/* Thin divider */}
-      <line x1="40" y1="166" x2="160" y2="166" stroke="rgba(212,181,116,0.35)" strokeWidth="0.6" />
+      <line
+        x1="40"
+        y1="166"
+        x2="160"
+        y2="166"
+        stroke="rgba(212,181,116,0.35)"
+        strokeWidth="0.6"
+      />
 
       {/* SRPS ISO/IEC 17020 */}
       <text
@@ -153,7 +208,15 @@ export default function ATCSeal({ size = 180, withGlow = true }) {
       </text>
 
       {/* Bottom decorative rule */}
-      <line x1="30" y1="196" x2="170" y2="196" stroke="url(#atcGold)" strokeWidth="0.7" opacity="0.5" />
+      <line
+        x1="30"
+        y1="196"
+        x2="170"
+        y2="196"
+        stroke="url(#atcGold)"
+        strokeWidth="0.7"
+        opacity="0.5"
+      />
 
       {/* ATS label */}
       <text

@@ -33,7 +33,7 @@ export const USLUGE_CONFIG = {
     },
     {
       code: "Klase tačnosti",
-      title: "Verifikacija vaga klasa I–IIII",
+      title: "Verifikacija vaga klasa II–IIII",
       body: "Inspekcijske aktivnosti pokrivaju verifikaciju neautomatskih merila mase u svim klasama tačnosti — od precizne (II) do industrijske (IIII). Klasa I (analitička/etalon) je u pripremi za uskoro proširenje akreditovanog opsega.",
       authority: "Opseg inspekcije · SRPS ISO/IEC 17020",
     },

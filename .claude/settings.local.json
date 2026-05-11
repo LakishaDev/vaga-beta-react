@@ -7,7 +7,9 @@
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{size_download}b %{content_type}\" \"https://vagabeta.rs/imgs/usluge/og-usluge.jpg\")",
       "Bash(curl -s -o /dev/null -w \"%{http_code} %{size_download}b %{content_type}\" \"https://vagabeta.rs/imgs/usluge/og-usluge.png\")",
       "Bash(ls -la public/imgs/usluge/og-usluge.*)",
-      "Bash(dir public\\\\imgs\\\\usluge\\\\og-usluge.*)"
+      "Bash(dir public\\\\imgs\\\\usluge\\\\og-usluge.*)",
+      "Bash(Get-Content \"C:\\\\Users\\\\lazar\\\\AppData\\\\Local\\\\Temp\\\\claude\\\\c--Users-lazar-Desktop-PROJEKTI-VAGA-BETA-Web-vaga-beta-react\\\\cf85c348-0757-40ae-a858-fc8872b46869\\\\tasks\\\\bw51216r9.output\" -Tail 20)",
+      "Bash(node -e \"import\\('./src/pages/services/usluge/uslugeStyles.js'\\).then\\(\\(\\) => console.log\\('OK'\\)\\).catch\\(e => console.error\\(e.message\\)\\)\")"
     ]
   }
 }
