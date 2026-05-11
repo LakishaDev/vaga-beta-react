@@ -418,6 +418,13 @@ const NOINDEX_PATH_PREFIXES = [
 ];
 
 const STATIC_PAGE_META = {
+  "/usluge": {
+    title:
+      "Akreditovano kontrolno telo ATC 06-373 — SRPS ISO/IEC 17020 | Vaga Beta",
+    description:
+      "Akreditovano kontrolno telo (ATC 06-373) po SRPS ISO/IEC 17020 — zakonsko overavanje, žigosanje, servis i kalibracija vaga klasa II, III i IIII. Sopstveni park 25+ tona etaloniranih tegova. Brz odziv 24h, pokrivamo celu Srbiju.",
+    image: "https://vagabeta.rs/imgs/usluge/og-usluge.jpg",
+  },
   "/kontakt": {
     title: "Kontakt | Vaga Beta",
     description:
@@ -437,6 +444,16 @@ const STATIC_PAGE_META = {
     title: "Newsletter | Vaga Beta",
     description:
       "Prijavite se na Vaga Beta newsletter i dobijajte korisne novosti, akcije i ponude.",
+  },
+  "/aplikacija": {
+    title: "eVaga Aplikacija - Mobilno Rešenje | Vaga Beta",
+    description:
+      "Preuzmite eVaga aplikaciju za upravljanje vagama sa mobilnog uređaja. Jednostavno, brzo, efikasno.",
+  },
+  "/evaga-desktop": {
+    title: "eVaga Desktop - Desktop Softver za Vage | Vaga Beta",
+    description:
+      "Profesionalan desktop softver za upravljanje vagama, skladištem i poslovnim procesima. Probna verzija dostupna.",
   },
 };
 
@@ -722,6 +739,18 @@ export async function onRequest(context) {
         /<meta\s+property=["']og:url["'][^>]*>/i,
         `<meta property="og:url" content="${escapeHtml(canonicalUrl)}" />`,
       );
+      if (staticMeta.image) {
+        template = replaceOrInsertHeadTag(
+          template,
+          /<meta\s+property=["']og:image["'][^>]*>/i,
+          `<meta property="og:image" content="${escapeHtml(staticMeta.image)}" />`,
+        );
+        template = replaceOrInsertHeadTag(
+          template,
+          /<meta\s+name=["']twitter:image["'][^>]*>/i,
+          `<meta name="twitter:image" content="${escapeHtml(staticMeta.image)}" />`,
+        );
+      }
       template = replaceOrInsertHeadTag(
         template,
         /<meta\s+name=["']twitter:title["'][^>]*>/i,
