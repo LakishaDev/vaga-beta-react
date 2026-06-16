@@ -164,6 +164,16 @@ service cloud.firestore {
       allow write: if isAdmin();
     }
     
+    /* ============================
+       RELEASES — update sistem
+       - Čitanje: published verzije su javne; draft samo admin
+       - Pisanje: isključivo Cloud Functions (write: false iz frontenda)
+    ============================ */
+    match /releases/{version} {
+      allow read: if resource.data.status == "published" || isAdmin();
+      allow write: if false;
+    }
+
     // fallback za sve ostalo - zabrani
     match /{document=**} {
       allow read, write: if false;

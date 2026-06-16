@@ -89,6 +89,34 @@ async function verifyFirebaseJWT(token, env) {
   }
 }
 
+async function verifyFeedToken(token, env) {
+  if (!env.FEED_TOKEN_SECRET || !token) return false;
+  try {
+    const decoded = JSON.parse(atob(token.replace(/-/g, "+").replace(/_/g, "/")));
+    const { version, app, expiresAt, sig } = decoded;
+    if (!version || !app || !expiresAt || !sig) return false;
+    if (Math.floor(Date.now() / 1000) > expiresAt) return false;
+
+    const key = await crypto.subtle.importKey(
+      "raw",
+      new TextEncoder().encode(env.FEED_TOKEN_SECRET),
+      { name: "HMAC", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+    const payload = `${version}:${app}:${expiresAt}`;
+    const expectedSig = Array.from(
+      new Uint8Array(
+        await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload))
+      )
+    ).map((b) => b.toString(16).padStart(2, "0")).join("");
+
+    return expectedSig === sig;
+  } catch {
+    return false;
+  }
+}
+
 async function validateAuth(request, env) {
   if (
     request.method === "GET" ||
@@ -663,10 +691,25 @@ export default {
         response = await handleImageDownload(request, env, slug, filename);
       }
 
-      // Download endpoint
+      // Download endpoint — software-updates/* prihvata feedToken umesto Firebase logina
       else if (path.startsWith("/download/")) {
         const key = path.replace("/download/", "");
-        response = await handleDownload(request, env, key);
+        if (key.startsWith("software-updates/")) {
+          const feedToken =
+            url.searchParams.get("feedToken") ||
+            request.headers.get("X-Feed-Token");
+          const valid = await verifyFeedToken(feedToken, env);
+          if (!valid) {
+            response = new Response(JSON.stringify({ error: "Unauthorized" }), {
+              status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          } else {
+            response = await handleDownload(request, env, key);
+          }
+        } else {
+          response = await handleDownload(request, env, key);
+        }
       }
 
       // Delete endpoint

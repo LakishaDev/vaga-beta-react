@@ -38,6 +38,7 @@ import AdminOrders from "./pages/shop/AdminOrders";
 import PasswordResetForm from "./components/shop/PasswordResetForm";
 import { AuthProvider } from "./contexts/shop/auth/AuthProvider";
 import { LicensesPage, OrdersPage } from "./pages/admin/licensing";
+import { UpdatesPage } from "./pages/admin/updates";
 import { usePromo } from "./contexts/PromoContext";
 import { Toaster } from "react-hot-toast";
 
@@ -134,6 +135,10 @@ function Prodavnica() {
                 <Route
                   path="/prodavnica/admin/licenses"
                   element={<LicensesPage />}
+                />
+                <Route
+                  path="/prodavnica/admin/updates"
+                  element={<UpdatesPage />}
                 />
                 <Route
                   path="/prodavnica/admin/licenses/orders"

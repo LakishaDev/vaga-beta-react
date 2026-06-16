@@ -41,3 +41,10 @@ export { adminChangePassword } from "./users/adminChangePassword";
 
 // Product slug validation
 export { validateProductSlug } from "./products/validateProductSlug";
+
+// Update system
+export { updateCheck } from "./updates/updateCheck";
+export { ciRegisterRelease } from "./updates/ciRegisterRelease";
+export { adminPublishRelease } from "./updates/adminPublishRelease";
+export { adminUnpublishRelease } from "./updates/adminUnpublishRelease";
+export { adminDeleteRelease } from "./updates/adminDeleteRelease";
