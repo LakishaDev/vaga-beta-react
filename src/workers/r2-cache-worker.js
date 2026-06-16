@@ -92,24 +92,27 @@ async function verifyFirebaseJWT(token, env) {
 async function verifyFeedToken(token, env) {
   if (!env.FEED_TOKEN_SECRET || !token) return false;
   try {
-    const decoded = JSON.parse(atob(token.replace(/-/g, "+").replace(/_/g, "/")));
+    const decoded = JSON.parse(
+      new TextDecoder().decode(
+        Uint8Array.from(atob(token.replace(/-/g, "+").replace(/_/g, "/")), (c) => c.charCodeAt(0))
+      )
+    );
     const { version, app, expiresAt, sig } = decoded;
     if (!version || !app || !expiresAt || !sig) return false;
     if (Math.floor(Date.now() / 1000) > expiresAt) return false;
 
-    const key = await crypto.subtle.importKey(
+    const cryptoKey = await crypto.subtle.importKey(
       "raw",
       new TextEncoder().encode(env.FEED_TOKEN_SECRET),
       { name: "HMAC", hash: "SHA-256" },
       false,
-      ["verify"],
+      ["sign"],
     );
     const payload = `${version}:${app}:${expiresAt}`;
-    const expectedSig = Array.from(
-      new Uint8Array(
-        await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(payload))
-      )
-    ).map((b) => b.toString(16).padStart(2, "0")).join("");
+    const sigBytes = await crypto.subtle.sign("HMAC", cryptoKey, new TextEncoder().encode(payload));
+    const expectedSig = Array.from(new Uint8Array(sigBytes))
+      .map((b) => b.toString(16).padStart(2, "0"))
+      .join("");
 
     return expectedSig === sig;
   } catch {

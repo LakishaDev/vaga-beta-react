@@ -4,6 +4,7 @@ import * as crypto from "crypto";
 import { signPayload } from "../crypto/signToken";
 
 const FEED_TOKEN_SECRET = process.env.FEED_TOKEN_SECRET!;
+const R2_WORKER_URL = (process.env.R2_WORKER_URL ?? "https://worker.vagabeta.rs").replace(/\/$/, "");
 const FEED_TOKEN_TTL_SECONDS = 3600; // 1h
 
 function generateFeedToken(version: string, app: string): string {
@@ -81,14 +82,18 @@ export const updateCheck = onRequest(async (req, res) => {
 
     const artifact = app === "server" ? release.artifacts?.server : release.artifacts?.client;
     const feedToken = generateFeedToken(latestVersion, app);
+    const feedUrl = artifact?.feedPath
+      ? `${R2_WORKER_URL}/download/${artifact.feedPath}`
+      : null;
+    const setupUrl = artifact?.setupUrl ?? null;
 
     const payload = {
       updateAvailable: true,
       version: latestVersion,
       channel,
-      feedUrl: artifact?.feedPath ?? null,
-      setupUrl: artifact?.setupUrl ?? null,
+      feedUrl,
       feedToken,
+      setupUrl,
       notes: release.notes ?? "",
       mandatory: release.mandatory ?? false,
       minServerVersion: release.minServerVersion ?? "0.0.0",
