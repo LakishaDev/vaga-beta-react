@@ -47,14 +47,14 @@ export const ciRegisterRelease = onRequest(async (req, res) => {
       minClientVersion,
       artifacts: {
         server: {
-          feedPath: artifacts.server.feedPath ?? `server`,
+          feedPath: artifacts.server.feedPath ?? `software-updates/server/${channel}`,
           setupUrl: artifacts.server.setupUrl ?? null,
           fullSize: artifacts.server.fullSize ?? null,
           deltaSize: artifacts.server.deltaSize ?? null,
           sha256: artifacts.server.sha256 ?? null,
         },
         client: {
-          feedPath: artifacts.client.feedPath ?? `client`,
+          feedPath: artifacts.client.feedPath ?? `software-updates/client/${channel}`,
           setupUrl: artifacts.client.setupUrl ?? null,
           fullSize: artifacts.client.fullSize ?? null,
           deltaSize: artifacts.client.deltaSize ?? null,

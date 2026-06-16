@@ -12,6 +12,18 @@ function sanitizeFilename(filename = "") {
     .trim();
 }
 
+// Namespace ulazi sirov u R2 ključ (`v1/<namespace>/...`); ukloni svaki
+// path-traversal pre upotrebe da se ne mogu kreirati ključevi van v1/.
+function sanitizeNamespace(namespace = "general") {
+  const cleaned = String(namespace)
+    .replace(/\\/g, "/")
+    .replace(/\.\./g, "")
+    .replace(/\/{2,}/g, "/")
+    .replace(/^\/+|\/+$/g, "")
+    .trim();
+  return cleaned || "general";
+}
+
 function getBucketForNamespace(env, namespace = "general") {
   if (namespace === "product-images" && env.R2_CDN) {
     return env.R2_CDN;
@@ -89,8 +101,10 @@ async function verifyFirebaseJWT(token, env) {
   }
 }
 
+// Vraća dekodovani payload ({ version, app, expiresAt, sig }) ako je token
+// validan, inače null. Poziva ga download ruta da veže `app` za putanju.
 async function verifyFeedToken(token, env) {
-  if (!env.FEED_TOKEN_SECRET || !token) return false;
+  if (!env.FEED_TOKEN_SECRET || !token) return null;
   try {
     const decoded = JSON.parse(
       new TextDecoder().decode(
@@ -98,8 +112,8 @@ async function verifyFeedToken(token, env) {
       )
     );
     const { version, app, expiresAt, sig } = decoded;
-    if (!version || !app || !expiresAt || !sig) return false;
-    if (Math.floor(Date.now() / 1000) > expiresAt) return false;
+    if (!version || !app || !expiresAt || !sig) return null;
+    if (Math.floor(Date.now() / 1000) > expiresAt) return null;
 
     const cryptoKey = await crypto.subtle.importKey(
       "raw",
@@ -114,9 +128,9 @@ async function verifyFeedToken(token, env) {
       .map((b) => b.toString(16).padStart(2, "0"))
       .join("");
 
-    return expectedSig === sig;
+    return expectedSig === sig ? decoded : null;
   } catch {
-    return false;
+    return null;
   }
 }
 
@@ -189,7 +203,7 @@ async function handleUpload(request, env) {
 
   const formData = await request.formData();
   const file = formData.get("file");
-  const namespace = formData.get("namespace") || "general";
+  const namespace = sanitizeNamespace(formData.get("namespace") || "general");
   const customFilename = sanitizeFilename(formData.get("filename") || "");
   const cacheControl =
     formData.get("cacheControl") || "public, max-age=31536000";
@@ -279,7 +293,7 @@ async function handleUploadBatch(request, env) {
   }
 
   const formData = await request.formData();
-  const namespace = formData.get("namespace") || "general";
+  const namespace = sanitizeNamespace(formData.get("namespace") || "general");
   const slug = sanitizeFilename(formData.get("slug") || "");
   const cacheControl =
     formData.get("cacheControl") || "public, max-age=31536000, immutable";
@@ -596,11 +610,10 @@ async function handlePresignedUpload(request, env) {
   }
 
   try {
-    const {
-      filename,
-      namespace = "general",
-      expiresIn = 3600,
-    } = await request.json();
+    const body = await request.json();
+    const filename = sanitizeFilename(body.filename || "");
+    const namespace = sanitizeNamespace(body.namespace || "general");
+    const expiresIn = body.expiresIn ?? 3600;
 
     if (!filename) {
       return new Response(JSON.stringify({ error: "Filename is required" }), {
@@ -694,17 +707,24 @@ export default {
         response = await handleImageDownload(request, env, slug, filename);
       }
 
-      // Download endpoint — software-updates/* prihvata feedToken umesto Firebase logina
+      // Download endpoint — feed artefakti su pod software-updates/<app>/<channel>/...
+      // i traže važeći feedToken čiji `app` mora da odgovara putanji.
       else if (path.startsWith("/download/")) {
         const key = path.replace("/download/", "");
         if (key.startsWith("software-updates/")) {
           const feedToken =
             url.searchParams.get("feedToken") ||
             request.headers.get("X-Feed-Token");
-          const valid = await verifyFeedToken(feedToken, env);
-          if (!valid) {
+          const decoded = await verifyFeedToken(feedToken, env);
+          if (!decoded) {
             response = new Response(JSON.stringify({ error: "Unauthorized" }), {
               status: 401,
+              headers: { "Content-Type": "application/json" },
+            });
+          } else if (decoded.app !== key.split("/")[1]) {
+            // Token za "server" ne sme da povuče "client" artefakte i obrnuto
+            response = new Response(JSON.stringify({ error: "Forbidden" }), {
+              status: 403,
               headers: { "Content-Type": "application/json" },
             });
           } else {

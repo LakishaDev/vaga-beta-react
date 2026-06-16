@@ -1,7 +1,7 @@
 import { onRequest, HttpsError } from "firebase-functions/v2/https";
 import { getFirestore, Timestamp } from "firebase-admin/firestore";
 import * as crypto from "crypto";
-import { signPayload } from "../crypto/signToken";
+import { signString } from "../crypto/signToken";
 
 const FEED_TOKEN_SECRET = process.env.FEED_TOKEN_SECRET!;
 const R2_WORKER_URL = (process.env.R2_WORKER_URL ?? "https://worker.vagabeta.rs").replace(/\/$/, "");
@@ -101,7 +101,9 @@ export const updateCheck = onRequest(async (req, res) => {
       issuedAt: now.toDate().toISOString(),
     };
 
-    const signature = signPayload(payload);
+    // Potpisuje se isti deterministički string koji desktop klijent
+    // verifikuje (UpdateService: `${version}:${feedUrl}:${feedToken}`).
+    const signature = signString(`${latestVersion}:${feedUrl}:${feedToken}`);
 
     res.json({ ...payload, signature });
   } catch (err: any) {

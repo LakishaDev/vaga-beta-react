@@ -8,3 +8,13 @@ export function signPayload(payload: any): string {
   sign.end();
   return sign.sign(PRIVATE_KEY, "base64");
 }
+
+// Potpisuje sirov string (bez JSON.stringify) — koristi se kad klijent
+// verifikuje deterministički string (npr. `version:feedUrl:feedToken`)
+// preko RSA VerifyData(SHA256, Pkcs1), bez rekonstrukcije JSON-a.
+export function signString(data: string): string {
+  const sign = crypto.createSign("RSA-SHA256");
+  sign.update(data);
+  sign.end();
+  return sign.sign(PRIVATE_KEY, "base64");
+}
