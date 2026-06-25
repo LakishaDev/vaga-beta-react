@@ -2,7 +2,7 @@
 // Admin aplikacija za admin.vagabeta.rs poddomen
 // Renderuje se samo na admin host-u, odvojeno od marketing/shop chrome-a
 
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./contexts/shop/auth/AuthProvider";
 import { SnackbarProvider } from "./contexts/snackbar/SnackbarProvider";
 import AdminLayout from "./components/admin/AdminLayout";
@@ -40,23 +40,18 @@ export default function AdminApp() {
             },
           }}
         />
-        <BrowserRouter>
-          <Suspense fallback={<Loader />}>
-            <Routes>
-              <Route path="/login" element={<AdminLoginPage />} />
-              <Route element={<AdminLayout />}>
-                <Route index element={<Navigate to="/licenses" replace />} />
-                <Route path="/licenses" element={<LicensesPage />} />
-                <Route
-                  path="/licenses/orders"
-                  element={<OrdersPage />}
-                />
-                <Route path="/updates" element={<UpdatesPage />} />
-              </Route>
-              <Route path="*" element={<Navigate to="/licenses" replace />} />
-            </Routes>
-          </Suspense>
-        </BrowserRouter>
+        <Suspense fallback={<Loader />}>
+          <Routes>
+            <Route path="/login" element={<AdminLoginPage />} />
+            <Route element={<AdminLayout />}>
+              <Route index element={<Navigate to="/licenses" replace />} />
+              <Route path="/licenses" element={<LicensesPage />} />
+              <Route path="/licenses/orders" element={<OrdersPage />} />
+              <Route path="/updates" element={<UpdatesPage />} />
+            </Route>
+            <Route path="*" element={<Navigate to="/licenses" replace />} />
+          </Routes>
+        </Suspense>
       </AuthProvider>
     </SnackbarProvider>
   );
