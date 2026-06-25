@@ -15,6 +15,7 @@ import { PromoProvider } from "./contexts/PromoContext";
 import { DataSaverProvider } from "./contexts/DataSaverContext";
 import { lazy, Suspense, useEffect, useState } from "react";
 
+const AdminApp = lazy(() => import("./AdminApp"));
 const Home = lazy(() => import("./pages/home/HomeModern"));
 const Usluge = lazy(() => import("./pages/services/Usluge"));
 const Kontakt = lazy(() => import("./pages/contact/KontaktModern"));
@@ -83,7 +84,7 @@ function AppContent() {
 
 // Glavna App komponenta - bez Router wrapper-a
 // Router se dodeljuje na entry-client.jsx i entry-server.jsx
-function App() {
+function MarketingApp() {
   const [showNewsletterModal, setShowNewsletterModal] = useState(false);
 
   // Inicijalizacija Lenis za glatko skrolovanje
@@ -170,5 +171,20 @@ function App() {
 const CloudflareDeploymentDebugLazy = lazy(
   () => import("./components/CloudflareDeploymentDebug"),
 );
+
+// Router-less dispatcher: admin host → AdminApp, sve ostalo → MarketingApp
+function App() {
+  if (
+    typeof window !== "undefined" &&
+    window.location.hostname.startsWith("admin.")
+  ) {
+    return (
+      <Suspense fallback={<Loader />}>
+        <AdminApp />
+      </Suspense>
+    );
+  }
+  return <MarketingApp />;
+}
 
 export default App;

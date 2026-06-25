@@ -13,6 +13,8 @@ import {
   CheckCircle,
   FileText,
   AlertCircle,
+  Settings,
+  Save,
 } from "lucide-react";
 import {
   collection,
@@ -22,6 +24,11 @@ import {
 } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions, auth } from "../../../utils/firebase";
+import {
+  setVersionPolicy,
+  subscribeVersionPolicies,
+  subscribePublishedReleases,
+} from "../../../services/versionControlService";
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -241,6 +248,15 @@ export default function UpdatesPage() {
   const [loadingAction, setLoadingAction] = useState(false);
   const [notification, setNotification] = useState(null);
 
+  // Version policy state (po kanalu)
+  const [policies, setPolicies] = useState({});
+  const [publishedReleases, setPublishedReleases] = useState([]);
+  const [policyForm, setPolicyForm] = useState({
+    stable: { targetVersion: "", mandatory: false, defaultGraceDays: 0 },
+    beta: { targetVersion: "", mandatory: false, defaultGraceDays: 0 },
+  });
+  const [savingPolicy, setSavingPolicy] = useState({});
+
   // Auth guard — isti obrazac kao LicensesPage
   useEffect(() => {
     const unsub = auth.onAuthStateChanged((user) => {
@@ -261,9 +277,53 @@ export default function UpdatesPage() {
     return () => unsub();
   }, [allowed]);
 
+  // Version policies + published releases
+  useEffect(() => {
+    if (!allowed) return;
+    const unsubPolicies = subscribeVersionPolicies((p) => {
+      setPolicies(p);
+      // Sinhronizuj form sa trenutnim vrednostima
+      setPolicyForm((prev) => {
+        const next = { ...prev };
+        for (const ch of ["stable", "beta"]) {
+          if (p[ch]) {
+            next[ch] = {
+              targetVersion: p[ch].targetVersion ?? "",
+              mandatory: p[ch].mandatory ?? false,
+              defaultGraceDays: p[ch].defaultGraceDays ?? 0,
+            };
+          }
+        }
+        return next;
+      });
+    });
+    const unsubReleases = subscribePublishedReleases(setPublishedReleases);
+    return () => {
+      unsubPolicies();
+      unsubReleases();
+    };
+  }, [allowed]);
+
   const notify = (msg, type = "success") => {
     setNotification({ msg, type });
     setTimeout(() => setNotification(null), 4000);
+  };
+
+  const handleSavePolicy = async (channel) => {
+    setSavingPolicy((p) => ({ ...p, [channel]: true }));
+    try {
+      const form = policyForm[channel];
+      await setVersionPolicy(channel, {
+        targetVersion: form.targetVersion || null,
+        mandatory: form.mandatory,
+        defaultGraceDays: Number(form.defaultGraceDays) || 0,
+      });
+      notify(`Politika za kanal "${channel}" je sačuvana`);
+    } catch (err) {
+      notify(err.message ?? "Greška pri čuvanju politike", "error");
+    } finally {
+      setSavingPolicy((p) => ({ ...p, [channel]: false }));
+    }
   };
 
   const callFn = async (name, data) => {
@@ -364,6 +424,96 @@ export default function UpdatesPage() {
             </motion.div>
           )}
         </AnimatePresence>
+
+        {/* Globalna politika verzija */}
+        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+          <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-5">
+            <Settings className="w-4 h-4 text-brand-secondary" />
+            Globalna politika verzija
+          </h2>
+          <div className="grid md:grid-cols-2 gap-6">
+            {["stable", "beta"].map((channel) => {
+              const form = policyForm[channel];
+              const current = policies[channel];
+              return (
+                <div key={channel} className="border border-gray-100 rounded-xl p-4 space-y-3">
+                  <div className="flex items-center justify-between">
+                    <span className="font-semibold text-sm text-gray-800 capitalize">{channel}</span>
+                    {current?.targetVersion && (
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-blue-50 text-blue-600 border border-blue-100 font-mono">
+                        aktivan: v{current.targetVersion}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="text-xs text-gray-500 font-medium">Ciljna verzija</label>
+                    <select
+                      value={form.targetVersion}
+                      onChange={(e) =>
+                        setPolicyForm((p) => ({
+                          ...p,
+                          [channel]: { ...p[channel], targetVersion: e.target.value },
+                        }))
+                      }
+                      className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-brand-secondary bg-white"
+                    >
+                      <option value="">— Najnoviji (automatski) —</option>
+                      {publishedReleases
+                        .filter((r) => !r.channel || r.channel === channel)
+                        .map((r) => (
+                          <option key={r.id} value={r.version}>
+                            v{r.version}{r.isLatest ? " (najnoviji)" : ""}
+                          </option>
+                        ))}
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs text-gray-500 font-medium">Grace period (dana)</label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={form.defaultGraceDays}
+                        onChange={(e) =>
+                          setPolicyForm((p) => ({
+                            ...p,
+                            [channel]: { ...p[channel], defaultGraceDays: e.target.value },
+                          }))
+                        }
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-brand-secondary"
+                      />
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer mt-5">
+                      <input
+                        type="checkbox"
+                        checked={form.mandatory}
+                        onChange={(e) =>
+                          setPolicyForm((p) => ({
+                            ...p,
+                            [channel]: { ...p[channel], mandatory: e.target.checked },
+                          }))
+                        }
+                        className="rounded"
+                      />
+                      <span className="text-sm text-gray-700">Obavezna</span>
+                    </label>
+                  </div>
+
+                  <button
+                    onClick={() => handleSavePolicy(channel)}
+                    disabled={savingPolicy[channel]}
+                    className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-brand-secondary text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60"
+                  >
+                    <Save className="w-3.5 h-3.5" />
+                    {savingPolicy[channel] ? "Čuvanje..." : "Sačuvaj"}
+                  </button>
+                </div>
+              );
+            })}
+          </div>
+        </div>
 
         {/* Releases lista */}
         {releases.length === 0 ? (

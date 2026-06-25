@@ -33,7 +33,9 @@ import {
   Sparkles,
   Shield,
   Users,
+  RefreshCw,
 } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { auth } from "../../../utils/firebase";
 import { useLicenseOptimistic } from "../../../hooks/useLicenseOptimistic";
 import {
@@ -95,6 +97,8 @@ const FilterBadge = ({
 };
 
 export default function LicensesPage() {
+  const navigate = useNavigate();
+
   // ===============================================================================
   // STATE
   // ===============================================================================
@@ -279,6 +283,20 @@ export default function LicensesPage() {
             </div>
           </div>
           <div className="flex gap-3">
+            <motion.button
+              whileHover={{ scale: 1.05, y: -2 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => {
+                const isAdmin =
+                  typeof window !== "undefined" &&
+                  window.location.hostname.startsWith("admin.");
+                navigate(isAdmin ? "/updates" : "/prodavnica/admin/updates");
+              }}
+              className="px-4 py-2.5 rounded-xl font-semibold flex items-center gap-2 bg-white text-text-primary hover:bg-gray-50 border border-gray-200 shadow-sm transition-all"
+            >
+              <RefreshCw size={16} />
+              Updates
+            </motion.button>
             {activeTab === "licenses" && (
               <>
                 <motion.button

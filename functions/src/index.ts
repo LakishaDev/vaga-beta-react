@@ -48,3 +48,7 @@ export { ciRegisterRelease } from "./updates/ciRegisterRelease";
 export { adminPublishRelease } from "./updates/adminPublishRelease";
 export { adminUnpublishRelease } from "./updates/adminUnpublishRelease";
 export { adminDeleteRelease } from "./updates/adminDeleteRelease";
+export { adminSetVersionPolicy } from "./updates/adminSetVersionPolicy";
+
+// Version control per-license
+export { adminSetLicenseVersion } from "./licenses/adminSetLicenseVersion";

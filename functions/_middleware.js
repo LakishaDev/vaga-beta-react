@@ -484,6 +484,11 @@ export async function onRequest(context) {
   const url = new URL(request.url);
   let pathname = url.pathname;
 
+  // Admin poddomen: preskoci SSR i promo injection, servira staticki CSR shell
+  if (url.hostname.startsWith("admin.")) {
+    return next();
+  }
+
   const normalizedPathname =
     pathname.length > 1 ? pathname.replace(/\/+$/, "") || "/" : pathname;
   const isProtocolOrHostNonCanonical =

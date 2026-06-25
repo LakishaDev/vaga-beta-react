@@ -19,7 +19,7 @@
 // ✅ Glassmorphism i gradient dizajn
 // ===============================================================================
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 // eslint-disable-next-line no-unused-vars
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -43,6 +43,8 @@ import {
   Sparkles,
   Shield,
   AlertTriangle,
+  GitBranch,
+  RotateCcw,
 } from "lucide-react";
 import {
   formatLicenseDate,
@@ -51,6 +53,11 @@ import {
   LICENSE_TYPES,
   PACKAGE_PRICES,
 } from "../../../utils/licenseUtils";
+import {
+  setLicenseVersion,
+  clearLicenseVersion,
+  subscribePublishedReleases,
+} from "../../../services/versionControlService";
 
 /**
  * Sekcija drawer-a sa glassmorphism efektom
@@ -104,6 +111,34 @@ export default function LicenseDetailsDrawer({
   const [convertType, setConvertType] = useState(LICENSE_TYPES.BASIC);
   const [loading, setLoading] = useState(false);
 
+  // Version control state
+  const [publishedReleases, setPublishedReleases] = useState([]);
+  const [versionForm, setVersionForm] = useState({
+    targetVersion: "",
+    mandatory: false,
+    graceDays: 0,
+  });
+  const [versionLoading, setVersionLoading] = useState(false);
+  const [versionMsg, setVersionMsg] = useState(null);
+
+  useEffect(() => {
+    if (!isOpen) return;
+    const unsub = subscribePublishedReleases(setPublishedReleases);
+    return () => unsub();
+  }, [isOpen]);
+
+  // Sync form s podacima licence kad se otvori
+  useEffect(() => {
+    if (isOpen && license) {
+      setVersionForm({
+        targetVersion: license.targetVersion ?? "",
+        mandatory: license.versionMandatory ?? false,
+        graceDays: license.versionGraceDays ?? 0,
+      });
+      setVersionMsg(null);
+    }
+  }, [isOpen, license]);
+
   if (!license) return null;
 
   const remainingDays = getRemainingDays(license.expiresAt);
@@ -144,6 +179,38 @@ export default function LicenseDetailsDrawer({
       setShowConvertForm(false);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleApplyVersion = async () => {
+    setVersionLoading(true);
+    setVersionMsg(null);
+    try {
+      await setLicenseVersion(license.licenseKey, {
+        targetVersion: versionForm.targetVersion || null,
+        mode: versionForm.targetVersion ? "pin" : "follow",
+        mandatory: versionForm.mandatory,
+        graceDays: Number(versionForm.graceDays) || null,
+      });
+      setVersionMsg({ text: "Verzija je primenjena.", type: "success" });
+    } catch (err) {
+      setVersionMsg({ text: err.message ?? "Greška", type: "error" });
+    } finally {
+      setVersionLoading(false);
+    }
+  };
+
+  const handleClearVersion = async () => {
+    setVersionLoading(true);
+    setVersionMsg(null);
+    try {
+      await clearLicenseVersion(license.licenseKey);
+      setVersionForm({ targetVersion: "", mandatory: false, graceDays: 0 });
+      setVersionMsg({ text: "Verzija resetovana na globalni default.", type: "success" });
+    } catch (err) {
+      setVersionMsg({ text: err.message ?? "Greška", type: "error" });
+    } finally {
+      setVersionLoading(false);
     }
   };
 
@@ -483,6 +550,97 @@ export default function LicenseDetailsDrawer({
                     </div>
                   </DrawerSection>
                 )}
+
+              {/* Kontrola verzije */}
+              <DrawerSection title="Kontrola verzije" icon={GitBranch}>
+                <div className="bg-gradient-to-br from-gray-50/80 to-white rounded-2xl p-4 border border-gray-100/50 shadow-sm space-y-3">
+                  {/* Trenutni status */}
+                  <div className="flex items-center justify-between text-xs">
+                    <span className="text-gray-500">Režim</span>
+                    <span className={`px-2 py-0.5 rounded-lg font-semibold ${license.versionMode === "pin" ? "bg-blue-100 text-blue-700" : "bg-gray-100 text-gray-600"}`}>
+                      {license.versionMode === "pin" ? `Pin: v${license.targetVersion}` : "Global default"}
+                    </span>
+                  </div>
+                  {license.downgradeDeadline && (
+                    <div className="flex items-center justify-between text-xs">
+                      <span className="text-gray-500">Downgrade deadline</span>
+                      <span className="text-amber-700 font-medium">
+                        {formatLicenseDate(license.downgradeDeadline)}
+                      </span>
+                    </div>
+                  )}
+
+                  {/* Forma za pin */}
+                  <div className="space-y-2 pt-1">
+                    <label className="text-xs text-gray-500 font-medium">Ciljna verzija</label>
+                    <select
+                      value={versionForm.targetVersion}
+                      onChange={(e) => setVersionForm((f) => ({ ...f, targetVersion: e.target.value }))}
+                      className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-bluegreen bg-white"
+                    >
+                      <option value="">— Prati globalni default —</option>
+                      {publishedReleases.map((r) => (
+                        <option key={r.id} value={r.version}>
+                          v{r.version}{r.isLatest ? " (najnoviji)" : ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs text-gray-500 font-medium">Grace period (dana)</label>
+                      <input
+                        type="number"
+                        min={0}
+                        value={versionForm.graceDays}
+                        onChange={(e) => setVersionForm((f) => ({ ...f, graceDays: e.target.value }))}
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-bluegreen"
+                      />
+                    </div>
+                    <label className="flex items-center gap-2 cursor-pointer mt-5">
+                      <input
+                        type="checkbox"
+                        checked={versionForm.mandatory}
+                        onChange={(e) => setVersionForm((f) => ({ ...f, mandatory: e.target.checked }))}
+                        className="rounded"
+                      />
+                      <span className="text-sm text-gray-700">Obavezna</span>
+                    </label>
+                  </div>
+
+                  {/* Poruka */}
+                  {versionMsg && (
+                    <p className={`text-xs font-medium ${versionMsg.type === "error" ? "text-red-600" : "text-emerald-600"}`}>
+                      {versionMsg.text}
+                    </p>
+                  )}
+
+                  {/* Dugmad */}
+                  <div className="flex gap-2 pt-1">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleApplyVersion}
+                      disabled={versionLoading}
+                      className="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-bluegreen to-sheen text-white text-sm font-semibold flex items-center justify-center gap-1.5 disabled:opacity-60 shadow-sm"
+                    >
+                      <Check size={14} />
+                      {versionLoading ? "..." : "Primeni verziju"}
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={handleClearVersion}
+                      disabled={versionLoading}
+                      className="px-3 py-2.5 rounded-xl bg-gray-100 text-gray-600 text-sm font-semibold hover:bg-gray-200 transition-colors disabled:opacity-60 flex items-center gap-1.5"
+                    >
+                      <RotateCcw size={14} />
+                      Reset
+                    </motion.button>
+                  </div>
+                </div>
+              </DrawerSection>
 
               {/* Akcije */}
               <div className="space-y-3 pt-4 border-t border-gray-100">
