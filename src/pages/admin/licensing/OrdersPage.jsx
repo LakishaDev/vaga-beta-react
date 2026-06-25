@@ -102,7 +102,7 @@ const FilterBadge = ({
 }) => {
   const colorStyles = {
     default: isActive
-      ? "bg-gradient-to-r from-brand-secondary to-brand-accent text-white shadow-lg shadow-brand-secondary/25"
+      ? "bg-gradient-to-r from-admin-primary to-admin-accent text-white shadow-lg shadow-admin-primary/25"
       : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200",
     paid: isActive
       ? "bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg shadow-green-200"
@@ -150,8 +150,8 @@ const OrderMobileCard = ({ order, onSelect }) => (
   >
     <div className="flex justify-between items-start mb-4">
       <div className="flex items-center gap-2.5">
-        <div className="p-2 rounded-xl bg-gradient-to-br from-brand-secondary/10 to-brand-accent/10">
-          <Receipt className="text-brand-secondary" size={18} />
+        <div className="p-2 rounded-xl bg-gradient-to-br from-admin-primary/10 to-admin-accent/10">
+          <Receipt className="text-admin-primary" size={18} />
         </div>
         <span className="font-mono text-sm font-bold text-text-primary">
           #{order.id.slice(0, 8)}
@@ -186,7 +186,7 @@ const OrderMobileCard = ({ order, onSelect }) => (
     <div className="flex justify-end mt-4 pt-4 border-t border-gray-100">
       <Link
         to="/prodavnica/admin/licenses"
-        className="text-brand-secondary text-sm font-semibold flex items-center gap-1.5 hover:underline px-3 py-1.5 rounded-lg hover:bg-brand-secondary/5 transition-all"
+        className="text-admin-primary text-sm font-semibold flex items-center gap-1.5 hover:underline px-3 py-1.5 rounded-lg hover:bg-admin-primary/5 transition-all"
         onClick={(e) => e.stopPropagation()}
       >
         Licenca <ExternalLink size={14} />
@@ -285,8 +285,8 @@ export default function OrdersPage() {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
         <div className="relative">
-          <div className="w-20 h-20 border-4 border-brand-secondary/30 rounded-full" />
-          <div className="w-20 h-20 border-4 border-brand-secondary border-t-transparent rounded-full animate-spin absolute inset-0" />
+          <div className="w-20 h-20 border-4 border-admin-primary/30 rounded-full" />
+          <div className="w-20 h-20 border-4 border-admin-primary border-t-transparent rounded-full animate-spin absolute inset-0" />
         </div>
         <p className="mt-6 text-gray-500 font-medium">Provera pristupa...</p>
       </div>
@@ -316,7 +316,7 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50/50 via-white to-brand-secondary/5">
+    <div className="min-h-screen bg-admin-surface-tint">
       <div className="max-w-7xl mx-auto w-full p-4 sm:p-8 pt-8">
         {/* Header */}
         <motion.div
@@ -325,7 +325,7 @@ export default function OrdersPage() {
           className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8"
         >
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-gradient-to-br from-brand-secondary to-brand-accent shadow-lg shadow-brand-secondary/25">
+            <div className="p-3 rounded-2xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg shadow-admin-primary/25">
               <ShoppingCart className="text-white" size={28} />
             </div>
             <div>
@@ -365,7 +365,7 @@ export default function OrdersPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 placeholder="Pretraži po ID-u, imenu ili emailu..."
-                className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-brand-secondary focus:ring-4 focus:ring-brand-secondary/10 transition-all placeholder:text-gray-400"
+                className="w-full pl-12 pr-12 py-3.5 bg-gray-50/50 border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all placeholder:text-gray-400"
               />
               {searchQuery && (
                 <motion.button
@@ -420,7 +420,7 @@ export default function OrdersPage() {
 
           {/* Results count */}
           <div className="mt-4 pt-4 border-t border-gray-100 flex items-center gap-2 text-sm text-gray-500">
-            <Sparkles size={14} className="text-brand-secondary" />
+            <Sparkles size={14} className="text-admin-primary" />
             <span>
               Pronađeno{" "}
               <strong className="text-text-primary">
@@ -431,7 +431,7 @@ export default function OrdersPage() {
                 <span>
                   {" "}
                   za "
-                  <strong className="text-brand-secondary">
+                  <strong className="text-admin-primary">
                     {searchQuery}
                   </strong>
                   "
@@ -450,8 +450,8 @@ export default function OrdersPage() {
           {loading ? (
             <div className="flex flex-col justify-center items-center py-20">
               <div className="relative">
-                <div className="w-16 h-16 border-4 border-brand-secondary/30 rounded-full" />
-                <div className="w-16 h-16 border-4 border-brand-secondary border-t-transparent rounded-full animate-spin absolute inset-0" />
+                <div className="w-16 h-16 border-4 border-admin-primary/30 rounded-full" />
+                <div className="w-16 h-16 border-4 border-admin-primary border-t-transparent rounded-full animate-spin absolute inset-0" />
               </div>
               <p className="mt-4 text-gray-500 font-medium">
                 Učitavanje porudžbina...
@@ -475,26 +475,26 @@ export default function OrdersPage() {
               <div className="hidden lg:block overflow-hidden rounded-2xl shadow-lg border border-gray-200/80 bg-white">
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200">
-                    <thead className="bg-gradient-to-r from-brand-secondary/10 via-brand-accent/5 to-brand-secondary/10">
+                    <thead className="bg-gradient-to-r from-admin-primary/10 via-admin-accent/5 to-admin-primary/10">
                       <tr>
                         <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
                             <Receipt
                               size={16}
-                              className="text-brand-secondary"
+                              className="text-admin-primary"
                             />
                             ID porudžbine
                           </div>
                         </th>
                         <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <User size={16} className="text-brand-secondary" />
+                            <User size={16} className="text-admin-primary" />
                             Klijent
                           </div>
                         </th>
                         <th className="py-4 px-5 text-left text-sm font-bold text-text-primary">
                           <div className="flex items-center gap-2">
-                            <Key size={16} className="text-brand-secondary" />
+                            <Key size={16} className="text-admin-primary" />
                             Licencni ključ
                           </div>
                         </th>
@@ -505,7 +505,7 @@ export default function OrdersPage() {
                           <div className="flex items-center gap-2">
                             <CreditCard
                               size={16}
-                              className="text-brand-secondary"
+                              className="text-admin-primary"
                             />
                             Iznos
                           </div>
@@ -517,7 +517,7 @@ export default function OrdersPage() {
                           <div className="flex items-center gap-2">
                             <Calendar
                               size={16}
-                              className="text-brand-secondary"
+                              className="text-admin-primary"
                             />
                             Datum
                           </div>
@@ -533,13 +533,13 @@ export default function OrdersPage() {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 20 }}
                             transition={{ delay: index * 0.03 }}
-                            className={`hover:bg-gradient-to-r hover:from-brand-secondary/5 hover:to-transparent transition-all cursor-pointer group ${
+                            className={`hover:bg-gradient-to-r hover:from-admin-primary/5 hover:to-transparent transition-all cursor-pointer group ${
                               index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                             }`}
                             onClick={() => setSelectedOrder(order)}
                           >
                             <td className="px-5 py-4">
-                              <span className="font-mono text-sm font-semibold text-text-primary bg-gray-100 px-2 py-1 rounded-lg group-hover:bg-brand-secondary/10 transition-colors">
+                              <span className="font-mono text-sm font-semibold text-text-primary bg-gray-100 px-2 py-1 rounded-lg group-hover:bg-admin-primary/10 transition-colors">
                                 #{order.id.slice(0, 8)}
                               </span>
                             </td>
@@ -617,11 +617,11 @@ export default function OrdersPage() {
                 onClick={(e) => e.stopPropagation()}
               >
                 {/* Decorative gradients */}
-                <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-brand-secondary/20 to-brand-accent/10 rounded-full blur-3xl" />
+                <div className="absolute -top-20 -right-20 w-40 h-40 bg-gradient-to-br from-admin-primary/20 to-admin-accent/10 rounded-full blur-3xl" />
 
                 {/* Header */}
                 <div className="relative bg-gradient-to-r from-text-primary via-neutral-900 to-text-primary p-5 text-white overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-brand-secondary/20 via-transparent to-brand-accent/20" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-admin-primary/20 via-transparent to-admin-accent/20" />
                   <motion.button
                     whileHover={{ scale: 1.1, rotate: 90 }}
                     whileTap={{ scale: 0.9 }}
@@ -632,7 +632,7 @@ export default function OrdersPage() {
                   </motion.button>
 
                   <div className="relative z-10 flex items-center gap-3">
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-brand-secondary to-brand-accent shadow-lg">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
                       <Receipt size={20} />
                     </div>
                     <div>
@@ -701,8 +701,8 @@ export default function OrdersPage() {
                       Licenca
                     </div>
                     <div className="flex items-center gap-2.5 mb-2">
-                      <div className="p-1.5 rounded-lg bg-brand-secondary/10">
-                        <Key size={12} className="text-brand-secondary" />
+                      <div className="p-1.5 rounded-lg bg-admin-primary/10">
+                        <Key size={12} className="text-admin-primary" />
                       </div>
                       <span className="font-mono text-sm bg-gray-100 px-2 py-0.5 rounded-lg">
                         {selectedOrder.licenseKey || "-"}
@@ -710,7 +710,7 @@ export default function OrdersPage() {
                     </div>
                     <div className="text-sm text-gray-600">
                       Paket:{" "}
-                      <span className="font-semibold text-text-primary px-2 py-0.5 bg-brand-secondary/10 rounded-lg">
+                      <span className="font-semibold text-text-primary px-2 py-0.5 bg-admin-primary/10 rounded-lg">
                         {getLicenseTypeLabel(selectedOrder.licenseType)}
                       </span>
                     </div>

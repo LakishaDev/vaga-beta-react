@@ -16,7 +16,6 @@ import {
   Menu,
   X,
   ChevronRight,
-  KeyRoundIcon,
 } from "lucide-react";
 import { MdAdminPanelSettings } from "react-icons/md";
 import { BiSolidReceipt } from "react-icons/bi";
@@ -57,7 +56,6 @@ const SHOP_NAV = [
 
 const ADMIN_NAV = [
   { to: "/prodavnica/admin", label: "Admin", icon: MdAdminPanelSettings },
-  { to: "/prodavnica/admin/licenses", label: "Licence", icon: KeyRoundIcon },
   { to: "/prodavnica/porudzbine", label: "Porudžbine", icon: BiSolidReceipt },
 ];
 

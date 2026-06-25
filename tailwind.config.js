@@ -1,4 +1,5 @@
 import { designTokens } from "./src/configs/designTokens.js";
+import { adminTheme } from "./src/configs/adminTheme.js";
 
 export const content = ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"];
 export const theme = {
@@ -41,6 +42,20 @@ export const theme = {
       warning: designTokens.colors.semantic.warning,
       error: designTokens.colors.semantic.error,
       info: designTokens.colors.semantic.info,
+
+      // Admin royal-blue theme (scoped to .admin-shell)
+      admin: {
+        primary: adminTheme.colors.primary,
+        "primary-hover": adminTheme.colors.primaryHover,
+        "primary-active": adminTheme.colors.primaryActive,
+        accent: adminTheme.colors.accent,
+        navy: adminTheme.colors.navy,
+        "surface-tint": adminTheme.colors.surfaceTint,
+        border: adminTheme.colors.border,
+        "border-dark": adminTheme.colors.borderDark,
+        text: adminTheme.colors.text,
+        "text-muted": adminTheme.colors.textMuted,
+      },
 
       // Legacy colors (for backward compatibility - will migrate gradually)
       bone: "#CBCFBB",

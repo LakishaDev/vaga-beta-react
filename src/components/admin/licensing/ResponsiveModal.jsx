@@ -70,7 +70,7 @@ export default function ResponsiveModal({
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 bg-charcoal/40 backdrop-blur-md"
+            className="fixed inset-0 z-50 bg-admin-text/40 backdrop-blur-md"
             onClick={onClose}
             style={{ touchAction: "none" }}
           />
@@ -118,13 +118,13 @@ export default function ResponsiveModal({
               )}
 
               {/* Decorative gradients */}
-              <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-bluegreen/30 to-sheen/20 rounded-full blur-3xl pointer-events-none" />
-              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-sheen/30 to-bluegreen/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-admin-primary/30 to-admin-accent/20 rounded-full blur-3xl pointer-events-none" />
+              <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-admin-accent/30 to-admin-primary/20 rounded-full blur-3xl pointer-events-none" />
 
               {/* Header */}
               {(title || showCloseButton) && (
                 <div className="relative bg-gradient-to-r from-charcoal via-midnight to-charcoal px-6 py-5 md:py-6 text-white overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-admin-primary/20 via-transparent to-admin-accent/20" />
                   
                   {showCloseButton && (
                     <motion.button
@@ -141,7 +141,7 @@ export default function ResponsiveModal({
                   {title && (
                     <div className="relative z-10 flex items-center gap-3">
                       {Icon && (
-                        <div className="p-3 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+                        <div className="p-3 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
                           <Icon size={24} />
                         </div>
                       )}

@@ -49,11 +49,11 @@ const StatCard = ({
 }) => {
   const colorClasses = {
     bluegreen: {
-      gradient: "from-bluegreen/20 via-sheen/10 to-bluegreen/5",
-      iconBg: "from-bluegreen to-sheen",
-      text: "text-bluegreen",
-      border: "border-bluegreen/20",
-      glow: "shadow-bluegreen/10",
+      gradient: "from-admin-primary/20 via-sheen/10 to-admin-primary/5",
+      iconBg: "from-admin-primary to-admin-accent",
+      text: "text-admin-primary",
+      border: "border-admin-primary/20",
+      glow: "shadow-admin-primary/10",
     },
     green: {
       gradient: "from-green-100/80 via-emerald-50/60 to-green-50/40",
@@ -141,7 +141,7 @@ const StatCard = ({
 const ProgressBar = ({ label, value, max, color = "bluegreen", delay = 0 }) => {
   const percentage = max > 0 ? (value / max) * 100 : 0;
   const colorClasses = {
-    bluegreen: "from-bluegreen to-sheen",
+    bluegreen: "from-admin-primary to-admin-accent",
     green: "from-green-500 to-emerald-500",
     amber: "from-amber-500 to-orange-500",
     red: "from-red-500 to-rose-500",
@@ -157,7 +157,7 @@ const ProgressBar = ({ label, value, max, color = "bluegreen", delay = 0 }) => {
     >
       <div className="flex justify-between text-sm mb-2">
         <span className="text-gray-600 font-medium">{label}</span>
-        <span className="font-bold text-charcoal">{value}</span>
+        <span className="font-bold text-admin-text">{value}</span>
       </div>
       <div className="h-2.5 bg-gray-200/80 rounded-full overflow-hidden shadow-inner">
         <motion.div
@@ -196,8 +196,8 @@ export default function LicenseAnalyticsPanel() {
     return (
       <div className="flex flex-col justify-center items-center py-12">
         <div className="relative">
-          <div className="w-12 h-12 border-4 border-bluegreen/30 rounded-full" />
-          <div className="w-12 h-12 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
+          <div className="w-12 h-12 border-4 border-admin-primary/30 rounded-full" />
+          <div className="w-12 h-12 border-4 border-admin-primary border-t-transparent rounded-full animate-spin absolute inset-0" />
         </div>
         <p className="mt-4 text-gray-500 font-medium">
           Učitavanje statistika...
@@ -215,11 +215,11 @@ export default function LicenseAnalyticsPanel() {
       {/* Header with time filter */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+          <div className="p-2.5 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
             <BarChart3 size={20} className="text-white" />
           </div>
           <div>
-            <h3 className="text-lg font-bold text-charcoal">
+            <h3 className="text-lg font-bold text-admin-text">
               Statistika licenci
             </h3>
             <p className="text-sm text-gray-500">Pregled ključnih metrika</p>
@@ -234,7 +234,7 @@ export default function LicenseAnalyticsPanel() {
               onClick={() => setTimeFilter(days)}
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all ${
                 timeFilter === days
-                  ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-md"
+                  ? "bg-gradient-to-r from-admin-primary to-admin-accent text-white shadow-md"
                   : "text-gray-600 hover:bg-white hover:shadow-sm"
               }`}
             >
@@ -322,12 +322,12 @@ export default function LicenseAnalyticsPanel() {
           className="relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-gray-100/80"
         >
           {/* Decorative element */}
-          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-bluegreen/10 to-sheen/5 blur-2xl" />
+          <div className="absolute -right-8 -top-8 w-32 h-32 rounded-full bg-gradient-to-br from-admin-primary/10 to-admin-accent/5 blur-2xl" />
 
           <div className="relative z-10">
-            <h4 className="text-sm font-bold text-charcoal mb-5 flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-gradient-to-br from-bluegreen/20 to-sheen/10">
-                <TrendingUp size={16} className="text-bluegreen" />
+            <h4 className="text-sm font-bold text-admin-text mb-5 flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-admin-primary/20 to-admin-accent/10">
+                <TrendingUp size={16} className="text-admin-primary" />
               </div>
               Odnos licenci
             </h4>
@@ -370,12 +370,12 @@ export default function LicenseAnalyticsPanel() {
           className="relative overflow-hidden bg-white/80 backdrop-blur-xl rounded-2xl p-6 shadow-lg border border-gray-100/80"
         >
           {/* Decorative element */}
-          <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full bg-gradient-to-br from-sheen/10 to-bluegreen/5 blur-2xl" />
+          <div className="absolute -left-8 -bottom-8 w-32 h-32 rounded-full bg-gradient-to-br from-admin-accent/10 to-admin-primary/5 blur-2xl" />
 
           <div className="relative z-10">
-            <h4 className="text-sm font-bold text-charcoal mb-5 flex items-center gap-2">
-              <div className="p-1.5 rounded-lg bg-gradient-to-br from-bluegreen/20 to-sheen/10">
-                <Activity size={16} className="text-bluegreen" />
+            <h4 className="text-sm font-bold text-admin-text mb-5 flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-admin-primary/20 to-admin-accent/10">
+                <Activity size={16} className="text-admin-primary" />
               </div>
               Ključne metrike
             </h4>
@@ -390,7 +390,7 @@ export default function LicenseAnalyticsPanel() {
                 <span className="text-sm text-gray-600 font-medium">
                   Prosečno aktivacija
                 </span>
-                <span className="font-bold text-charcoal bg-bluegreen/10 px-3 py-1 rounded-lg">
+                <span className="font-bold text-admin-text bg-admin-primary/10 px-3 py-1 rounded-lg">
                   {stats.avgActivationsPerLicense} po licenci
                 </span>
               </motion.div>
@@ -404,7 +404,7 @@ export default function LicenseAnalyticsPanel() {
                 <span className="text-sm text-gray-600 font-medium">
                   Trial/Paid odnos
                 </span>
-                <span className="font-bold text-charcoal bg-amber-100/50 px-3 py-1 rounded-lg">
+                <span className="font-bold text-admin-text bg-amber-100/50 px-3 py-1 rounded-lg">
                   {stats.trialToPaidRatio} : 1
                 </span>
               </motion.div>
@@ -418,7 +418,7 @@ export default function LicenseAnalyticsPanel() {
                 <span className="text-sm text-gray-600 font-medium">
                   Stopa aktivnosti ({timeFilter}d)
                 </span>
-                <span className="font-bold text-charcoal bg-green-100/50 px-3 py-1 rounded-lg">
+                <span className="font-bold text-admin-text bg-green-100/50 px-3 py-1 rounded-lg">
                   {(
                     (stats.recentlyActive / stats.totalLicenses) * 100 || 0
                   ).toFixed(1)}
@@ -427,18 +427,18 @@ export default function LicenseAnalyticsPanel() {
               </motion.div>
 
               <motion.div
-                className="flex items-center justify-between p-4 bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 rounded-xl border border-bluegreen/20"
+                className="flex items-center justify-between p-4 bg-gradient-to-r from-admin-primary/10 via-sheen/5 to-admin-primary/10 rounded-xl border border-admin-primary/20"
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.9 }}
               >
                 <div className="flex items-center gap-2">
-                  <Sparkles size={16} className="text-bluegreen" />
-                  <span className="text-sm text-bluegreen font-semibold">
+                  <Sparkles size={16} className="text-admin-primary" />
+                  <span className="text-sm text-admin-primary font-semibold">
                     Konverzija trial → paid
                   </span>
                 </div>
-                <span className="font-black text-bluegreen text-lg">
+                <span className="font-black text-admin-primary text-lg">
                   {stats.paidLicenses > 0
                     ? (
                         (stats.paidLicenses /

@@ -76,7 +76,7 @@ export default function ResponsiveDrawer({
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 bg-charcoal/40 backdrop-blur-md"
+            className="fixed inset-0 z-40 bg-admin-text/40 backdrop-blur-md"
             onClick={onClose}
           />
 
@@ -102,11 +102,11 @@ export default function ResponsiveDrawer({
             </div>
 
             {/* Decorative gradients */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-bluegreen/10 to-sheen/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-admin-primary/10 to-admin-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-charcoal via-midnight to-charcoal px-6 py-5 text-white z-10 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
+              <div className="absolute inset-0 bg-gradient-to-r from-admin-primary/20 via-transparent to-admin-accent/20" />
 
               <motion.button
                 whileHover={{ scale: 1.1 }}
@@ -120,7 +120,7 @@ export default function ResponsiveDrawer({
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-2">
                   {Icon && (
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
                       <Icon size={22} />
                     </div>
                   )}
@@ -153,11 +153,11 @@ export default function ResponsiveDrawer({
             data-lenis-prevent
           >
             {/* Decorative gradients */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-bluegreen/10 to-sheen/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-admin-primary/10 to-admin-accent/5 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
 
             {/* Header */}
             <div className="sticky top-0 bg-gradient-to-r from-charcoal via-midnight to-charcoal p-6 text-white z-10 overflow-hidden">
-              <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
+              <div className="absolute inset-0 bg-gradient-to-r from-admin-primary/20 via-transparent to-admin-accent/20" />
 
               <motion.button
                 whileHover={{ scale: 1.1, rotate: 90 }}
@@ -171,7 +171,7 @@ export default function ResponsiveDrawer({
               <div className="relative z-10">
                 <div className="flex items-center gap-3 mb-3">
                   {Icon && (
-                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+                    <div className="p-2.5 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
                       <Icon size={22} />
                     </div>
                   )}

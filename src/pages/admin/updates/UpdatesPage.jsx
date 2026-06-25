@@ -117,7 +117,7 @@ function ReleaseRow({ release, onPublish, onUnpublish, onDelete, loading }) {
               whileTap={{ scale: 0.95 }}
               onClick={() => onPublish(release.version)}
               disabled={loading}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition-colors disabled:opacity-50"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold bg-emerald-500 hover:bg-emerald-600 text-white transition-colors disabled:opacity-50 min-h-[44px]"
             >
               <Globe className="w-3.5 h-3.5" />
               Objavi
@@ -174,7 +174,7 @@ function ReleaseRow({ release, onPublish, onUnpublish, onDelete, loading }) {
                   return (
                     <div key={side} className="bg-gray-50 rounded-xl p-4 space-y-2">
                       <div className="flex items-center gap-2 mb-2">
-                        <Download className="w-4 h-4 text-brand-secondary" />
+                        <Download className="w-4 h-4 text-admin-primary" />
                         <span className="font-semibold text-sm text-gray-700 capitalize">
                           {side === "server" ? "Serverska strana" : "Klijentska strana"}
                         </span>
@@ -385,17 +385,17 @@ export default function UpdatesPage() {
 
   // ─── Main UI ───────────────────────────────────────────────────────────────
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50/30 to-indigo-50/20 px-4 py-8">
-      <div className="max-w-4xl mx-auto space-y-6">
+    <div className="min-h-screen bg-admin-surface-tint px-4 py-5">
+      <div className="max-w-4xl mx-auto space-y-4">
 
         {/* Header */}
         <div className="flex items-start justify-between gap-4">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-              <Download className="w-6 h-6 text-brand-secondary" />
+            <h1 className="text-lg font-bold text-gray-900 flex items-center gap-2">
+              <Download className="w-5 h-5 text-admin-primary" />
               Upravljanje ažuriranjima
             </h1>
-            <p className="text-sm text-gray-500 mt-1">
+            <p className="text-xs text-gray-500 mt-0.5">
               Pregled i objava verzija eVaga Desktop softvera
             </p>
           </div>
@@ -428,7 +428,7 @@ export default function UpdatesPage() {
         {/* Globalna politika verzija */}
         <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
           <h2 className="text-base font-bold text-gray-900 flex items-center gap-2 mb-5">
-            <Settings className="w-4 h-4 text-brand-secondary" />
+            <Settings className="w-4 h-4 text-admin-primary" />
             Globalna politika verzija
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
@@ -456,7 +456,7 @@ export default function UpdatesPage() {
                           [channel]: { ...p[channel], targetVersion: e.target.value },
                         }))
                       }
-                      className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-brand-secondary bg-white"
+                      className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-admin-primary bg-white"
                     >
                       <option value="">— Najnoviji (automatski) —</option>
                       {publishedReleases
@@ -482,7 +482,7 @@ export default function UpdatesPage() {
                             [channel]: { ...p[channel], defaultGraceDays: e.target.value },
                           }))
                         }
-                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-brand-secondary"
+                        className="w-full text-sm border border-gray-200 rounded-lg px-3 py-2 focus:outline-none focus:border-admin-primary"
                       />
                     </div>
                     <label className="flex items-center gap-2 cursor-pointer mt-5">
@@ -504,7 +504,7 @@ export default function UpdatesPage() {
                   <button
                     onClick={() => handleSavePolicy(channel)}
                     disabled={savingPolicy[channel]}
-                    className="w-full flex items-center justify-center gap-2 py-2 rounded-xl bg-brand-secondary text-white text-sm font-semibold hover:opacity-90 transition-opacity disabled:opacity-60"
+                    className="w-full flex items-center justify-center gap-2 py-2.5 rounded-xl bg-admin-primary hover:bg-admin-primary-hover text-white text-sm font-semibold transition-colors disabled:opacity-60 min-h-[44px]"
                   >
                     <Save className="w-3.5 h-3.5" />
                     {savingPolicy[channel] ? "Čuvanje..." : "Sačuvaj"}

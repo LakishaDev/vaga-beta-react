@@ -185,7 +185,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
-        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-charcoal/40 backdrop-blur-md"
+        className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-admin-text/40 backdrop-blur-md"
         onClick={onClose}
         data-lenis-prevent
       >
@@ -198,12 +198,12 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
           onClick={(e) => e.stopPropagation()}
         >
           {/* Decorative gradients */}
-          <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-bluegreen/30 to-sheen/20 rounded-full blur-3xl" />
-          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-sheen/30 to-bluegreen/20 rounded-full blur-3xl" />
+          <div className="absolute -top-24 -right-24 w-48 h-48 bg-gradient-to-br from-admin-primary/30 to-admin-accent/20 rounded-full blur-3xl" />
+          <div className="absolute -bottom-24 -left-24 w-48 h-48 bg-gradient-to-br from-admin-accent/30 to-admin-primary/20 rounded-full blur-3xl" />
 
           {/* Header */}
           <div className="relative bg-gradient-to-r from-charcoal via-midnight to-charcoal p-6 text-white overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-r from-bluegreen/20 via-transparent to-sheen/20" />
+            <div className="absolute inset-0 bg-gradient-to-r from-admin-primary/20 via-transparent to-admin-accent/20" />
             <button
               onClick={onClose}
               className="absolute right-4 top-4 p-2 rounded-full bg-white/10 hover:bg-white/20 transition-all hover:rotate-90 duration-300 z-30"
@@ -211,7 +211,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
               <X size={20} />
             </button>
             <div className="relative z-10 flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
                 <Key size={24} />
               </div>
               <div>
@@ -294,8 +294,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
 
             {/* Licencni ključ */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                <Key size={16} className="text-bluegreen" />
+              <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                <Key size={16} className="text-admin-primary" />
                 Licencni ključ
               </label>
               <div className="flex gap-2">
@@ -306,7 +306,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                     onChange={(e) =>
                       setFormData({ ...formData, licenseKey: e.target.value })
                     }
-                    className="w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl font-mono text-lg tracking-wider focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all"
+                    className="w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl font-mono text-lg tracking-wider focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all"
                     readOnly
                   />
                   <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -318,7 +318,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                   whileHover={{ scale: 1.05 }}
                   whileTap={{ scale: 0.95, speed: 0.1 }}
                   onClick={regenerateKey}
-                  className="px-4 py-3.5 bg-gradient-to-br from-bluegreen to-sheen text-white rounded-xl hover:shadow-lg hover:shadow-bluegreen/25 transition-all"
+                  className="px-4 py-3.5 bg-gradient-to-br from-admin-primary to-admin-accent text-white rounded-xl hover:shadow-lg hover:shadow-admin-primary/25 transition-all"
                 >
                   <motion.span
                     whileHover={{ scale: 1.05, rotate: 180 }}
@@ -343,8 +343,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
             {/* Klijent info */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                  <User size={16} className="text-bluegreen" />
+                <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                  <User size={16} className="text-admin-primary" />
                   Ime klijenta
                 </label>
                 <input
@@ -353,13 +353,13 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                   onChange={(e) =>
                     setFormData({ ...formData, clientName: e.target.value })
                   }
-                  className="w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+                  className="w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all placeholder:text-gray-400"
                   placeholder="Ime i prezime ili naziv firme"
                 />
               </div>
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                  <Mail size={16} className="text-bluegreen" />
+                <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                  <Mail size={16} className="text-admin-primary" />
                   Email klijenta
                 </label>
                 <input
@@ -368,7 +368,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                   onChange={(e) =>
                     setFormData({ ...formData, clientEmail: e.target.value })
                   }
-                  className="w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+                  className="w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all placeholder:text-gray-400"
                   placeholder="email@primer.com"
                 />
               </div>
@@ -377,8 +377,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
             {/* Tip licence */}
             {!formData.isTrial && (
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                  <Sparkles size={16} className="text-bluegreen" />
+                <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                  <Sparkles size={16} className="text-admin-primary" />
                   Tip licence
                 </label>
                 <div className="grid grid-cols-3 gap-3">
@@ -395,14 +395,14 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                       onClick={() => handleTypeChange(type)}
                       className={`relative p-4 rounded-xl border-2 transition-all duration-300 overflow-hidden ${
                         formData.licenseType === type
-                          ? "border-bluegreen bg-gradient-to-br from-bluegreen/10 to-sheen/5 shadow-lg shadow-bluegreen/10"
-                          : "border-gray-200 hover:border-bluegreen/50 bg-white"
+                          ? "border-admin-primary bg-gradient-to-br from-admin-primary/10 to-admin-accent/5 shadow-lg shadow-admin-primary/10"
+                          : "border-gray-200 hover:border-admin-primary/50 bg-white"
                       }`}
                     >
                       {formData.licenseType === type && (
                         <motion.div
                           layoutId="selectedType"
-                          className="absolute inset-0 bg-gradient-to-br from-bluegreen/10 to-sheen/5"
+                          className="absolute inset-0 bg-gradient-to-br from-admin-primary/10 to-admin-accent/5"
                           transition={{
                             type: "spring",
                             bounce: 0.2,
@@ -414,8 +414,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                         <span
                           className={`font-bold ${
                             formData.licenseType === type
-                              ? "text-bluegreen"
-                              : "text-charcoal"
+                              ? "text-admin-primary"
+                              : "text-admin-text"
                           }`}
                         >
                           {getLicenseTypeLabel(type)}
@@ -423,7 +423,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                         {formData.licenseType === type && (
                           <Check
                             size={16}
-                            className="absolute -top-1 -right-1 text-bluegreen"
+                            className="absolute -top-1 -right-1 text-admin-primary"
                           />
                         )}
                       </div>
@@ -436,8 +436,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
             {/* Datum isteka i aktivacije */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                  <Calendar size={16} className="text-bluegreen" />
+                <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                  <Calendar size={16} className="text-admin-primary" />
                   Datum isteka
                 </label>
                 <input
@@ -446,7 +446,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                   onChange={(e) =>
                     setFormData({ ...formData, expiresAt: e.target.value })
                   }
-                  className={`w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all ${
+                  className={`w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all ${
                     formData.isTrial ? "opacity-60 cursor-not-allowed" : ""
                   }`}
                   disabled={formData.isTrial}
@@ -458,8 +458,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                 )}
               </div>
               <div>
-                <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                  <Monitor size={16} className="text-bluegreen" />
+                <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                  <Monitor size={16} className="text-admin-primary" />
                   Maksimalan broj aktivacija
                 </label>
                 <input
@@ -473,7 +473,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                       maxActivations: parseInt(e.target.value) || 1,
                     })
                   }
-                  className={`w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all ${
+                  className={`w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all ${
                     formData.isTrial ? "opacity-60 cursor-not-allowed" : ""
                   }`}
                   disabled={formData.isTrial}
@@ -488,8 +488,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
 
             {/* Moduli */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                <Package size={16} className="text-bluegreen" />
+              <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                <Package size={16} className="text-admin-primary" />
                 Dozvoljeni moduli
               </label>
               <div className="flex flex-wrap gap-3">
@@ -505,8 +505,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                     disabled={formData.isTrial}
                     className={`px-5 py-2.5 rounded-full border-2 transition-all duration-300 font-medium flex items-center gap-2 ${
                       formData.modules.includes(module)
-                        ? "border-bluegreen bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
-                        : "border-gray-200 hover:border-bluegreen/50 bg-white text-charcoal"
+                        ? "border-admin-primary bg-gradient-to-r from-admin-primary to-admin-accent text-white shadow-lg shadow-admin-primary/25"
+                        : "border-gray-200 hover:border-admin-primary/50 bg-white text-admin-text"
                     } ${
                       formData.isTrial ? "opacity-50 cursor-not-allowed" : ""
                     }`}
@@ -537,8 +537,8 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
 
             {/* Offline dani */}
             <div>
-              <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-3">
-                <Wifi size={16} className="text-bluegreen" />
+              <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-3">
+                <Wifi size={16} className="text-admin-primary" />
                 Dozvoljeni offline dani
               </label>
               <input
@@ -552,7 +552,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                     offlineDaysAllowed: parseInt(e.target.value) || 0,
                   })
                 }
-                className={`w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all ${
+                className={`w-full px-4 py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all ${
                   formData.isTrial ? "opacity-60 cursor-not-allowed" : ""
                 }`}
                 disabled={formData.isTrial}
@@ -568,7 +568,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
               <motion.div
                 className={`relative p-5 rounded-2xl border-2 transition-all duration-300 ${
                   formData.autoRenew
-                    ? "bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 border-bluegreen/30 shadow-lg shadow-bluegreen/5"
+                    ? "bg-gradient-to-r from-admin-primary/10 via-sheen/5 to-admin-primary/10 border-admin-primary/30 shadow-lg shadow-admin-primary/5"
                     : "bg-gradient-to-r from-gray-50 to-white border-gray-200"
                 }`}
               >
@@ -577,7 +577,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                     <div
                       className={`p-2 rounded-xl transition-all duration-300 ${
                         formData.autoRenew
-                          ? "bg-gradient-to-br from-bluegreen to-sheen"
+                          ? "bg-gradient-to-br from-admin-primary to-admin-accent"
                           : "bg-gray-200"
                       }`}
                     >
@@ -592,7 +592,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                       <span
                         className={`font-bold ${
                           formData.autoRenew
-                            ? "text-bluegreen"
+                            ? "text-admin-primary"
                             : "text-gray-700"
                         }`}
                       >
@@ -619,7 +619,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                     }
                     className={`relative w-16 h-8 rounded-full transition-all duration-300 ${
                       formData.autoRenew
-                        ? "bg-gradient-to-r from-bluegreen to-sheen shadow-lg shadow-bluegreen/20"
+                        ? "bg-gradient-to-r from-admin-primary to-admin-accent shadow-lg shadow-admin-primary/20"
                         : "bg-gray-300"
                     }`}
                   >
@@ -657,7 +657,7 @@ export default function LicenseCreateModal({ isOpen, onClose, onSubmit }) {
                 }}
                 whileTap={{ scale: 0.98 }}
                 disabled={loading}
-                className="flex-1 px-6 py-3.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold shadow-lg shadow-bluegreen/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 px-6 py-3.5 bg-gradient-to-r from-admin-primary via-sheen to-admin-primary bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold shadow-lg shadow-admin-primary/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                 style={{ backgroundSize: "200% 100%" }}
               >
                 {loading ? (

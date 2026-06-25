@@ -15,6 +15,7 @@ const LicensesPage = lazy(() =>
 );
 const OrdersPage = lazy(() => import("./pages/admin/licensing/OrdersPage"));
 const UpdatesPage = lazy(() => import("./pages/admin/updates/UpdatesPage"));
+const UsersPage = lazy(() => import("./pages/admin/users/UsersPage"));
 const AdminLoginPage = lazy(() => import("./pages/admin/AdminLoginPage"));
 
 export default function AdminApp() {
@@ -48,6 +49,7 @@ export default function AdminApp() {
               <Route path="/licenses" element={<LicensesPage />} />
               <Route path="/licenses/orders" element={<OrdersPage />} />
               <Route path="/updates" element={<UpdatesPage />} />
+              <Route path="/users" element={<UsersPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/licenses" replace />} />
           </Routes>

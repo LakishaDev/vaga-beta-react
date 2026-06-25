@@ -223,8 +223,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
 
         {/* Licencni ključ */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-            <Key size={16} className="text-bluegreen" />
+          <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+            <Key size={16} className="text-admin-primary" />
             Licencni ključ
           </label>
           <div className="flex gap-2">
@@ -235,7 +235,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                 onChange={(e) =>
                   setFormData({ ...formData, licenseKey: e.target.value })
                 }
-                className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl font-mono text-sm md:text-lg tracking-wider focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all"
+                className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl font-mono text-sm md:text-lg tracking-wider focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all"
                 readOnly
               />
               <div className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -247,7 +247,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
               onClick={regenerateKey}
-              className="px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-br from-bluegreen to-sheen text-white rounded-xl hover:shadow-lg hover:shadow-bluegreen/25 transition-all min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
+              className="px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-br from-admin-primary to-admin-accent text-white rounded-xl hover:shadow-lg hover:shadow-admin-primary/25 transition-all min-w-[44px] min-h-[44px] md:min-w-0 md:min-h-0 flex items-center justify-center"
               aria-label="Regenerate key"
             >
               <RefreshCw size={20} />
@@ -258,8 +258,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
         {/* Klijent info - RESPONSIVE GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-              <User size={16} className="text-bluegreen" />
+            <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+              <User size={16} className="text-admin-primary" />
               Ime klijenta
             </label>
             <input
@@ -268,13 +268,13 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
               onChange={(e) =>
                 setFormData({ ...formData, clientName: e.target.value })
               }
-              className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+              className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all placeholder:text-gray-400"
               placeholder="Ime i prezime"
             />
           </div>
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-              <Mail size={16} className="text-bluegreen" />
+            <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+              <Mail size={16} className="text-admin-primary" />
               Email
             </label>
             <input
@@ -283,7 +283,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
               onChange={(e) =>
                 setFormData({ ...formData, clientEmail: e.target.value })
               }
-              className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all placeholder:text-gray-400"
+              className="w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all placeholder:text-gray-400"
               placeholder="email@primer.com"
             />
           </div>
@@ -292,8 +292,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
         {/* Tip licence - RESPONSIVE GRID */}
         {!formData.isTrial && (
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-              <Sparkles size={16} className="text-bluegreen" />
+            <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+              <Sparkles size={16} className="text-admin-primary" />
               Tip licence
             </label>
             <div className="grid grid-cols-3 gap-2 md:gap-3">
@@ -310,15 +310,15 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                   onClick={() => handleTypeChange(type)}
                   className={`relative p-3 md:p-4 rounded-xl border-2 transition-all duration-300 overflow-hidden min-h-[44px] ${
                     formData.licenseType === type
-                      ? "border-bluegreen bg-gradient-to-br from-bluegreen/10 to-sheen/5 shadow-lg shadow-bluegreen/10"
-                      : "border-gray-200 hover:border-bluegreen/50 bg-white"
+                      ? "border-admin-primary bg-gradient-to-br from-admin-primary/10 to-admin-accent/5 shadow-lg shadow-admin-primary/10"
+                      : "border-gray-200 hover:border-admin-primary/50 bg-white"
                   }`}
                 >
                   <span
                     className={`font-bold text-xs md:text-base ${
                       formData.licenseType === type
-                        ? "text-bluegreen"
-                        : "text-charcoal"
+                        ? "text-admin-primary"
+                        : "text-admin-text"
                     }`}
                   >
                     {getLicenseTypeLabel(type)}
@@ -326,7 +326,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                   {formData.licenseType === type && (
                     <Check
                       size={14}
-                      className="absolute top-2 right-2 text-bluegreen"
+                      className="absolute top-2 right-2 text-admin-primary"
                     />
                   )}
                 </motion.button>
@@ -338,8 +338,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
         {/* Datum i aktivacije - RESPONSIVE GRID */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-              <Calendar size={16} className="text-bluegreen" />
+            <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+              <Calendar size={16} className="text-admin-primary" />
               Datum isteka
             </label>
             <input
@@ -348,15 +348,15 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
               onChange={(e) =>
                 setFormData({ ...formData, expiresAt: e.target.value })
               }
-              className={`w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all ${
+              className={`w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all ${
                 formData.isTrial ? "opacity-60 cursor-not-allowed" : ""
               }`}
               disabled={formData.isTrial}
             />
           </div>
           <div>
-            <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-              <Monitor size={16} className="text-bluegreen" />
+            <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+              <Monitor size={16} className="text-admin-primary" />
               Max aktivacija
             </label>
             <input
@@ -370,7 +370,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                   maxActivations: parseInt(e.target.value) || 1,
                 })
               }
-              className={`w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all ${
+              className={`w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all ${
                 formData.isTrial ? "opacity-60 cursor-not-allowed" : ""
               }`}
               disabled={formData.isTrial}
@@ -380,8 +380,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
 
         {/* Moduli - RESPONSIVE FLEX WRAP */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-            <Package size={16} className="text-bluegreen" />
+          <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+            <Package size={16} className="text-admin-primary" />
             Moduli
           </label>
           <div className="flex flex-wrap gap-2">
@@ -395,8 +395,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                 disabled={formData.isTrial}
                 className={`px-3 md:px-5 py-2 md:py-2.5 rounded-full border-2 transition-all duration-300 font-medium flex items-center gap-2 text-xs md:text-sm min-h-[44px] md:min-h-0 ${
                   formData.modules.includes(module)
-                    ? "border-bluegreen bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
-                    : "border-gray-200 hover:border-bluegreen/50 bg-white text-charcoal"
+                    ? "border-admin-primary bg-gradient-to-r from-admin-primary to-admin-accent text-white shadow-lg shadow-admin-primary/25"
+                    : "border-gray-200 hover:border-admin-primary/50 bg-white text-admin-text"
                 } ${formData.isTrial ? "opacity-50 cursor-not-allowed" : ""}`}
               >
                 {formData.modules.includes(module) && <Check size={16} />}
@@ -408,8 +408,8 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
 
         {/* Offline dani */}
         <div>
-          <label className="flex items-center gap-2 text-sm font-bold text-charcoal mb-2 md:mb-3">
-            <Wifi size={16} className="text-bluegreen" />
+          <label className="flex items-center gap-2 text-sm font-bold text-admin-text mb-2 md:mb-3">
+            <Wifi size={16} className="text-admin-primary" />
             Offline dani
           </label>
           <input
@@ -423,7 +423,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                 offlineDaysAllowed: parseInt(e.target.value) || 0,
               })
             }
-            className={`w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-bluegreen focus:ring-4 focus:ring-bluegreen/10 transition-all ${
+            className={`w-full px-3 md:px-4 py-3 md:py-3.5 bg-gradient-to-r from-gray-50 to-white border-2 border-gray-200 rounded-xl focus:border-admin-primary focus:ring-4 focus:ring-admin-primary/10 transition-all ${
               formData.isTrial ? "opacity-60 cursor-not-allowed" : ""
             }`}
             disabled={formData.isTrial}
@@ -435,7 +435,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
           <motion.div
             className={`relative p-4 md:p-5 rounded-2xl border-2 transition-all duration-300 ${
               formData.autoRenew
-                ? "bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 border-bluegreen/30 shadow-lg shadow-bluegreen/5"
+                ? "bg-gradient-to-r from-admin-primary/10 via-sheen/5 to-admin-primary/10 border-admin-primary/30 shadow-lg shadow-admin-primary/5"
                 : "bg-gradient-to-r from-gray-50 to-white border-gray-200"
             }`}
           >
@@ -444,7 +444,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                 <div
                   className={`p-2 rounded-xl transition-all duration-300 ${
                     formData.autoRenew
-                      ? "bg-gradient-to-br from-bluegreen to-sheen"
+                      ? "bg-gradient-to-br from-admin-primary to-admin-accent"
                       : "bg-gray-200"
                   }`}
                 >
@@ -456,7 +456,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                 <div>
                   <span
                     className={`font-bold text-sm md:text-base ${
-                      formData.autoRenew ? "text-bluegreen" : "text-gray-700"
+                      formData.autoRenew ? "text-admin-primary" : "text-gray-700"
                     }`}
                   >
                     Auto obnavljanje
@@ -480,7 +480,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
                 }
                 className={`relative w-14 md:w-16 h-7 md:h-8 rounded-full transition-all duration-300 flex-shrink-0 ${
                   formData.autoRenew
-                    ? "bg-gradient-to-r from-bluegreen to-sheen shadow-lg shadow-bluegreen/20"
+                    ? "bg-gradient-to-r from-admin-primary to-admin-accent shadow-lg shadow-admin-primary/20"
                     : "bg-gray-300"
                 }`}
               >
@@ -514,7 +514,7 @@ export default function LicenseCreateModalResponsive({ isOpen, onClose, onSubmit
             }}
             whileTap={{ scale: 0.98 }}
             disabled={loading}
-            className="flex-1 px-6 py-3.5 bg-gradient-to-r from-bluegreen via-sheen to-bluegreen bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold shadow-lg shadow-bluegreen/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
+            className="flex-1 px-6 py-3.5 bg-gradient-to-r from-admin-primary via-sheen to-admin-primary bg-size-200 bg-pos-0 hover:bg-pos-100 text-white rounded-xl font-bold shadow-lg shadow-admin-primary/25 transition-all disabled:opacity-50 disabled:cursor-not-allowed min-h-[44px]"
             style={{ backgroundSize: "200% 100%" }}
           >
             {loading ? (

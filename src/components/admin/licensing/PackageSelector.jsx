@@ -49,7 +49,7 @@ const FeatureRow = ({ feature, packages, selectedPackage }) => (
       <td
         key={pkg}
         className={`py-3.5 px-4 text-center transition-all ${
-          selectedPackage === pkg ? "bg-bluegreen/5" : ""
+          selectedPackage === pkg ? "bg-admin-primary/5" : ""
         }`}
       >
         {feature.values[pkg] === true ? (
@@ -61,7 +61,7 @@ const FeatureRow = ({ feature, packages, selectedPackage }) => (
             <X className="text-gray-400" size={14} />
           </div>
         ) : (
-          <span className="text-sm font-semibold text-charcoal bg-gray-100 px-2 py-0.5 rounded-lg">
+          <span className="text-sm font-semibold text-admin-text bg-gray-100 px-2 py-0.5 rounded-lg">
             {feature.values[pkg]}
           </span>
         )}
@@ -99,15 +99,15 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
       onClick={() => onSelect(type)}
       className={`relative cursor-pointer rounded-3xl p-6 transition-all duration-300 overflow-hidden ${
         isSelected
-          ? "bg-gradient-to-br from-charcoal via-midnight to-charcoal text-white shadow-2xl shadow-charcoal/30 ring-4 ring-bluegreen/30"
-          : "bg-white/90 backdrop-blur-xl border-2 border-gray-200 hover:border-bluegreen/50 hover:shadow-xl"
+          ? "bg-gradient-to-br from-charcoal via-midnight to-charcoal text-white shadow-2xl shadow-charcoal/30 ring-4 ring-admin-primary/30"
+          : "bg-white/90 backdrop-blur-xl border-2 border-gray-200 hover:border-admin-primary/50 hover:shadow-xl"
       }`}
     >
       {/* Decorative elements */}
       {isSelected && (
         <>
-          <div className="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br from-bluegreen/30 to-sheen/20 rounded-full blur-2xl" />
-          <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-sheen/30 to-bluegreen/20 rounded-full blur-2xl" />
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-gradient-to-br from-admin-primary/30 to-admin-accent/20 rounded-full blur-2xl" />
+          <div className="absolute -bottom-8 -left-8 w-24 h-24 bg-gradient-to-br from-admin-accent/30 to-admin-primary/20 rounded-full blur-2xl" />
         </>
       )}
 
@@ -132,7 +132,7 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           <div
             className={`p-2.5 rounded-xl ${
               isSelected
-                ? "bg-gradient-to-br from-bluegreen to-sheen"
+                ? "bg-gradient-to-br from-admin-primary to-admin-accent"
                 : "bg-gray-100"
             } transition-all`}
           >
@@ -143,7 +143,7 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           </div>
           <h3
             className={`text-xl font-black ${
-              isSelected ? "text-white" : "text-charcoal"
+              isSelected ? "text-white" : "text-admin-text"
             }`}
           >
             {getLicenseTypeLabel(type)}
@@ -155,7 +155,7 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           <div className="flex items-baseline gap-1">
             <span
               className={`text-4xl font-black ${
-                isSelected ? "text-white" : "text-bluegreen"
+                isSelected ? "text-white" : "text-admin-primary"
               }`}
             >
               {price?.toLocaleString("sr-RS")}
@@ -186,12 +186,12 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           >
             <div
               className={`p-1 rounded-full ${
-                isSelected ? "bg-bluegreen/30" : "bg-green-100"
+                isSelected ? "bg-admin-primary/30" : "bg-green-100"
               }`}
             >
               <Check
                 size={12}
-                className={isSelected ? "text-bluegreen" : "text-green-600"}
+                className={isSelected ? "text-admin-primary" : "text-green-600"}
               />
             </div>
             <span>
@@ -205,12 +205,12 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           >
             <div
               className={`p-1 rounded-full ${
-                isSelected ? "bg-bluegreen/30" : "bg-green-100"
+                isSelected ? "bg-admin-primary/30" : "bg-green-100"
               }`}
             >
               <Check
                 size={12}
-                className={isSelected ? "text-bluegreen" : "text-green-600"}
+                className={isSelected ? "text-admin-primary" : "text-green-600"}
               />
             </div>
             <span>
@@ -224,12 +224,12 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
           >
             <div
               className={`p-1 rounded-full ${
-                isSelected ? "bg-bluegreen/30" : "bg-green-100"
+                isSelected ? "bg-admin-primary/30" : "bg-green-100"
               }`}
             >
               <Check
                 size={12}
-                className={isSelected ? "text-bluegreen" : "text-green-600"}
+                className={isSelected ? "text-admin-primary" : "text-green-600"}
               />
             </div>
             <span>
@@ -260,7 +260,7 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
                   className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold transition-all ${
                     isSelected
                       ? "bg-white/15 text-white border border-white/10"
-                      : "bg-bluegreen/10 text-bluegreen border border-bluegreen/20"
+                      : "bg-admin-primary/10 text-admin-primary border border-admin-primary/20"
                   }`}
                 >
                   <Icon size={12} />
@@ -278,7 +278,7 @@ const PackageCard = ({ type, isSelected, onSelect, isPopular = false }) => {
             animate={{ scale: 1 }}
             className="absolute top-4 right-4"
           >
-            <div className="p-2 rounded-full bg-gradient-to-br from-bluegreen to-sheen shadow-lg">
+            <div className="p-2 rounded-full bg-gradient-to-br from-admin-primary to-admin-accent shadow-lg">
               <Check size={16} className="text-white" />
             </div>
           </motion.div>
@@ -406,9 +406,9 @@ export default function PackageSelector({
           transition={{ delay: 0.3 }}
           className="bg-white/90 backdrop-blur-xl rounded-3xl shadow-xl overflow-hidden border border-gray-100/80"
         >
-          <div className="p-5 bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10 border-b border-gray-100/50">
-            <h4 className="font-black text-charcoal flex items-center gap-2">
-              <Sparkles size={18} className="text-bluegreen" />
+          <div className="p-5 bg-gradient-to-r from-admin-primary/10 via-sheen/5 to-admin-primary/10 border-b border-gray-100/50">
+            <h4 className="font-black text-admin-text flex items-center gap-2">
+              <Sparkles size={18} className="text-admin-primary" />
               Uporedni prikaz funkcionalnosti
             </h4>
           </div>
@@ -416,7 +416,7 @@ export default function PackageSelector({
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50/80">
-                  <th className="py-4 px-4 text-left text-sm font-bold text-charcoal w-1/4">
+                  <th className="py-4 px-4 text-left text-sm font-bold text-admin-text w-1/4">
                     Funkcionalnost
                   </th>
                   {packages.map((pkg) => (
@@ -424,14 +424,14 @@ export default function PackageSelector({
                       key={pkg}
                       className={`py-4 px-4 text-center text-sm font-bold transition-all ${
                         selectedPackage === pkg
-                          ? "bg-gradient-to-b from-bluegreen/15 to-bluegreen/5 text-bluegreen"
-                          : "text-charcoal"
+                          ? "bg-gradient-to-b from-admin-primary/15 to-admin-primary/5 text-admin-primary"
+                          : "text-admin-text"
                       }`}
                     >
                       <div className="flex flex-col items-center gap-1">
                         <span>{getLicenseTypeLabel(pkg)}</span>
                         {selectedPackage === pkg && (
-                          <span className="text-xs font-normal bg-bluegreen/20 px-2 py-0.5 rounded-full">
+                          <span className="text-xs font-normal bg-admin-primary/20 px-2 py-0.5 rounded-full">
                             Izabrano
                           </span>
                         )}

@@ -122,7 +122,7 @@ const LicenseActions = ({
         whileHover={{ scale: 1.1, y: -2 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => onView(license)}
-        className="p-2 rounded-lg bg-gradient-to-br from-bluegreen/10 to-sheen/10 text-bluegreen hover:from-bluegreen/20 hover:to-sheen/20 transition-all shadow-sm hover:shadow-md"
+        className="p-2 rounded-lg bg-gradient-to-br from-admin-primary/10 to-admin-accent/10 text-admin-primary hover:from-admin-primary/20 hover:to-admin-accent/20 transition-all shadow-sm hover:shadow-md"
         title="Pogledaj detalje"
       >
         <Eye size={16} />
@@ -189,10 +189,10 @@ const LicenseMobileCard = ({
       {/* Header with Key and Status */}
       <div className="flex justify-between items-start mb-4">
         <div className="flex items-center gap-2.5">
-          <div className="p-2 rounded-xl bg-gradient-to-br from-bluegreen/10 to-sheen/10">
-            <Key className="text-bluegreen" size={18} />
+          <div className="p-2 rounded-xl bg-gradient-to-br from-admin-primary/10 to-admin-accent/10">
+            <Key className="text-admin-primary" size={18} />
           </div>
-          <span className="font-mono text-sm font-bold text-charcoal tracking-wide">
+          <span className="font-mono text-sm font-bold text-admin-text tracking-wide">
             {license.licenseKey}
           </span>
         </div>
@@ -206,14 +206,14 @@ const LicenseMobileCard = ({
       {/* Info Grid */}
       <div className="space-y-2.5 text-sm">
         <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
-          <User size={14} className="text-charcoal/60" />
+          <User size={14} className="text-admin-text/60" />
           <span className="font-medium">
             {license.clientName || "Bez imena"}
           </span>
         </div>
 
         <div className="flex items-center gap-2.5 text-gray-600 p-2 rounded-lg bg-gray-50/50">
-          <Calendar size={14} className="text-charcoal/60" />
+          <Calendar size={14} className="text-admin-text/60" />
           <span>
             Ističe: {formatLicenseDate(license.expiresAt)}
             {remainingDays > 0 && (
@@ -231,17 +231,17 @@ const LicenseMobileCard = ({
 
         <div className="flex items-center justify-between p-2 rounded-lg bg-gray-50/50">
           <div className="flex items-center gap-2.5 text-gray-600">
-            <Monitor size={14} className="text-charcoal/60" />
+            <Monitor size={14} className="text-admin-text/60" />
             <span>
               Aktivacije:{" "}
-              <span className="font-semibold text-charcoal">
+              <span className="font-semibold text-admin-text">
                 {license.currentActivations || 0}
               </span>
               /{license.maxActivations}
             </span>
           </div>
           {license.hardwareId && (
-            <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-charcoal/10 text-charcoal text-xs font-medium">
+            <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-admin-text/10 text-admin-text text-xs font-medium">
               <Cpu size={10} />
               HWID
             </span>
@@ -281,8 +281,8 @@ export default function LicenseTable({
     return (
       <div className="flex flex-col justify-center items-center py-20">
         <div className="relative">
-          <div className="w-16 h-16 border-4 border-bluegreen/30 rounded-full" />
-          <div className="w-16 h-16 border-4 border-bluegreen border-t-transparent rounded-full animate-spin absolute inset-0" />
+          <div className="w-16 h-16 border-4 border-admin-primary/30 rounded-full" />
+          <div className="w-16 h-16 border-4 border-admin-primary border-t-transparent rounded-full animate-spin absolute inset-0" />
         </div>
         <p className="mt-4 text-gray-500 font-medium">Učitavanje licenci...</p>
       </div>
@@ -311,42 +311,42 @@ export default function LicenseTable({
       <div className="hidden lg:block overflow-hidden rounded-2xl shadow-lg border border-gray-200/80 bg-white">
         <div className="overflow-x-auto">
           <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gradient-to-r from-bluegreen/10 via-sheen/5 to-bluegreen/10">
+            <thead className="bg-gradient-to-r from-admin-primary/10 via-sheen/5 to-admin-primary/10">
               <tr>
-                <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-left text-sm font-bold text-admin-text">
                   <div className="flex items-center gap-2">
-                    <Key size={16} className="text-bluegreen" />
+                    <Key size={16} className="text-admin-primary" />
                     Licencni ključ
                   </div>
                 </th>
-                <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-left text-sm font-bold text-admin-text">
                   <div className="flex items-center gap-2">
-                    <User size={16} className="text-bluegreen" />
+                    <User size={16} className="text-admin-primary" />
                     Klijent
                   </div>
                 </th>
-                <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-left text-sm font-bold text-admin-text">
                   <div className="flex items-center gap-2">
-                    <Sparkles size={16} className="text-bluegreen" />
+                    <Sparkles size={16} className="text-admin-primary" />
                     Tip
                   </div>
                 </th>
-                <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-left text-sm font-bold text-admin-text">
                   Status
                 </th>
-                <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-left text-sm font-bold text-admin-text">
                   <div className="flex items-center gap-2">
-                    <Monitor size={16} className="text-bluegreen" />
+                    <Monitor size={16} className="text-admin-primary" />
                     Aktivacije
                   </div>
                 </th>
-                <th className="py-4 px-5 text-left text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-left text-sm font-bold text-admin-text">
                   <div className="flex items-center gap-2">
-                    <Calendar size={16} className="text-bluegreen" />
+                    <Calendar size={16} className="text-admin-primary" />
                     Ističe
                   </div>
                 </th>
-                <th className="py-4 px-5 text-center text-sm font-bold text-charcoal">
+                <th className="py-4 px-5 text-center text-sm font-bold text-admin-text">
                   Akcije
                 </th>
               </tr>
@@ -363,18 +363,18 @@ export default function LicenseTable({
                       animate={{ opacity: 1, x: 0 }}
                       exit={{ opacity: 0, x: 20 }}
                       transition={{ delay: index * 0.03 }}
-                      className={`hover:bg-gradient-to-r hover:from-bluegreen/5 hover:to-transparent transition-all cursor-pointer group ${
+                      className={`hover:bg-gradient-to-r hover:from-admin-primary/5 hover:to-transparent transition-all cursor-pointer group ${
                         index % 2 === 0 ? "bg-white" : "bg-gray-50/30"
                       }`}
                       onClick={() => onView(license)}
                     >
                       <td className="px-5 py-4">
                         <div className="flex items-center gap-2">
-                          <span className="font-mono text-sm font-semibold text-charcoal bg-gray-100 px-2 py-1 rounded-lg group-hover:bg-bluegreen/10 transition-colors">
+                          <span className="font-mono text-sm font-semibold text-admin-text bg-gray-100 px-2 py-1 rounded-lg group-hover:bg-admin-primary/10 transition-colors">
                             {license.licenseKey}
                           </span>
                           {license.hardwareId && (
-                            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-charcoal/10 text-charcoal text-xs">
+                            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-admin-text/10 text-admin-text text-xs">
                               <Cpu size={10} />
                             </span>
                           )}
@@ -382,7 +382,7 @@ export default function LicenseTable({
                       </td>
                       <td className="px-5 py-4">
                         <div>
-                          <div className="font-semibold text-charcoal">
+                          <div className="font-semibold text-admin-text">
                             {license.clientName || "-"}
                           </div>
                           <div className="text-xs text-gray-500">
@@ -391,7 +391,7 @@ export default function LicenseTable({
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 text-xs font-semibold text-charcoal border border-gray-200">
+                        <span className="px-2.5 py-1 rounded-lg bg-gradient-to-r from-gray-100 to-gray-50 text-xs font-semibold text-admin-text border border-gray-200">
                           {getLicenseTypeLabel(license.licenseType)}
                         </span>
                       </td>
@@ -406,7 +406,7 @@ export default function LicenseTable({
                         <div className="flex items-center gap-2">
                           <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden max-w-[60px]">
                             <div
-                              className="h-full bg-gradient-to-r from-bluegreen to-sheen rounded-full transition-all"
+                              className="h-full bg-gradient-to-r from-admin-primary to-admin-accent rounded-full transition-all"
                               style={{
                                 width: `${Math.min(
                                   ((license.currentActivations || 0) /
@@ -417,14 +417,14 @@ export default function LicenseTable({
                               }}
                             />
                           </div>
-                          <span className="text-sm font-medium text-charcoal">
+                          <span className="text-sm font-medium text-admin-text">
                             {license.currentActivations || 0}/
                             {license.maxActivations}
                           </span>
                         </div>
                       </td>
                       <td className="px-5 py-4">
-                        <div className="text-sm text-charcoal">
+                        <div className="text-sm text-admin-text">
                           {formatLicenseDate(license.expiresAt)}
                         </div>
                         {remainingDays > 0 && remainingDays <= 30 && (

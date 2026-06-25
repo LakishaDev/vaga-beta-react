@@ -47,7 +47,7 @@ const StatsCard = ({ icon: Icon, label, value, color = "blue" }) => {
   return (
     <motion.div
       whileHover={{ scale: 1.02, y: -2 }}
-      className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm"
+      className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200 shadow-sm"
     >
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0">
@@ -79,7 +79,7 @@ const FilterBadge = ({ label, isActive, onClick, icon: Icon }) => {
       onClick={onClick}
       className={`px-3 sm:px-4 py-2 sm:py-2.5 rounded-lg sm:rounded-xl text-xs sm:text-sm font-semibold transition-all flex items-center gap-1.5 sm:gap-2 whitespace-nowrap ${
         isActive
-          ? "bg-gradient-to-r from-bluegreen to-sheen text-white shadow-lg shadow-bluegreen/25"
+          ? "bg-gradient-to-r from-admin-primary to-admin-accent text-white shadow-lg shadow-admin-primary/25"
           : "bg-white text-gray-600 hover:bg-gray-50 border border-gray-200"
       }`}
     >
@@ -272,8 +272,8 @@ function UserManagementTabContent() {
       >
         <div className="text-center">
           <div className="relative w-16 h-16 mx-auto mb-4">
-            <div className="absolute inset-0 border-4 border-bluegreen/20 rounded-full"></div>
-            <div className="absolute inset-0 border-4 border-bluegreen border-t-transparent rounded-full animate-spin"></div>
+            <div className="absolute inset-0 border-4 border-admin-primary/20 rounded-full"></div>
+            <div className="absolute inset-0 border-4 border-admin-primary border-t-transparent rounded-full animate-spin"></div>
           </div>
           <p className="text-gray-600 font-medium">Učitavanje korisnika...</p>
         </div>
@@ -286,7 +286,7 @@ function UserManagementTabContent() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4 }}
-      className="space-y-4 sm:space-y-6 px-3 sm:px-0"
+      className="space-y-3 sm:space-y-4"
     >
       {/* Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
@@ -328,7 +328,7 @@ function UserManagementTabContent() {
       </div>
 
       {/* Actions Bar */}
-      <div className="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 border border-gray-200 shadow-sm">
+      <div className="bg-white rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-gray-200 shadow-sm">
         <div className="flex flex-col gap-3 sm:gap-4">
           {/* Search & Add Button Row */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
@@ -340,7 +340,7 @@ function UserManagementTabContent() {
                 placeholder="Pretraži..."
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-bluegreen/20 focus:border-bluegreen transition-all"
+                className="w-full pl-10 sm:pl-11 pr-4 py-2.5 sm:py-3 text-sm sm:text-base border border-gray-300 rounded-lg sm:rounded-xl focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary transition-all"
               />
             </div>
 
@@ -349,7 +349,7 @@ function UserManagementTabContent() {
               whileHover={{ scale: 1.02, y: -2 }}
               whileTap={{ scale: 0.98 }}
               onClick={() => setIsCreateModalOpen(true)}
-              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-bluegreen to-sheen text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-bluegreen/25 transition-all flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
+              className="px-4 sm:px-6 py-2.5 sm:py-3 bg-gradient-to-r from-admin-primary to-admin-accent text-white rounded-lg sm:rounded-xl font-semibold hover:shadow-lg hover:shadow-admin-primary/25 transition-all flex items-center justify-center gap-2 text-sm sm:text-base whitespace-nowrap"
             >
               <PlusIcon className="w-4 h-4 sm:w-5 sm:h-5" />
               <span className="hidden xs:inline">Dodaj korisnika</span>
@@ -506,6 +506,9 @@ function UserManagementTabContent() {
           setSelectedUser(null);
         }}
         onSubmit={handleUpdateUser}
+        onDelete={handleDeleteUser}
+        onChangePassword={handleChangePassword}
+        onToggleActive={handleToggleActive}
       />
     </motion.div>
   );

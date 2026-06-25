@@ -160,7 +160,7 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
               onChange={(e) =>
                 setFormData({ ...formData, displayName: e.target.value })
               }
-              className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-bluegreen/20 focus:border-bluegreen transition-all ${
+              className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary transition-all ${
                 errors.displayName ? "border-red-300" : "border-gray-300"
               }`}
               placeholder="Petar Petrović"
@@ -184,7 +184,7 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
               onChange={(e) =>
                 setFormData({ ...formData, email: e.target.value })
               }
-              className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-bluegreen/20 focus:border-bluegreen transition-all ${
+              className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary transition-all ${
                 errors.email ? "border-red-300" : "border-gray-300"
               }`}
               placeholder="petar@example.com"
@@ -209,7 +209,7 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
                 onChange={(e) =>
                   setFormData({ ...formData, password: e.target.value })
                 }
-                className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-bluegreen/20 focus:border-bluegreen transition-all ${
+                className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary transition-all ${
                   errors.password ? "border-red-300" : "border-gray-300"
                 }`}
                 placeholder="••••••••"
@@ -235,7 +235,7 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
                     confirmPassword: e.target.value,
                   })
                 }
-                className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-bluegreen/20 focus:border-bluegreen transition-all ${
+                className={`w-full pl-11 pr-4 py-3 md:py-3.5 border rounded-xl focus:ring-2 focus:ring-admin-primary/20 focus:border-admin-primary transition-all ${
                   errors.confirmPassword
                     ? "border-red-300"
                     : "border-gray-300"
@@ -270,21 +270,21 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
                 onClick={() => setFormData({ ...formData, role: value })}
                 className={`p-3 md:p-4 border-2 rounded-xl transition-all min-h-[44px] ${
                   formData.role === value
-                    ? "border-bluegreen bg-bluegreen/5"
+                    ? "border-admin-primary bg-admin-primary/5"
                     : "border-gray-200 hover:border-gray-300"
                 }`}
               >
                 <Icon
                   className={`w-5 md:w-6 h-5 md:h-6 mx-auto mb-1 md:mb-2 ${
                     formData.role === value
-                      ? "text-bluegreen"
+                      ? "text-admin-primary"
                       : "text-gray-400"
                   }`}
                 />
                 <div
                   className={`text-xs md:text-sm font-semibold ${
                     formData.role === value
-                      ? "text-bluegreen"
+                      ? "text-admin-primary"
                       : "text-gray-700"
                   }`}
                 >
@@ -355,7 +355,7 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
               onChange={(e) =>
                 setFormData({ ...formData, isAdmin: e.target.checked })
               }
-              className="w-5 h-5 rounded border-gray-300 text-bluegreen focus:ring-bluegreen"
+              className="w-5 h-5 rounded border-gray-300 text-admin-primary focus:ring-admin-primary"
             />
             <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
               Admin privilegije
@@ -392,7 +392,7 @@ export default function UserCreateModal({ isOpen, onClose, onSubmit }) {
             type="submit"
             whileHover={{ scale: 1.02 }}
             whileTap={{ scale: 0.98 }}
-            className="flex-1 px-6 py-3 md:py-3.5 bg-gradient-to-r from-bluegreen to-sheen text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-bluegreen/25 transition-all min-h-[44px]"
+            className="flex-1 px-6 py-3 md:py-3.5 bg-gradient-to-r from-admin-primary to-admin-accent text-white rounded-xl font-semibold hover:shadow-lg hover:shadow-admin-primary/25 transition-all min-h-[44px]"
           >
             Kreiraj korisnika
           </motion.button>

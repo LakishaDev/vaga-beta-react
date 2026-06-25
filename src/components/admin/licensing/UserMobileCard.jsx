@@ -37,7 +37,7 @@ const UserMobileCard = ({ user, onEdit, onDelete, onChangePassword, onToggleActi
       <div className="flex items-start justify-between mb-3">
         <div className="flex items-center gap-3 flex-1 min-w-0">
           {/* Avatar */}
-          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-bluegreen to-sheen flex items-center justify-center flex-shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-admin-primary to-admin-accent flex items-center justify-center flex-shrink-0">
             <UserIcon className="w-6 h-6 text-white" />
           </div>
           

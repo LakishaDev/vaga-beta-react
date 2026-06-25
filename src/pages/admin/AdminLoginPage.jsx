@@ -1,6 +1,3 @@
-// src/pages/admin/AdminLoginPage.jsx
-// Login stranica za admin.vagabeta.rs
-
 import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../utils/firebase";
@@ -30,14 +27,14 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-white px-4">
-      <div className="w-full max-w-sm bg-white rounded-2xl shadow-xl border border-gray-100 p-8">
+    <div className="admin-shell flex items-center justify-center bg-admin-navy px-4" style={{ minHeight: "100dvh" }}>
+      <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-admin-border p-8">
         <div className="flex flex-col items-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-brand-secondary to-brand-accent flex items-center justify-center shadow-lg mb-4">
+          <div className="w-14 h-14 rounded-2xl bg-admin-primary flex items-center justify-center shadow-lg shadow-admin-primary/30 mb-4">
             <Shield size={28} className="text-white" />
           </div>
-          <h1 className="text-2xl font-bold text-gray-900">Admin panel</h1>
-          <p className="text-gray-500 text-sm mt-1">Prijavite se za pristup</p>
+          <h1 className="text-2xl font-bold text-admin-text">Admin panel</h1>
+          <p className="text-admin-text-muted text-sm mt-1">Prijavite se za pristup</p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
@@ -49,7 +46,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               required
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-secondary focus:ring-2 focus:ring-brand-secondary/10 text-sm"
+              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/10 text-sm min-h-[44px]"
             />
           </div>
 
@@ -61,7 +58,7 @@ export default function AdminLoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Lozinka"
               required
-              className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-brand-secondary focus:ring-2 focus:ring-brand-secondary/10 text-sm"
+              className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/10 text-sm min-h-[44px]"
             />
             <button
               type="button"
@@ -79,7 +76,7 @@ export default function AdminLoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3 rounded-xl bg-gradient-to-r from-brand-secondary to-brand-accent text-white font-semibold text-sm shadow-md hover:opacity-90 transition-opacity disabled:opacity-60"
+            className="w-full py-3 rounded-xl bg-admin-primary hover:bg-admin-primary-hover text-white font-semibold text-sm shadow-md transition-colors disabled:opacity-60 min-h-[44px]"
           >
             {loading ? "Prijavljivanje..." : "Prijavi se"}
           </button>

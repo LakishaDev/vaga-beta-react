@@ -103,13 +103,13 @@ export default function BottomSheet({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3 flex-1">
                     {Icon && (
-                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-bluegreen/10 to-sheen/10">
-                        <Icon size={20} className="text-bluegreen" />
+                      <div className="p-2.5 rounded-xl bg-gradient-to-br from-admin-primary/10 to-admin-accent/10">
+                        <Icon size={20} className="text-admin-primary" />
                       </div>
                     )}
                     <div>
                       {title && (
-                        <h3 className="text-lg font-bold text-charcoal">{title}</h3>
+                        <h3 className="text-lg font-bold text-admin-text">{title}</h3>
                       )}
                       {subtitle && (
                         <p className="text-sm text-gray-500 mt-0.5">{subtitle}</p>
