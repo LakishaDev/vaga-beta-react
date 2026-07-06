@@ -27,38 +27,49 @@ export default function AdminLoginPage() {
   };
 
   return (
-    <div className="admin-shell flex items-center justify-center bg-admin-navy px-4" style={{ minHeight: "100dvh" }}>
+    <div
+      className="admin-shell flex items-center justify-center bg-admin-navy px-4"
+      style={{ minHeight: "100dvh" }}
+    >
       <div className="w-full max-w-sm bg-white rounded-2xl shadow-2xl border border-admin-border p-8">
         <div className="flex flex-col items-center mb-8">
           <div className="w-14 h-14 rounded-2xl bg-admin-primary flex items-center justify-center shadow-lg shadow-admin-primary/30 mb-4">
             <Shield size={28} className="text-white" />
           </div>
           <h1 className="text-2xl font-bold text-admin-text">Admin panel</h1>
-          <p className="text-admin-text-muted text-sm mt-1">Prijavite se za pristup</p>
+          <p className="text-admin-text-muted text-sm mt-1">
+            Prijavite se za pristup
+          </p>
         </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <div className="relative">
-            <Mail size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Mail
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="Email"
               required
-              className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/10 text-sm min-h-[44px]"
+              className="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/10 text-sm min-h-[44px]"
             />
           </div>
 
           <div className="relative">
-            <Lock size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <Lock
+              size={16}
+              className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"
+            />
             <input
               type={showPassword ? "text" : "password"}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Lozinka"
               required
-              className="w-full pl-10 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/10 text-sm min-h-[44px]"
+              className="w-full pl-7 pr-10 py-3 border border-gray-200 rounded-xl focus:outline-none focus:border-admin-primary focus:ring-2 focus:ring-admin-primary/10 text-sm min-h-[44px]"
             />
             <button
               type="button"
@@ -69,9 +80,7 @@ export default function AdminLoginPage() {
             </button>
           </div>
 
-          {error && (
-            <p className="text-red-600 text-sm text-center">{error}</p>
-          )}
+          {error && <p className="text-red-600 text-sm text-center">{error}</p>}
 
           <button
             type="submit"

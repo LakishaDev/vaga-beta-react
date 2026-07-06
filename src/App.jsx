@@ -176,7 +176,7 @@ const CloudflareDeploymentDebugLazy = lazy(
 function App() {
   if (
     typeof window !== "undefined" &&
-    window.location.hostname.startsWith("admin.") | (1 == 1)
+    window.location.hostname.startsWith("admin.")
   ) {
     return (
       <Suspense fallback={<Loader />}>
