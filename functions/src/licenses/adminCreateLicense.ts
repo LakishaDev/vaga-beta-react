@@ -13,11 +13,13 @@ export const adminCreateLicense = onCall(async (req) => {
     licenseType,
     expiresAt,
     maxActivations = 1,
-    modules = {},
-    allowedOfflineDays = 7,
+    modules = [],
     isTrial = false,
     autoRenew = false,
   } = req.data;
+
+  const allowedOfflineDays =
+    req.data.allowedOfflineDays ?? req.data.offlineDaysAllowed ?? 7;
 
   if (!licenseType) {
     throw new HttpsError("invalid-argument", "licenseType required");

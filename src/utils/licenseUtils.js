@@ -5,13 +5,13 @@
 //
 // @description Generisanje licencnih ključeva i konstante tipova licenci
 // @author eVaga Team
-// @version 1.0
-// @lastmodified 2025-12-01
+// @version 1.1
+// @lastmodified 2026-07-06
 //
 // FUNKCIONALNOSTI:
 // ✅ Generisanje jedinstvenog licencnog ključa u formatu EVAGA-XXXX-XXXX-XXXX
-// ✅ Definicija tipova licenci (trial, basic, pro, enterprise)
-// ✅ Definicija modula aplikacije
+// ✅ Definicija tipova licenci (trial, basic, pro, enterprise, custom)
+// ✅ Taksonomija modula/funkcionalnosti programa (Kontrola modula)
 // ✅ Pomoćne funkcije za validaciju i formatiranje
 // ===============================================================================
 
@@ -24,13 +24,130 @@ export const LICENSE_TYPES = {
   BASIC: "basic",
   PRO: "pro",
   ENTERPRISE: "enterprise",
+  CUSTOM: "custom",
 };
 
 /**
- * Dostupni moduli za licenciranje
+ * Katalog svih funkcionalnosti (modula) eVaga Desktop programa.
+ * Ovo je jedini izvor istine — ključevi se 1:1 preslikavaju na desktop
+ * `IsModuleEnabled`/`IsFeatureAllowed` gate-ove (OrdinalIgnoreCase, ali
+ * čuvamo tačne stringove).
+ * @constant {Array<Object>} LICENSE_MODULE_CATALOG
+ */
+export const LICENSE_MODULE_CATALOG = [
+  {
+    key: "trenutnoMerenje",
+    label: "Trenutno merenje",
+    description: "Bruto/tara/neto merenje u realnom vremenu",
+    icon: "Scale",
+    group: "Merenje",
+    type: "FEAT",
+  },
+  {
+    key: "cuvanjeMerenja",
+    label: "Čuvanje merenja",
+    description: "Trajno čuvanje izmerenih vrednosti",
+    icon: "Save",
+    group: "Merenje",
+    type: "FEAT",
+  },
+  {
+    key: "listaMerenja",
+    label: "Lista merenja",
+    description: "Pregled istorije svih merenja",
+    icon: "List",
+    group: "Merenje",
+    type: "SISTEM",
+  },
+  {
+    key: "pauzaMerenja",
+    label: "Pauziranje merenja",
+    description: "Privremeno zaustavljanje aktivnog merenja",
+    icon: "Pause",
+    group: "Merenje",
+    type: "FEAT",
+  },
+  {
+    key: "stampaMerenja",
+    label: "Štampanje merenja",
+    description: "Štampanje potvrde/izveštaja o merenju",
+    icon: "Printer",
+    group: "Merenje",
+    type: "FEAT",
+  },
+  {
+    key: "upravljanjeAmbalazom",
+    label: "Upravljanje ambalažom",
+    description: "Definisanje i podešavanje tipova ambalaže",
+    icon: "Package",
+    group: "Ambalaža i lica",
+    type: "SISTEM",
+  },
+  {
+    key: "evidencijaAmbalaze",
+    label: "Evidencija ambalaže",
+    description: "Praćenje kretanja i stanja ambalaže",
+    icon: "ClipboardList",
+    group: "Ambalaža i lica",
+    type: "SISTEM",
+  },
+  {
+    key: "upravljanjeLicima",
+    label: "Upravljanje licima",
+    description: "Unos, pregled i Excel izvoz lica",
+    icon: "Users",
+    group: "Ambalaža i lica",
+    type: "SISTEM",
+  },
+  {
+    key: "excelImportLica",
+    label: "Excel import lica",
+    description: "Uvoz lica iz Excel fajla (submodul Upravljanja licima)",
+    icon: "FileSpreadsheet",
+    group: "Ambalaža i lica",
+    type: "FEAT",
+    parentKey: "upravljanjeLicima",
+  },
+  {
+    key: "kontrolaPristupa",
+    label: "Kontrola pristupa",
+    description: "Upravljanje ulogama i pravima korisnika",
+    icon: "Shield",
+    group: "Napredno",
+    type: "SISTEM",
+    enterpriseOnly: true,
+  },
+  {
+    key: "webSocketStreaming",
+    label: "WebSocket streaming (APK)",
+    description: "Realtime prenos podataka ka mobilnoj aplikaciji",
+    icon: "Wifi",
+    group: "Napredno",
+    type: "FEAT",
+    enterpriseOnly: true,
+  },
+  {
+    key: "klijentskaStrana",
+    label: "Klijentska strana",
+    description: "Zaseban prikaz merenja za klijenta",
+    icon: "MonitorSmartphone",
+    group: "Napredno",
+    type: "SISTEM",
+    enterpriseOnly: true,
+  },
+];
+
+/**
+ * Svi ključevi modula (samo stringovi), izvedeni iz kataloga.
+ * @constant {string[]} LICENSE_MODULE_KEYS
+ */
+export const LICENSE_MODULE_KEYS = LICENSE_MODULE_CATALOG.map((m) => m.key);
+
+/**
+ * Legacy alias — postojeći importi u kodu koriste `LICENSE_MODULES`.
  * @constant {string[]} LICENSE_MODULES
  */
-export const LICENSE_MODULES = ["ambalaza", "stampa", "cloud"];
+export const LICENSE_MODULES = LICENSE_MODULE_KEYS;
 
 /**
  * Statusi licenci
@@ -44,6 +161,32 @@ export const LICENSE_STATUS = {
 };
 
 /**
+ * Moduli uključeni u svaki paket (BASIC ⊂ PRO ⊂ ENTERPRISE).
+ * @constant {Object} PACKAGE_MODULES
+ */
+export const PACKAGE_MODULES = {
+  [LICENSE_TYPES.BASIC]: [
+    "trenutnoMerenje",
+    "cuvanjeMerenja",
+    "listaMerenja",
+    "upravljanjeAmbalazom",
+    "stampaMerenja",
+  ],
+  [LICENSE_TYPES.PRO]: [
+    "trenutnoMerenje",
+    "cuvanjeMerenja",
+    "listaMerenja",
+    "upravljanjeAmbalazom",
+    "stampaMerenja",
+    "pauzaMerenja",
+    "evidencijaAmbalaze",
+    "upravljanjeLicima",
+    "excelImportLica",
+  ],
+  [LICENSE_TYPES.ENTERPRISE]: LICENSE_MODULE_KEYS,
+};
+
+/**
  * Podrazumevane vrednosti za tipove licenci
  * @constant {Object} LICENSE_DEFAULTS
  */
@@ -52,28 +195,28 @@ export const LICENSE_DEFAULTS = {
     durationDays: 7,
     maxActivations: 1,
     offlineDaysAllowed: 0,
-    modules: ["ambalaza"],
+    modules: ["trenutnoMerenje", "cuvanjeMerenja"],
     canResetHwid: false,
   },
   [LICENSE_TYPES.BASIC]: {
     durationDays: 365,
     maxActivations: 2,
     offlineDaysAllowed: 7,
-    modules: ["ambalaza"],
+    modules: PACKAGE_MODULES[LICENSE_TYPES.BASIC],
     canResetHwid: true,
   },
   [LICENSE_TYPES.PRO]: {
     durationDays: 365,
     maxActivations: 5,
     offlineDaysAllowed: 14,
-    modules: ["ambalaza", "stampa"],
+    modules: PACKAGE_MODULES[LICENSE_TYPES.PRO],
     canResetHwid: true,
   },
   [LICENSE_TYPES.ENTERPRISE]: {
     durationDays: 365,
     maxActivations: 999,
     offlineDaysAllowed: 30,
-    modules: ["ambalaza", "stampa", "cloud"],
+    modules: PACKAGE_MODULES[LICENSE_TYPES.ENTERPRISE],
     canResetHwid: true,
   },
 };
@@ -86,6 +229,49 @@ export const PACKAGE_PRICES = {
   [LICENSE_TYPES.BASIC]: 9900,
   [LICENSE_TYPES.PRO]: 19900,
   [LICENSE_TYPES.ENTERPRISE]: 49900,
+};
+
+/**
+ * Normalizuje `modules` u niz stringova bez obzira na ulazni oblik
+ * (undefined, stari objekat oblik, ili već ispravan niz).
+ * @function normalizeModules
+ * @param {string[]|Object|undefined|null} modules
+ * @returns {string[]}
+ */
+export const normalizeModules = (modules) => {
+  if (Array.isArray(modules)) return modules;
+  if (modules && typeof modules === "object") {
+    return Object.keys(modules).filter((k) => modules[k]);
+  }
+  return [];
+};
+
+const sortedUniqueEqual = (a, b) => {
+  const aSorted = [...new Set(a)].sort();
+  const bSorted = [...new Set(b)].sort();
+  if (aSorted.length !== bSorted.length) return false;
+  return aSorted.every((v, i) => v === bSorted[i]);
+};
+
+/**
+ * Izvodi naziv paketa (basic|pro|enterprise|custom) iz seta modula, poređenjem
+ * sa `PACKAGE_MODULES`. Ako se ne poklapa ni sa jednim presetom → "custom".
+ * @function getPackageFromModules
+ * @param {string[]|Object} modules
+ * @returns {string}
+ */
+export const getPackageFromModules = (modules) => {
+  const list = normalizeModules(modules);
+  if (sortedUniqueEqual(list, PACKAGE_MODULES[LICENSE_TYPES.ENTERPRISE])) {
+    return LICENSE_TYPES.ENTERPRISE;
+  }
+  if (sortedUniqueEqual(list, PACKAGE_MODULES[LICENSE_TYPES.PRO])) {
+    return LICENSE_TYPES.PRO;
+  }
+  if (sortedUniqueEqual(list, PACKAGE_MODULES[LICENSE_TYPES.BASIC])) {
+    return LICENSE_TYPES.BASIC;
+  }
+  return LICENSE_TYPES.CUSTOM;
 };
 
 /**
@@ -214,6 +400,7 @@ export const getLicenseTypeLabel = (type) => {
     [LICENSE_TYPES.BASIC]: "Basic",
     [LICENSE_TYPES.PRO]: "Pro",
     [LICENSE_TYPES.ENTERPRISE]: "Enterprise",
+    [LICENSE_TYPES.CUSTOM]: "Prilagođeno",
   };
   return labels[type] || type;
 };
@@ -235,16 +422,38 @@ export const getStatusColor = (status) => {
 };
 
 /**
- * Dobijanje ikone za modul
+ * Dobijanje ikone za modul (pokriva novu taksonomiju + legacy ključeve za
+ * prikaz starih licenci koje još imaju `ambalaza/stampa/cloud`).
  * @function getModuleIcon
  * @param {string} module - Naziv modula
  * @returns {string} Naziv ikone za Lucide
  */
 export const getModuleIcon = (module) => {
-  const icons = {
+  const catalogEntry = LICENSE_MODULE_CATALOG.find((m) => m.key === module);
+  if (catalogEntry) return catalogEntry.icon;
+
+  const legacyIcons = {
     ambalaza: "Package",
     stampa: "Printer",
     cloud: "Cloud",
   };
-  return icons[module] || "Box";
+  return legacyIcons[module] || "Box";
+};
+
+/**
+ * Dobijanje labele za modul (pokriva novu taksonomiju + legacy ključeve).
+ * @function getModuleLabel
+ * @param {string} module - Naziv modula
+ * @returns {string} Prikazna labela
+ */
+export const getModuleLabel = (module) => {
+  const catalogEntry = LICENSE_MODULE_CATALOG.find((m) => m.key === module);
+  if (catalogEntry) return catalogEntry.label;
+
+  const legacyLabels = {
+    ambalaza: "Ambalaža",
+    stampa: "Štampa",
+    cloud: "Cloud",
+  };
+  return legacyLabels[module] || module;
 };

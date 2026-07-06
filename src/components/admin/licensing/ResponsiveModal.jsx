@@ -123,7 +123,7 @@ export default function ResponsiveModal({
 
               {/* Header */}
               {(title || showCloseButton) && (
-                <div className="relative bg-gradient-to-r from-charcoal via-midnight to-charcoal px-6 py-5 md:py-6 text-white overflow-hidden">
+                <div className="relative bg-admin-navy px-6 py-5 md:py-6 text-white overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-r from-admin-primary/20 via-transparent to-admin-accent/20" />
                   
                   {showCloseButton && (

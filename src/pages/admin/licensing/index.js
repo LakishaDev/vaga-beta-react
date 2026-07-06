@@ -9,4 +9,5 @@
 // ===============================================================================
 
 export { default as LicensesPage } from "./LicensesPage";
+export { default as LicenseCreatePage } from "./LicenseCreatePage";
 export { default as OrdersPage } from "./OrdersPage";

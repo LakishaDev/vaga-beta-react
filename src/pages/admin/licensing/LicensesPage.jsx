@@ -15,10 +15,10 @@ import { auth } from "../../../utils/firebase";
 import { useLicenseOptimistic } from "../../../hooks/useLicenseOptimistic";
 import {
   LicenseTable,
-  LicenseCreateModal,
   LicenseDetailsDrawer,
   LicenseAnalyticsPanel,
 } from "../../../components/admin/licensing";
+import LicenseCreatePage from "./LicenseCreatePage";
 
 const FilterBadge = ({ label, isActive, onClick, count, color = "default" }) => {
   const colorStyles = {
@@ -60,9 +60,9 @@ export default function LicensesPage() {
   const [allowed, setAllowed] = useState(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
-  const [showCreateModal, setShowCreateModal] = useState(false);
   const [selectedLicense, setSelectedLicense] = useState(null);
   const [showAnalytics, setShowAnalytics] = useState(false);
+  const [viewMode, setViewMode] = useState("list"); // "list" | "create"
 
   const filters = useMemo(() => {
     return statusFilter !== "all" ? { status: statusFilter } : {};
@@ -116,7 +116,7 @@ export default function LicensesPage() {
 
   const handleCreateLicense = async (licenseData) => {
     const success = await createLicense(licenseData);
-    if (success) setShowCreateModal(false);
+    if (success) setViewMode("list");
   };
 
   const handleBlockLicense = async (licenseId) => {
@@ -146,6 +146,10 @@ export default function LicensesPage() {
     await updateLicense(licenseId, { autoRenew });
   };
 
+  const handleUpdateModules = async (licenseId, { modules, licenseType }) => {
+    await updateLicense(licenseId, { modules, licenseType });
+  };
+
   if (allowed === null) {
     return (
       <div className="flex flex-col justify-center items-center min-h-screen bg-gradient-to-br from-gray-50 to-white">
@@ -172,6 +176,19 @@ export default function LicensesPage() {
           <h2 className="text-red-700 font-black text-2xl mb-2">Pristup odbijen</h2>
           <p className="text-gray-500">Nemate dozvolu za pristup ovoj stranici.</p>
         </motion.div>
+      </div>
+    );
+  }
+
+  if (viewMode === "create") {
+    return (
+      <div className="min-h-screen bg-admin-surface-tint">
+        <div className="max-w-7xl mx-auto w-full p-4 sm:p-8 pt-8">
+          <LicenseCreatePage
+            onBack={() => setViewMode("list")}
+            onSubmit={handleCreateLicense}
+          />
+        </div>
       </div>
     );
   }
@@ -213,7 +230,7 @@ export default function LicensesPage() {
             <motion.button
               whileHover={{ scale: 1.05, y: -2 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => setShowCreateModal(true)}
+              onClick={() => setViewMode("create")}
               className="px-4 py-2.5 bg-admin-primary hover:bg-admin-primary-hover text-white rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-admin-primary/25 transition-colors min-h-[44px]"
             >
               <Plus size={18} />
@@ -307,12 +324,6 @@ export default function LicensesPage() {
           />
         </motion.div>
 
-        <LicenseCreateModal
-          isOpen={showCreateModal}
-          onClose={() => setShowCreateModal(false)}
-          onSubmit={handleCreateLicense}
-        />
-
         <LicenseDetailsDrawer
           license={selectedLicense}
           isOpen={!!selectedLicense}
@@ -323,6 +334,7 @@ export default function LicensesPage() {
           onExtend={handleExtendLicense}
           onConvertToPaid={handleConvertToPaid}
           onUpdateAutoRenew={handleUpdateAutoRenew}
+          onUpdateModules={handleUpdateModules}
         />
       </div>
     </div>

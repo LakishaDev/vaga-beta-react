@@ -9,10 +9,10 @@
 // ===============================================================================
 
 export { default as LicenseTable } from "./LicenseTable";
-export { default as LicenseCreateModal } from "./LicenseCreateModal";
 export { default as LicenseDetailsDrawer } from "./LicenseDetailsDrawer";
 export { default as LicenseAnalyticsPanel } from "./LicenseAnalyticsPanel";
 export { default as PackageSelector } from "./PackageSelector";
+export { default as ModuleControlPanel } from "./ModuleControlPanel";
 
 // User Management Components
 export { default as UserManagementTab } from "./UserManagementTab";

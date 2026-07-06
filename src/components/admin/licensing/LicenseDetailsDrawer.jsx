@@ -49,16 +49,18 @@ import {
 } from "lucide-react";
 import {
   formatLicenseDate,
-  getLicenseTypeLabel,
   getRemainingDays,
   LICENSE_TYPES,
   PACKAGE_PRICES,
+  getLicenseTypeLabel,
+  normalizeModules,
 } from "../../../utils/licenseUtils";
 import {
   setLicenseVersion,
   clearLicenseVersion,
   subscribePublishedReleases,
 } from "../../../services/versionControlService";
+import ModuleControlPanel from "./ModuleControlPanel";
 
 /**
  * Sekcija drawer-a sa glassmorphism efektom
@@ -105,6 +107,7 @@ export default function LicenseDetailsDrawer({
   onExtend,
   onConvertToPaid,
   onUpdateAutoRenew,
+  onUpdateModules,
 }) {
   const [showExtendForm, setShowExtendForm] = useState(false);
   const [extendDays, setExtendDays] = useState(30);
@@ -112,6 +115,10 @@ export default function LicenseDetailsDrawer({
   const [convertType, setConvertType] = useState(LICENSE_TYPES.BASIC);
   const [loading, setLoading] = useState(false);
   const [autoRenew, setAutoRenew] = useState(false);
+  const [moduleState, setModuleState] = useState({
+    licenseType: LICENSE_TYPES.BASIC,
+    modules: [],
+  });
 
   // Version control state
   const [publishedReleases, setPublishedReleases] = useState([]);
@@ -138,6 +145,10 @@ export default function LicenseDetailsDrawer({
         graceDays: license.versionGraceDays ?? 0,
       });
       setAutoRenew(license.autoRenew ?? false);
+      setModuleState({
+        licenseType: license.licenseType ?? LICENSE_TYPES.BASIC,
+        modules: normalizeModules(license.modules),
+      });
       setVersionMsg(null);
     }
   }, [isOpen, license]);
@@ -305,15 +316,6 @@ export default function LicenseDetailsDrawer({
                       value={license.clientEmail || "-"}
                       icon={Mail}
                     />
-                    <InfoRow
-                      label="Tip licence"
-                      value={
-                        <span className="px-2 py-0.5 rounded-lg bg-admin-surface-tint text-admin-primary font-semibold text-xs">
-                          {getLicenseTypeLabel(license.licenseType)}
-                        </span>
-                      }
-                      icon={Sparkles}
-                    />
                   </div>
                 </DrawerSection>
 
@@ -397,7 +399,7 @@ export default function LicenseDetailsDrawer({
                     </div>
                     <InfoRow
                       label="Offline dani"
-                      value={`${license.offlineDaysAllowed || 0} dana`}
+                      value={`${license.allowedOfflineDays ?? license.offlineDaysAllowed ?? 0} dana`}
                     />
                     <InfoRow
                       label="Poslednja aktivnost"
@@ -431,21 +433,18 @@ export default function LicenseDetailsDrawer({
                   </DrawerSection>
                 )}
 
-                {/* Moduli */}
-                <DrawerSection title="Dozvoljeni moduli" icon={Package}>
-                  <div className="flex flex-wrap gap-2">
-                    {(license.modules || []).map((module) => (
-                      <motion.span
-                        key={module}
-                        whileHover={{ scale: 1.05 }}
-                        className="px-4 py-2 bg-admin-surface-tint text-admin-primary rounded-xl text-sm font-semibold border border-admin-border shadow-sm"
-                      >
-                        {module.charAt(0).toUpperCase() + module.slice(1)}
-                      </motion.span>
-                    ))}
-                    {(!license.modules || license.modules.length === 0) && (
-                      <span className="text-gray-400 text-sm">Nema modula</span>
-                    )}
+                {/* Licenca i moduli */}
+                <DrawerSection title="Licenca i moduli" icon={Package}>
+                  <div className="bg-gradient-to-br from-gray-50/80 to-white rounded-2xl p-4 border border-gray-100/50 shadow-sm">
+                    <ModuleControlPanel
+                      licenseType={moduleState.licenseType}
+                      modules={moduleState.modules}
+                      disabled={license.isTrial}
+                      onChange={(next) => {
+                        setModuleState(next);
+                        onUpdateModules(license.id, next);
+                      }}
+                    />
                   </div>
                 </DrawerSection>
 

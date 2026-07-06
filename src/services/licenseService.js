@@ -44,7 +44,7 @@ export const adminCreateLicense = async (payload) => {
 };
 
 export const adminUpdateLicense = async (licenseId, data) => {
-  await fn.updateLicense({ licenseId, data });
+  await fn.updateLicense({ licenseKey: licenseId, ...data });
 };
 
 export const adminBlockLicense = async (licenseId, reason = "") => {

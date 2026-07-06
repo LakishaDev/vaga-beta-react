@@ -73,7 +73,7 @@ export const licenseVerify = onRequest(async (req, res) => {
       licenseKey,
       hwidHash: hwid,
       ip: license.ipLockEnabled ? ip ?? null : null,
-      modules: license.modules ?? {},
+      modules: Array.isArray(license.modules) ? license.modules : [],
       expiresAt: license.expiresAt.toDate().toISOString(),
       offlineUntil: offlineUntil.toDate().toISOString(),
       issuedAt: now.toDate().toISOString(),
